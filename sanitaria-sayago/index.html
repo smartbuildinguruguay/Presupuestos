@@ -1,0 +1,980 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Sanitaria Baño Sayago</title>
+<style>
+@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/barlow-condensed-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'Barlow Condensed';font-style:normal;font-weight:700;font-display:swap;src:url(fonts/barlow-condensed-latin-700-normal.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/ibm-plex-sans-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:500;font-display:swap;src:url(fonts/ibm-plex-sans-latin-500-normal.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Sans';font-style:normal;font-weight:600;font-display:swap;src:url(fonts/ibm-plex-sans-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:400;font-display:swap;src:url(fonts/ibm-plex-mono-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Mono';font-style:normal;font-weight:500;font-display:swap;src:url(fonts/ibm-plex-mono-latin-500-normal.woff2) format('woff2')}
+:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+body{margin:0;font:14px/1.5 system-ui,sans-serif}
+img{max-width:100%}
+[hidden]{display:none!important}
+/* Layout: dos sistemas (agua / desagües), cada uno con plano interactivo, despiece y guía; una columna en celular */
+:root{
+  --paper:#edf1f0; --panel:#fbfcfc; --ink:#17252a; --muted:#5a6a6d; --line:#cbd5d4; --fix:#9aa9a9;
+  --hot:#c23b2a; --cold:#1d68ad; --mix:#7b4aa6; --sel:#c98a00; --selbg:#fff1cf;
+  --pri:#d9531e; --sec:#8a6a3c; --ven:#3f9a2c;
+  --f-d:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;
+  --f-b:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;
+  --f-m:'IBM Plex Mono',ui-monospace,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){
+  --paper:#111718; --panel:#192122; --ink:#e4ebea; --muted:#93a2a2; --line:#2d3839; --fix:#56676a;
+  --hot:#ff6a52; --cold:#5ea8ee; --mix:#b78de3; --sel:#ffc23d; --selbg:#3a2f12;
+  --pri:#ff8a4f; --sec:#c9a46f; --ven:#7fd36a; color-scheme:dark}}
+:root[data-theme="dark"]{
+  --paper:#111718; --panel:#192122; --ink:#e4ebea; --muted:#93a2a2; --line:#2d3839; --fix:#56676a;
+  --hot:#ff6a52; --cold:#5ea8ee; --mix:#b78de3; --sel:#ffc23d; --selbg:#3a2f12;
+  --pri:#ff8a4f; --sec:#c9a46f; --ven:#7fd36a; color-scheme:dark}
+*{box-sizing:border-box}
+body{background:var(--paper);color:var(--ink);font-family:var(--f-b);font-size:15px;line-height:1.5}
+.wrap{max-width:1040px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px));padding-block:20px 48px}
+header h1{font-family:var(--f-d);font-weight:700;font-size:2.1rem;line-height:1.05;margin:0;letter-spacing:.01em;text-wrap:balance}
+header p{margin:.35rem 0 0;color:var(--muted);font-size:.9rem;max-width:68ch}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--paper)}
+.bar{position:sticky;top:env(safe-area-inset-top,0px);z-index:5;background:var(--paper);margin:16px 0 14px;padding:6px 0 8px;border-bottom:1px solid var(--line);display:flex;flex-direction:column;gap:6px}
+.sys{display:flex;gap:4px}
+.sys button{flex:1;font-family:var(--f-d);font-weight:700;font-size:1.15rem;letter-spacing:.05em;text-transform:uppercase;background:none;border:1px solid var(--line);color:var(--muted);padding:7px 4px;border-radius:7px;cursor:pointer}
+.sys button[aria-selected="true"]{color:var(--panel);background:var(--ink);border-color:var(--ink)}
+.sub{display:flex;gap:4px}
+.sub button{flex:1;font-family:var(--f-d);font-weight:600;font-size:1rem;letter-spacing:.06em;text-transform:uppercase;background:none;border:0;color:var(--muted);padding:6px 4px;border-radius:6px;cursor:pointer}
+.sub button[aria-selected="true"]{color:var(--ink);background:var(--panel);box-shadow:inset 0 -2px 0 var(--ink)}
+button:focus-visible,input:focus-visible,[tabindex]:focus-visible{outline:2px solid var(--sel);outline-offset:2px}
+h2{font-family:var(--f-d);font-weight:700;font-size:1.35rem;margin:26px 0 8px;letter-spacing:.02em}
+section > h2:first-child{margin-top:4px}
+.lbl{font-size:.72rem;letter-spacing:.09em;text-transform:uppercase;color:var(--muted);font-weight:600}
+.note{margin:0 0 8px;font-size:.88rem;color:var(--muted);max-width:75ch}
+.controls{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:8px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden;background:var(--panel)}
+.seg button{background:none;border:0;padding:6px 11px;font:500 .85rem var(--f-b);color:var(--muted);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+.chip{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:99px;padding:5px 11px;font:500 .82rem var(--f-b);cursor:pointer}
+.chip[aria-pressed="true"]{color:var(--ink);border-color:var(--ink)}
+.drawing{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow-x:auto;-webkit-overflow-scrolling:touch}
+.drawing svg{display:block;width:100%;height:auto}
+#svgA{min-width:900px} #svgD{min-width:760px}
+.hlbar{display:flex;gap:10px;align-items:center;justify-content:space-between;background:var(--selbg);border:1px solid var(--sel);border-radius:8px;padding:7px 12px;margin-bottom:8px;font-size:.88rem}
+.hlbar button{background:none;border:1px solid var(--sel);color:var(--ink);border-radius:6px;padding:3px 9px;cursor:pointer;font:inherit}
+.legend{display:flex;flex-wrap:wrap;gap:6px 16px;font-size:.8rem;color:var(--muted);margin:8px 2px 0}
+.legend span{display:inline-flex;align-items:center;gap:6px}
+.sw{width:18px;height:3px;border-radius:2px;display:inline-block}
+.info{margin-top:12px;background:var(--panel);border:1px solid var(--line);border-left:4px solid var(--muted);border-radius:8px;padding:12px 14px;min-height:76px}
+.info.F{border-left-color:var(--cold)} .info.C{border-left-color:var(--hot)} .info.M{border-left-color:var(--mix)}
+.info.P{border-left-color:var(--pri)} .info.S{border-left-color:var(--sec)} .info.V{border-left-color:var(--ven)}
+.info .code{font-family:var(--f-m);font-size:.8rem;color:var(--muted)}
+.info b{font-size:1rem}
+.info p{margin:.3rem 0 0;font-size:.9rem}
+.tbl{overflow-x:auto;border:1px solid var(--line);border-radius:8px;background:var(--panel)}
+table{border-collapse:collapse;width:100%;font-size:.88rem}
+th,td{text-align:left;padding:8px 10px;border-bottom:1px solid var(--line);vertical-align:top}
+th{font-size:.7rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);font-weight:600;background:var(--paper)}
+tr:last-child td{border-bottom:0}
+td.num,th.num{text-align:right;font-family:var(--f-m);font-variant-numeric:tabular-nums;white-space:nowrap}
+tr[data-id]{cursor:pointer}
+.dot{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:6px;vertical-align:middle}
+.assume{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(min(100%,280px),1fr))}
+.assume div{background:var(--panel);border:1px solid var(--line);border-radius:8px;padding:10px 12px;font-size:.88rem;min-width:0}
+.assume div b{display:block;font-size:.72rem;letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:2px}
+.params{display:flex;flex-wrap:wrap;gap:10px;margin-bottom:12px}
+.params label{display:flex;flex-direction:column;gap:3px;font-size:.75rem;color:var(--muted);font-weight:600;letter-spacing:.04em}
+.params input{width:120px;padding:7px 9px;border:1px solid var(--line);border-radius:6px;background:var(--panel);color:var(--ink);font:500 .95rem var(--f-m)}
+.bomg{margin-bottom:14px}
+.bomg h3{font-family:var(--f-d);font-weight:600;font-size:1.05rem;letter-spacing:.05em;text-transform:uppercase;margin:0 0 6px;color:var(--muted)}
+.bomg .list{border:1px solid var(--line);border-radius:8px;overflow:hidden}
+.row{display:grid;grid-template-columns:28px 58px 1fr;gap:6px 10px;align-items:start;padding:9px 12px;border-bottom:1px solid var(--line);background:var(--panel)}
+.row:last-child{border-bottom:0}
+.row input{width:18px;height:18px;margin:2px 0 0;accent-color:var(--ink)}
+.row .q{font-family:var(--f-m);font-weight:500;font-variant-numeric:tabular-nums;text-align:right}
+.row .q small{display:block;font-size:.68rem;color:var(--muted);font-weight:400}
+.row .t{min-width:0}
+.row .t span{display:block;font-size:.8rem;color:var(--muted)}
+.row.have{opacity:.5}.row.have .t b{text-decoration:line-through}
+.btn{background:var(--ink);color:var(--panel);border:0;border-radius:7px;padding:9px 14px;font:600 .9rem var(--f-b);cursor:pointer}
+.btn.ghost{background:none;color:var(--ink);border:1px solid var(--line)}
+.toast{font-size:.85rem;color:var(--muted);margin-left:8px}
+.step{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;margin-bottom:10px;display:grid;grid-template-columns:34px 1fr;gap:4px 10px}
+.step > div{min-width:0}
+.step .n{font-family:var(--f-d);font-weight:700;font-size:1.5rem;line-height:1;color:var(--muted);text-align:center}
+.step.done{opacity:.55}.step.done .n{color:var(--ink)}
+.step h4{margin:0;font-size:1rem;font-weight:600}
+.step ul{margin:6px 0 0;padding-left:18px;font-size:.9rem}
+.step li{margin:3px 0}
+.step .act{display:flex;gap:8px;align-items:center;margin-top:8px;flex-wrap:wrap}
+.step .act label{display:inline-flex;gap:6px;align-items:center;font-size:.85rem;color:var(--muted);cursor:pointer}
+.prog{height:6px;border-radius:3px;background:var(--line);overflow:hidden;margin:4px 0 14px}
+.prog i{display:block;height:100%;background:var(--ink);width:0;transition:width .3s}
+@media (prefers-reduced-motion:reduce){.prog i{transition:none}}
+/* SVG */
+.p{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.pF{stroke:var(--cold)}.pC{stroke:var(--hot)}.pM{stroke:var(--mix)}
+.pP{stroke:var(--pri)}.pS{stroke:var(--sec)}.pV{stroke:var(--ven)}
+.fx{fill:none;stroke:var(--fix);stroke-width:.7}
+.fxl{fill:var(--fix);font:600 5.4px var(--f-b);letter-spacing:.06em;text-transform:uppercase}
+.zl{fill:var(--muted);font:600 6px var(--f-b);letter-spacing:.1em;text-transform:uppercase}
+.wall{fill:var(--line)}
+.dim{fill:var(--muted);font:500 5.2px var(--f-m)}
+.dimln{stroke:var(--muted);stroke-width:.4}
+.guide{stroke:var(--fix);stroke-width:.35;stroke-dasharray:1.5 1.5}
+.nd{cursor:pointer}
+.nd .hit{fill:transparent}
+.dimmed{opacity:.18}
+.selring{fill:none;stroke:var(--sel);stroke-width:1.6}
+.code{fill:var(--ink);font:500 4.4px var(--f-m)}
+.bg{fill:var(--panel)}
+#svgD .fxl{font-size:6.4px}
+#svgD .dim{font-size:6px}
+#svgD .code{font-size:5.6px}
+#svgD .zl{font-size:7px}
+
+/* ---------- impresión / PDF ---------- */
+.printbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:flex-end;margin:0 0 10px}
+.printbar a{font:500 .85rem var(--f-b);color:var(--ink)}
+.ptitle{display:none}
+.hdr-actions{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+@page{size:A4 portrait;margin:12mm}
+@page land{size:A4 landscape;margin:10mm}
+@media print{
+ :root,:root:not([data-theme="light"]),:root[data-theme="dark"]{
+  --paper:#ffffff;--panel:#ffffff;--ink:#111a1d;--muted:#4d5c5f;--line:#c4cecd;--fix:#8d9c9c;
+  --hot:#c23b2a;--cold:#1d68ad;--mix:#7b4aa6;--sel:#c98a00;--selbg:#fff1cf;--pri:#d9531e;--sec:#8a6a3c;--ven:#3f9a2c;color-scheme:light}
+ *{-webkit-print-color-adjust:exact;print-color-adjust:exact}
+ body{font-size:11px;background:#fff}
+ body::before{display:none}
+ .wrap{max-width:none;padding:0}
+ .bar,.controls,.printbar,.hlbar,.info,.hdr-actions,#cpfb,.act button{display:none!important}
+ header{display:none}
+ .ptitle small{display:block;font-family:var(--f-b);font-weight:500;font-size:.62rem;letter-spacing:.08em;color:var(--muted)}
+ .ptitle{display:block;font-family:var(--f-d);font-weight:700;font-size:1.25rem;letter-spacing:.04em;text-transform:uppercase;border-bottom:1.5px solid var(--ink);padding-bottom:3px;margin:0 0 8px}
+ #A-plano,#D-plano{page:land}
+ section{break-before:page}
+ .drawing{overflow:visible;border-color:var(--line)}
+ #svgA,#svgD{min-width:0!important;max-height:150mm}
+ h2{font-size:1.1rem;margin:12px 0 5px;break-after:avoid}
+ .step,.row,.assume div,tr{break-inside:avoid}
+ .bomg h3{break-after:avoid}
+ .step.done,.row.have{opacity:1}
+ .tbl{overflow:visible}
+ .assume{grid-template-columns:repeat(3,1fr)}
+}
+</style>
+</head>
+<body>
+
+<div class="wrap">
+<header>
+  <div class="lbl">Vivienda Sayago · Padrón 17428 · Steel frame</div>
+  <h1>Sanitaria baño y cocina</h1>
+  <p>Agua fría y caliente en termofusión PPR para baño y pileta de cocina, con calefón en el muro exterior detrás del bidet y el inodoro. Desagües del baño y de la cocina hasta la cámara de inspección, las fosas y el pozo filtrante, según la lámina S01.</p>
+  <div class="hdr-actions"><button type="button" class="btn" id="printAll">Imprimir todo / PDF</button><a class="btn ghost" href="pdf/sanitaria-sayago-completa.pdf" style="text-decoration:none">Descargar PDF completo</a></div>
+</header>
+
+<div class="bar">
+  <div class="sys" role="tablist" aria-label="Sistema">
+    <button type="button" role="tab" data-sys="A" aria-selected="true">Agua</button>
+    <button type="button" role="tab" data-sys="D" aria-selected="false">Desagües</button>
+  </div>
+  <div class="sub" role="tablist" aria-label="Sección">
+    <button type="button" role="tab" data-sub="plano" aria-selected="true">Plano</button>
+    <button type="button" role="tab" data-sub="despiece" aria-selected="false">Despiece</button>
+    <button type="button" role="tab" data-sub="guia" aria-selected="false">Guía</button>
+  </div>
+</div>
+
+<!-- ================= AGUA ================= -->
+<section id="A-plano">
+  <div class="printbar"><button type="button" class="btn ghost" data-print="A-plano">Imprimir esta vista / PDF</button><a href="pdf/agua-1-plano.pdf">Descargar PDF</a></div>
+  <div class="ptitle"><small>Vivienda Sayago · Padrón 17428 · Sanitaria baño y cocina · SBU</small>Agua fría y caliente · Plano</div>
+  <div id="hlbarA" class="hlbar" hidden><span id="hltxtA"></span><button id="hlclearA" type="button">Quitar</button></div>
+  <div class="controls">
+    <div class="seg" role="group" aria-label="Lado">
+      <button type="button" data-mode="int" aria-pressed="false">Interior</button>
+      <button type="button" data-mode="ext" aria-pressed="false">Exterior</button>
+      <button type="button" data-mode="all" aria-pressed="true">Todo</button>
+    </div>
+    <button type="button" class="chip" id="tgDimsA" aria-pressed="true">Cotas</button>
+    <button type="button" class="chip" id="tgCodesA" aria-pressed="false">Códigos</button>
+  </div>
+  <div class="drawing"><svg id="svgA" viewBox="-48 0 740 290" role="img" aria-label="Desarrollo del muro este y del muro húmedo con la cañería de agua"></svg></div>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--cold)"></i>Fría</span>
+    <span><i class="sw" style="background:var(--hot)"></i>Caliente</span>
+    <span><i class="sw" style="background:var(--mix)"></i>Salida de ducha</span>
+    <span>Punteado: lado exterior, se ve espejado</span>
+  </div>
+  <p class="note" style="margin-top:6px">Desarrollo de los dos muros vistos desde adentro. A la izquierda va el muro este (cocina y lateral de la ducha) y a la derecha el muro húmedo del baño. Se doblan en la esquina SE.</p>
+  <div id="infoA" class="info"><span class="lbl">Pieza</span><p>Tocá cualquier pieza del plano para ver qué es, dónde va y en qué paso se coloca.</p></div>
+
+  <h2>Replanteo de tomas</h2>
+  <p class="note">Muro húmedo: X desde la cara interior del muro del lavatorio. Muro este: s desde la cara interior del muro húmedo. Altura desde nivel de piso terminado (NPT). La caliente siempre a la izquierda, mirando el artefacto.</p>
+  <div class="tbl"><table id="tomasA"><thead><tr><th>Artefacto</th><th>Agua</th><th>Muro</th><th class="num">Posición</th><th class="num">Altura</th><th>Pieza</th></tr></thead><tbody></tbody></table></div>
+
+  <h2>Supuestos</h2>
+  <div class="assume">
+    <div><b>Calefón</b>40 l (S01), en el muro exterior centrado detrás del bidet y el inodoro (eje X 1,43), dentro de una casilla. La entrada fría a la derecha y la salida caliente a la izquierda mirándolo de frente, separadas 14 cm.</div>
+    <div><b>Inodoro</b>Con mochila apoyada: una toma fría a 0,20 m, 15 cm a la izquierda del eje.</div>
+    <div><b>Ducha</b>Monocomando embutido. Cuerpo a 1,10 m con entradas abajo (caliente X 2,47 · fría X 2,39) y salida de brazo a 2,05 m.</div>
+    <div><b>Cocina</b>Pileta sobre el muro este, a unos 3,20 m de la cara interior del muro húmedo, medido a escala en S01. Hay que medirlo en obra. Tomas a 0,55 m, 20 cm entre sí, para mezcladora con flexibles.</div>
+    <div><b>Recorrido a la cocina</b>Las horizontales siguen desde la ducha, doblan en la esquina SE y van por el muro este, pasando el encuentro con el tabique, hasta la pileta. Fría a 0,30 y caliente a 0,45.</div>
+    <div><b>Caño</b>PPR PN20. 20 mm dentro de la casa y 25 mm en la llegada desde el medidor de OSE (S01: "PPT diam. 25mm").</div>
+  </div>
+</section>
+
+<section id="A-despiece" hidden>
+  <div class="printbar"><button type="button" class="btn ghost" data-print="A-despiece">Imprimir esta vista / PDF</button><a href="pdf/agua-2-despiece.pdf">Descargar PDF</a></div>
+  <div class="ptitle"><small>Vivienda Sayago · Padrón 17428 · Sanitaria baño y cocina · SBU</small>Agua fría y caliente · Despiece</div>
+  <h2>Parámetros</h2>
+  <div class="params">
+    <label for="pLleg">Llegada 25 mm (m)<input id="pLleg" type="number" min="0" step="0.5" value="10"></label>
+    <label for="pDesp">Desperdicio (%)<input id="pDesp" type="number" min="0" step="5" value="15"></label>
+    <label for="pBar">Largo de barra (m)<input id="pBar" type="number" min="1" step="1" value="4"></label>
+  </div>
+  <p class="note">La llegada de 10 m sale de medir a escala en S01, desde el medidor de OSE hasta la casilla del calefón. Ajustala con la medida real.</p>
+  <div class="controls">
+    <button type="button" class="btn" data-copy="A" data-miss="1">Copiar lo que falta</button>
+    <button type="button" class="btn ghost" data-copy="A" data-miss="0">Copiar todo</button>
+    <span class="toast" data-toast="A" aria-live="polite"></span>
+  </div>
+  <div id="bomA"></div>
+</section>
+
+<section id="A-guia" hidden>
+  <div class="printbar"><button type="button" class="btn ghost" data-print="A-guia">Imprimir esta vista / PDF</button><a href="pdf/agua-3-guia.pdf">Descargar PDF</a></div>
+  <div class="ptitle"><small>Vivienda Sayago · Padrón 17428 · Sanitaria baño y cocina · SBU</small>Agua fría y caliente · Guía de instalación</div>
+  <h2>Termofusión</h2>
+  <div class="tbl"><table><thead><tr><th>Caño</th><th class="num">Marca de inserción</th><th class="num">Calentamiento</th><th class="num">Ajuste máx.</th><th class="num">Enfriado</th></tr></thead>
+  <tbody><tr><td>20 mm</td><td class="num">14,5 mm</td><td class="num">5 s</td><td class="num">4 s</td><td class="num">2 min</td></tr>
+  <tr><td>25 mm</td><td class="num">16 mm</td><td class="num">7 s</td><td class="num">4 s</td><td class="num">2 min</td></tr></tbody></table></div>
+  <p class="note" style="margin-top:6px">Termofusora a 260 °C. El caño y el accesorio tienen que estar limpios y secos, y se insertan sin girar. Si la marca de tu caño publica otra tabla, usá la de la marca.</p>
+  <h2>Paso a paso</h2>
+  <div class="prog"><i id="progA"></i></div>
+  <div id="stepsA"></div>
+</section>
+
+<!-- ================= DESAGÜES ================= -->
+<section id="D-plano" hidden>
+  <div class="printbar"><button type="button" class="btn ghost" data-print="D-plano">Imprimir esta vista / PDF</button><a href="pdf/desagues-1-plano.pdf">Descargar PDF</a></div>
+  <div class="ptitle"><small>Vivienda Sayago · Padrón 17428 · Sanitaria baño y cocina · SBU</small>Desagües · Plano</div>
+  <div id="hlbarD" class="hlbar" hidden><span id="hltxtD"></span><button id="hlclearD" type="button">Quitar</button></div>
+  <div class="controls">
+    <button type="button" class="chip" id="tgDimsD" aria-pressed="true">Cotas</button>
+    <button type="button" class="chip" id="tgCodesD" aria-pressed="false">Códigos</button>
+  </div>
+  <div class="drawing"><svg id="svgD" viewBox="0 0 480 340" role="img" aria-label="Planta de desagües de baño y cocina hasta el pozo filtrante"></svg></div>
+  <div class="legend">
+    <span><i class="sw" style="background:var(--pri);height:4px"></i>Primaria PVC 110</span>
+    <span><i class="sw" style="background:var(--sec)"></i>Secundaria PVC 40 / 50</span>
+    <span><i class="sw" style="background:var(--ven)"></i>Ventilación</span>
+    <span>Planta, norte arriba, como en S01</span>
+  </div>
+  <div id="infoD" class="info"><span class="lbl">Pieza</span><p>Tocá cualquier pieza del plano para ver qué es, dónde va y en qué paso se coloca.</p></div>
+
+  <h2>Cotas de zampeado</h2>
+  <p class="note">El piso terminado está a 0,00 y el terreno bajo la casa a −0,58 / −0,60. El colector parte de la entrada a la cámara (−0,84) con pendiente del 2 % hacia la casa, así que bajo la casa queda enterrado unos 20 cm, igual que en el corte AA.</p>
+  <div class="tbl"><table id="cotasD"><thead><tr><th>Punto</th><th class="num">Distancia a la cámara</th><th class="num">Cota</th><th>Origen</th></tr></thead><tbody></tbody></table></div>
+
+  <h2>Supuestos</h2>
+  <div class="assume">
+    <div><b>Distribución del baño</b>La de tus croquis: lavatorio, bidet, inodoro y ducha sobre el muro sur. S01 tiene otra distribución en el baño, pero las conexiones exteriores se toman tal cual de la lámina.</div>
+    <div><b>Caja sifonada</b>Junta lavatorio, bidet y ducha y funciona como sifón de los tres, así que esos artefactos no llevan sifón propio. La salida es PVC 50 y entra al colector 110 a 45°.</div>
+    <div><b>Inodoro</b>Desagüe vertical a piso con el eje a 0,30 m de la pared terminada. Revisá la ficha: hay modelos con mochila apoyada que salen a 0,20–0,25.</div>
+    <div><b>Cocina</b>Como en S01: pileta con sifón, PVC 50 al interceptor de grasa de 20 l, después a la pileta de patio tapada 20 × 20 y de ahí PVC 110 a la cámara 1. Ventilaciones VF y RA en PVC 50.</div>
+    <div><b>Cámara y tratamiento</b>Cámara de inspección 1 de 0,60 × 0,60 con sifón desconector. Después van dos fosas sépticas y el pozo filtrante, todos con aros de Ø 1,50 y 1,40 m de profundidad útil (S01).</div>
+    <div><b>Fuera de alcance</b>Pluviales y la ventilación del pozo filtrante, que se hace según S01.</div>
+  </div>
+</section>
+
+<section id="D-despiece" hidden>
+  <div class="printbar"><button type="button" class="btn ghost" data-print="D-despiece">Imprimir esta vista / PDF</button><a href="pdf/desagues-2-despiece.pdf">Descargar PDF</a></div>
+  <div class="ptitle"><small>Vivienda Sayago · Padrón 17428 · Sanitaria baño y cocina · SBU</small>Desagües · Despiece</div>
+  <h2>Parámetros</h2>
+  <div class="params">
+    <label for="pCV">CV 110 total (m)<input id="pCV" type="number" min="0" step="0.5" value="5"></label>
+    <label for="pVF">VF cocina 50 (m)<input id="pVF" type="number" min="0" step="0.5" value="2.5"></label>
+    <label for="pDespD">Desperdicio (%)<input id="pDespD" type="number" min="0" step="5" value="10"></label>
+    <label for="pBarD">Largo de barra PVC (m)<input id="pBarD" type="number" min="1" step="1" value="4"></label>
+  </div>
+  <p class="note">El CV va desde el colector enterrado (−0,75) hasta 0,30 m por encima del alero (+3,92). Los tramos entre la cámara, las fosas y el pozo se estiman en 0,60 m cada uno.</p>
+  <div class="controls">
+    <button type="button" class="btn" data-copy="D" data-miss="1">Copiar lo que falta</button>
+    <button type="button" class="btn ghost" data-copy="D" data-miss="0">Copiar todo</button>
+    <span class="toast" data-toast="D" aria-live="polite"></span>
+  </div>
+  <div id="bomD"></div>
+</section>
+
+<section id="D-guia" hidden>
+  <div class="printbar"><button type="button" class="btn ghost" data-print="D-guia">Imprimir esta vista / PDF</button><a href="pdf/desagues-3-guia.pdf">Descargar PDF</a></div>
+  <div class="ptitle"><small>Vivienda Sayago · Padrón 17428 · Sanitaria baño y cocina · SBU</small>Desagües · Guía de instalación</div>
+  <h2>Pegado de PVC</h2>
+  <p class="note">Cortá a escuadra, sacá la rebaba, limpiá caño y accesorio con limpiador y poné adhesivo en los dos. Insertá hasta el tope con un cuarto de giro y sostené 30 s. Antes de tapar o probar, dejá curar lo que indique el fabricante del adhesivo.</p>
+  <h2>Paso a paso</h2>
+  <div class="prog"><i id="progD"></i></div>
+  <div id="stepsD"></div>
+</section>
+<textarea id="cpfb" style="position:absolute;left:-9999px;top:0" aria-hidden="true" tabindex="-1"></textarea>
+</div>
+
+<script>
+(function(){
+const fmt=(n,d=2)=>Number(n).toLocaleString('es-UY',{minimumFractionDigits:d,maximumFractionDigits:d});
+const KEY='sanit-sayago-v2';
+let store={};try{store=JSON.parse(localStorage.getItem(KEY)||'{}')}catch(e){store={}}
+const save=()=>{try{localStorage.setItem(KEY,JSON.stringify(store))}catch(e){}};
+['haveA','haveD','stepsA','stepsD','par'].forEach(k=>store[k]=store[k]||{});
+
+/* =====================================================================
+   AGUA — desarrollo muro este (izq.) + muro húmedo (der.), visto desde adentro
+   ===================================================================== */
+const SM=3.60, LW=2.83, M=100, H0=2.45;
+const DS=x=>SM+LW-x, DE=s=>SM-s;
+const P=(w,p,h)=>[w==='S'?DS(p):DE(p),h];
+const X=d=>d*M, Y=h=>(H0-h)*M;
+
+const SEGS=[
+ {id:'e25',c:'F',side:'ext',d:25,pts:[P('S',1.50,0),P('S',1.50,0.24)]},
+ {id:'ef', c:'F',side:'ext',d:20,pts:[P('S',1.50,0.24),P('S',1.50,1.25)]},
+ {id:'ec', c:'C',side:'ext',d:20,pts:[P('S',1.36,1.25),P('S',1.36,0.45)]},
+ {id:'fl', c:'F',side:'int',d:20,pts:[P('S',1.50,.30),P('S',0.30,.30),P('S',0.30,.60)]},
+ {id:'fb', c:'F',side:'int',d:20,pts:[P('S',1.03,.30),P('S',1.03,.20)]},
+ {id:'fi', c:'F',side:'int',d:20,pts:[P('S',1.83,.30),P('S',1.83,.20)]},
+ {id:'fr', c:'F',side:'int',d:20,pts:[P('S',1.50,.30),P('E',3.10,.30),P('E',3.10,.55)]},
+ {id:'fd', c:'F',side:'int',d:20,pts:[P('S',2.39,.30),P('S',2.39,1.03)]},
+ {id:'cl', c:'C',side:'int',d:20,pts:[P('S',1.36,.45),P('S',0.50,.45),P('S',0.50,.60)]},
+ {id:'cb', c:'C',side:'int',d:20,pts:[P('S',1.23,.45),P('S',1.23,.20)]},
+ {id:'cr', c:'C',side:'int',d:20,pts:[P('S',1.36,.45),P('E',3.30,.45),P('E',3.30,.55)]},
+ {id:'cd', c:'C',side:'int',d:20,pts:[P('S',2.47,.45),P('S',2.47,1.03)]},
+ {id:'m3', c:'M',side:'int',d:20,pts:[P('S',2.43,1.17),P('S',2.43,2.05)]},
+];
+const PASANTE=0.20;
+const segLen=s=>s.pts.reduce((a,p,i)=>i?a+Math.hypot(p[0]-s.pts[i-1][0],p[1]-s.pts[i-1][1]):0,0);
+const sumL=f=>SEGS.filter(f).reduce((a,s)=>a+segLen(s),0);
+const len20=()=>sumL(s=>s.d===20)+2*PASANTE;
+const extLen=()=>sumL(s=>s.side==='ext');
+const hotInt=()=>sumL(s=>s.c==='C'&&s.side==='int')+PASANTE;
+const horizLen=()=>(1.50-0.30)+(LW-1.50)+3.30; // tramo con punzonados
+
+const NA=[
+ // exterior
+ {id:'LLP1',k:'llave',c:'F',side:'ext',w:'S',p:1.50,h:0.14,n:'Llave de paso general 25 mm',t:'Corta todo: baño, cocina y calefón. Queda abajo, dentro de la casilla y a mano.'},
+ {id:'RED',k:'red',c:'F',side:'ext',w:'S',p:1.50,h:0.24,n:'Reducción 25 × 20',t:'De acá en adelante todo es 20 mm.'},
+ {id:'TE',k:'tee',c:'F',side:'ext',w:'S',p:1.50,h:0.30,n:'Tee 20 · T-E',t:'Sigue hacia arriba al calefón. La derivación entra al muro por el pasamuro de fría.'},
+ {id:'PF',k:'pas',c:'F',side:'ext',w:'S',p:1.50,h:0.30,n:'Pasamuro fría · 20 cm',t:'Atraviesa el muro exterior por el vano entre montantes. Se sella con poliuretano por fuera.'},
+ {id:'LLP2',k:'llave',c:'F',side:'ext',w:'S',p:1.50,h:0.95,n:'Llave de paso 20 · entrada calefón',t:'Permite sacar el calefón sin cortar la fría de la casa.'},
+ {id:'UD1',k:'union',c:'F',side:'ext',w:'S',p:1.50,h:1.15,n:'Unión doble 20 × ½" H · entrada',t:'Rosca sobre la válvula de seguridad. Permite desmontar el calefón sin cortar caño.'},
+ {id:'VS',k:'valv',c:'F',side:'ext',w:'S',p:1.50,h:1.21,n:'Válvula de seguridad',t:'Va directo en la entrada del calefón, sin ninguna llave entre la válvula y el calefón. La descarga se lleva a terreno o a desagüe.'},
+ {id:'UD2',k:'union',c:'C',side:'ext',w:'S',p:1.36,h:1.15,n:'Unión doble 20 × ½" H · salida',t:'Salida caliente del calefón.'},
+ {id:'LLP3',k:'llave',c:'C',side:'ext',w:'S',p:1.36,h:0.95,n:'Llave de paso 20 · salida caliente',t:'Corta la caliente de la casa y deja andando la fría.'},
+ {id:'CE',k:'codo',c:'C',side:'ext',w:'S',p:1.36,h:0.45,n:'Codo 90° 20',t:'Gira la bajada de caliente hacia el muro.'},
+ {id:'PC',k:'pas',c:'C',side:'ext',w:'S',p:1.36,h:0.45,n:'Pasamuro caliente · 20 cm',t:'Mismo criterio que el de la fría, a 14 cm de él.'},
+ // fría interior
+ {id:'TF1',k:'tee',c:'F',side:'int',w:'S',p:1.50,h:0.30,n:'Tee 20 · T-F1',t:'Recibe la fría del exterior. Hacia la derecha va al bidet y al lavatorio; hacia la izquierda, al inodoro, la ducha y la cocina.'},
+ {id:'TFB',k:'tee',c:'F',side:'int',w:'S',p:1.03,h:0.30,n:'Tee 20 · bidet fría',t:'Derivación hacia abajo, 10 cm hasta la toma.'},
+ {id:'TBF',k:'toma',c:'F',side:'int',w:'S',p:1.03,h:0.20,n:'Toma bidet · fría',t:'Codo 90° 20 × ½" hembra con base. Fría a la derecha del eje mirando el bidet.'},
+ {id:'CLF',k:'codo',c:'F',side:'int',w:'S',p:0.30,h:0.30,n:'Codo 90° 20',t:'Fin de la horizontal fría hacia el lavatorio. Sube a la toma.'},
+ {id:'TLF',k:'toma',c:'F',side:'int',w:'S',p:0.30,h:0.60,n:'Toma lavatorio · fría',t:'Codo 90° 20 × ½" hembra con base, a 0,60 m.'},
+ {id:'TFI',k:'tee',c:'F',side:'int',w:'S',p:1.83,h:0.30,n:'Tee 20 · inodoro',t:'Derivación hacia abajo, 10 cm hasta la toma.'},
+ {id:'TI',k:'toma',c:'F',side:'int',w:'S',p:1.83,h:0.20,n:'Toma inodoro · fría',t:'Codo 90° 20 × ½" hembra con base, 15 cm a la izquierda del eje del inodoro. Confirmalo con la ficha de la mochila.'},
+ {id:'TFD',k:'tee',c:'F',side:'int',w:'S',p:2.39,h:0.30,n:'Tee 20 · ducha fría',t:'La derivación sube a la entrada fría del monocomando. La línea sigue hacia la esquina y la cocina.'},
+ {id:'SF',k:'sobre',c:'F',side:'int',w:'S',p:2.39,h:0.45,n:'Curva de sobrepaso 20',t:'La subida fría de la ducha salta la horizontal caliente.'},
+ {id:'KF',k:'codo',c:'F',side:'int',w:'S',p:2.83,h:0.30,n:'Codo 90° 20 · esquina SE fría',t:'Dobla del muro húmedo al muro este. Fijalo bien: si la esquina no deja paso, hacé el giro en el primer vano de cada lado con dos tramos cortos.'},
+ {id:'CKF',k:'codo',c:'F',side:'int',w:'E',p:3.10,h:0.30,n:'Codo 90° 20',t:'Fin de la horizontal fría en la cocina. Sube a la toma de la pileta.'},
+ {id:'SK',k:'sobre',c:'F',side:'int',w:'E',p:3.10,h:0.45,n:'Curva de sobrepaso 20',t:'La subida fría de la cocina salta la horizontal caliente.'},
+ {id:'TKF',k:'toma',c:'F',side:'int',w:'E',p:3.10,h:0.55,n:'Toma pileta cocina · fría',t:'Codo 90° 20 × ½" hembra con base, a 0,55 m bajo la mesada. Fría a la derecha mirando la pileta.'},
+ // caliente interior
+ {id:'TC1',k:'tee',c:'C',side:'int',w:'S',p:1.36,h:0.45,n:'Tee 20 · T-C1',t:'Recibe la caliente del calefón. Hacia la derecha va al bidet y al lavatorio; hacia la izquierda, a la ducha y la cocina.'},
+ {id:'TCB',k:'tee',c:'C',side:'int',w:'S',p:1.23,h:0.45,n:'Tee 20 · bidet caliente',t:'Queda a 13 cm de T-C1. Bajada de 25 cm con sobrepaso hasta la toma.'},
+ {id:'SC',k:'sobre',c:'C',side:'int',w:'S',p:1.23,h:0.30,n:'Curva de sobrepaso 20',t:'La bajada caliente del bidet salta la horizontal fría.'},
+ {id:'TBC',k:'toma',c:'C',side:'int',w:'S',p:1.23,h:0.20,n:'Toma bidet · caliente',t:'Codo 90° 20 × ½" hembra con base. Caliente a la izquierda del eje.'},
+ {id:'CLC',k:'codo',c:'C',side:'int',w:'S',p:0.50,h:0.45,n:'Codo 90° 20',t:'Fin de la horizontal caliente hacia el lavatorio. Sube a la toma.'},
+ {id:'TLC',k:'toma',c:'C',side:'int',w:'S',p:0.50,h:0.60,n:'Toma lavatorio · caliente',t:'Codo 90° 20 × ½" hembra con base, a 0,60 m.'},
+ {id:'TCD',k:'tee',c:'C',side:'int',w:'S',p:2.47,h:0.45,n:'Tee 20 · ducha caliente',t:'La derivación sube a la entrada caliente del monocomando. La línea sigue hacia la esquina y la cocina.'},
+ {id:'KC',k:'codo',c:'C',side:'int',w:'S',p:2.83,h:0.45,n:'Codo 90° 20 · esquina SE caliente',t:'Dobla del muro húmedo al muro este, 15 cm arriba del codo de fría.'},
+ {id:'CKC',k:'codo',c:'C',side:'int',w:'E',p:3.30,h:0.45,n:'Codo 90° 20',t:'Fin de la horizontal caliente en la cocina. Sube a la toma.'},
+ {id:'TKC',k:'toma',c:'C',side:'int',w:'E',p:3.30,h:0.55,n:'Toma pileta cocina · caliente',t:'Codo 90° 20 × ½" hembra con base, a 0,55 m. La caliente queda a la izquierda mirando la pileta. Desde el calefón hay unos 5 m de caño: el agua tarda un poco en salir caliente.'},
+ // ducha
+ {id:'MON',k:'grif',c:'M',side:'int',w:'S',p:2.43,h:1.10,n:'Monocomando de ducha embutido · cuerpo',t:'Entradas abajo (caliente a la izquierda, fría a la derecha) y salida arriba, con conectores 20 × ½" macho. La salida de abajo queda con el tapón original. La profundidad la da la plantilla de la tapa respecto al revestimiento terminado, y va a nivel.'},
+ {id:'TSD',k:'toma',c:'M',side:'int',w:'S',p:2.43,h:2.05,n:'Salida de ducha',t:'Codo 90° 20 × ½" hembra con base para el brazo de ducha. Va bien firme al travesaño, porque es la toma que más palanca recibe.'},
+];
+NA.forEach(n=>{const q=P(n.w,n.p,n.h);n.D=q[0]});
+const byA=Object.fromEntries(NA.map(n=>[n.id,n]));
+const where=n=>n.w==='S'?`Muro húmedo · X ${fmt(n.p)}`:`Muro este · s ${fmt(n.p)}`;
+
+const STEPS_A=[
+ {t:'Confirmar datos antes de comprar',ids:['TI','MON','TKC','TKF','UD1','UD2'],li:[
+  'Ficha de la mochila: altura y lado de la toma (acá 0,20 m y 15 cm a la izquierda del eje).',
+  'Monocomando: plantilla del cuerpo y rango de embutido. Si las entradas son laterales, se suman 2 codos.',
+  'Pileta de cocina: medir en obra la posición real sobre el muro este (acá s 3,20) y el tipo de grifería.',
+  'Calefón de 40 l: peso lleno, separación entre entrada y salida (14 cm) y si el fabricante acepta instalarlo a la intemperie bajo casilla.',
+  'Altura de los punzonados de los montantes en el muro sur y en el muro este. Si no están cerca de 0,30 y 0,45, se mueven las dos horizontales manteniendo 15 cm entre ellas.']},
+ {t:'Replanteo',ids:['TLC','TLF','TBC','TBF','TI','MON','TSD','TKC','TKF'],li:[
+  'Muro húmedo, ejes: lavatorio X 0,40, bidet 1,13, inodoro 1,68, ducha 2,43.',
+  'Muro este: eje de la pileta en s 3,20 desde la cara interior del muro húmedo.',
+  'Pasá a los montantes las alturas de la tabla de tomas y las dos horizontales (fría 0,30, caliente 0,45).',
+  'La caliente siempre a la izquierda mirando el artefacto.']},
+ {t:'Travesaños para fijar tomas',ids:['TLC','TLF','TBC','TBF','TI','MON','TSD','TKC','TKF'],li:[
+  'Cinco travesaños entre montantes (PGU 100 o tabla tratada): lavatorio a 0,60, bidet e inodoro a 0,20, monocomando a 1,10, salida de ducha a 2,05 y pileta de cocina a 0,55.',
+  'Cada travesaño va a la profundidad que deje la boca de la toma al ras del revestimiento terminado.',
+  'En el exterior va el refuerzo para colgar el calefón. No se cuelga solo de la placa.']},
+ {t:'Pasamuros, punzonados y esquina',ids:['PF','PC','TF1','TC1','KF','KC'],li:[
+  'Perforá la placa exterior y la interior en (X 1,50 ; 0,30) para la fría y en (X 1,36 ; 0,45) para la caliente.',
+  'Si un pasamuro cae sobre un montante, corré los dos hasta el vano y ajustá la posición del calefón.',
+  'Revisá el paso en la esquina SE y en el encuentro del tabique baño-cocina con el muro este. No se perforan montantes ni soleras sin aprobación del ingeniero.',
+  'Poné pasacables de goma en cada punzonado que cruce el caño.']},
+ {t:'Línea fría · baño',ids:['TF1','TFB','TBF','CLF','TLF','TFI','TI','TFD','SF'],li:[
+  'Empezá por T-F1 con un tramo de 20 cm hacia el pasamuro.',
+  'Hacia la derecha: tee del bidet y después codo y subida al lavatorio.',
+  'Hacia la izquierda: tee del inodoro y tee de la ducha. La subida a la ducha lleva sobrepaso a 0,45.',
+  'Orientá todas las derivaciones de las tees antes de que enfríen, porque después no se corrigen.']},
+ {t:'Línea caliente · baño',ids:['TC1','TCB','SC','TBC','CLC','TLC','TCD'],li:[
+  'T-C1 con su tramo de pasamuro, a 0,45.',
+  'Bajada del bidet con sobrepaso sobre la fría a 0,30. La tee queda a 13 cm de T-C1, así que trabajá con tramos cortos.',
+  'Codo y subida al lavatorio. Tee de la ducha en X 2,47.']},
+ {t:'Ducha',ids:['MON','TFD','TCD','TSD'],li:[
+  'Atornillá el cuerpo del monocomando al travesaño, a nivel y con la profundidad que marca la plantilla de la tapa.',
+  'Poné conectores 20 × ½" macho en las dos entradas y en la salida de arriba, con teflón en las roscas.',
+  'La salida de abajo queda tapada con el tapón original. Subí hasta la salida de brazo a 2,05.']},
+ {t:'Prolongación a la cocina',ids:['KF','KC','CKF','CKC','SK','TKF','TKC'],li:[
+  'Desde las tees de la ducha, seguí las dos horizontales hasta la esquina SE y doblá con codos al muro este.',
+  'Recorré el muro este a 0,30 y 0,45 pasando el encuentro con el tabique hasta la pileta: unos 3,3 m.',
+  'Usá barras enteras dentro del muro de la ducha y dejá las cuplas en el tramo de la cocina, si se puede.',
+  'Fría: codo en s 3,10 y subida con sobrepaso a 0,55. Caliente: codo en s 3,30 y subida a 0,55.']},
+ {t:'Exterior y casilla',ids:['LLP1','RED','TE','PF','LLP2','UD1','VS','UD2','LLP3','CE','PC'],li:[
+  'Llegada de 25 mm desde el medidor de OSE, llave general a 0,14 y reducción a 20.',
+  'Tee T-E: la derivación va al pasamuro de fría y la subida a la llave de entrada del calefón.',
+  'Uniones dobles en la entrada y la salida. La válvula de seguridad va directo en la entrada del calefón.',
+  'Bajada caliente con su llave y codo al pasamuro.']},
+ {t:'Fijación y profundidad de tomas',ids:['TLC','TLF','TBC','TBF','TI','TSD','TKC','TKF'],li:[
+  'Grampas cada 50 cm y en cada cambio de dirección.',
+  'Cada codo hembra se atornilla por su base al travesaño, perpendicular a la pared.',
+  'Las bocas quedan al ras del revestimiento final. Se corrigen ahora, antes del cerámico.']},
+ {t:'Prueba hidráulica',ids:['TLC','TLF','TBC','TBF','TI','TSD','TKC','TKF','LLP1'],li:[
+  'Tapones de prueba de ½" en las 8 tomas. El monocomando va con su tapón de prueba o cerrado, según el fabricante.',
+  'Cargá a 10 bar con bomba de prueba y dejá 1 hora sin caída.',
+  'Recorré cada unión, sobre todo en la esquina y en el encuentro con el tabique.']},
+ {t:'Aislación, registro y cierre',ids:['TC1','TCB','CLC','TCD','KC','CKC','CE','LLP3','UD2'],li:[
+  'Coquilla en toda la caliente, también en el tramo a la cocina para que pierda menos temperatura.',
+  'Afuera va coquilla en todo el caño y protección UV, porque el PPR al sol se degrada. Sellá los pasamuros.',
+  'Sacá fotos de los dos muros con cinta métrica a la vista antes de cerrar placas.']},
+ {t:'Calefón',ids:['UD1','VS','UD2','LLP2','LLP3'],li:[
+  'Colgalo del refuerzo y conectalo con las uniones dobles.',
+  'Llenalo antes de darle corriente: abrí una canilla de caliente hasta que salga agua sin aire.',
+  'Verificá la descarga de la válvula de seguridad y recién ahí energizá. El circuito es exclusivo con diferencial y lo hace el electricista.']},
+];
+
+/* =====================================================================
+   DESAGÜES — planta. X desde muro del lavatorio (oeste→este), Y desde muro húmedo (sur→norte)
+   ===================================================================== */
+const M2=55, XO=0.70, YT=5.25;
+const PX=x=>(x+XO)*M2, PY=y=>(YT-y)*M2;
+const CZE=-0.84, CZS=-0.90, CT=-0.55, SLOPE=0.02;
+
+const DSEG=[
+ {id:'main',sys:'P',dia:110,pts:[[0.25,-0.30],[0.25,0.30],[2.60,0.30],[3.48,1.18],[3.57,1.18]]},
+ {id:'csout',sys:'S',dia:50,pts:[[1.95,0.75],[1.95,0.45],[2.10,0.30]]},
+ {id:'lav',sys:'S',dia:40,pts:[[0.40,0.15],[0.40,0.92],[1.85,0.92]]},
+ {id:'bid',sys:'S',dia:40,pts:[[1.13,0.20],[1.13,0.80],[1.85,0.80]]},
+ {id:'duch',sys:'S',dia:50,pts:[[2.43,0.75],[2.05,0.82]]},
+ {id:'kit',sys:'S',dia:50,pts:[[2.55,3.20],[3.05,3.16]]},
+ {id:'igppt',sys:'S',dia:50,pts:[[3.20,2.99],[3.20,2.88]]},
+ {id:'pptci',sys:'P',dia:110,pts:[[3.27,2.70],[3.75,1.58],[3.75,1.48]]},
+ {id:'vfk',sys:'V',dia:50,pts:[[2.85,3.18],[3.05,1.45]],dash:true},
+ {id:'ra',sys:'V',dia:50,pts:[[3.30,2.78],[3.45,2.72]]},
+ {id:'t1',sys:'P',dia:110,pts:[[4.35,1.18],[4.53,1.20]]},
+ {id:'t2',sys:'P',dia:110,pts:[[6.03,1.20],[6.19,1.20]]},
+ {id:'t3',sys:'P',dia:110,pts:[[6.94,1.95],[6.94,2.12]]},
+];
+const plen=pts=>pts.reduce((a,p,i)=>i?a+Math.hypot(p[0]-pts[i-1][0],p[1]-pts[i-1][1]):0,0);
+const dsegL=id=>plen(DSEG.find(s=>s.id===id).pts);
+function distToCam(px,py){
+ const pts=DSEG[0].pts;let acc=0,best=null;
+ for(let i=1;i<pts.length;i++){const a=pts[i-1],b=pts[i],L=Math.hypot(b[0]-a[0],b[1]-a[1]);
+  const t=Math.max(0,Math.min(1,((px-a[0])*(b[0]-a[0])+(py-a[1])*(b[1]-a[1]))/(L*L)));
+  const qx=a[0]+t*(b[0]-a[0]),qy=a[1]+t*(b[1]-a[1]),dd=Math.hypot(px-qx,py-qy);
+  if(!best||dd<best.dd)best={dd,along:acc+t*L};acc+=L}
+ return acc-best.along;
+}
+const ND=[
+ {id:'CV1',k:'vent',sys:'V',x:0.25,y:-0.30,n:'CV · ventilación PVC 110',t:'Es la cabeza del colector. Sube por fuera del muro sur detrás del lavatorio, con abrazaderas cada 1 m, hasta 0,30 m sobre el alero, y lleva sombrerete. Al pie lleva un codo 90° 110 enterrado a −0,75.'},
+ {id:'INO',k:'baj',sys:'P',x:1.68,y:0.30,n:'Bajada de inodoro PVC 110',t:'Conexión del inodoro a piso con el eje a 0,30 m de la pared terminada (confirmar con la ficha). Tubo 110 vertical, codo 45° y ramal Y 110 a 45° en el colector, a −0,80.'},
+ {id:'RY',k:'ram',sys:'P',x:2.10,y:0.30,n:'Ramal Y 110 × 50 a 45°',t:'Entrada de la salida de la caja sifonada al colector. La 50 entra desde arriba a 45°, nunca de costado ni desde abajo.'},
+ {id:'K1',k:'codo',sys:'P',x:2.60,y:0.30,n:'Codo 45° 110',t:'El colector gira hacia la cámara y pasa por debajo del muro este.'},
+ {id:'K2',k:'codo',sys:'P',x:3.48,y:1.18,n:'Codo 45° 110',t:'Endereza el colector para entrar recto a la cámara por el lado oeste, a −0,84.'},
+ {id:'CS',k:'cs',sys:'S',x:1.95,y:0.85,n:'Caja sifonada PVC 100',t:'Recibe el lavatorio (40), el bidet (40) y la ducha (50), y sale en 50 al colector. Va colgada del entrepiso con la tapa a ras del piso terminado, ciega o con rejilla. Es el sifón de los tres artefactos.'},
+ {id:'LAV',k:'boca',sys:'S',x:0.40,y:0.15,n:'Desagüe lavatorio PVC 40',t:'Baja por el piso dentro del vanitory. Lleva válvula y tubo de descarga, sin sifón propio porque descarga a la caja sifonada. Pendiente mínima 2 %.'},
+ {id:'BID',k:'boca',sys:'S',x:1.13,y:0.20,n:'Desagüe bidet PVC 40',t:'Boca a piso según la ficha del bidet. Va a la caja sifonada con pendiente mínima 2 %.'},
+ {id:'RJ',k:'rej',sys:'S',x:2.43,y:0.75,n:'Rejilla de piso de ducha · salida 50',t:'Sumidero de la ducha. Va al punto bajo de la pendiente del piso de la ducha y descarga en 50 a la caja sifonada.'},
+ {id:'PCK',k:'boca',sys:'S',x:2.55,y:3.20,n:'Pileta de cocina · sifón + PVC 50',t:'Sifón bajo la pileta como en S01. Baja por el piso y sale en 50 por debajo del muro este hasta el interceptor de grasa.'},
+ {id:'IG',k:'ig',sys:'S',x:3.20,y:3.14,n:'Interceptor de grasa PVC · 20 l',t:'Va afuera, pegado al muro este, frente a la pileta (S01). Tiene que ser accesible para limpiarlo.'},
+ {id:'PPT',k:'ppt',sys:'S',x:3.20,y:2.78,n:'Pileta de patio tapada 20 × 20',t:'Recibe la salida del interceptor. De acá sale PVC 110 a la cámara de inspección 1 con pendiente del 2 %.'},
+ {id:'VFK',k:'vent',sys:'V',x:3.05,y:1.45,n:'VF · ventilación PVC 50 (cocina)',t:'Ventilación del desagüe de la pileta, como en S01. Sube embutida en el muro este y termina con curva.'},
+ {id:'RA',k:'vent',sys:'V',x:3.45,y:2.72,n:'RA · PVC 50',t:'Ventilación de la pileta de patio, con terminal en curva sobre el terreno (S01).'},
+ {id:'CI',k:'cam',sys:'P',x:3.87,y:1.18,n:'Cámara de inspección 1 · 0,60 × 0,60',t:'CT −0,55, CZe −0,84, CZs −0,90 (S01). Entran el colector del baño por el oeste y la 110 de la cocina por el norte. Lleva tapa y contratapa.'},
+ {id:'SD',k:'sd',sys:'P',x:4.28,y:1.18,n:'Sifón desconector 110',t:'Va a la salida de la cámara y separa los gases de la fosa de la instalación de la casa (S01).'},
+ {id:'FS1',k:'fosa',sys:'P',x:5.28,y:1.20,n:'Fosa séptica 1',t:'Aros prefabricados de Ø 1,50, profundidad útil 1,40 m, 2,47 m³, fondo de hormigón armado de 10 cm. Entrada y salida con T 110.'},
+ {id:'FS2',k:'fosa',sys:'P',x:6.94,y:1.20,n:'Fosa séptica 2',t:'Igual que la fosa 1. En el corte AA, la salida está 0,25 más baja que la entrada.'},
+ {id:'PZ',k:'fosa',sys:'P',x:6.94,y:2.87,n:'Pozo filtrante',t:'Aros de Ø 1,50, profundidad útil 1,40 m, 2,47 m³, fondo de canto rodado de 10 cm. Lleva su propio CV PVC 110 (S01).'},
+];
+const byD=Object.fromEntries(ND.map(n=>[n.id,n]));
+
+const STEPS_D=[
+ {t:'Confirmar datos',ids:['INO','BID','LAV','CS','RJ','PCK'],li:[
+  'Ficha del inodoro: distancia del eje del desagüe a la pared terminada (acá 0,30).',
+  'Ficha del bidet: posición de la boca a piso.',
+  'Caja sifonada con 3 entradas (40, 40, 50) y salida 50. Rejilla de ducha con salida 50.',
+  'Ubicación real de la pileta de cocina, que también fija la del interceptor de grasa.']},
+ {t:'Replanteo de bocas en el piso',ids:['LAV','BID','INO','RJ','CS','PCK'],li:[
+  'Marcá en el entrepiso las bocas: lavatorio (0,40 ; 0,15), bidet (1,13 ; 0,20), inodoro (1,68 ; 0,30), rejilla (2,43 ; 0,75) y caja sifonada (1,95 ; 0,85).',
+  'Pileta de cocina en (2,55 ; 3,20). X desde el muro del lavatorio, Y desde el muro húmedo.',
+  'Antes de cortar, revisá que ninguna boca caiga sobre una viga del entrepiso. Si cae, corré la boca o pedí el refuerzo al ingeniero.']},
+ {t:'Cámara de inspección 1 y sifón desconector',ids:['CI','SD'],li:[
+  'Excavá y armá la cámara de 0,60 × 0,60 interior con la tapa a −0,55.',
+  'Zampeado de entrada a −0,84 y de salida a −0,90, con medias cañas hacia la salida.',
+  'Colocá el sifón desconector 110 en la salida.']},
+ {t:'Fosas y pozo filtrante',ids:['FS1','FS2','PZ','SD'],li:[
+  'Según S01: dos fosas y un pozo con aros de Ø 1,50 y profundidad útil de 1,40 m.',
+  'Las fosas llevan fondo de hormigón armado de 10 cm y el pozo fondo de canto rodado de 10 cm.',
+  'Conexiones con PVC 110 y T de entrada y salida en cada fosa.']},
+ {t:'Colector 110 en zanja',ids:['K2','K1','RY','INO','CV1'],li:[
+  'Empezá desde la cámara hacia la casa, al 2 %. Las cotas están en la tabla de zampeado.',
+  'Bajo la casa el colector queda enterrado unos 20 cm. Va sobre cama de arena y con el fondo de zanja compactado.',
+  'Colocá los dos codos de 45°, el ramal Y 110 × 50 de la caja sifonada y el ramal Y 110 del inodoro, con las bocas mirando hacia arriba.',
+  'En la cabeza va el codo 90° al pie del CV.']},
+ {t:'Ventilación CV 110',ids:['CV1'],li:[
+  'Subí por fuera del muro sur, detrás del lavatorio, hasta 0,30 m sobre el alero, y poné sombrerete.',
+  'Abrazaderas cada 1 m fijadas a la estructura, no solo a la placa.']},
+ {t:'Bajada del inodoro',ids:['INO'],li:[
+  'Tubo 110 desde el piso hasta el ramal, con codo de 45°.',
+  'Dejá la boca a ras del piso terminado y tapada hasta colocar el inodoro.']},
+ {t:'Caja sifonada y ramales del baño',ids:['CS','LAV','BID','RJ','RY'],li:[
+  'Colgá la caja sifonada del entrepiso con la tapa a nivel del piso terminado.',
+  'Lavatorio y bidet en 40 y ducha en 50, todos con pendiente mínima del 2 % hacia la caja y colgados con abrazaderas cada 1 m.',
+  'Los ramales del lavatorio y del bidet pasan por arriba del colector, que va enterrado. No hay cruce real.',
+  'Salida de la caja en 50, con codo de 45° al ramal Y.']},
+ {t:'Desagüe de la cocina',ids:['PCK','IG','PPT','VFK','RA','CI'],li:[
+  'Sifón bajo la pileta, después PVC 50 por el piso y por debajo del muro este hasta el interceptor de grasa.',
+  'Del interceptor a la pileta de patio tapada, y de ahí PVC 110 al 2 % a la cámara 1, entrando por el norte.',
+  'Ventilaciones VF (PVC 50, embutida en el muro este) y RA (PVC 50 en la pileta de patio), como en S01.']},
+ {t:'Prueba de estanqueidad',ids:['CI','INO','CS','PCK'],li:[
+  'Tapá la salida de la cámara y las bocas bajas. Llená con agua hasta el nivel del piso.',
+  'Dejala 1 hora y revisá que no baje ni haya pérdidas en uniones visibles.',
+  'Después vaciá, sacá los tapones de prueba y dejá las bocas tapadas para obra.']},
+ {t:'Tapado y cierre',ids:['K1','K2','CI'],li:[
+  'Tapá la zanja con arena alrededor del caño y después tierra, compactando en capas sin golpear el caño.',
+  'Sacá fotos del recorrido con cinta antes de tapar.',
+  'Cerrá la tapa y la contratapa de la cámara.']},
+];
+
+STEPS_A.forEach((s,i)=>s.ids.forEach(id=>{const n=byA[id];if(n)(n.st=n.st||[]).push(i+1)}));
+STEPS_D.forEach((s,i)=>s.ids.forEach(id=>{const n=byD[id];if(n)(n.st=n.st||[]).push(i+1)}));
+
+const SA={mode:'all',dims:true,codes:false,sel:null,hl:null,hlName:''};
+const SDs={dims:true,codes:false,sel:null,hl:null,hlName:''};
+
+/* ---------- dibujo agua ---------- */
+const col=c=>({F:'var(--cold)',C:'var(--hot)',M:'var(--mix)',P:'var(--pri)',S:'var(--sec)',V:'var(--ven)'})[c];
+function rect(d1,h1,d2,h2,cls,extra=''){const a=Math.min(d1,d2),b=Math.max(d1,d2);return `<rect class="${cls}" x="${X(a)}" y="${Y(h2)}" width="${(b-a)*M}" height="${(h2-h1)*M}" ${extra}/>`}
+function pathA(s){return 'M'+s.pts.map(p=>X(p[0])+' '+Y(p[1])).join(' L')}
+function symA(n){
+ const x=X(n.D),y=Y(n.h),c=col(n.c);
+ switch(n.k){
+  case 'tee': return `<rect x="${x-2.6}" y="${y-2.6}" width="5.2" height="5.2" fill="var(--panel)" stroke="${c}" stroke-width="1.3"/>`;
+  case 'codo': return `<circle cx="${x}" cy="${y}" r="2.5" fill="var(--panel)" stroke="${c}" stroke-width="1.3"/>`;
+  case 'toma': return `<circle cx="${x}" cy="${y}" r="3.6" fill="${c}"/><circle cx="${x}" cy="${y}" r="1.4" fill="var(--panel)"/>`;
+  case 'llave': return `<path d="M${x-3} ${y-4} L${x+3} ${y-4} L${x-3} ${y+4} L${x+3} ${y+4} Z" fill="${c}"/>`;
+  case 'red': return `<path d="M${x-2.4} ${y+2.2} L${x+2.4} ${y+2.2} L${x+1.6} ${y-2.2} L${x-1.6} ${y-2.2} Z" fill="var(--panel)" stroke="${c}" stroke-width="1.1"/>`;
+  case 'union': return `<path d="M${x-3} ${y} L${x-1.5} ${y-2.6} L${x+1.5} ${y-2.6} L${x+3} ${y} L${x+1.5} ${y+2.6} L${x-1.5} ${y+2.6} Z" fill="var(--panel)" stroke="${c}" stroke-width="1.1"/>`;
+  case 'valv': return `<rect x="${x-3}" y="${y-1.8}" width="6" height="3.6" fill="var(--sel)"/><line x1="${x-3}" y1="${y}" x2="${x-7}" y2="${y}" stroke="var(--sel)" stroke-width="1.2"/>`;
+  case 'grif': return `<rect x="${x-6.5}" y="${y-7}" width="13" height="14" rx="2" fill="var(--panel)" stroke="var(--ink)" stroke-width="1"/><circle cx="${x}" cy="${y}" r="2.6" fill="none" stroke="var(--ink)" stroke-width=".8"/><circle cx="${x-4}" cy="${y+7}" r="1.3" fill="var(--hot)"/><circle cx="${x+4}" cy="${y+7}" r="1.3" fill="var(--cold)"/>`;
+  case 'pas': return `<circle cx="${x}" cy="${y}" r="5.2" fill="none" stroke="var(--ink)" stroke-width=".7" stroke-dasharray="1.4 1"/>`;
+  case 'sobre': return `<circle cx="${x}" cy="${y}" r="5.5" fill="transparent"/>`;
+ }return '';
+}
+const visA=side=>SA.mode==='all'||SA.mode===side;
+function renderA(){
+ const sv=document.getElementById('svgA');let o='';
+ const onlyExt=SA.mode==='ext';
+ const R=SM+LW;
+ o+=rect(R,0,R+0.10,2.40,'wall');
+ o+=`<path d="M${X(2.00)} ${Y(0)} h${0.10*M} v${-2.40*M} h${-0.10*M} Z" class="wall"/>`;
+ o+=`<line x1="${X(-0.35)}" y1="${Y(0)}" x2="${X(R+0.35)}" y2="${Y(0)}" stroke="var(--ink)" stroke-width=".9"/>`;
+ o+=`<line x1="${X(-0.35)}" y1="${Y(2.40)}" x2="${X(R+0.10)}" y2="${Y(2.40)}" class="guide"/>`;
+ o+=`<line x1="${X(SM)}" y1="${Y(0)}" x2="${X(SM)}" y2="${Y(2.40)}" stroke="var(--ink)" stroke-width=".8" stroke-dasharray="5 2 1 2"/>`;
+ o+=`<text class="fxl" x="${X(SM)}" y="${Y(2.33)}" text-anchor="middle" style="fill:var(--ink)">Esquina SE</text>`;
+ o+=`<path d="M${X(-0.02)} ${Y(2.40)} l3 8 l-6 8 l6 8 l-6 8" fill="none" stroke="var(--fix)" stroke-width=".6"/>`;
+ o+=`<text class="zl" x="${X(1.00)}" y="${Y(2.25)}" text-anchor="middle">Muro este · cocina</text>`;
+ o+=`<text class="zl" x="${X(2.85)}" y="${Y(2.25)}" text-anchor="middle">Muro este · ducha</text>`;
+ o+=`<text class="zl" x="${X(SM+1.415)}" y="${Y(2.25)}" text-anchor="middle">Muro húmedo · baño (sur)</text>`;
+ o+=`<text class="fxl" x="${X(2.05)}" y="${Y(1.70)}" text-anchor="middle" transform="rotate(-90 ${X(2.05)} ${Y(1.70)})">Tabique baño | cocina</text>`;
+ const fo=onlyExt?' opacity=".45"':'';
+ o+=`<g${fo}>`;
+ o+=rect(DS(0.02),0,DS(0.78),0.82,'fx')+`<path class="fx" d="M${X(DS(0.12))} ${Y(0.82)} Q${X(DS(0.40))} ${Y(0.70)} ${X(DS(0.68))} ${Y(0.82)}"/>`;
+ o+=`<text class="fxl" x="${X(DS(0.40))}" y="${Y(0.88)}" text-anchor="middle">Lavatorio</text>`;
+ o+=rect(DS(0.95),0,DS(1.31),0.40,'fx','rx="5"')+`<text class="fxl" x="${X(DS(1.13))}" y="${Y(0.46)}" text-anchor="middle">Bidet</text>`;
+ o+=rect(DS(1.49),0,DS(1.87),0.40,'fx','rx="5"')+rect(DS(1.50),0.42,DS(1.86),0.80,'fx','rx="1.5"')+`<text class="fxl" x="${X(DS(1.68))}" y="${Y(0.86)}" text-anchor="middle">Inodoro</text>`;
+ o+=`<line x1="${X(DS(2.03))}" y1="${Y(0)}" x2="${X(DS(2.03))}" y2="${Y(2.00)}" class="guide"/>`;
+ o+=`<path class="fx" d="M${X(DS(2.43))} ${Y(2.05)} L${X(DS(2.43))} ${Y(1.98)}"/><ellipse class="fx" cx="${X(DS(2.43))}" cy="${Y(1.96)}" rx="5" ry="1.6"/>`;
+ o+=`<text class="fxl" x="${X(DS(2.62))}" y="${Y(1.62)}" text-anchor="middle">Ducha</text>`;
+ o+=rect(DE(1.60),0.86,DE(3.62),0.90,'fx','style="fill:var(--line)"');
+ o+=`<rect class="fx" x="${X(DE(3.62))}" y="${Y(0.86)}" width="${(3.62-1.70)*M}" height="${0.76*M}" stroke-dasharray="2 1.5"/>`;
+ o+=`<path class="fx" d="M${X(DE(3.45))} ${Y(0.90)} V${Y(0.70)} H${X(DE(2.95))} V${Y(0.90)}"/>`;
+ o+=`<text class="fxl" x="${X(DE(3.20))}" y="${Y(0.96)}" text-anchor="middle">Pileta s 3,20</text>`;
+ o+=`<text class="fxl" x="${X(DE(2.30))}" y="${Y(0.96)}" text-anchor="middle">Mesada 0,90</text>`;
+ o+=`</g>`;
+ if(visA('ext')){
+  const da=SA.mode==='all'?'stroke-dasharray="2 1.4"':'';
+  o+=`<rect x="${X(DS(1.76))}" y="${Y(2.25)}" width="${0.66*M}" height="${2.20*M}" fill="none" stroke="var(--muted)" stroke-width=".6" stroke-dasharray="3 2"/>`;
+  o+=`<rect x="${X(DS(1.66))}" y="${Y(2.12)}" width="${0.46*M}" height="${0.87*M}" rx="7" fill="var(--panel)" fill-opacity=".6" stroke="var(--ink)" stroke-width=".9" ${da}/>`;
+  o+=`<text class="fxl" x="${X(DS(1.43))}" y="${Y(1.72)}" text-anchor="middle" style="fill:var(--ink)">Calefón 40 l</text><text class="fxl" x="${X(DS(1.43))}" y="${Y(1.64)}" text-anchor="middle">exterior</text>`;
+  o+=`<text class="fxl" x="${X(DS(1.73))}" y="${Y(2.19)}">Casilla</text>`;
+ }
+ if(SA.dims&&!onlyExt){
+  o+=`<line x1="${X(0)}" y1="${Y(0.30)}" x2="${X(R)}" y2="${Y(0.30)}" class="guide"/><line x1="${X(0)}" y1="${Y(0.45)}" x2="${X(R)}" y2="${Y(0.45)}" class="guide"/>`;
+ }
+ const hl=SA.hl;
+ SEGS.forEach(s=>{
+  const faint=s.side==='int'&&onlyExt;
+  if(!visA(s.side)&&!faint) return;
+  const da=(s.side==='ext'&&SA.mode==='all')?'stroke-dasharray="4 2.2"':'';
+  const op=faint?'opacity=".18"':(hl?'opacity=".5"':'');
+  o+=`<path class="p p${s.c}" d="${pathA(s)}" stroke-width="${s.d===25?3.2:2.2}" ${da} ${op}/>`;
+ });
+ if(!onlyExt){
+  NA.filter(n=>n.k==='sobre').forEach(n=>{
+   const x=X(n.D),y=Y(n.h),r=4.6,under=n.c==='F'?'C':'F';
+   o+=`<rect x="${x-1.6}" y="${y-r}" width="3.2" height="${2*r}" class="bg"/>`;
+   o+=`<path class="p p${n.c}" stroke-width="2.2" d="M${x} ${y-r} A${r} ${r} 0 0 0 ${x} ${y+r}"/>`;
+   o+=`<line class="p p${under}" stroke-width="2.2" x1="${x-2.4}" y1="${y}" x2="${x+2.4}" y2="${y}"/>`;
+  });
+ }
+ NA.forEach(n=>{
+  if(!visA(n.side)) return;
+  const dim=hl&&!hl.includes(n.id);
+  const r=n.k==='pas'?6.5:n.k==='grif'?8:5.2;
+  o+=`<g class="nd${dim?' dimmed':''}" data-id="${n.id}" tabindex="0" role="button" aria-label="${n.n}">`;
+  o+=`<circle class="hit" cx="${X(n.D)}" cy="${Y(n.h)}" r="${r}"/>`+symA(n);
+  if(SA.sel===n.id) o+=`<circle class="selring" cx="${X(n.D)}" cy="${Y(n.h)}" r="${r+1}"/>`;
+  else if(hl&&hl.includes(n.id)) o+=`<circle class="selring" cx="${X(n.D)}" cy="${Y(n.h)}" r="${r+.4}" stroke-width=".9"/>`;
+  if(SA.codes){const lx=n.side==='ext'&&SA.mode==='all'?-4:4;o+=`<text class="code" x="${X(n.D)+lx}" y="${Y(n.h)-4}" text-anchor="${lx<0?'end':'start'}">${n.id}</text>`}
+  o+=`</g>`;
+ });
+ if(SA.dims){
+  const ticks=[...[0.30,0.50,1.03,1.23,1.36,1.50,1.83,2.39,2.47].map(v=>({D:DS(v),v})),...[1.50,1.60,3.10,3.30].map(v=>({D:DE(v),v}))].sort((a,b)=>a.D-b.D);
+  ticks.forEach((t,i)=>{const row=i%2?0.20:0.10;
+   o+=`<line class="dimln" x1="${X(t.D)}" y1="${Y(0)+1}" x2="${X(t.D)}" y2="${Y(-row)+1.5}"/>`;
+   o+=`<text class="dim" x="${X(t.D)}" y="${Y(-row)+6.5}" text-anchor="middle">${fmt(t.v)}</text>`;
+  });
+  o+=`<text class="dim" x="${X(SM+0.05)}" y="${Y(-0.30)+6}" style="font-size:4.4px">X desde la cara interior del muro del lavatorio →</text>`;
+  o+=`<text class="dim" x="${X(SM-0.05)}" y="${Y(-0.30)+6}" text-anchor="end" style="font-size:4.4px">← s desde la cara interior del muro húmedo</text>`;
+  [0.20,0.30,0.45,0.60,1.03,1.10,2.05].forEach(v=>{
+   o+=`<line class="dimln" x1="${X(R+0.12)}" y1="${Y(v)}" x2="${X(R+0.15)}" y2="${Y(v)}"/>`;
+   o+=`<text class="dim" x="${X(R+0.17)}" y="${Y(v)+1.8}">${fmt(v)}</text>`;
+  });
+  [0.30,0.45,0.55,0.90].forEach(v=>{
+   o+=`<line class="dimln" x1="${X(-0.08)}" y1="${Y(v)}" x2="${X(-0.05)}" y2="${Y(v)}"/>`;
+   o+=`<text class="dim" x="${X(-0.10)}" y="${Y(v)+1.8}" text-anchor="end">${fmt(v)}</text>`;
+  });
+  o+=`<text class="dim" x="${X(R+0.17)}" y="${Y(2.36)}" style="font-size:4.4px">h (m)</text>`;
+ }
+ sv.innerHTML=o;
+ bindNodes(sv,selectA);
+ const hb=document.getElementById('hlbarA');hb.hidden=!hl;
+ if(hl) document.getElementById('hltxtA').textContent='Resaltado: '+SA.hlName;
+}
+function bindNodes(sv,fn){
+ sv.querySelectorAll('.nd').forEach(g=>{const f=()=>fn(g.dataset.id);
+  g.addEventListener('click',f);g.addEventListener('keydown',e=>{if(e.key==='Enter'||e.key===' '){e.preventDefault();f()}})});
+}
+function selectA(id){
+ SA.sel=id;const n=byA[id];const box=document.getElementById('infoA');
+ box.className='info '+n.c;
+ const lado=n.side==='ext'?'Exterior (casilla)':'Interior (dentro del muro)';
+ box.innerHTML=`<span class="code">${n.id} · ${lado}</span><br><b>${n.n}</b>
+  <p style="font-size:.85rem;font-family:var(--f-m)">${where(n)} m · h ${fmt(n.h)} m</p><p>${n.t}</p>
+  ${n.st?`<p style="color:var(--muted);font-size:.82rem">Se coloca en el paso ${n.st.join(', ')}.</p>`:''}`;
+ renderA();
+}
+
+/* ---------- dibujo desagües ---------- */
+function dline(pts){return 'M'+pts.map(p=>PX(p[0])+' '+PY(p[1])).join(' L')}
+function prect(x1,y1,x2,y2,cls,extra=''){return `<rect class="${cls}" x="${PX(Math.min(x1,x2))}" y="${PY(Math.max(y1,y2))}" width="${Math.abs(x2-x1)*M2}" height="${Math.abs(y2-y1)*M2}" ${extra}/>`}
+function symD(n){
+ const x=PX(n.x),y=PY(n.y),c=col(n.sys);
+ switch(n.k){
+  case 'vent': return `<circle cx="${x}" cy="${y}" r="4.2" fill="var(--panel)" stroke="${c}" stroke-width="1.5"/><circle cx="${x}" cy="${y}" r="1.3" fill="${c}"/>`;
+  case 'baj': return `<circle cx="${x}" cy="${y}" r="5" fill="${c}"/><circle cx="${x}" cy="${y}" r="2" fill="var(--panel)"/>`;
+  case 'ram': return `<path d="M${x-3} ${y+3} L${x} ${y-3} L${x+3} ${y+3} Z" fill="var(--panel)" stroke="${c}" stroke-width="1.2"/>`;
+  case 'codo': return `<circle cx="${x}" cy="${y}" r="2.6" fill="var(--panel)" stroke="${c}" stroke-width="1.3"/>`;
+  case 'cs': return `<rect x="${x-5.5}" y="${y-5.5}" width="11" height="11" fill="var(--panel)" stroke="${c}" stroke-width="1.4"/><line x1="${x-5.5}" y1="${y}" x2="${x+5.5}" y2="${y}" stroke="${c}" stroke-width="1"/>`;
+  case 'boca': return `<circle cx="${x}" cy="${y}" r="3" fill="var(--panel)" stroke="${c}" stroke-width="1.4"/>`;
+  case 'rej': return `<rect x="${x-4}" y="${y-4}" width="8" height="8" fill="var(--panel)" stroke="${c}" stroke-width="1.2"/><path d="M${x-4} ${y-1.3}h8M${x-4} ${y+1.3}h8" stroke="${c}" stroke-width=".7"/>`;
+  case 'ig': return `<circle cx="${x}" cy="${y}" r="7" fill="${c}"/><path d="M${x-5} ${y-5} L${x+5} ${y+5} M${x+5} ${y-5} L${x-5} ${y+5}" stroke="var(--panel)" stroke-width="1.4"/>`;
+  case 'ppt': return `<rect x="${x-5.5}" y="${y-5.5}" width="11" height="11" fill="${c}"/>`;
+  case 'cam': return `<rect x="${x-0.375*M2}" y="${y-0.375*M2}" width="${0.75*M2}" height="${0.75*M2}" fill="var(--panel)" stroke="${c}" stroke-width="1.4"/><rect x="${x-0.30*M2}" y="${y-0.30*M2}" width="${0.60*M2}" height="${0.60*M2}" fill="none" stroke="${c}" stroke-width=".6"/>`;
+  case 'sd': return `<rect x="${x-4.5}" y="${y-2.6}" width="9" height="5.2" fill="${c}"/>`;
+  case 'fosa': return `<circle cx="${x}" cy="${y}" r="${0.81*M2}" fill="var(--panel)" stroke="${c}" stroke-width="1.4"/><circle cx="${x}" cy="${y}" r="${0.75*M2}" fill="none" stroke="${c}" stroke-width=".6"/>`;
+ }return '';
+}
+function renderD(){
+ const sv=document.getElementById('svgD');let o='';const hl=SDs.hl;
+ o+=prect(-0.10,-0.15,2.98,0,'wall')+prect(2.83,-0.15,2.98,4.95,'wall')+prect(0,4.80,2.98,4.95,'wall')+prect(-0.10,0,0,1.60,'wall');
+ o+=prect(0.80,1.50,2.83,1.60,'wall');
+ o+=`<line x1="${PX(0)}" y1="${PY(1.60)}" x2="${PX(0)}" y2="${PY(4.80)}" class="guide"/>`;
+ o+=`<path class="fx" d="M${PX(0.05)} ${PY(1.50)} L${PX(0.05)} ${PY(0.80)} A${0.70*M2} ${0.70*M2} 0 0 0 ${PX(0.75)} ${PY(1.50)}" stroke-dasharray="2 1.5"/>`;
+ o+=prect(0,0,0.80,0.50,'fx')+`<text class="fxl" x="${PX(0.40)}" y="${PY(0.60)}" text-anchor="middle">Lavatorio</text>`;
+ o+=`<ellipse class="fx" cx="${PX(1.13)}" cy="${PY(0.32)}" rx="${0.18*M2}" ry="${0.27*M2}"/>`+`<text class="fxl" x="${PX(1.13)}" y="${PY(0.45)}" text-anchor="middle" style="font-size:4.6px">Bidet</text>`;
+ o+=prect(1.49,0,1.87,0.18,'fx')+`<ellipse class="fx" cx="${PX(1.68)}" cy="${PY(0.42)}" rx="${0.18*M2}" ry="${0.23*M2}"/>`+`<text class="fxl" x="${PX(1.68)}" y="${PY(0.50)}" text-anchor="middle" style="font-size:4.6px">Inodoro</text>`;
+ o+=`<line x1="${PX(2.03)}" y1="${PY(0)}" x2="${PX(2.03)}" y2="${PY(1.50)}" class="guide"/><text class="fxl" x="${PX(2.43)}" y="${PY(1.30)}" text-anchor="middle">Ducha</text>`;
+ o+=prect(2.28,1.60,2.83,4.80,'fx')+prect(2.35,2.98,2.75,3.42,'fx')+`<text class="fxl" x="${PX(2.10)}" y="${PY(3.95)}" text-anchor="middle" transform="rotate(-90 ${PX(2.10)} ${PY(3.95)})">Mesada</text>`;
+ o+=prect(1.10,-0.15,1.76,-0.55,'fx','stroke-dasharray="3 2"')+`<text class="fxl" x="${PX(1.43)}" y="${PY(-0.44)}" text-anchor="middle">Casilla calefón</text>`;
+ o+=`<text class="zl" x="${PX(1.00)}" y="${PY(1.25)}" text-anchor="middle">Baño</text>`;
+ o+=`<text class="zl" x="${PX(1.10)}" y="${PY(3.40)}" text-anchor="middle">Cocina</text>`;
+ o+=`<text class="fxl" x="${PX(-0.45)}" y="${PY(3.30)}" text-anchor="middle" transform="rotate(-90 ${PX(-0.45)} ${PY(3.30)})">Estar ←</text>`;
+ o+=`<text class="fxl" x="${PX(3.10)}" y="${PY(4.40)}" transform="rotate(-90 ${PX(3.10)} ${PY(4.40)})">Muro este</text>`;
+ o+=`<text class="fxl" x="${PX(2.40)}" y="${PY(-0.66)}" text-anchor="middle">Muro sur · muro húmedo</text>`;
+ o+=`<g transform="translate(${PX(7.55)} ${PY(4.55)})"><circle r="9" fill="none" stroke="var(--muted)" stroke-width=".6"/><path d="M0 -8 L3 4 L0 2 L-3 4 Z" fill="var(--muted)"/><text class="zl" y="-12" text-anchor="middle">N</text></g>`;
+ DSEG.forEach(s=>{
+  const w=s.dia===110?3.2:s.dia===50?2.1:1.6;
+  o+=`<path class="p p${s.sys}" d="${dline(s.pts)}" stroke-width="${w}" ${s.dash?'stroke-dasharray="3 2"':''} ${hl?'opacity=".5"':''}/>`;
+ });
+ ND.forEach(n=>{
+  const dim=hl&&!hl.includes(n.id);
+  const r=n.k==='fosa'?0.81*M2:n.k==='cam'?0.40*M2:6.5;
+  o+=`<g class="nd${dim?' dimmed':''}" data-id="${n.id}" tabindex="0" role="button" aria-label="${n.n}">`;
+  o+=`<circle class="hit" cx="${PX(n.x)}" cy="${PY(n.y)}" r="${r}"/>`+symD(n);
+  if(SDs.sel===n.id) o+=`<circle class="selring" cx="${PX(n.x)}" cy="${PY(n.y)}" r="${r+1.5}"/>`;
+  else if(hl&&hl.includes(n.id)) o+=`<circle class="selring" cx="${PX(n.x)}" cy="${PY(n.y)}" r="${r+1}" stroke-width=".9"/>`;
+  if(SDs.codes) o+=`<text class="code" x="${PX(n.x)+6}" y="${PY(n.y)-6}">${n.id}</text>`;
+  o+=`</g>`;
+ });
+ o+=`<text class="fxl" x="${PX(3.50)}" y="${PY(0.62)}" style="fill:var(--ink)">C. Insp 1</text>`;
+ o+=`<text class="fxl" x="${PX(5.28)}" y="${PY(1.20)+2}" text-anchor="middle" style="fill:var(--ink)">Fosa 1</text>`;
+ o+=`<text class="fxl" x="${PX(6.94)}" y="${PY(1.20)+2}" text-anchor="middle" style="fill:var(--ink)">Fosa 2</text>`;
+ o+=`<text class="fxl" x="${PX(6.94)}" y="${PY(2.87)+2}" text-anchor="middle" style="fill:var(--ink)">Pozo filtrante</text>`;
+ o+=`<text class="fxl" x="${PX(3.55)}" y="${PY(3.14)+2}">IG 20 l</text>`;
+ o+=`<text class="fxl" x="${PX(3.55)}" y="${PY(2.50)}">PPT 20×20</text>`;
+ if(SDs.dims){
+  const lbl=(x,y,t,a='start')=>`<text class="dim" x="${PX(x)}" y="${PY(y)}" text-anchor="${a}">${t}</text>`;
+  o+=lbl(2.22,0.14,'110 · 2 %');
+  o+=lbl(0.45,1.00,'40');
+  o+=lbl(1.18,0.86,'40');
+  o+=lbl(2.18,0.92,'50');
+  o+=lbl(3.80,2.15,'110 · 2 %');
+  o+=lbl(3.50,0.47,'CT −0,55 · CZe −0,84');
+  o+=lbl(3.50,0.34,'CZs −0,90');
+  o+=lbl(0.32,-0.55,'CV 110');
+  o+=lbl(3.15,1.62,'VF 50');
+  o+=lbl(3.58,2.66,'RA 50');
+  o+=lbl(6.00,0.15,'Aros Ø 1,50 · prof. útil 1,40','middle');
+ }
+ sv.innerHTML=o;
+ bindNodes(sv,selectD);
+ const hb=document.getElementById('hlbarD');hb.hidden=!hl;
+ if(hl) document.getElementById('hltxtD').textContent='Resaltado: '+SDs.hlName;
+}
+function selectD(id){
+ SDs.sel=id;const n=byD[id];const box=document.getElementById('infoD');
+ box.className='info '+n.sys;
+ const sysN={P:'Primaria',S:'Secundaria',V:'Ventilación'}[n.sys];
+ box.innerHTML=`<span class="code">${n.id} · ${sysN}</span><br><b>${n.n}</b>
+  <p style="font-size:.85rem;font-family:var(--f-m)">X ${fmt(n.x)} · Y ${fmt(n.y)} m</p><p>${n.t}</p>
+  ${n.st?`<p style="color:var(--muted);font-size:.82rem">Se coloca en el paso ${n.st.join(', ')}.</p>`:''}`;
+ renderD();
+}
+
+/* ---------- tablas ---------- */
+const TOMAS=[['Lavatorio','C','TLC'],['Lavatorio','F','TLF'],['Bidet','C','TBC'],['Bidet','F','TBF'],['Inodoro (mochila)','F','TI'],['Ducha · monocomando','CF','MON'],['Ducha · salida brazo','M','TSD'],['Pileta de cocina','C','TKC'],['Pileta de cocina','F','TKF']];
+document.querySelector('#tomasA tbody').innerHTML=TOMAS.map(([a,c,id])=>{const n=byA[id];
+ const pz=n.k==='grif'?'Cuerpo embutido; entradas a 1,03 (C X 2,47 · F X 2,39), 3 conectores 20×½" M':'Codo 90° 20×½" H con base';
+ const ag=c==='F'?'Fría':c==='C'?'Caliente':c==='CF'?'Fría + caliente':'Mezcla';
+ const dc=c==='CF'?'linear-gradient(90deg,var(--hot) 50%,var(--cold) 50%)':col(c);
+ return `<tr data-id="${id}"><td>${a}</td><td><span class="dot" style="background:${dc}"></span>${ag}</td><td>${n.w==='S'?'Húmedo':'Este'}</td><td class="num">${n.w==='S'?'X':'s'} ${fmt(n.p)}</td><td class="num">${fmt(n.h)}</td><td>${pz}</td></tr>`}).join('');
+document.querySelectorAll('#tomasA tr[data-id]').forEach(r=>r.addEventListener('click',()=>{selectA(r.dataset.id);document.getElementById('svgA').scrollIntoView({behavior:'smooth',block:'center'})}));
+
+const COTAS=[['Cabeza del colector (pie del CV)','CV1'],['Ramal del inodoro','INO'],['Ramal de la caja sifonada','RY'],['Paso bajo el muro este',null,[2.98,0.68]],['Entrada cámara 1 (CZe)',null,[3.57,1.18]]];
+document.querySelector('#cotasD tbody').innerHTML=COTAS.map(([t,id,xy])=>{const pt=id?[byD[id].x,byD[id].y]:xy;
+ const d=distToCam(pt[0],pt[1]);const z=CZE+d*SLOPE;
+ return `<tr ${id?`data-id="${id}"`:''}><td>${t}</td><td class="num">${fmt(d)} m</td><td class="num">${fmt(z)}</td><td>${d<0.01?'S01':'2 % desde CZe'}</td></tr>`}).join('')+
+ `<tr data-id="CI"><td>Salida cámara 1 (CZs)</td><td class="num">—</td><td class="num">${fmt(CZS)}</td><td>S01</td></tr><tr data-id="CI"><td>Tapa cámara 1 (CT)</td><td class="num">—</td><td class="num">${fmt(CT)}</td><td>S01</td></tr>`;
+document.querySelectorAll('#cotasD tr[data-id]').forEach(r=>r.addEventListener('click',()=>{selectD(r.dataset.id);document.getElementById('svgD').scrollIntoView({behavior:'smooth',block:'center'})}));
+
+/* ---------- despieces ---------- */
+const num=(id,def)=>{const v=parseFloat(document.getElementById(id).value);return isNaN(v)?def:Math.max(0,v)};
+function bomA(){
+ const lleg=num('pLleg',10), w=num('pDesp',15)/100, bar=Math.max(1,num('pBar',4));
+ const n20=len20(), m25=0.24+lleg;
+ const b20=Math.ceil(n20*(1+w)/bar), b25=Math.ceil(m25*(1+w)/bar);
+ const coqE=Math.ceil(extLen()*1.1*2)/2, coqI=Math.ceil(hotInt()*1.1*2)/2;
+ const gr=Math.ceil((n20+m25)/0.5), pc=Math.ceil(horizLen()/0.40)*2;
+ return [
+ {g:'Caño PPR termofusión',r:[
+  {id:'c20',q:b20,u:'barras',n:'Caño PPR 20 mm PN20',s:`${fmt(n20)} m netos + ${Math.round(w*100)} % = ${fmt(n20*(1+w))} m`},
+  {id:'c25',q:b25,u:'barras',n:'Caño PPR 25 mm PN20',s:`Llegada de ${fmt(lleg,1)} m desde el medidor + tramo en la casilla`}]},
+ {g:'Accesorios 20 mm',r:[
+  {id:'tee',q:8,u:'u',n:'Tee 20',s:'T-E, T-F1, T-C1, bidet ×2, inodoro, ducha ×2'},
+  {id:'c90',q:7,u:'u',n:'Codo 90° 20',s:'Bajada caliente exterior, fines hacia el lavatorio ×2, esquina SE ×2, subidas a la cocina ×2'},
+  {id:'ch',q:8,u:'u',n:'Codo 90° 20 × ½" rosca hembra con base',s:'Tomas: lavatorio 2, bidet 2, inodoro 1, salida de ducha 1, pileta de cocina 2'},
+  {id:'cm',q:3,u:'u',n:'Conector 20 × ½" rosca macho',s:'2 entradas y la salida del monocomando'},
+  {id:'sob',q:3,u:'u',n:'Curva de sobrepaso 20',s:'Bajada caliente del bidet, subida fría de la ducha y subida fría de la cocina'},
+  {id:'ud',q:2,u:'u',n:'Unión doble 20 × ½" rosca hembra',s:'Entrada y salida del calefón'},
+  {id:'cup',q:3,u:'u',n:'Cupla 20',s:'Empalmes y repuesto'}]},
+ {g:'Accesorios 25 mm',r:[
+  {id:'red',q:1,u:'u',n:'Reducción 25 × 20',s:'Después de la llave general'},
+  {id:'k25',q:3,u:'u',n:'Codo 90° 25',s:'Estimado para la llegada; ajustar según el recorrido'},
+  {id:'cp25',q:Math.max(1,b25-1),u:'u',n:'Cupla 25',s:'Empalmes de la llegada'}]},
+ {g:'Llaves y válvulas',r:[
+  {id:'l25',q:1,u:'u',n:'Llave de paso termofusión 25 mm',s:'General de la casa y el calefón'},
+  {id:'l20',q:2,u:'u',n:'Llave de paso termofusión 20 mm',s:'Entrada y salida del calefón'},
+  {id:'vs',q:1,u:'u',n:'Válvula de seguridad ½"',s:'Suele venir con el calefón; verificar'}]},
+ {g:'Grifería y conexión de artefactos',r:[
+  {id:'jd',q:1,u:'u',n:'Monocomando de ducha embutido (cuerpo + tapa)',s:'Comprarlo antes de armar: define las entradas'},
+  {id:'br',q:1,u:'u',n:'Brazo y flor de ducha',s:''},
+  {id:'lc',q:7,u:'u',n:'Llave de corte ½" cromada',s:'Lavatorio 2, bidet 2, inodoro 1, pileta de cocina 2'},
+  {id:'fl',q:7,u:'u',n:'Flexible mallado ½"',s:'Largo según el artefacto; con mezcladora suelen venir incluidos'}]},
+ {g:'Fijación y steel frame',r:[
+  {id:'gr',q:gr,u:'u',n:'Grampa para caño 20/25',s:'Una cada 50 cm y en los cambios de dirección'},
+  {id:'pc',q:pc,u:'u',n:'Pasacables de goma para punzonado',s:`Dos horizontales, ${fmt(horizLen())} m, montantes cada 40 cm`},
+  {id:'tr',q:5,u:'u',n:'Travesaño PGU 100 × 40 cm (o tabla tratada)',s:'Lavatorio, bidet + inodoro, monocomando, salida de ducha, pileta de cocina'},
+  {id:'rc',q:2,u:'u',n:'Refuerzo exterior para calefón',s:'Travesaños PGC a la altura de los anclajes; definir con el ingeniero'},
+  {id:'tt',q:1,u:'caja',n:'Tornillos T1 punta mecha',s:'Para grampas y bases de los codos'},
+  {id:'pu',q:1,u:'u',n:'Sellador poliuretano',s:'Pasamuros exteriores'}]},
+ {g:'Aislación y protección',r:[
+  {id:'ce',q:coqE,u:'m',n:'Coquilla 20 mm · exterior',s:'Todo el caño expuesto, además de protección UV'},
+  {id:'ci',q:coqI,u:'m',n:'Coquilla 20 mm · caliente interior',s:'Toda la caliente, incluido el tramo a la cocina'}]},
+ {g:'Prueba y consumibles',r:[
+  {id:'tp',q:8,u:'u',n:'Tapón de prueba ½" rosca macho',s:'Uno por toma'},
+  {id:'tf',q:2,u:'rollo',n:'Cinta teflón',s:''}]},
+ ];
+}
+function bomD(){
+ const cv=num('pCV',5), vf=num('pVF',2.5), w=num('pDespD',10)/100, bar=Math.max(1,num('pBarD',4));
+ const l110=dsegL('main')+0.80+cv+dsegL('pptci')+3*0.60;
+ const l50=dsegL('csout')+dsegL('duch')+dsegL('kit')+1.0+0.40+vf+0.60;
+ const l40=dsegL('lav')+dsegL('bid')+2*0.25;
+ const b=(L)=>Math.ceil(L*(1+w)/bar);
+ const ab=Math.ceil(cv)+Math.ceil((l50+l40-vf-0.60)/1.0);
+ return [
+ {g:'Caño PVC sanitario',r:[
+  {id:'p110',q:b(l110),u:'barras',n:'Caño PVC 110',s:`${fmt(l110)} m: colector ${fmt(dsegL('main'))}, inodoro 0,80, CV ${fmt(cv,1)}, cocina a cámara ${fmt(dsegL('pptci'))}, tramos a fosas y pozo 1,80`},
+  {id:'p50',q:b(l50),u:'barras',n:'Caño PVC 50',s:`${fmt(l50)} m: caja sifonada, ducha, pileta de cocina a interceptor y pileta de patio, VF ${fmt(vf,1)}, RA 0,60`},
+  {id:'p40',q:b(l40),u:'barras',n:'Caño PVC 40',s:`${fmt(l40)} m: lavatorio y bidet`}]},
+ {g:'Accesorios PVC 110',r:[
+  {id:'k90',q:1,u:'u',n:'Codo 90° 110',s:'Pie del CV'},
+  {id:'k45',q:4,u:'u',n:'Codo 45° 110',s:'Giro del colector ×2, bajada del inodoro y entrada de la cocina a la cámara'},
+  {id:'ry',q:1,u:'u',n:'Ramal Y 110 a 45°',s:'Inodoro'},
+  {id:'ry50',q:1,u:'u',n:'Ramal Y 110 × 50 a 45°',s:'Caja sifonada'},
+  {id:'cino',q:1,u:'u',n:'Conexión / manguito para inodoro 110',s:'Según el modelo del inodoro'},
+  {id:'t110',q:5,u:'u',n:'T 110',s:'Entrada y salida de cada fosa y entrada del pozo'},
+  {id:'sd',q:1,u:'u',n:'Sifón desconector 110',s:'Cámara de inspección 1'},
+  {id:'som',q:1,u:'u',n:'Sombrerete 110',s:'Remate del CV'}]},
+ {g:'Accesorios PVC 40 / 50',r:[
+  {id:'k5090',q:8,u:'u',n:'Codo 90° 50',s:'Ducha, salida de la caja sifonada, cocina ×3, terminales de VF y RA'},
+  {id:'k5045',q:2,u:'u',n:'Codo 45° 50',s:'Entrada al ramal Y y ajuste'},
+  {id:'ry5',q:1,u:'u',n:'Ramal Y 50 a 45°',s:'Arranque de la VF en la línea de la cocina'},
+  {id:'k4090',q:4,u:'u',n:'Codo 90° 40',s:'Lavatorio ×2 y bidet ×2'}]},
+ {g:'Artefactos de desagüe',r:[
+  {id:'cs',q:1,u:'u',n:'Caja sifonada PVC 100 (3 entradas, salida 50)',s:'Con tapa ciega o rejilla a nivel de piso'},
+  {id:'rj',q:1,u:'u',n:'Rejilla de piso / sumidero de ducha, salida 50',s:''},
+  {id:'vl',q:1,u:'u',n:'Válvula y tubo de descarga para lavatorio',s:'Sin sifón: descarga a la caja sifonada'},
+  {id:'vb',q:1,u:'u',n:'Válvula y conexión de descarga para bidet',s:''},
+  {id:'sif',q:1,u:'u',n:'Sifón para pileta de cocina',s:'Como en S01'},
+  {id:'ig',q:1,u:'u',n:'Interceptor de grasa PVC 20 l',s:''},
+  {id:'ppt',q:1,u:'u',n:'Pileta de patio tapada 20 × 20 con tapa',s:''}]},
+ {g:'Cámara y tratamiento (S01)',r:[
+  {id:'cam',q:1,u:'u',n:'Cámara de inspección 0,60 × 0,60 con tapa y contratapa',s:'CT −0,55 · CZe −0,84 · CZs −0,90'},
+  {id:'aros',q:3,u:'pozos',n:'Aros prefabricados Ø 1,50',s:'Dos fosas y un pozo de 1,40 m útil cada uno; la cantidad de aros depende de la altura del aro del proveedor'},
+  {id:'tapas',q:3,u:'u',n:'Tapa para aro Ø 1,50',s:''},
+  {id:'ha',q:2,u:'u',n:'Fondo de hormigón armado de 10 cm',s:'Fosas sépticas'},
+  {id:'cr',q:1,u:'u',n:'Fondo de canto rodado de 10 cm',s:'Pozo filtrante'}]},
+ {g:'Fijación y consumibles',r:[
+  {id:'abr',q:ab,u:'u',n:'Abrazadera / colgante PVC',s:'CV cada 1 m y ramales colgados del entrepiso cada 1 m'},
+  {id:'peg',q:1,u:'u',n:'Adhesivo para PVC',s:''},
+  {id:'lim',q:1,u:'u',n:'Limpiador para PVC',s:''},
+  {id:'are',q:1,u:'m³',n:'Arena para cama de zanja',s:'Estimado; depende del largo real de zanja'}]},
+ ];
+}
+function renderBom(sys){
+ const G=sys==='A'?bomA():bomD(), have=store['have'+sys];
+ document.getElementById('bom'+sys).innerHTML=G.map(g=>`<div class="bomg"><h3>${g.g}</h3><div class="list">${g.r.map(r=>{const h=!!have[r.id];
+  return `<div class="row${h?' have':''}"><input type="checkbox" id="h${sys}_${r.id}" data-id="${r.id}" ${h?'checked':''} aria-label="Tengo ${r.n}">
+  <div class="q">${String(r.q).replace('.',',')}<small>${r.u}</small></div><label class="t" for="h${sys}_${r.id}"><b>${r.n}</b>${r.s?`<span>${r.s}</span>`:''}</label></div>`}).join('')}</div></div>`).join('');
+ document.querySelectorAll('#bom'+sys+' input[type=checkbox]').forEach(c=>c.addEventListener('change',()=>{have[c.dataset.id]=c.checked;save();renderBom(sys)}));
+}
+['pLleg','pDesp','pBar','pCV','pVF','pDespD','pBarD'].forEach(id=>{const el=document.getElementById(id);
+ if(store.par[id]!=null) el.value=store.par[id];
+ el.addEventListener('input',()=>{store.par[id]=el.value;save();renderBom(/^(pCV|pVF|pDespD|pBarD)$/.test(id)?'D':'A')})});
+function listText(sys,miss){
+ const G=sys==='A'?bomA():bomD(), have=store['have'+sys];
+ let t=(sys==='A'?'Sanitaria Sayago · agua termofusión':'Sanitaria Sayago · desagües PVC')+(miss?' (falta)':'')+'\n';
+ G.forEach(g=>{const rows=g.r.filter(r=>!miss||!have[r.id]);if(!rows.length)return;
+  t+=`\n${g.g}\n`+rows.map(r=>`- ${String(r.q).replace('.',',')} ${r.u} · ${r.n}`).join('\n')+'\n'});
+ return t;
+}
+document.querySelectorAll('[data-copy]').forEach(b=>b.addEventListener('click',()=>{
+ const sys=b.dataset.copy, txt=listText(sys,b.dataset.miss==='1'), el=document.querySelector(`[data-toast="${sys}"]`);
+ const ok=()=>{el.textContent='Lista copiada';setTimeout(()=>el.textContent='',2200)};
+ const fb=()=>{const ta=document.getElementById('cpfb');ta.value=txt;ta.select();try{document.execCommand('copy')?ok():el.textContent='Seleccioná y copiá a mano'}catch(e){el.textContent='Seleccioná y copiá a mano'}};
+ try{navigator.clipboard.writeText(txt).then(ok,fb)}catch(e){fb()}
+}));
+
+/* ---------- guías ---------- */
+function renderSteps(sys){
+ const ST=sys==='A'?STEPS_A:STEPS_D, done=store['steps'+sys];
+ const n=ST.filter((s,i)=>done[i]).length;
+ document.getElementById('prog'+sys).style.width=(n/ST.length*100)+'%';
+ const host=document.getElementById('steps'+sys);
+ host.innerHTML=ST.map((s,i)=>`<div class="step${done[i]?' done':''}">
+  <div class="n">${i+1}</div><div><h4>${s.t}</h4><ul>${s.li.map(l=>`<li>${l}</li>`).join('')}</ul>
+  <div class="act"><button type="button" class="btn ghost" data-see="${i}">Ver en plano</button>
+  <label><input type="checkbox" id="st${sys}_${i}" data-st="${i}" ${done[i]?'checked':''}> Hecho</label></div></div></div>`).join('');
+ host.querySelectorAll('[data-st]').forEach(c=>c.addEventListener('change',()=>{done[c.dataset.st]=c.checked;save();renderSteps(sys)}));
+ host.querySelectorAll('[data-see]').forEach(b=>b.addEventListener('click',()=>{const i=+b.dataset.see;
+  if(sys==='A'){
+   SA.hl=ST[i].ids;SA.hlName=`paso ${i+1} · ${ST[i].t}`;SA.sel=null;
+   const e=ST[i].ids.some(id=>byA[id].side==='ext'), it=ST[i].ids.some(id=>byA[id].side==='int');
+   SA.mode=e&&it?'all':e?'ext':'int';syncMode();renderA();
+  }else{SDs.hl=ST[i].ids;SDs.hlName=`paso ${i+1} · ${ST[i].t}`;SDs.sel=null;renderD()}
+  show(sys,'plano');window.scrollTo({top:0,behavior:'smooth'})}));
+}
+
+/* ---------- navegación ---------- */
+let cur={sys:'A',sub:'plano'};
+try{const v=JSON.parse(localStorage.getItem(KEY+'-nav')||'null');if(v&&v.sys&&v.sub)cur=v}catch(e){}
+function show(sys,sub){
+ cur={sys,sub};try{localStorage.setItem(KEY+'-nav',JSON.stringify(cur))}catch(e){}
+ document.querySelectorAll('[data-sys]').forEach(b=>b.setAttribute('aria-selected',b.dataset.sys===sys));
+ document.querySelectorAll('[data-sub]').forEach(b=>b.setAttribute('aria-selected',b.dataset.sub===sub));
+ ['A','D'].forEach(s=>['plano','despiece','guia'].forEach(x=>document.getElementById(s+'-'+x).hidden=!(s===sys&&x===sub)));
+}
+document.querySelectorAll('[data-sys]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.sys,cur.sub)));
+document.querySelectorAll('[data-sub]').forEach(b=>b.addEventListener('click',()=>show(cur.sys,b.dataset.sub)));
+function syncMode(){document.querySelectorAll('[data-mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.mode===SA.mode))}
+document.querySelectorAll('[data-mode]').forEach(b=>b.addEventListener('click',()=>{SA.mode=b.dataset.mode;syncMode();renderA()}));
+document.getElementById('tgDimsA').addEventListener('click',e=>{SA.dims=!SA.dims;e.currentTarget.setAttribute('aria-pressed',SA.dims);renderA()});
+document.getElementById('tgCodesA').addEventListener('click',e=>{SA.codes=!SA.codes;e.currentTarget.setAttribute('aria-pressed',SA.codes);renderA()});
+document.getElementById('tgDimsD').addEventListener('click',e=>{SDs.dims=!SDs.dims;e.currentTarget.setAttribute('aria-pressed',SDs.dims);renderD()});
+document.getElementById('tgCodesD').addEventListener('click',e=>{SDs.codes=!SDs.codes;e.currentTarget.setAttribute('aria-pressed',SDs.codes);renderD()});
+document.getElementById('hlclearA').addEventListener('click',()=>{SA.hl=null;renderA()});
+document.getElementById('hlclearD').addEventListener('click',()=>{SDs.hl=null;renderD()});
+
+function withAllVisible(fn){
+ const secs=[...document.querySelectorAll('section')],prev=secs.map(x=>x.hidden);
+ secs.forEach(x=>x.hidden=false);fn();
+ const restore=()=>{secs.forEach((x,i)=>x.hidden=prev[i]);window.removeEventListener('afterprint',restore)};
+ window.addEventListener('afterprint',restore);
+}
+window.sanitPrintAll=()=>withAllVisible(()=>{});
+document.getElementById('printAll').addEventListener('click',()=>withAllVisible(()=>window.print()));
+document.querySelectorAll('[data-print]').forEach(b=>b.addEventListener('click',()=>{const [sy,sb]=b.dataset.print.split('-');show(sy,sb);window.print()}));
+window.sanitShow=show;
+renderA();renderD();renderBom('A');renderBom('D');renderSteps('A');renderSteps('D');show(cur.sys,cur.sub);
+})();
+</script>
+</body>
+</html>
