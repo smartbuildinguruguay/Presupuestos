@@ -162,7 +162,49 @@ tr[data-id]{cursor:pointer}
  .step.done,.row.have{opacity:1}
  .tbl{overflow:visible}
  .assume{grid-template-columns:repeat(3,1fr)}
+ section[data-noprint]{display:none!important}
 }
+
+/* ---------- Primaria 3D ---------- */
+:root{--earth:#b9a07c;--earthd:#7a6246;--conc:#a9b1ad;--sand:#d8c49a;--water:#3a8fd6;--fixw:#e6eaea;--p3bg:#f4f7f6}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--earth:#6f5c44;--earthd:#9a7f5d;--conc:#6d7672;--sand:#8c7a55;--water:#4ea3ef;--fixw:#c9d0d0;--p3bg:#151c1d}}
+:root[data-theme="dark"]{--earth:#6f5c44;--earthd:#9a7f5d;--conc:#6d7672;--sand:#8c7a55;--water:#4ea3ef;--fixw:#c9d0d0;--p3bg:#151c1d}
+.p3-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:14px;align-items:start}
+@media (max-width:820px){.p3-grid{grid-template-columns:minmax(0,1fr)}}
+.p3-left,.p3-right{min-width:0}
+.p3-wrap{position:relative;width:100%;aspect-ratio:4/3;max-height:72vh;background:var(--p3bg);border:1px solid var(--line);border-radius:10px;overflow:hidden;touch-action:none;max-width:100%}
+.p3-wrap canvas{display:block;width:100%;height:100%;cursor:grab}
+.p3-wrap canvas:active{cursor:grabbing}
+.p3-labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.p3-labels span{position:absolute;transform:translate(-50%,-100%);margin-top:-6px;white-space:nowrap;font:600 11px/1.2 var(--f-m);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:2px 6px;box-shadow:0 1px 2px rgba(0,0,0,.08)}
+.p3-labels span.k{border-color:var(--sel)}
+.p3-tools{position:absolute;top:8px;right:8px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.p3-tools button{background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:99px;padding:4px 10px;font:500 .78rem var(--f-b);cursor:pointer}
+.p3-tools button[aria-pressed="true"]{color:var(--ink);border-color:var(--ink)}
+.p3-hint{position:absolute;left:10px;bottom:8px;font-size:.72rem;color:var(--muted);pointer-events:none}
+.p3-fb[hidden],.sub[hidden]{display:none!important}
+.p3-fb{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--muted);font-size:.9rem}
+.p3-dots{display:flex;gap:4px;margin-top:8px}
+.p3-dots button{flex:1;height:8px;border:0;border-radius:4px;background:var(--line);cursor:pointer;padding:0}
+.p3-dots button.done{background:var(--muted)}
+.p3-dots button[aria-selected="true"]{background:var(--sel)}
+.p3-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
+.p3-count{font:600 .72rem var(--f-b);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
+.p3-card h3{font-family:var(--f-d);font-weight:700;font-size:1.5rem;line-height:1.1;margin:4px 0 6px;text-wrap:balance}
+.p3-card ul{margin:0;padding-left:18px;font-size:.92rem}
+.p3-card li{margin:4px 0}
+.p3-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
+.p3-chips span{font-size:.78rem;border:1px solid var(--line);border-radius:99px;padding:2px 9px;background:var(--paper)}
+.p3-nav{display:flex;gap:6px;margin:10px 0}
+.p3-nav .btn{flex:1;padding:9px 6px}
+.p3-nav .btn:disabled{opacity:.4;cursor:default}
+.p3-list{margin:0;padding:0;list-style:none;border:1px solid var(--line);border-radius:10px;overflow:hidden;background:var(--panel)}
+.p3-list li{border-bottom:1px solid var(--line)}
+.p3-list li:last-child{border-bottom:0}
+.p3-list button{display:grid;grid-template-columns:26px 1fr;gap:6px;width:100%;text-align:left;background:none;border:0;padding:7px 10px;font:500 .86rem var(--f-b);color:var(--muted);cursor:pointer}
+.p3-list button b{font-family:var(--f-m);font-weight:500;color:var(--muted)}
+.p3-list button[aria-current="step"]{background:var(--selbg);color:var(--ink)}
+.p3-list button[aria-current="step"] b{color:var(--ink)}
 </style>
 </head>
 <body>
@@ -179,6 +221,7 @@ tr[data-id]{cursor:pointer}
   <div class="sys" role="tablist" aria-label="Sistema">
     <button type="button" role="tab" data-sys="A" aria-selected="true">Agua</button>
     <button type="button" role="tab" data-sys="D" aria-selected="false">Desagües</button>
+    <button type="button" role="tab" data-sys="P" aria-selected="false">Primaria 3D</button>
   </div>
   <div class="sub" role="tablist" aria-label="Sección">
     <button type="button" role="tab" data-sub="plano" aria-selected="true">Plano</button>
@@ -317,6 +360,41 @@ tr[data-id]{cursor:pointer}
   <h2>Paso a paso</h2>
   <div class="prog"><i id="progD"></i></div>
   <div id="stepsD"></div>
+</section>
+<!-- ================= PRIMARIA 3D ================= -->
+<section id="P-3d" data-noprint hidden>
+  <div class="p3-grid">
+    <div class="p3-left">
+      <div id="p3-wrap" class="p3-wrap">
+        <canvas id="p3-canvas" aria-label="Modelo 3D del armado de la instalación primaria"></canvas>
+        <div id="p3-labels" class="p3-labels" aria-hidden="true"></div>
+        <div id="p3-fallback" class="p3-fb" hidden>No se pudo iniciar el 3D en este navegador. Los pasos de la derecha siguen sirviendo como guía.</div>
+        <div class="p3-tools">
+          <button type="button" id="p3-reset">Recentrar</button>
+          <button type="button" id="p3-house" aria-pressed="true">Casa</button>
+          <button type="button" id="p3-ground" aria-pressed="true">Terreno</button>
+        </div>
+        <div class="p3-hint">Arrastrá para girar · rueda o pellizco para acercar</div>
+      </div>
+      <div class="p3-dots" id="p3-dots" role="tablist" aria-label="Pasos"></div>
+    </div>
+    <div class="p3-right">
+      <div class="p3-card">
+        <div class="p3-count" id="p3-count">Paso 1 de 12</div>
+        <h3 id="p3-stitle"></h3>
+        <ul id="p3-bul"></ul>
+        <div class="lbl" style="margin-top:10px">Piezas y material</div>
+        <div class="p3-chips" id="p3-pz"></div>
+      </div>
+      <div class="p3-nav">
+        <button type="button" class="btn ghost" id="p3-prev">← Anterior</button>
+        <button type="button" class="btn ghost" id="p3-play">Ver armado</button>
+        <button type="button" class="btn" id="p3-next">Siguiente →</button>
+      </div>
+      <ol class="p3-list" id="p3-list"></ol>
+    </div>
+  </div>
+  <p class="note" style="margin-top:12px">Modelo ilustrativo: muestra el orden de armado y las cotas principales, no el detalle de cada pieza. Las medidas son las de Desagües · Plano y la lámina S01. Lo secundario (lavatorio, bidet, ducha) aparece solo como referencia.</p>
 </section>
 <textarea id="cpfb" style="position:absolute;left:-9999px;top:0" aria-hidden="true" tabindex="-1"></textarea>
 </div>
@@ -545,7 +623,7 @@ const STEPS_D=[
   'Empezá desde la cámara hacia la casa, al 2 %. Las cotas están en la tabla de zampeado.',
   'Bajo la casa el colector queda enterrado unos 20 cm. Va sobre cama de arena y con el fondo de zanja compactado.',
   'Colocá los dos codos de 45°, el ramal Y 110 × 50 de la caja sifonada y el ramal Y 110 del inodoro, con las bocas mirando hacia arriba.',
-  'En la cabeza va el codo 90° al pie del CV.']},
+  'En la cabeza van dos codos de 90°: el giro bajo el lavatorio y el pie del CV.']},
  {t:'Ventilación CV 110',ids:['CV1'],li:[
   'Subí por fuera del muro sur, detrás del lavatorio, hasta 0,30 m sobre el alero, y poné sombrerete.',
   'Abrazaderas cada 1 m fijadas a la estructura, no solo a la placa.']},
@@ -865,7 +943,7 @@ function bomD(){
   {id:'p50',q:b(l50),u:'barras',n:'Caño PVC 50',s:`${fmt(l50)} m: caja sifonada, ducha, pileta de cocina a interceptor y pileta de patio, VF ${fmt(vf,1)}, RA 0,60`},
   {id:'p40',q:b(l40),u:'barras',n:'Caño PVC 40',s:`${fmt(l40)} m: lavatorio y bidet`}]},
  {g:'Accesorios PVC 110',r:[
-  {id:'k90',q:1,u:'u',n:'Codo 90° 110',s:'Pie del CV'},
+  {id:'k90',q:2,u:'u',n:'Codo 90° 110',s:'Pie del CV y giro bajo el lavatorio'},
   {id:'k45',q:4,u:'u',n:'Codo 45° 110',s:'Giro del colector ×2, bajada del inodoro y entrada de la cocina a la cámara'},
   {id:'ry',q:1,u:'u',n:'Ramal Y 110 a 45°',s:'Inodoro'},
   {id:'ry50',q:1,u:'u',n:'Ramal Y 110 × 50 a 45°',s:'Caja sifonada'},
@@ -951,6 +1029,8 @@ function show(sys,sub){
  document.querySelectorAll('[data-sys]').forEach(b=>b.setAttribute('aria-selected',b.dataset.sys===sys));
  document.querySelectorAll('[data-sub]').forEach(b=>b.setAttribute('aria-selected',b.dataset.sub===sub));
  ['A','D'].forEach(s=>['plano','despiece','guia'].forEach(x=>document.getElementById(s+'-'+x).hidden=!(s===sys&&x===sub)));
+ document.getElementById('P-3d').hidden=sys!=='P';document.querySelector('.sub').hidden=sys==='P';
+ if(window.primaria3d)window.primaria3d.visible(sys==='P');
 }
 document.querySelectorAll('[data-sys]').forEach(b=>b.addEventListener('click',()=>show(b.dataset.sys,cur.sub)));
 document.querySelectorAll('[data-sub]').forEach(b=>b.addEventListener('click',()=>show(cur.sys,b.dataset.sub)));
@@ -964,7 +1044,7 @@ document.getElementById('hlclearA').addEventListener('click',()=>{SA.hl=null;ren
 document.getElementById('hlclearD').addEventListener('click',()=>{SDs.hl=null;renderD()});
 
 function withAllVisible(fn){
- const secs=[...document.querySelectorAll('section')],prev=secs.map(x=>x.hidden);
+ const secs=[...document.querySelectorAll('section:not([data-noprint])')],prev=secs.map(x=>x.hidden);
  secs.forEach(x=>x.hidden=false);fn();
  const restore=()=>{secs.forEach((x,i)=>x.hidden=prev[i]);window.removeEventListener('afterprint',restore)};
  window.addEventListener('afterprint',restore);
@@ -974,6 +1054,361 @@ document.getElementById('printAll').addEventListener('click',()=>withAllVisible(
 document.querySelectorAll('[data-print]').forEach(b=>b.addEventListener('click',()=>{const [sy,sb]=b.dataset.print.split('-');show(sy,sb);window.print()}));
 window.sanitShow=show;
 renderA();renderD();renderBom('A');renderBom('D');renderSteps('A');renderSteps('D');show(cur.sys,cur.sub);
+})();
+</script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+const sec=document.getElementById('P-3d');if(!sec)return;
+const $=id=>document.getElementById(id);
+const fmt=(n,d=2)=>Number(n).toLocaleString('es-UY',{minimumFractionDigits:d,maximumFractionDigits:d});
+
+/* ---------- niveles del colector (2 % desde CZe −0,84) ---------- */
+const MAIN=[[0.25,-0.30],[0.25,0.30],[2.60,0.30],[3.48,1.18],[3.57,1.18]];
+const R110=0.055, R50=0.025;
+const segL=(a,b)=>Math.hypot(b[0]-a[0],b[1]-a[1]);
+const mainD=(()=>{const d=new Array(MAIN.length).fill(0);for(let i=MAIN.length-2;i>=0;i--)d[i]=d[i+1]+segL(MAIN[i],MAIN[i+1]);return d})();
+const inv=d=>-0.84+d*0.02;
+const hMain=i=>inv(mainD[i])+R110;
+const dAtX=x=>{for(let i=1;i<MAIN.length;i++){const a=MAIN[i-1],b=MAIN[i];if(a[1]===b[1]&&x>=Math.min(a[0],b[0])&&x<=Math.max(a[0],b[0]))return mainD[i]+Math.abs(b[0]-x)}return 0};
+const hInoY=inv(dAtX(1.84))+R110, hCsY=inv(dAtX(2.10))+R110;
+
+/* ---------- pasos ---------- */
+const STEPS=[
+ {t:'Replanteo y niveles',v:'all',b:[
+  'Marcá con estacas la cámara, las dos fosas, el pozo y el pie del CV, igual que en Desagües · Plano.',
+  'La referencia es el piso terminado (0,00). El terreno bajo la casa está a −0,60 y el colector entra a la cámara a −0,84.',
+  'Tendé un hilo por el recorrido del colector para marcar la zanja.'],p:['Estacas','Hilo','Nivel de manguera o láser']},
+ {t:'Excavación',v:'trat',b:[
+  'Pozos de unos 1,90 m de diámetro para las dos fosas y el pozo filtrante: hasta −2,35 las fosas y −2,45 el pozo.',
+  'Pozo de unos 0,90 × 0,90 para la cámara, hasta −1,00.',
+  'Dejá la tierra lejos del borde de los pozos.'],p:['Pala','Pico']},
+ {t:'Fosas y pozo filtrante',v:'trat',b:[
+  'Fosas: fondo de hormigón armado de 10 cm. Pozo: fondo de canto rodado de 10 cm.',
+  'Bajá los aros de Ø 1,50 a nivel y a plomo hasta que la tapa quede a −0,55.',
+  'Las tapas se dejan apoyadas hasta terminar las conexiones.'],p:['Aros Ø 1,50','Malla + hormigón','Canto rodado','Tapas ×3']},
+ {t:'Cámara de inspección 1',v:'cam',b:[
+  'Cámara de 0,60 × 0,60 interior con la tapa a −0,55.',
+  'Zampeado con media caña: entrada a −0,84 y salida a −0,90.',
+  'Dejá las bocas de entrada al oeste (baño) y al norte (cocina).'],p:['Cámara 0,60 × 0,60','Tapa y contratapa']},
+ {t:'Sifón desconector y tramos a fosas',v:'trat',b:[
+  'El sifón desconector va en la salida de la cámara.',
+  'PVC 110 de la cámara a la fosa 1, de la fosa 1 a la 2 y de la 2 al pozo.',
+  'Cada entrada y salida de fosa lleva una T 110 con la pata hacia abajo.'],p:['Sifón desconector 110','T 110 ×5','Caño PVC 110']},
+ {t:'Zanja del colector',v:'zanja',b:[
+  'Zanja de unos 40 cm de ancho desde la cámara hasta el pie del CV, y otra desde la pileta de patio a la cámara.',
+  'Fondo parejo al 2 %: baja 2 cm por cada metro hacia la cámara.',
+  'Cama de arena de 5 cm en el fondo.'],p:['Arena']},
+ {t:'Colector PVC 110',v:'col',b:[
+  'Empezá desde la cámara y avanzá hacia la casa.',
+  'Van dos codos de 45° y los dos ramales Y (inodoro y caja sifonada) con las bocas mirando hacia arriba.',
+  'Bajo el lavatorio gira con un codo de 90° y termina en otro codo de 90° al pie del CV.',
+  'Controlá el 2 % con el nivel en cada tramo antes de pegar.'],p:['Caño PVC 110','Codo 45° ×2','Ramal Y 110','Ramal Y 110 × 50','Codo 90° ×2','Adhesivo + limpiador']},
+ {t:'Ventilación CV 110',v:'cv',b:[
+  'Desde el codo del pie, sube por fuera del muro sur detrás del lavatorio.',
+  'Lleva abrazaderas cada 1 m fijadas a la estructura.',
+  'Termina 0,30 m sobre el alero (+3,92) con sombrerete.'],p:['Caño PVC 110','Abrazaderas','Sombrerete 110']},
+ {t:'Bajada del inodoro',v:'ino',b:[
+  'Tubo vertical desde el piso, después un codo de 45° que entra al ramal Y.',
+  'Eje a 0,30 de la pared terminada. Verificalo con la ficha del inodoro.',
+  'La boca queda a ras del piso terminado y tapada hasta colocar el inodoro.'],p:['Caño PVC 110','Codo 45°','Manguito de inodoro']},
+ {t:'Caja sifonada y cocina',v:'coc',b:[
+  'La caja sifonada va colgada del entrepiso. Su salida de 50 baja a 45° al ramal Y.',
+  'Cocina: interceptor de grasa, después la pileta de patio tapada y PVC 110 al 2 % que entra a la cámara por el norte.'],p:['Caja sifonada','Caño PVC 50','Interceptor de grasa 20 l','PPT 20 × 20','Caño PVC 110','Codo 45°']},
+ {t:'Prueba de agua',v:'col',b:[
+  'Tapá la salida de la cámara y las bocas de inodoro, caja y pileta de patio.',
+  'Llená con agua hasta el nivel del piso y esperá 1 hora.',
+  'Si el nivel no baja y no hay pérdidas en las uniones, vaciá.'],p:['Tapones de prueba','Manguera']},
+ {t:'Tapado y cierre',v:'all',b:[
+  'Primero arena alrededor del caño, después tierra en capas, compactando sin golpear el caño.',
+  'Antes de tapar, sacá fotos del recorrido con cinta métrica a la vista.',
+  'Colocá las tapas de la cámara, las fosas y el pozo.'],p:['Arena','Tierra']},
+];
+const N=STEPS.length;
+let step=0;
+try{const v=+localStorage.getItem('sanit-sayago-p3');if(v>=0&&v<N)step=v}catch(e){}
+
+/* ---------- UI ---------- */
+$('p3-list').innerHTML=STEPS.map((s,i)=>`<li><button type="button" data-i="${i}"><b>${String(i+1).padStart(2,'0')}</b>${s.t}</button></li>`).join('');
+$('p3-dots').innerHTML=STEPS.map((s,i)=>`<button type="button" role="tab" data-i="${i}" aria-label="Paso ${i+1}: ${s.t}"></button>`).join('');
+document.querySelectorAll('#p3-list [data-i],#p3-dots [data-i]').forEach(b=>b.addEventListener('click',()=>{stopPlay();go(+b.dataset.i)}));
+function renderUI(){
+ const s=STEPS[step];
+ $('p3-count').textContent=`Paso ${step+1} de ${N}`;
+ $('p3-stitle').textContent=s.t;
+ $('p3-bul').innerHTML=s.b.map(x=>`<li>${x}</li>`).join('');
+ $('p3-pz').innerHTML=s.p.map(x=>`<span>${x}</span>`).join('');
+ $('p3-prev').disabled=step===0;$('p3-next').disabled=step===N-1;
+ document.querySelectorAll('#p3-list button').forEach((b,i)=>{if(i===step)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current')});
+ document.querySelectorAll('#p3-dots button').forEach((b,i)=>{b.setAttribute('aria-selected',i===step);b.classList.toggle('done',i<step)});
+}
+function go(i){step=Math.max(0,Math.min(N-1,i));try{localStorage.setItem('sanit-sayago-p3',step)}catch(e){}renderUI();if(W)W.apply(true)}
+$('p3-prev').addEventListener('click',()=>{stopPlay();go(step-1)});
+$('p3-next').addEventListener('click',()=>{stopPlay();go(step+1)});
+let playT=null;
+function stopPlay(){if(playT){clearInterval(playT);playT=null;$('p3-play').textContent='Ver armado'}}
+$('p3-play').addEventListener('click',()=>{
+ if(playT){stopPlay();return}
+ if(step===N-1)go(0);
+ $('p3-play').textContent='Pausa';
+ playT=setInterval(()=>{if(step>=N-1){stopPlay();return}go(step+1)},3800);
+});
+renderUI();
+
+/* ---------- 3D ---------- */
+let W=null,inited=false;
+window.primaria3d={visible(v){if(v){if(!inited){inited=true;try{W=build();W.apply(false)}catch(e){console.error(e);W=null;$('p3-fallback').hidden=false}}if(W)W.start()}else{stopPlay();if(W)W.stop()}}};
+
+function build(){
+ if(!window.THREE) throw new Error('THREE no cargó');
+ const T=window.THREE;
+ const canvas=$('p3-canvas'),wrap=$('p3-wrap'),lab=$('p3-labels');
+ const renderer=new T.WebGLRenderer({canvas,antialias:true});
+ renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+ const scene=new T.Scene();
+ const camera=new T.PerspectiveCamera(38,4/3,0.05,120);
+ scene.add(new T.HemisphereLight(0xffffff,0x8a7a66,0.85));
+ const dl=new T.DirectionalLight(0xffffff,0.75);dl.position.set(5,9,6);scene.add(dl);
+ const dl2=new T.DirectionalLight(0xffffff,0.25);dl2.position.set(-6,4,-3);scene.add(dl2);
+ const V=(x,y,h)=>new T.Vector3(x,h,-y);
+ const cssv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim()||'#888888';
+ const tok=n=>new T.Color(cssv(n));
+ const MATS=[],G={};
+ const META={house:[0,99],rep:[1,5],hoyos:[2,11],fosas:[3,99],cam:[4,99],sd:[5,99],tramos:[5,99],zanja:[6,11],col:[7,99],cv:[8,99],ino:[9,99],cs:[10,99],coc:[10,99],prueba:[11,11],tapado:[12,99]};
+ const grp=id=>G[id]||(G[id]={objs:[],mats:new Set(),grow:[],pop:[]});
+ const cache={};
+ function mat(token,gid,op=1,dbl=false){
+  const k=token+'|'+gid+'|'+op+'|'+dbl;if(cache[k])return cache[k];
+  const m=new T.MeshStandardMaterial({color:tok(token),roughness:.55,metalness:.05,transparent:op<1,opacity:op,side:dbl?T.DoubleSide:T.FrontSide,depthWrite:op>=.6});
+  MATS.push({m,token});grp(gid).mats.add(m);cache[k]=m;return m;
+ }
+ function add(o,gid,kind){scene.add(o);const g=grp(gid);g.objs.push(o);if(kind==='grow')g.grow.push(o);else if(kind==='pop')g.pop.push(o)}
+ const UP=new T.Vector3(0,1,0);
+ function seg(a,b,r,m,gid,kind='grow'){
+  const d=new T.Vector3().subVectors(b,a),L=d.length();if(L<1e-4)return;
+  const geo=new T.CylinderGeometry(r,r,L,20,1);geo.translate(0,L/2,0);
+  const o=new T.Mesh(geo,m);o.position.copy(a);o.quaternion.setFromUnitVectors(UP,d.normalize());add(o,gid,kind);return o;
+ }
+ function pipe(pts,r,token,gid,opt={}){
+  const m=mat(token,gid,opt.op??1),fm=mat(opt.fit||'--ink',gid);
+  const P=pts.map(p=>V(...p));
+  for(let i=1;i<P.length;i++)seg(P[i-1],P[i],r,m,gid,opt.kind||'grow');
+  if(!opt.nofit)for(let i=1;i<P.length-1;i++){const s=new T.Mesh(new T.SphereGeometry(r*1.32,16,12),fm);s.position.copy(P[i]);add(s,gid,'pop')}
+  return P;
+ }
+ function box(x1,y1,h1,x2,y2,h2,m,gid,kind='pop'){
+  const o=new T.Mesh(new T.BoxGeometry(Math.abs(x2-x1),Math.abs(h2-h1),Math.abs(y2-y1)),m);
+  o.position.copy(V((x1+x2)/2,(y1+y2)/2,(h1+h2)/2));add(o,gid,kind);return o;
+ }
+ function cyl(x,y,h1,h2,r,m,gid,kind='pop',open=false){
+  const o=new T.Mesh(new T.CylinderGeometry(r,r,h2-h1,40,1,open),m);o.position.copy(V(x,y,(h1+h2)/2));add(o,gid,kind);return o;
+ }
+ function ring(x,y,h,R,t,m,gid){const o=new T.Mesh(new T.TorusGeometry(R,t,8,48),m);o.rotation.x=Math.PI/2;o.position.copy(V(x,y,h));add(o,gid,'pop');return o}
+ function slab(a,b,w,hb,ht,m,gid,kind='pop'){ // caja orientada a lo largo de a→b en planta
+  const dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy);
+  const o=new T.Mesh(new T.BoxGeometry(L,ht-hb,w),m);o.position.copy(V((a[0]+b[0])/2,(a[1]+b[1])/2,(hb+ht)/2));o.rotation.y=Math.atan2(dy,dx);add(o,gid,kind);return o;
+ }
+ function line(pts,token,gid){const g=new T.BufferGeometry().setFromPoints(pts.map(p=>V(...p)));const m=new T.LineBasicMaterial({color:tok(token)});MATS.push({m,token});const o=new T.Line(g,m);add(o,gid,'static');return o}
+
+ /* casa (contexto) */
+ const mHouse=mat('--line','house',.38),mWall=mat('--fix','house',.35),mFix=mat('--fixw','house',.9),mConc=mat('--conc','house');
+ box(-0.10,-0.15,-0.20,2.98,4.95,0,mHouse,'house','static');
+ [-0.05,1.45,2.93].forEach(x=>[-0.10,1.55,3.25,4.90].forEach(y=>box(x-0.1,y-0.1,-0.60,x+0.1,y+0.1,-0.20,mConc,'house','static')));
+ [[-0.10,-0.15,2.98,0],[2.83,-0.15,2.98,4.95],[-0.10,4.80,2.98,4.95],[-0.10,0,0,1.60],[0.80,1.50,2.83,1.60]].forEach(w=>box(w[0],w[1],0,w[2],w[3],0.55,mWall,'house','static'));
+ box(1.50,0,0.42,1.86,0.18,0.80,mFix,'house','static');box(1.52,0.04,0,1.84,0.62,0.40,mFix,'house','static');
+ box(0.96,0.02,0,1.30,0.58,0.40,mFix,'house','static');box(0,0,0.50,0.80,0.50,0.85,mFix,'house','static');
+ box(2.28,1.60,0.86,2.83,4.80,0.90,mFix,'house','static');
+ box(-0.40,-0.75,3.90,1.20,0.10,3.94,mat('--fix','house',.3),'house','static');
+
+ /* terreno */
+ const mGround=mat('--earth','ground',.30,true);
+ const ground=new T.Mesh(new T.PlaneGeometry(12,9),mGround);ground.rotation.x=-Math.PI/2;ground.position.copy(V(3.6,1.6,-0.60));scene.add(ground);
+
+ /* 1 replanteo */
+ const mStake=mat('--sel','rep');
+ [[3.87,1.18],[5.28,1.20],[6.94,1.20],[6.94,2.87],[0.25,-0.30],[2.60,0.30],[3.20,2.78]].forEach(p=>box(p[0]-0.02,p[1]-0.02,-0.60,p[0]+0.02,p[1]+0.02,-0.15,mStake,'rep'));
+ line(MAIN.map(p=>[p[0],p[1],-0.22]),'--sel','rep');
+ line([[3.20,2.78,-0.22],[3.75,1.48,-0.22]],'--sel','rep');
+
+ /* 2 hoyos */
+ const mHole=mat('--earthd','hoyos',.33,true);
+ [[5.28,1.20,-2.35],[6.94,1.20,-2.35],[6.94,2.87,-2.45]].forEach(f=>cyl(f[0],f[1],f[2]-0.05,-0.60,0.95,mHole,'hoyos','pop',true));
+ box(3.42,0.73,-1.00,4.32,1.63,-0.60,mHole,'hoyos');
+
+ /* 3 fosas y pozo */
+ const mAro=mat('--conc','fosas',.55,true),mAroL=mat('--conc','fosas'),mFondo=mat('--conc','fosas'),mCanto=mat('--sand','fosas'),mTapa=mat('--conc','fosas',.45);
+ [[5.28,1.20,-2.35,0],[6.94,1.20,-2.35,0],[6.94,2.87,-2.45,1]].forEach(f=>{
+  const [x,y,hb,pz]=f;
+  cyl(x,y,hb,hb+0.10,0.81,pz?mCanto:mFondo,'fosas');
+  cyl(x,y,hb+0.10,-0.55,0.81,mAro,'fosas','pop',true);
+  for(let h=hb+0.10;h<-0.55+0.01;h+=0.50)ring(x,y,h,0.81,0.02,mAroL,'fosas');
+  ring(x,y,-0.55,0.81,0.03,mAroL,'fosas');
+  cyl(x,y,-0.55,-0.49,0.86,mTapa,'fosas');
+ });
+
+ /* 4 cámara */
+ const mCam=mat('--conc','cam',.8),mCamT=mat('--conc','cam',.4);
+ const cx1=3.57,cx2=4.17,cy1=0.88,cy2=1.48,e=0.075;
+ box(cx1-e,cy1-e,-1.00,cx2+e,cy2+e,-0.95,mCam,'cam');
+ box(cx1-e,cy1-e,-0.95,cx1,cy2+e,-0.55,mCam,'cam');box(cx2,cy1-e,-0.95,cx2+e,cy2+e,-0.55,mCam,'cam');
+ box(cx1,cy1-e,-0.95,cx2,cy1,-0.55,mCam,'cam');box(cx1,cy2,-0.95,cx2,cy2+e,-0.55,mCam,'cam');
+ box(cx1-e,cy1-e,-0.55,cx2+e,cy2+e,-0.50,mCamT,'cam');
+ // media caña
+ pipe([[3.57,1.18,-0.84+0.02],[4.17,1.18,-0.90+0.02]],0.05,'--conc','cam',{nofit:true});
+
+ /* 5 sifón desconector + tramos */
+ pipe([[4.08,1.18,-0.845],[4.12,1.18,-1.00],[4.26,1.18,-1.00],[4.30,1.18,-0.85]],R110*.9,'--pri','sd');
+ const tram=[[[4.30,1.18,-0.85],[4.65,1.20,-0.87]],[[5.91,1.20,-0.92],[6.31,1.20,-0.92]],[[6.94,1.83,-0.97],[6.94,2.24,-0.97]]];
+ tram.forEach(t=>pipe(t,R110,'--pri','tramos'));
+ [[4.65,1.20,-0.62,-1.12],[5.91,1.20,-0.67,-1.17],[6.31,1.20,-0.67,-1.17],[6.94,1.83,-0.72,-1.22],[6.94,2.24,-0.72,-1.22]].forEach(t=>pipe([[t[0],t[1],t[2]],[t[0],t[1],t[3]]],R110,'--pri','tramos',{nofit:true}));
+ pipe([[7.64,2.87,-0.75],[7.64,2.87,0.70]],R110,'--ven','tramos');
+
+ /* 6 zanja */
+ const mZ=mat('--earthd','zanja',.38,true);
+ const ZS=[];for(let i=1;i<MAIN.length;i++)ZS.push([MAIN[i-1],MAIN[i],hMain(i)-R110-0.10]);
+ ZS.push([[3.20,2.78],[3.75,1.58],-0.95],[[3.75,1.58],[3.75,1.48],-0.95]);
+ ZS.forEach(z=>slab(z[0],z[1],0.40,z[2],-0.60,mZ,'zanja'));
+
+ /* 7 colector */
+ const colP=MAIN.map((p,i)=>[p[0],p[1],hMain(i)]);
+ pipe(colP,R110,'--pri','col');
+ // ramales Y (bocas hacia arriba)
+ pipe([[1.84,0.30,hInoY],[1.76,0.30,hInoY+0.08]],R110,'--pri','col',{nofit:true});
+ pipe([[2.10,0.30,hCsY],[2.04,0.36,hCsY+0.09]],R50,'--pri','col',{nofit:true});
+ const mFit=mat('--ink','col');
+ [[1.84,0.30,hInoY],[2.10,0.30,hCsY]].forEach(p=>{const s=new T.Mesh(new T.SphereGeometry(R110*1.4,16,12),mFit);s.position.copy(V(...p));add(s,'col','pop')});
+
+ /* 8 CV */
+ const cvTop=4.22;
+ pipe([[0.25,-0.30,hMain(0)],[0.25,-0.30,cvTop]],R110,'--ven','cv',{nofit:true});
+ const cone=new T.Mesh(new T.ConeGeometry(0.11,0.12,24),mat('--ven','cv'));cone.position.copy(V(0.25,-0.30,cvTop+0.08));add(cone,'cv','pop');
+ for(let h=0.5;h<cvTop;h+=1.0)ring(0.25,-0.30,h,R110+0.012,0.012,mat('--ink','cv'),'cv');
+
+ /* 9 inodoro */
+ pipe([[1.68,0.30,0.00],[1.68,0.30,-0.62],[1.76,0.30,hInoY+0.08]],R110,'--pri','ino');
+ ring(1.68,0.30,0.0,R110+0.02,0.02,mat('--ink','ino'),'ino');
+
+ /* 10 caja sifonada + cocina */
+ cyl(1.95,0.85,-0.30,0,0.10,mat('--sec','cs'),'cs');
+ pipe([[1.95,0.75,-0.30],[1.95,0.45,-0.33],[2.04,0.36,hCsY+0.09]],R50,'--sec','cs');
+ pipe([[0.40,0.15,-0.05],[0.40,0.92,-0.12],[1.85,0.92,-0.15]],0.02,'--sec','cs',{op:.5,nofit:true});
+ pipe([[1.13,0.20,-0.05],[1.13,0.80,-0.12],[1.85,0.80,-0.15]],0.02,'--sec','cs',{op:.5,nofit:true});
+ pipe([[2.43,0.75,-0.05],[2.05,0.82,-0.12]],R50,'--sec','cs',{op:.5,nofit:true});
+ cyl(3.20,3.14,-0.95,-0.55,0.20,mat('--sec','coc'),'coc');
+ box(3.10,2.68,-0.90,3.30,2.88,-0.55,mat('--sec','coc'),'coc');
+ pipe([[2.55,3.20,0.55],[2.55,3.20,-0.35],[3.00,3.16,-0.45],[3.00,3.16,-0.65]],R50,'--sec','coc');
+ const kitP=[[3.27,2.70,-0.84+1.32*0.02+R110],[3.75,1.58,-0.84+0.10*0.02+R110],[3.75,1.48,-0.84+R110]];
+ pipe(kitP,R110,'--pri','coc');
+
+ /* 11 prueba */
+ const mW=mat('--water','prueba',.55);
+ const wet=[colP,[[1.68,0.30,0.00],[1.68,0.30,-0.62],[1.76,0.30,hInoY+0.08]],kitP];
+ wet.forEach(pp=>{const P=pp.map(p=>V(...p));for(let i=1;i<P.length;i++)seg(P[i-1],P[i],R110*1.18,mW,'prueba','static')});
+ box(cx1,cy1,-0.95,cx2,cy2,-0.62,mW,'prueba','static');
+
+ /* 12 tapado */
+ const mT=mat('--sand','tapado',.92);
+ ZS.forEach(z=>slab(z[0],z[1],0.40,z[2],-0.60,mT,'tapado'));
+ [[5.28,1.20],[6.94,1.20],[6.94,2.87]].forEach(f=>{const o=new T.Mesh(new T.RingGeometry(0.86,0.95,48),mat('--sand','tapado',.92,true));o.rotation.x=-Math.PI/2;o.position.copy(V(f[0],f[1],-0.598));add(o,'tapado','pop')});
+
+ /* rótulos */
+ const LB=[
+  {s:[1],p:[1.40,4.95,0.05],t:'Piso terminado 0,00'},{s:[1],p:[8.0,-0.4,-0.60],t:'Terreno −0,60'},{s:[1,4],p:[3.87,1.18,-0.55],t:'Cámara 1 · CZe −0,84',k:1},
+  {s:[1,2,3],p:[5.28,1.20,-0.45],t:'Fosa 1'},{s:[1,2,3],p:[6.94,1.20,-0.45],t:'Fosa 2'},{s:[1,2,3],p:[6.94,2.87,-0.45],t:'Pozo filtrante'},{s:[1],p:[0.25,-0.30,-0.10],t:'Pie del CV'},
+  {s:[2],p:[6.94,1.20,-2.40],t:'Fondo −2,35',k:1},{s:[2],p:[6.94,2.87,-2.50],t:'Fondo −2,45',k:1},
+  {s:[3],p:[5.28,1.20,-2.30],t:'Fondo HA 10 cm'},{s:[3],p:[6.94,2.87,-2.40],t:'Canto rodado 10 cm'},{s:[3],p:[6.05,1.20,-0.50],t:'Tapa −0,55',k:1},
+  {s:[4],p:[3.57,1.18,-0.84],t:'Entrada −0,84',k:1},{s:[4],p:[4.17,1.18,-0.90],t:'Salida −0,90',k:1},{s:[4],p:[4.20,0.85,-0.50],t:'Tapa −0,55'},
+  {s:[5],p:[4.19,1.18,-1.00],t:'Sifón desconector',k:1},{s:[5],p:[4.65,1.20,-0.60],t:'T 110'},{s:[5],p:[7.64,2.87,0.72],t:'Ventilación pozo (S01)'},
+  {s:[6],p:[1.40,0.30,-0.60],t:'Zanja ≈ 40 cm · 2 %',k:1},{s:[6],p:[3.45,2.15,-0.60],t:'Zanja cocina'},
+  {s:[7],p:[3.57,1.18,hMain(4)],t:fmt(inv(0))},{s:[7],p:[2.60,0.30,hMain(2)],t:'Codo 45° · '+fmt(inv(mainD[2])),k:1},{s:[7],p:[3.48,1.18,hMain(3)],t:'Codo 45°'},
+  {s:[7],p:[1.84,0.30,hInoY+0.06],t:'Ramal Y inodoro · '+fmt(inv(dAtX(1.84))),k:1},{s:[7],p:[2.16,0.30,hCsY+0.42],t:'Ramal Y 110×50'},{s:[7],p:[0.25,-0.30,hMain(0)],t:'Codo 90° · '+fmt(inv(mainD[0])),k:1},{s:[7],p:[0.25,0.30,hMain(1)],t:'Codo 90°'},
+  {s:[8],p:[0.25,-0.30,cvTop+0.15],t:'Sombrerete · +4,22',k:1},{s:[8],p:[0.60,-0.40,3.92],t:'Alero +3,92'},{s:[8],p:[0.25,-0.30,1.5],t:'Abrazadera cada 1 m'},
+  {s:[9],p:[1.68,0.30,0.02],t:'Boca a ras del piso · eje a 0,30',k:1},{s:[9],p:[1.70,0.30,-0.62],t:'Codo 45°'},
+  {s:[10],p:[1.95,0.85,0.02],t:'Caja sifonada',k:1},{s:[10],p:[3.20,3.14,-0.52],t:'Interceptor 20 l'},{s:[10],p:[3.20,2.78,-0.52],t:'PPT 20×20'},{s:[10],p:[3.55,2.15,-0.80],t:'110 · 2 % a la cámara',k:1},
+  {s:[11],p:[2.0,0.30,-0.35],t:'Agua hasta el piso · 1 h',k:1},{s:[11],p:[4.17,1.18,-0.60],t:'Salida tapada'},
+  {s:[12],p:[1.40,0.30,-0.55],t:'Arena + tierra en capas',k:1},{s:[12],p:[3.87,1.18,-0.48],t:'Tapa cámara'},
+ ];
+ const LE=LB.map(l=>{const sp=document.createElement('span');sp.textContent=l.t;if(l.k)sp.className='k';lab.appendChild(sp);return{...l,el:sp,v:V(...l.p)}});
+
+ /* vistas */
+ const VIEWS={
+  all:{t:[3.7,1.4,-0.9],p:[11.0,-6.5,5.2]},
+  trat:{t:[5.8,1.8,-1.3],p:[10.8,-4.2,2.6]},
+  cam:{t:[3.95,1.15,-0.80],p:[6.4,-1.6,1.15]},
+  zanja:{t:[2.1,0.8,-0.75],p:[6.2,-4.2,2.6]},
+  col:{t:[1.9,0.6,-0.75],p:[5.4,-3.8,1.9]},
+  cv:{t:[0.9,0.1,1.6],p:[5.6,-6.6,3.6]},
+  ino:{t:[1.85,0.4,-0.45],p:[4.0,-2.3,0.9]},
+  coc:{t:[2.9,1.7,-0.55],p:[7.0,-1.6,2.5]},
+ };
+ const orb={t:new T.Vector3(),r:10,th:0,ph:1};
+ function sph(pos,tg){const o=new T.Vector3().subVectors(pos,tg);const r=o.length();return{t:tg.clone(),r,th:Math.atan2(o.x,o.z),ph:Math.acos(Math.max(-1,Math.min(1,o.y/r)))}}
+ function viewState(key){const v=VIEWS[key]||VIEWS.all;return sph(V(...v.p),V(...v.t))}
+ let tw=null;
+ function setOrb(s){orb.t.copy(s.t);orb.r=s.r;orb.th=s.th;orb.ph=s.ph}
+ function tweenTo(s,ms=900){const a={t:orb.t.clone(),r:orb.r,th:orb.th,ph:orb.ph};let dth=s.th-a.th;while(dth>Math.PI)dth-=2*Math.PI;while(dth<-Math.PI)dth+=2*Math.PI;tw={a,b:s,dth,t0:performance.now(),ms}}
+ function placeCam(){const sp=Math.sin(orb.ph);camera.position.set(orb.t.x+orb.r*sp*Math.sin(orb.th),orb.t.y+orb.r*Math.cos(orb.ph),orb.t.z+orb.r*sp*Math.cos(orb.th));camera.lookAt(orb.t)}
+
+ /* interacción */
+ const pts=new Map();let pinch0=0,r0=0;
+ canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});tw=null;if(pts.size===2){const [a,b]=[...pts.values()];pinch0=Math.hypot(a.x-b.x,a.y-b.y);r0=orb.r}});
+ canvas.addEventListener('pointermove',e=>{const p=pts.get(e.pointerId);if(!p)return;
+  if(pts.size===1){orb.th-=(e.clientX-p.x)*0.008;orb.ph=Math.max(0.12,Math.min(1.62,orb.ph-(e.clientY-p.y)*0.008))}
+  p.x=e.clientX;p.y=e.clientY;
+  if(pts.size===2){const [a,b]=[...pts.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);if(pinch0>0)orb.r=Math.max(1.2,Math.min(30,r0*pinch0/d))}});
+ const up=e=>{pts.delete(e.pointerId);pinch0=0};
+ canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
+ canvas.addEventListener('wheel',e=>{e.preventDefault();tw=null;orb.r=Math.max(1.2,Math.min(30,orb.r*(1+Math.sign(e.deltaY)*0.08)))},{passive:false});
+ $('p3-reset').addEventListener('click',()=>tweenTo(viewState(STEPS[step].v)));
+ const tgl=(id,fn)=>$(id).addEventListener('click',e=>{const on=e.currentTarget.getAttribute('aria-pressed')!=='true';e.currentTarget.setAttribute('aria-pressed',on);fn(on)});
+ let showHouse=true,showGround=true;
+ tgl('p3-house',on=>{showHouse=on;applyVis()});
+ tgl('p3-ground',on=>{showGround=on;ground.visible=on});
+
+ /* estado por paso */
+ let anim=null;
+ const selC=()=>tok('--sel');
+ function applyVis(){
+  const s=step+1;
+  for(const id in G){const [a,b]=META[id]||[0,99];const vis=(id==='house'?showHouse:true)&&s>=a&&s<=b;G[id].objs.forEach(o=>o.visible=vis)}
+ }
+ function apply(animate){
+  const s=step+1;applyVis();
+  const sc=selC();
+  for(const id in G){const cur=(META[id]||[0])[0]===s&&id!=='house';G[id].mats.forEach(m=>{if(m.emissive){m.emissive.copy(cur?sc:new T.Color(0));m.emissiveIntensity=cur?0.35:0}})}
+  for(const id in G){G[id].grow.forEach(o=>o.scale.set(1,1,1));G[id].pop.forEach(o=>o.scale.set(1,1,1))}
+  if(animate){const list=[];for(const id in G){if((META[id]||[0])[0]!==s)continue;G[id].grow.forEach((o,i)=>{o.scale.set(1,0.001,1);list.push({o,k:'g',d:i*0.12})});G[id].pop.forEach(o=>{o.scale.set(0.001,0.001,0.001);list.push({o,k:'p',d:0.05})})}anim={t0:performance.now(),list}}
+  tweenTo(viewState(STEPS[step].v),animate?900:1);
+  if(!animate)setOrb(viewState(STEPS[step].v));
+ }
+
+ /* tema */
+ function recolor(){MATS.forEach(({m,token})=>m.color.copy(tok(token)));scene.background=tok('--p3bg');apply(false)}
+ scene.background=tok('--p3bg');
+ try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',recolor)}catch(e){}
+ new MutationObserver(recolor).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+
+ /* tamaño */
+ function resize(){const w=wrap.clientWidth,h=wrap.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+ new ResizeObserver(resize).observe(wrap);
+
+ /* bucle */
+ let raf=0,running=false;const tmp=new T.Vector3();
+ const ease=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
+ function frame(now){
+  if(!running)return;raf=requestAnimationFrame(frame);
+  if(tw){const k=Math.min(1,(now-tw.t0)/tw.ms),e=ease(k);orb.t.lerpVectors(tw.a.t,tw.b.t,e);orb.r=tw.a.r+(tw.b.r-tw.a.r)*e;orb.th=tw.a.th+tw.dth*e;orb.ph=tw.a.ph+(tw.b.ph-tw.a.ph)*e;if(k>=1)tw=null}
+  if(anim){const t=(now-anim.t0)/1000;let done=true;anim.list.forEach(a=>{const k=Math.max(0,Math.min(1,(t-a.d)/0.45));if(k<1)done=false;const v=Math.max(0.001,ease(k));if(a.k==='g')a.o.scale.set(1,v,1);else a.o.scale.set(v,v,v)});if(done)anim=null}
+  if(step+1===11){mW.opacity=0.35+0.25*Math.sin(now/350)}
+  placeCam();renderer.render(scene,camera);
+  const w=wrap.clientWidth,h=wrap.clientHeight,s=step+1;
+  LE.forEach(l=>{if(!l.s.includes(s)){l.el.style.display='none';return}tmp.copy(l.v).project(camera);if(tmp.z>1||tmp.x<-1.1||tmp.x>1.1||tmp.y<-1.1||tmp.y>1.1){l.el.style.display='none';return}l.el.style.display='block';l.el.style.left=((tmp.x+1)/2*w)+'px';l.el.style.top=((1-tmp.y)/2*h)+'px'});
+ }
+ resize();
+ return{apply,start(){if(running)return;running=true;resize();raf=requestAnimationFrame(frame)},stop(){running=false;cancelAnimationFrame(raf)}};
+}
+
+if(!sec.hidden)window.primaria3d.visible(true);
 })();
 </script>
 </body>
