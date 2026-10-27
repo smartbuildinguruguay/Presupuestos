@@ -2,7 +2,7 @@
 
 Padrón 17428 · El Tesoro · Steel frame · SBU
 
-Guía interactiva de la instalación sanitaria, con una pestaña 3D del armado de la primaria: agua fría y caliente en termofusión PPR (baño + pileta de cocina, calefón exterior) y desagües en PVC hasta cámara de inspección, fosas sépticas y pozo filtrante, según lámina S01.
+Guía interactiva de la instalación sanitaria, con una pestaña 3D de la instalación completa y del armado de la primaria: agua fría y caliente en termofusión PPR (baño + pileta de cocina, calefón exterior) y desagües en PVC hasta cámara de inspección, fosas sépticas y pozo filtrante, según lámina S01.
 
 **Ver online:** https://smartbuildinguruguay.github.io/Presupuestos/sanitaria-sayago/
 
@@ -17,7 +17,7 @@ Guía interactiva de la instalación sanitaria, con una pestaña 3D del armado d
 | Desagües | Despiece de materiales | [desagues-2-despiece.pdf](pdf/desagues-2-despiece.pdf) |
 | Desagües | Guía de instalación paso a paso | [desagues-3-guia.pdf](pdf/desagues-3-guia.pdf) |
 | Desagües | Cocina (pileta → interceptor → pileta de patio → cámara) y ventilaciones CV, VF, RA y pozo | [desagues-4-cocina-ventilacion.pdf](pdf/desagues-4-cocina-ventilacion.pdf) |
-| Primaria 3D | Armado paso a paso del colector, cámara, fosas y pozo, en 3D (solo online) | — |
+| 3D | Modelo de la instalación completa (agua fría y caliente, desagües, ventilaciones) con flujo animado y fichas por pieza, y armado de la primaria en 12 pasos (solo online) | — |
 | Todo | Documento completo | [sanitaria-sayago-completa.pdf](pdf/sanitaria-sayago-completa.pdf) |
 
 Los planos salen en A4 apaisado; despieces y guías en A4 vertical.

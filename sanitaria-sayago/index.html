@@ -174,36 +174,52 @@ h2.sub{font-size:.95rem;margin-top:14px}
  section[data-noprint]{display:none!important}
 }
 
-/* ---------- Primaria 3D ---------- */
-:root{--earth:#b9a07c;--earthd:#7a6246;--conc:#a9b1ad;--sand:#d8c49a;--water:#3a8fd6;--fixw:#e6eaea;--p3bg:#f4f7f6}
-@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--earth:#6f5c44;--earthd:#9a7f5d;--conc:#6d7672;--sand:#8c7a55;--water:#4ea3ef;--fixw:#c9d0d0;--p3bg:#151c1d}}
-:root[data-theme="dark"]{--earth:#6f5c44;--earthd:#9a7f5d;--conc:#6d7672;--sand:#8c7a55;--water:#4ea3ef;--fixw:#c9d0d0;--p3bg:#151c1d}
+/* ---------- Instalación 3D ---------- */
+:root{--earth:#b9a07c;--earthd:#7a6246;--conc:#a9b1ad;--sand:#d8c49a;--water:#2f8fe0;--fixw:#eef1f1;--p3bg:#eef3f2;--wood:#c9a679;--steel:#9aa3a7;--chrome:#c3cacd;--brass:#c8a44a;--top:#5c6366}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--earth:#6f5c44;--earthd:#9a7f5d;--conc:#6d7672;--sand:#8c7a55;--water:#4ea3ef;--fixw:#d5dbdb;--p3bg:#141b1c;--wood:#8f7452;--steel:#7d878b;--chrome:#a9b2b5;--brass:#b39140;--top:#3e4447}}
+:root[data-theme="dark"]{--earth:#6f5c44;--earthd:#9a7f5d;--conc:#6d7672;--sand:#8c7a55;--water:#4ea3ef;--fixw:#d5dbdb;--p3bg:#141b1c;--wood:#8f7452;--steel:#7d878b;--chrome:#a9b2b5;--brass:#b39140;--top:#3e4447}
+.p3-top{display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between;margin-bottom:10px}
+.p3-views{display:flex;flex-wrap:wrap;gap:6px}
+.p3-views button,.p3-layers button{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:99px;padding:5px 11px;font:500 .8rem var(--f-b);cursor:pointer}
+.p3-views button[aria-pressed="true"]{color:var(--panel);background:var(--ink);border-color:var(--ink)}
+.p3-layers{display:flex;flex-wrap:wrap;gap:6px;margin-top:8px}
+.p3-layers button{display:inline-flex;align-items:center;gap:6px}
+.p3-layers button i{width:12px;height:4px;border-radius:2px;display:inline-block;opacity:.35}
+.p3-layers button[aria-pressed="true"]{color:var(--ink);border-color:var(--ink)}
+.p3-layers button[aria-pressed="true"] i{opacity:1}
 .p3-grid{display:grid;grid-template-columns:minmax(0,1fr) 330px;gap:14px;align-items:start}
 @media (max-width:820px){.p3-grid{grid-template-columns:minmax(0,1fr)}}
 .p3-left,.p3-right{min-width:0}
-.p3-wrap{position:relative;width:100%;aspect-ratio:4/3;max-height:72vh;background:var(--p3bg);border:1px solid var(--line);border-radius:10px;overflow:hidden;touch-action:none;max-width:100%}
+.p3-wrap{position:relative;width:100%;aspect-ratio:4/3;max-height:74vh;background:var(--p3bg);border:1px solid var(--line);border-radius:10px;overflow:hidden;touch-action:none;max-width:100%}
 .p3-wrap canvas{display:block;width:100%;height:100%;cursor:grab}
 .p3-wrap canvas:active{cursor:grabbing}
 .p3-labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
 .p3-labels span{position:absolute;transform:translate(-50%,-100%);margin-top:-6px;white-space:nowrap;font:600 11px/1.2 var(--f-m);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:2px 6px;box-shadow:0 1px 2px rgba(0,0,0,.08)}
 .p3-labels span.k{border-color:var(--sel)}
-.p3-tools{position:absolute;top:8px;right:8px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
-.p3-tools button{background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:99px;padding:4px 10px;font:500 .78rem var(--f-b);cursor:pointer}
-.p3-tools button[aria-pressed="true"]{color:var(--ink);border-color:var(--ink)}
-.p3-hint{position:absolute;left:10px;bottom:8px;font-size:.72rem;color:var(--muted);pointer-events:none}
-.p3-fb[hidden],.sub[hidden]{display:none!important}
-.p3-fb{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--muted);font-size:.9rem}
+.p3-tools{position:absolute;top:8px;right:8px;display:flex;gap:6px}
+.p3-tools button{background:var(--panel);border:1px solid var(--line);color:var(--ink);border-radius:99px;padding:4px 10px;font:500 .78rem var(--f-b);cursor:pointer}
+.p3-hint{position:absolute;left:10px;right:10px;bottom:8px;font-size:.72rem;color:var(--muted);pointer-events:none}
+@media (max-width:600px){.p3-hint{display:none}}
+.p3-fb{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;text-align:center;padding:24px;color:var(--muted);font-size:.9rem;background:var(--p3bg)}
+.p3-fb[hidden]{display:none!important}
+.sub[hidden]{display:none!important}
 .p3-dots{display:flex;gap:4px;margin-top:8px}
+.p3-dots[hidden]{display:none!important}
 .p3-dots button{flex:1;height:8px;border:0;border-radius:4px;background:var(--line);cursor:pointer;padding:0}
 .p3-dots button.done{background:var(--muted)}
 .p3-dots button[aria-selected="true"]{background:var(--sel)}
 .p3-card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px 16px}
 .p3-count{font:600 .72rem var(--f-b);letter-spacing:.09em;text-transform:uppercase;color:var(--muted)}
-.p3-card h3{font-family:var(--f-d);font-weight:700;font-size:1.5rem;line-height:1.1;margin:4px 0 6px;text-wrap:balance}
+.p3-card h3{font-family:var(--f-d);font-weight:700;font-size:1.45rem;line-height:1.1;margin:4px 0 6px;text-wrap:balance}
 .p3-card ul{margin:0;padding-left:18px;font-size:.92rem}
 .p3-card li{margin:4px 0}
+.p3-card .p3-txt{margin:6px 0 0;font-size:.9rem}
+.p3-card .p3-where{font:500 .82rem var(--f-m);color:var(--muted);margin-top:2px}
 .p3-chips{display:flex;flex-wrap:wrap;gap:5px;margin-top:5px}
 .p3-chips span{font-size:.78rem;border:1px solid var(--line);border-radius:99px;padding:2px 9px;background:var(--paper)}
+.p3-legend{display:grid;gap:5px;margin-top:10px;font-size:.82rem;color:var(--muted);background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:10px 14px}
+.p3-legend span{display:flex;align-items:center;gap:8px}
+.p3-legend i{width:18px;height:5px;border-radius:3px;display:inline-block}
 .p3-nav{display:flex;gap:6px;margin:10px 0}
 .p3-nav .btn{flex:1;padding:9px 6px}
 .p3-nav .btn:disabled{opacity:.4;cursor:default}
@@ -230,7 +246,7 @@ h2.sub{font-size:.95rem;margin-top:14px}
   <div class="sys" role="tablist" aria-label="Sistema">
     <button type="button" role="tab" data-sys="A" aria-selected="true">Agua</button>
     <button type="button" role="tab" data-sys="D" aria-selected="false">Desagües</button>
-    <button type="button" role="tab" data-sys="P" aria-selected="false">Primaria 3D</button>
+    <button type="button" role="tab" data-sys="P" aria-selected="false">3D</button>
   </div>
   <div class="sub" role="tablist" aria-label="Sección">
     <button type="button" role="tab" data-sub="plano" aria-selected="true">Plano</button>
@@ -272,9 +288,9 @@ h2.sub{font-size:.95rem;margin-top:14px}
   <div class="assume">
     <div><b>Calefón</b>40 l (S01), en el muro exterior centrado detrás del bidet y el inodoro (eje X 1,43), dentro de una casilla. La entrada fría a la derecha y la salida caliente a la izquierda mirándolo de frente, separadas 14 cm.</div>
     <div><b>Inodoro</b>Con mochila apoyada: una toma fría a 0,20 m, 15 cm a la izquierda del eje.</div>
-    <div><b>Ducha</b>Monocomando embutido. Cuerpo a 1,10 m con entradas abajo (caliente X 2,47 · fría X 2,39) y salida de brazo a 2,05 m.</div>
+    <div><b>Ducha</b>Monocomando embutido en el muro este, centrado en la ducha (s 0,75, enfrentado a la rejilla). Cuerpo a 1,10 m con entradas abajo (caliente s 0,79 · fría s 0,71) y salida de brazo a 2,05 m.</div>
     <div><b>Cocina</b>Pileta sobre el muro este, a unos 3,20 m de la cara interior del muro húmedo, medido a escala en S01. Hay que medirlo en obra. Tomas a 0,55 m, 20 cm entre sí, para mezcladora con flexibles.</div>
-    <div><b>Recorrido a la cocina</b>Las horizontales siguen desde la ducha, doblan en la esquina SE y van por el muro este, pasando el encuentro con el tabique, hasta la pileta. Fría a 0,30 y caliente a 0,45.</div>
+    <div><b>Recorrido a la cocina</b>Las horizontales doblan en la esquina SE, toman la ducha en el muro este y siguen, pasando el encuentro con el tabique, hasta la pileta. Fría a 0,30 y caliente a 0,45.</div>
     <div><b>Caño</b>PPR PN20. 20 mm dentro de la casa y 25 mm en la llegada desde el medidor de OSE (S01: "PPT diam. 25mm").</div>
   </div>
 </section>
@@ -353,7 +369,7 @@ h2.sub{font-size:.95rem;margin-top:14px}
 
   <h2>Supuestos</h2>
   <div class="assume">
-    <div><b>Distribución del baño</b>La de tus croquis: lavatorio, bidet, inodoro y ducha sobre el muro sur. S01 tiene otra distribución en el baño, pero las conexiones exteriores se toman tal cual de la lámina.</div>
+    <div><b>Distribución del baño</b>La de tus croquis: lavatorio, bidet e inodoro sobre el muro sur; la ducha en el extremo este, con la grifería sobre el muro este y la rejilla en el centro. S01 tiene otra distribución en el baño, pero las conexiones exteriores se toman tal cual de la lámina.</div>
     <div><b>Entrepiso</b>Vigas de 8 cm y 3 cm de piso terminado encima. Los ramales van colgados por debajo de las vigas, sin perforarlas, así que la caja lleva prolongador.</div>
     <div><b>Caja sifonada</b>Entre el bidet y el inodoro, casi contra el muro. Junta lavatorio, bidet y ducha y es el sifón de los tres, así que no llevan sifón propio. Sale en PVC 50 y entra al colector 110 a 45°, casi en vertical.</div>
     <div><b>Inodoro</b>Desagüe vertical a piso con el eje a 0,30 m de la pared terminada. Revisá la ficha: hay modelos con mochila apoyada que salen a 0,20–0,25.</div>
@@ -424,40 +440,62 @@ h2.sub{font-size:.95rem;margin-top:14px}
   </div>
 </section>
 
-<!-- ================= PRIMARIA 3D ================= -->
+<!-- ================= INSTALACIÓN 3D ================= -->
 <section id="P-3d" data-noprint hidden>
+  <div class="p3-top">
+    <div class="seg" role="group" aria-label="Modo">
+      <button type="button" data-p3mode="exp" aria-pressed="true">Instalación completa</button>
+      <button type="button" data-p3mode="arm" aria-pressed="false">Armado de la primaria</button>
+    </div>
+    <div class="p3-views" id="p3-views" role="group" aria-label="Vistas"></div>
+  </div>
   <div class="p3-grid">
     <div class="p3-left">
       <div id="p3-wrap" class="p3-wrap">
-        <canvas id="p3-canvas" aria-label="Modelo 3D del armado de la instalación primaria"></canvas>
+        <canvas id="p3-canvas" aria-label="Modelo 3D de la instalación sanitaria"></canvas>
         <div id="p3-labels" class="p3-labels" aria-hidden="true"></div>
-        <div id="p3-fallback" class="p3-fb" hidden>No se pudo iniciar el 3D en este navegador. Los pasos de la derecha siguen sirviendo como guía.</div>
-        <div class="p3-tools">
-          <button type="button" id="p3-reset">Recentrar</button>
-          <button type="button" id="p3-house" aria-pressed="true">Casa</button>
-          <button type="button" id="p3-ground" aria-pressed="true">Terreno</button>
-        </div>
-        <div class="p3-hint">Arrastrá para girar · rueda o pellizco para acercar</div>
+        <div id="p3-fallback" class="p3-fb" hidden>No se pudo iniciar el 3D en este navegador. Los planos de Agua y Desagües tienen la misma información.</div>
+        <div class="p3-tools"><button type="button" id="p3-reset">Recentrar</button></div>
+        <div class="p3-hint">Arrastrá para girar · dos dedos o clic derecho para mover · rueda o pellizco para acercar · tocá una pieza para ver qué es</div>
       </div>
-      <div class="p3-dots" id="p3-dots" role="tablist" aria-label="Pasos"></div>
+      <div class="p3-layers" id="p3-layers" role="group" aria-label="Capas"></div>
+      <div class="p3-dots" id="p3-dots" role="tablist" aria-label="Pasos" hidden></div>
     </div>
     <div class="p3-right">
-      <div class="p3-card">
-        <div class="p3-count" id="p3-count">Paso 1 de 12</div>
-        <h3 id="p3-stitle"></h3>
-        <ul id="p3-bul"></ul>
-        <div class="lbl" style="margin-top:10px">Piezas y material</div>
-        <div class="p3-chips" id="p3-pz"></div>
+      <div id="p3-exp">
+        <div class="p3-card" id="p3-info">
+          <div class="p3-count">Pieza</div>
+          <h3>Tocá una pieza</h3>
+          <p class="p3-txt">Cualquier caño, accesorio o artefacto del modelo muestra acá qué es, dónde va y su cota. Las vistas de arriba te llevan directo a cada zona.</p>
+        </div>
+        <div class="p3-legend">
+          <span><i style="background:var(--cold)"></i>Agua fría · PPR 20/25</span>
+          <span><i style="background:var(--hot)"></i>Agua caliente · PPR 20</span>
+          <span><i style="background:var(--mix)"></i>Salida de ducha</span>
+          <span><i style="background:var(--sec)"></i>Desagüe secundario · PVC 40/50</span>
+          <span><i style="background:var(--pri)"></i>Desagüe primario · PVC 110</span>
+          <span><i style="background:var(--ven)"></i>Ventilación</span>
+          <span><i style="background:var(--water)"></i>Agua circulando</span>
+        </div>
       </div>
-      <div class="p3-nav">
-        <button type="button" class="btn ghost" id="p3-prev">← Anterior</button>
-        <button type="button" class="btn ghost" id="p3-play">Ver armado</button>
-        <button type="button" class="btn" id="p3-next">Siguiente →</button>
+      <div id="p3-arm" hidden>
+        <div class="p3-card">
+          <div class="p3-count" id="p3-count">Paso 1 de 12</div>
+          <h3 id="p3-stitle"></h3>
+          <ul id="p3-bul"></ul>
+          <div class="lbl" style="margin-top:10px">Piezas y material</div>
+          <div class="p3-chips" id="p3-pz"></div>
+        </div>
+        <div class="p3-nav">
+          <button type="button" class="btn ghost" id="p3-prev">← Anterior</button>
+          <button type="button" class="btn ghost" id="p3-play">Ver armado</button>
+          <button type="button" class="btn" id="p3-next">Siguiente →</button>
+        </div>
+        <ol class="p3-list" id="p3-list"></ol>
       </div>
-      <ol class="p3-list" id="p3-list"></ol>
     </div>
   </div>
-  <p class="note" style="margin-top:12px">Modelo ilustrativo: muestra el orden de armado y las cotas principales, no el detalle de cada pieza. Las medidas son las de Desagües · Plano y la lámina S01. Lo secundario (lavatorio, bidet, ducha) aparece solo como referencia.</p>
+  <p class="note" style="margin-top:12px">El modelo sale de los mismos datos que Agua · Plano, Desagües · Plano, los cortes y la pestaña Cocina y ventilación: si cambiás una medida en los cortes o en la cocina, el 3D la toma al volver a abrirlo. Los caños se pintan por función (el PPR real es verde y el PVC, gris o naranja). Los muros se ven en esqueleto de steel frame, montantes cada 40 cm, sin placas, para que se vea lo que va adentro.</p>
 </section>
 <textarea id="cpfb" style="position:absolute;left:-9999px;top:0" aria-hidden="true" tabindex="-1"></textarea>
 </div>
@@ -486,12 +524,12 @@ const SEGS=[
  {id:'fb', c:'F',side:'int',d:20,pts:[P('S',1.03,.30),P('S',1.03,.20)]},
  {id:'fi', c:'F',side:'int',d:20,pts:[P('S',1.83,.30),P('S',1.83,.20)]},
  {id:'fr', c:'F',side:'int',d:20,pts:[P('S',1.50,.30),P('E',3.10,.30),P('E',3.10,.55)]},
- {id:'fd', c:'F',side:'int',d:20,pts:[P('S',2.39,.30),P('S',2.39,1.03)]},
+ {id:'fd', c:'F',side:'int',d:20,pts:[P('E',0.71,.30),P('E',0.71,1.03)]},
  {id:'cl', c:'C',side:'int',d:20,pts:[P('S',1.36,.45),P('S',0.50,.45),P('S',0.50,.60)]},
  {id:'cb', c:'C',side:'int',d:20,pts:[P('S',1.23,.45),P('S',1.23,.20)]},
  {id:'cr', c:'C',side:'int',d:20,pts:[P('S',1.36,.45),P('E',3.30,.45),P('E',3.30,.55)]},
- {id:'cd', c:'C',side:'int',d:20,pts:[P('S',2.47,.45),P('S',2.47,1.03)]},
- {id:'m3', c:'M',side:'int',d:20,pts:[P('S',2.43,1.17),P('S',2.43,2.05)]},
+ {id:'cd', c:'C',side:'int',d:20,pts:[P('E',0.79,.45),P('E',0.79,1.03)]},
+ {id:'m3', c:'M',side:'int',d:20,pts:[P('E',0.75,1.17),P('E',0.75,2.05)]},
 ];
 const PASANTE=0.20;
 const segLen=s=>s.pts.reduce((a,p,i)=>i?a+Math.hypot(p[0]-s.pts[i-1][0],p[1]-s.pts[i-1][1]):0,0);
@@ -522,8 +560,8 @@ const NA=[
  {id:'TLF',k:'toma',c:'F',side:'int',w:'S',p:0.30,h:0.60,n:'Toma lavatorio · fría',t:'Codo 90° 20 × ½" hembra con base, a 0,60 m.'},
  {id:'TFI',k:'tee',c:'F',side:'int',w:'S',p:1.83,h:0.30,n:'Tee 20 · inodoro',t:'Derivación hacia abajo, 10 cm hasta la toma.'},
  {id:'TI',k:'toma',c:'F',side:'int',w:'S',p:1.83,h:0.20,n:'Toma inodoro · fría',t:'Codo 90° 20 × ½" hembra con base, 15 cm a la izquierda del eje del inodoro. Confirmalo con la ficha de la mochila.'},
- {id:'TFD',k:'tee',c:'F',side:'int',w:'S',p:2.39,h:0.30,n:'Tee 20 · ducha fría',t:'La derivación sube a la entrada fría del monocomando. La línea sigue hacia la esquina y la cocina.'},
- {id:'SF',k:'sobre',c:'F',side:'int',w:'S',p:2.39,h:0.45,n:'Curva de sobrepaso 20',t:'La subida fría de la ducha salta la horizontal caliente.'},
+ {id:'TFD',k:'tee',c:'F',side:'int',w:'E',p:0.71,h:0.30,n:'Tee 20 · ducha fría',t:'En el muro este, pasando la esquina. La derivación sube a la entrada fría del monocomando y la línea sigue hacia la cocina.'},
+ {id:'SF',k:'sobre',c:'F',side:'int',w:'E',p:0.71,h:0.45,n:'Curva de sobrepaso 20',t:'La subida fría de la ducha salta la horizontal caliente.'},
  {id:'KF',k:'codo',c:'F',side:'int',w:'S',p:2.83,h:0.30,n:'Codo 90° 20 · esquina SE fría',t:'Dobla del muro húmedo al muro este. Fijalo bien: si la esquina no deja paso, hacé el giro en el primer vano de cada lado con dos tramos cortos.'},
  {id:'CKF',k:'codo',c:'F',side:'int',w:'E',p:3.10,h:0.30,n:'Codo 90° 20',t:'Fin de la horizontal fría en la cocina. Sube a la toma de la pileta.'},
  {id:'SK',k:'sobre',c:'F',side:'int',w:'E',p:3.10,h:0.45,n:'Curva de sobrepaso 20',t:'La subida fría de la cocina salta la horizontal caliente.'},
@@ -535,13 +573,13 @@ const NA=[
  {id:'TBC',k:'toma',c:'C',side:'int',w:'S',p:1.23,h:0.20,n:'Toma bidet · caliente',t:'Codo 90° 20 × ½" hembra con base. Caliente a la izquierda del eje.'},
  {id:'CLC',k:'codo',c:'C',side:'int',w:'S',p:0.50,h:0.45,n:'Codo 90° 20',t:'Fin de la horizontal caliente hacia el lavatorio. Sube a la toma.'},
  {id:'TLC',k:'toma',c:'C',side:'int',w:'S',p:0.50,h:0.60,n:'Toma lavatorio · caliente',t:'Codo 90° 20 × ½" hembra con base, a 0,60 m.'},
- {id:'TCD',k:'tee',c:'C',side:'int',w:'S',p:2.47,h:0.45,n:'Tee 20 · ducha caliente',t:'La derivación sube a la entrada caliente del monocomando. La línea sigue hacia la esquina y la cocina.'},
+ {id:'TCD',k:'tee',c:'C',side:'int',w:'E',p:0.79,h:0.45,n:'Tee 20 · ducha caliente',t:'En el muro este, pasando la esquina. La derivación sube a la entrada caliente del monocomando y la línea sigue hacia la cocina.'},
  {id:'KC',k:'codo',c:'C',side:'int',w:'S',p:2.83,h:0.45,n:'Codo 90° 20 · esquina SE caliente',t:'Dobla del muro húmedo al muro este, 15 cm arriba del codo de fría.'},
  {id:'CKC',k:'codo',c:'C',side:'int',w:'E',p:3.30,h:0.45,n:'Codo 90° 20',t:'Fin de la horizontal caliente en la cocina. Sube a la toma.'},
  {id:'TKC',k:'toma',c:'C',side:'int',w:'E',p:3.30,h:0.55,n:'Toma pileta cocina · caliente',t:'Codo 90° 20 × ½" hembra con base, a 0,55 m. La caliente queda a la izquierda mirando la pileta. Desde el calefón hay unos 5 m de caño: el agua tarda un poco en salir caliente.'},
  // ducha
- {id:'MON',k:'grif',c:'M',side:'int',w:'S',p:2.43,h:1.10,n:'Monocomando de ducha embutido · cuerpo',t:'Entradas abajo (caliente a la izquierda, fría a la derecha) y salida arriba, con conectores 20 × ½" macho. La salida de abajo queda con el tapón original. La profundidad la da la plantilla de la tapa respecto al revestimiento terminado, y va a nivel.'},
- {id:'TSD',k:'toma',c:'M',side:'int',w:'S',p:2.43,h:2.05,n:'Salida de ducha',t:'Codo 90° 20 × ½" hembra con base para el brazo de ducha. Va bien firme al travesaño, porque es la toma que más palanca recibe.'},
+ {id:'MON',k:'grif',c:'M',side:'int',w:'E',p:0.75,h:1.10,n:'Monocomando de ducha embutido · cuerpo',t:'En el muro este, centrado en la ducha y enfrentado a la rejilla. Entradas abajo (caliente a la izquierda, fría a la derecha) y salida arriba, con conectores 20 × ½" macho. La salida de abajo queda con el tapón original. La profundidad la da la plantilla de la tapa respecto al revestimiento terminado, y va a nivel.'},
+ {id:'TSD',k:'toma',c:'M',side:'int',w:'E',p:0.75,h:2.05,n:'Salida de ducha',t:'Codo 90° 20 × ½" hembra con base para el brazo de ducha. Va bien firme al travesaño, porque es la toma que más palanca recibe.'},
 ];
 NA.forEach(n=>{const q=P(n.w,n.p,n.h);n.D=q[0]});
 const byA=Object.fromEntries(NA.map(n=>[n.id,n]));
@@ -555,8 +593,8 @@ const STEPS_A=[
   'Calefón de 40 l: peso lleno, separación entre entrada y salida (14 cm) y si el fabricante acepta instalarlo a la intemperie bajo casilla.',
   'Altura de los punzonados de los montantes en el muro sur y en el muro este. Si no están cerca de 0,30 y 0,45, se mueven las dos horizontales manteniendo 15 cm entre ellas.']},
  {t:'Replanteo',ids:['TLC','TLF','TBC','TBF','TI','MON','TSD','TKC','TKF'],li:[
-  'Muro húmedo, ejes: lavatorio X 0,40, bidet 1,13, inodoro 1,68, ducha 2,43.',
-  'Muro este: eje de la pileta en s 3,20 desde la cara interior del muro húmedo.',
+  'Muro húmedo, ejes: lavatorio X 0,40, bidet 1,13, inodoro 1,68.',
+  'Muro este, desde la cara interior del muro húmedo: monocomando de la ducha en s 0,75 y eje de la pileta en s 3,20.',
   'Pasá a los montantes las alturas de la tabla de tomas y las dos horizontales (fría 0,30, caliente 0,45).',
   'La caliente siempre a la izquierda mirando el artefacto.']},
  {t:'Travesaños para fijar tomas',ids:['TLC','TLF','TBC','TBF','TI','MON','TSD','TKC','TKF'],li:[
@@ -571,18 +609,19 @@ const STEPS_A=[
  {t:'Línea fría · baño',ids:['TF1','TFB','TBF','CLF','TLF','TFI','TI','TFD','SF'],li:[
   'Empezá por T-F1 con un tramo de 20 cm hacia el pasamuro.',
   'Hacia la derecha: tee del bidet y después codo y subida al lavatorio.',
-  'Hacia la izquierda: tee del inodoro y tee de la ducha. La subida a la ducha lleva sobrepaso a 0,45.',
+  'Hacia la izquierda: tee del inodoro y seguís hacia la esquina SE. La tee de la ducha va en el muro este (paso Ducha).',
   'Orientá todas las derivaciones de las tees antes de que enfríen, porque después no se corrigen.']},
  {t:'Línea caliente · baño',ids:['TC1','TCB','SC','TBC','CLC','TLC','TCD'],li:[
   'T-C1 con su tramo de pasamuro, a 0,45.',
   'Bajada del bidet con sobrepaso sobre la fría a 0,30. La tee queda a 13 cm de T-C1, así que trabajá con tramos cortos.',
-  'Codo y subida al lavatorio. Tee de la ducha en X 2,47.']},
- {t:'Ducha',ids:['MON','TFD','TCD','TSD'],li:[
-  'Atornillá el cuerpo del monocomando al travesaño, a nivel y con la profundidad que marca la plantilla de la tapa.',
+  'Codo y subida al lavatorio. Hacia la izquierda la horizontal sigue a la esquina SE.']},
+ {t:'Ducha',ids:['MON','TFD','TCD','SF','TSD'],li:[
+  'Doblá las dos horizontales en la esquina SE con codos al muro este. En s 0,71 va la tee de fría y en s 0,79 la de caliente (la caliente a la izquierda, mirando el muro). La subida fría lleva sobrepaso a 0,45.',
+  'Atornillá el cuerpo del monocomando al travesaño en s 0,75, a nivel y con la profundidad que marca la plantilla de la tapa.',
   'Poné conectores 20 × ½" macho en las dos entradas y en la salida de arriba, con teflón en las roscas.',
   'La salida de abajo queda tapada con el tapón original. Subí hasta la salida de brazo a 2,05.']},
  {t:'Prolongación a la cocina',ids:['KF','KC','CKF','CKC','SK','TKF','TKC'],li:[
-  'Desde las tees de la ducha, seguí las dos horizontales hasta la esquina SE y doblá con codos al muro este.',
+  'Desde las tees de la ducha, seguí las dos horizontales por el muro este hacia la cocina.',
   'Recorré el muro este a 0,30 y 0,45 pasando el encuentro con el tabique hasta la pileta: unos 3,3 m.',
   'Usá barras enteras dentro del muro de la ducha y dejá las cuplas en el tramo de la cocina, si se puede.',
   'Fría: codo en s 3,10 y subida con sobrepaso a 0,55. Caliente: codo en s 3,30 y subida a 0,55.']},
@@ -761,8 +800,8 @@ function renderA(){
  o+=rect(DS(0.95),0,DS(1.31),0.40,'fx','rx="5"')+`<text class="fxl" x="${X(DS(1.13))}" y="${Y(0.46)}" text-anchor="middle">Bidet</text>`;
  o+=rect(DS(1.49),0,DS(1.87),0.40,'fx','rx="5"')+rect(DS(1.50),0.42,DS(1.86),0.80,'fx','rx="1.5"')+`<text class="fxl" x="${X(DS(1.68))}" y="${Y(0.86)}" text-anchor="middle">Inodoro</text>`;
  o+=`<line x1="${X(DS(2.03))}" y1="${Y(0)}" x2="${X(DS(2.03))}" y2="${Y(2.00)}" class="guide"/>`;
- o+=`<path class="fx" d="M${X(DS(2.43))} ${Y(2.05)} L${X(DS(2.43))} ${Y(1.98)}"/><ellipse class="fx" cx="${X(DS(2.43))}" cy="${Y(1.96)}" rx="5" ry="1.6"/>`;
- o+=`<text class="fxl" x="${X(DS(2.62))}" y="${Y(1.62)}" text-anchor="middle">Ducha</text>`;
+ o+=`<path class="fx" d="M${X(DE(0.75))} ${Y(2.05)} L${X(DE(0.75))} ${Y(1.98)}"/><ellipse class="fx" cx="${X(DE(0.75))}" cy="${Y(1.96)}" rx="5" ry="1.6"/>`;
+ o+=`<text class="fxl" x="${X(DS(2.43))}" y="${Y(1.62)}" text-anchor="middle">Ducha (grifería en muro este)</text>`;
  o+=rect(DE(1.60),0.86,DE(3.62),0.90,'fx','style="fill:var(--line)"');
  o+=`<rect class="fx" x="${X(DE(3.62))}" y="${Y(0.86)}" width="${(3.62-1.70)*M}" height="${0.76*M}" stroke-dasharray="2 1.5"/>`;
  o+=`<path class="fx" d="M${X(DE(3.45))} ${Y(0.90)} V${Y(0.70)} H${X(DE(2.95))} V${Y(0.90)}"/>`;
@@ -807,7 +846,7 @@ function renderA(){
   o+=`</g>`;
  });
  if(SA.dims){
-  const ticks=[...[0.30,0.50,1.03,1.23,1.36,1.50,1.83,2.39,2.47].map(v=>({D:DS(v),v})),...[1.50,1.60,3.10,3.30].map(v=>({D:DE(v),v}))].sort((a,b)=>a.D-b.D);
+  const ticks=[...[0.30,0.50,1.03,1.23,1.36,1.50,1.83].map(v=>({D:DS(v),v})),...[0.71,0.79,1.50,1.60,3.10,3.30].map(v=>({D:DE(v),v}))].sort((a,b)=>a.D-b.D);
   ticks.forEach((t,i)=>{const row=i%2?0.20:0.10;
    o+=`<line class="dimln" x1="${X(t.D)}" y1="${Y(0)+1}" x2="${X(t.D)}" y2="${Y(-row)+1.5}"/>`;
    o+=`<text class="dim" x="${X(t.D)}" y="${Y(-row)+6.5}" text-anchor="middle">${fmt(t.v)}</text>`;
@@ -933,7 +972,7 @@ function selectD(id){
 /* ---------- tablas ---------- */
 const TOMAS=[['Lavatorio','C','TLC'],['Lavatorio','F','TLF'],['Bidet','C','TBC'],['Bidet','F','TBF'],['Inodoro (mochila)','F','TI'],['Ducha · monocomando','CF','MON'],['Ducha · salida brazo','M','TSD'],['Pileta de cocina','C','TKC'],['Pileta de cocina','F','TKF']];
 document.querySelector('#tomasA tbody').innerHTML=TOMAS.map(([a,c,id])=>{const n=byA[id];
- const pz=n.k==='grif'?'Cuerpo embutido; entradas a 1,03 (C X 2,47 · F X 2,39), 3 conectores 20×½" M':'Codo 90° 20×½" H con base';
+ const pz=n.k==='grif'?'Cuerpo embutido; entradas a 1,03 (C s 0,79 · F s 0,71), 3 conectores 20×½" M':'Codo 90° 20×½" H con base';
  const ag=c==='F'?'Fría':c==='C'?'Caliente':c==='CF'?'Fría + caliente':'Mezcla';
  const dc=c==='CF'?'linear-gradient(90deg,var(--hot) 50%,var(--cold) 50%)':col(c);
  return `<tr data-id="${id}"><td>${a}</td><td><span class="dot" style="background:${dc}"></span>${ag}</td><td>${n.w==='S'?'Húmedo':'Este'}</td><td class="num">${n.w==='S'?'X':'s'} ${fmt(n.p)}</td><td class="num">${fmt(n.h)}</td><td>${pz}</td></tr>`}).join('');
@@ -1260,365 +1299,11 @@ window.sanitPrintAll=()=>withAllVisible(()=>{});
 document.getElementById('printAll').addEventListener('click',()=>withAllVisible(()=>window.print()));
 document.querySelectorAll('[data-print]').forEach(b=>b.addEventListener('click',()=>{const [sy,sb]=b.dataset.print.split('-');show(sy,sb);window.print()}));
 window.sanitShow=show;
-window.SANIT={fmt,CSX,dsegL,distToCam,CZE,SLOPE};
+window.SANIT={fmt,CSX,dsegL,distToCam,CZE,SLOPE,SEGS,NA,DSEG,ND,SM,LW};
 renderA();renderD();renderBom('A');renderBom('D');renderSteps('A');renderSteps('D');show(cur.sys,cur.sub);
 })();
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-<script>
-(function(){
-const sec=document.getElementById('P-3d');if(!sec)return;
-const $=id=>document.getElementById(id);
-const fmt=(n,d=2)=>Number(n).toLocaleString('es-UY',{minimumFractionDigits:d,maximumFractionDigits:d});
-
-/* ---------- niveles del colector (2 % desde CZe −0,84) ---------- */
-const MAIN=[[0.25,-0.30],[0.25,0.30],[2.60,0.30],[3.48,1.18],[3.57,1.18]];
-const R110=0.055, R50=0.025;
-const segL=(a,b)=>Math.hypot(b[0]-a[0],b[1]-a[1]);
-const mainD=(()=>{const d=new Array(MAIN.length).fill(0);for(let i=MAIN.length-2;i>=0;i--)d[i]=d[i+1]+segL(MAIN[i],MAIN[i+1]);return d})();
-const inv=d=>-0.84+d*0.02;
-const hMain=i=>inv(mainD[i])+R110;
-const dAtX=x=>{for(let i=1;i<MAIN.length;i++){const a=MAIN[i-1],b=MAIN[i];if(a[1]===b[1]&&x>=Math.min(a[0],b[0])&&x<=Math.max(a[0],b[0]))return mainD[i]+Math.abs(b[0]-x)}return 0};
-const hInoY=inv(dAtX(1.84))+R110, hCsY=inv(dAtX(1.40))+R110;
-
-/* ---------- pasos ---------- */
-const STEPS=[
- {t:'Replanteo y niveles',v:'all',b:[
-  'Marcá con estacas la cámara, las dos fosas, el pozo y el pie del CV, igual que en Desagües · Plano.',
-  'La referencia es el piso terminado (0,00). El terreno bajo la casa está a −0,60 y el colector entra a la cámara a −0,84.',
-  'Tendé un hilo por el recorrido del colector para marcar la zanja.'],p:['Estacas','Hilo','Nivel de manguera o láser']},
- {t:'Excavación',v:'trat',b:[
-  'Pozos de unos 1,90 m de diámetro para las dos fosas y el pozo filtrante: hasta −2,35 las fosas y −2,45 el pozo.',
-  'Pozo de unos 0,90 × 0,90 para la cámara, hasta −1,00.',
-  'Dejá la tierra lejos del borde de los pozos.'],p:['Pala','Pico']},
- {t:'Fosas y pozo filtrante',v:'trat',b:[
-  'Fosas: fondo de hormigón armado de 10 cm. Pozo: fondo de canto rodado de 10 cm.',
-  'Bajá los aros de Ø 1,50 a nivel y a plomo hasta que la tapa quede a −0,55.',
-  'Las tapas se dejan apoyadas hasta terminar las conexiones.'],p:['Aros Ø 1,50','Malla + hormigón','Canto rodado','Tapas ×3']},
- {t:'Cámara de inspección 1',v:'cam',b:[
-  'Cámara de 0,60 × 0,60 interior con la tapa a −0,55.',
-  'Zampeado con media caña: entrada a −0,84 y salida a −0,90.',
-  'Dejá las bocas de entrada al oeste (baño) y al norte (cocina).'],p:['Cámara 0,60 × 0,60','Tapa y contratapa']},
- {t:'Sifón desconector y tramos a fosas',v:'trat',b:[
-  'El sifón desconector va en la salida de la cámara.',
-  'PVC 110 de la cámara a la fosa 1, de la fosa 1 a la 2 y de la 2 al pozo.',
-  'Cada entrada y salida de fosa lleva una T 110 con la pata hacia abajo.'],p:['Sifón desconector 110','T 110 ×5','Caño PVC 110']},
- {t:'Zanja del colector',v:'zanja',b:[
-  'Zanja de unos 40 cm de ancho desde la cámara hasta el pie del CV, y otra desde la pileta de patio a la cámara.',
-  'Fondo parejo al 2 %: baja 2 cm por cada metro hacia la cámara.',
-  'Cama de arena de 5 cm en el fondo.'],p:['Arena']},
- {t:'Colector PVC 110',v:'col',b:[
-  'Empezá desde la cámara y avanzá hacia la casa.',
-  'Van dos codos de 45° y los dos ramales Y (inodoro y caja sifonada) con las bocas mirando hacia arriba.',
-  'Bajo el lavatorio gira con un codo de 90° y termina en otro codo de 90° al pie del CV.',
-  'Controlá el 2 % con el nivel en cada tramo antes de pegar.'],p:['Caño PVC 110','Codo 45° ×2','Ramal Y 110','Ramal Y 110 × 50','Codo 90° ×2','Adhesivo + limpiador']},
- {t:'Ventilación CV 110',v:'cv',b:[
-  'Desde el codo del pie, sube por fuera del muro sur detrás del lavatorio.',
-  'Lleva abrazaderas cada 1 m fijadas a la estructura.',
-  'Termina 0,30 m sobre el alero (+3,92) con sombrerete.'],p:['Caño PVC 110','Abrazaderas','Sombrerete 110']},
- {t:'Bajada del inodoro',v:'ino',b:[
-  'Tubo vertical desde el piso, después un codo de 45° que entra al ramal Y.',
-  'Eje a 0,30 de la pared terminada. Verificalo con la ficha del inodoro.',
-  'La boca queda a ras del piso terminado y tapada hasta colocar el inodoro.'],p:['Caño PVC 110','Codo 45°','Manguito de inodoro']},
- {t:'Caja sifonada y cocina',v:'coc',b:[
-  'La caja sifonada va colgada del entrepiso. Su salida de 50 baja a 45° al ramal Y.',
-  'Cocina: interceptor de grasa, después la pileta de patio tapada y PVC 110 al 2 % que entra a la cámara por el norte.'],p:['Caja sifonada','Caño PVC 50','Interceptor de grasa 20 l','PPT 20 × 20','Caño PVC 110','Codo 45°']},
- {t:'Prueba de agua',v:'col',b:[
-  'Tapá la salida de la cámara y las bocas de inodoro, caja y pileta de patio.',
-  'Llená con agua hasta el nivel del piso y esperá 1 hora.',
-  'Si el nivel no baja y no hay pérdidas en las uniones, vaciá.'],p:['Tapones de prueba','Manguera']},
- {t:'Tapado y cierre',v:'all',b:[
-  'Primero arena alrededor del caño, después tierra en capas, compactando sin golpear el caño.',
-  'Antes de tapar, sacá fotos del recorrido con cinta métrica a la vista.',
-  'Colocá las tapas de la cámara, las fosas y el pozo.'],p:['Arena','Tierra']},
-];
-const N=STEPS.length;
-let step=0;
-try{const v=+localStorage.getItem('sanit-sayago-p3');if(v>=0&&v<N)step=v}catch(e){}
-
-/* ---------- UI ---------- */
-$('p3-list').innerHTML=STEPS.map((s,i)=>`<li><button type="button" data-i="${i}"><b>${String(i+1).padStart(2,'0')}</b>${s.t}</button></li>`).join('');
-$('p3-dots').innerHTML=STEPS.map((s,i)=>`<button type="button" role="tab" data-i="${i}" aria-label="Paso ${i+1}: ${s.t}"></button>`).join('');
-document.querySelectorAll('#p3-list [data-i],#p3-dots [data-i]').forEach(b=>b.addEventListener('click',()=>{stopPlay();go(+b.dataset.i)}));
-function renderUI(){
- const s=STEPS[step];
- $('p3-count').textContent=`Paso ${step+1} de ${N}`;
- $('p3-stitle').textContent=s.t;
- $('p3-bul').innerHTML=s.b.map(x=>`<li>${x}</li>`).join('');
- $('p3-pz').innerHTML=s.p.map(x=>`<span>${x}</span>`).join('');
- $('p3-prev').disabled=step===0;$('p3-next').disabled=step===N-1;
- document.querySelectorAll('#p3-list button').forEach((b,i)=>{if(i===step)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current')});
- document.querySelectorAll('#p3-dots button').forEach((b,i)=>{b.setAttribute('aria-selected',i===step);b.classList.toggle('done',i<step)});
-}
-function go(i){step=Math.max(0,Math.min(N-1,i));try{localStorage.setItem('sanit-sayago-p3',step)}catch(e){}renderUI();if(W)W.apply(true)}
-$('p3-prev').addEventListener('click',()=>{stopPlay();go(step-1)});
-$('p3-next').addEventListener('click',()=>{stopPlay();go(step+1)});
-let playT=null;
-function stopPlay(){if(playT){clearInterval(playT);playT=null;$('p3-play').textContent='Ver armado'}}
-$('p3-play').addEventListener('click',()=>{
- if(playT){stopPlay();return}
- if(step===N-1)go(0);
- $('p3-play').textContent='Pausa';
- playT=setInterval(()=>{if(step>=N-1){stopPlay();return}go(step+1)},3800);
-});
-renderUI();
-
-/* ---------- 3D ---------- */
-let W=null,inited=false;
-window.primaria3d={visible(v){if(v){if(!inited){inited=true;try{W=build();W.apply(false)}catch(e){console.error(e);W=null;$('p3-fallback').hidden=false}}if(W)W.start()}else{stopPlay();if(W)W.stop()}}};
-
-function build(){
- if(!window.THREE) throw new Error('THREE no cargó');
- const T=window.THREE;
- const canvas=$('p3-canvas'),wrap=$('p3-wrap'),lab=$('p3-labels');
- const renderer=new T.WebGLRenderer({canvas,antialias:true});
- renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
- const scene=new T.Scene();
- const camera=new T.PerspectiveCamera(38,4/3,0.05,120);
- scene.add(new T.HemisphereLight(0xffffff,0x8a7a66,0.85));
- const dl=new T.DirectionalLight(0xffffff,0.75);dl.position.set(5,9,6);scene.add(dl);
- const dl2=new T.DirectionalLight(0xffffff,0.25);dl2.position.set(-6,4,-3);scene.add(dl2);
- const V=(x,y,h)=>new T.Vector3(x,h,-y);
- const cssv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim()||'#888888';
- const tok=n=>new T.Color(cssv(n));
- const MATS=[],G={};
- const META={house:[0,99],rep:[1,5],hoyos:[2,11],fosas:[3,99],cam:[4,99],sd:[5,99],tramos:[5,99],zanja:[6,11],col:[7,99],cv:[8,99],ino:[9,99],cs:[10,99],coc:[10,99],prueba:[11,11],tapado:[12,99]};
- const grp=id=>G[id]||(G[id]={objs:[],mats:new Set(),grow:[],pop:[]});
- const cache={};
- function mat(token,gid,op=1,dbl=false){
-  const k=token+'|'+gid+'|'+op+'|'+dbl;if(cache[k])return cache[k];
-  const m=new T.MeshStandardMaterial({color:tok(token),roughness:.55,metalness:.05,transparent:op<1,opacity:op,side:dbl?T.DoubleSide:T.FrontSide,depthWrite:op>=.6});
-  MATS.push({m,token});grp(gid).mats.add(m);cache[k]=m;return m;
- }
- function add(o,gid,kind){scene.add(o);const g=grp(gid);g.objs.push(o);if(kind==='grow')g.grow.push(o);else if(kind==='pop')g.pop.push(o)}
- const UP=new T.Vector3(0,1,0);
- function seg(a,b,r,m,gid,kind='grow'){
-  const d=new T.Vector3().subVectors(b,a),L=d.length();if(L<1e-4)return;
-  const geo=new T.CylinderGeometry(r,r,L,20,1);geo.translate(0,L/2,0);
-  const o=new T.Mesh(geo,m);o.position.copy(a);o.quaternion.setFromUnitVectors(UP,d.normalize());add(o,gid,kind);return o;
- }
- function pipe(pts,r,token,gid,opt={}){
-  const m=mat(token,gid,opt.op??1),fm=mat(opt.fit||'--ink',gid);
-  const P=pts.map(p=>V(...p));
-  for(let i=1;i<P.length;i++)seg(P[i-1],P[i],r,m,gid,opt.kind||'grow');
-  if(!opt.nofit)for(let i=1;i<P.length-1;i++){const s=new T.Mesh(new T.SphereGeometry(r*1.32,16,12),fm);s.position.copy(P[i]);add(s,gid,'pop')}
-  return P;
- }
- function box(x1,y1,h1,x2,y2,h2,m,gid,kind='pop'){
-  const o=new T.Mesh(new T.BoxGeometry(Math.abs(x2-x1),Math.abs(h2-h1),Math.abs(y2-y1)),m);
-  o.position.copy(V((x1+x2)/2,(y1+y2)/2,(h1+h2)/2));add(o,gid,kind);return o;
- }
- function cyl(x,y,h1,h2,r,m,gid,kind='pop',open=false){
-  const o=new T.Mesh(new T.CylinderGeometry(r,r,h2-h1,40,1,open),m);o.position.copy(V(x,y,(h1+h2)/2));add(o,gid,kind);return o;
- }
- function ring(x,y,h,R,t,m,gid){const o=new T.Mesh(new T.TorusGeometry(R,t,8,48),m);o.rotation.x=Math.PI/2;o.position.copy(V(x,y,h));add(o,gid,'pop');return o}
- function slab(a,b,w,hb,ht,m,gid,kind='pop'){ // caja orientada a lo largo de a→b en planta
-  const dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy);
-  const o=new T.Mesh(new T.BoxGeometry(L,ht-hb,w),m);o.position.copy(V((a[0]+b[0])/2,(a[1]+b[1])/2,(hb+ht)/2));o.rotation.y=Math.atan2(dy,dx);add(o,gid,kind);return o;
- }
- function line(pts,token,gid){const g=new T.BufferGeometry().setFromPoints(pts.map(p=>V(...p)));const m=new T.LineBasicMaterial({color:tok(token)});MATS.push({m,token});const o=new T.Line(g,m);add(o,gid,'static');return o}
-
- /* casa (contexto) */
- const mHouse=mat('--line','house',.38),mWall=mat('--fix','house',.35),mFix=mat('--fixw','house',.9),mConc=mat('--conc','house');
- box(-0.10,-0.15,-0.20,2.98,4.95,0,mHouse,'house','static');
- [-0.05,1.45,2.93].forEach(x=>[-0.10,1.55,3.25,4.90].forEach(y=>box(x-0.1,y-0.1,-0.60,x+0.1,y+0.1,-0.20,mConc,'house','static')));
- [[-0.10,-0.15,2.98,0],[2.83,-0.15,2.98,4.95],[-0.10,4.80,2.98,4.95],[-0.10,0,0,1.60],[0.80,1.50,2.83,1.60]].forEach(w=>box(w[0],w[1],0,w[2],w[3],0.55,mWall,'house','static'));
- box(1.50,0,0.42,1.86,0.18,0.80,mFix,'house','static');box(1.52,0.04,0,1.84,0.62,0.40,mFix,'house','static');
- box(0.96,0.02,0,1.30,0.58,0.40,mFix,'house','static');box(0,0,0.50,0.80,0.50,0.85,mFix,'house','static');
- box(2.28,1.60,0.86,2.83,4.80,0.90,mFix,'house','static');
- box(-0.40,-0.75,3.90,1.20,0.10,3.94,mat('--fix','house',.3),'house','static');
-
- /* terreno */
- const mGround=mat('--earth','ground',.30,true);
- const ground=new T.Mesh(new T.PlaneGeometry(12,9),mGround);ground.rotation.x=-Math.PI/2;ground.position.copy(V(3.6,1.6,-0.60));scene.add(ground);
-
- /* 1 replanteo */
- const mStake=mat('--sel','rep');
- [[3.87,1.18],[5.28,1.20],[6.94,1.20],[6.94,2.87],[0.25,-0.30],[2.60,0.30],[3.20,2.78]].forEach(p=>box(p[0]-0.02,p[1]-0.02,-0.60,p[0]+0.02,p[1]+0.02,-0.15,mStake,'rep'));
- line(MAIN.map(p=>[p[0],p[1],-0.22]),'--sel','rep');
- line([[3.20,2.78,-0.22],[3.75,1.48,-0.22]],'--sel','rep');
-
- /* 2 hoyos */
- const mHole=mat('--earthd','hoyos',.33,true);
- [[5.28,1.20,-2.35],[6.94,1.20,-2.35],[6.94,2.87,-2.45]].forEach(f=>cyl(f[0],f[1],f[2]-0.05,-0.60,0.95,mHole,'hoyos','pop',true));
- box(3.42,0.73,-1.00,4.32,1.63,-0.60,mHole,'hoyos');
-
- /* 3 fosas y pozo */
- const mAro=mat('--conc','fosas',.55,true),mAroL=mat('--conc','fosas'),mFondo=mat('--conc','fosas'),mCanto=mat('--sand','fosas'),mTapa=mat('--conc','fosas',.45);
- [[5.28,1.20,-2.35,0],[6.94,1.20,-2.35,0],[6.94,2.87,-2.45,1]].forEach(f=>{
-  const [x,y,hb,pz]=f;
-  cyl(x,y,hb,hb+0.10,0.81,pz?mCanto:mFondo,'fosas');
-  cyl(x,y,hb+0.10,-0.55,0.81,mAro,'fosas','pop',true);
-  for(let h=hb+0.10;h<-0.55+0.01;h+=0.50)ring(x,y,h,0.81,0.02,mAroL,'fosas');
-  ring(x,y,-0.55,0.81,0.03,mAroL,'fosas');
-  cyl(x,y,-0.55,-0.49,0.86,mTapa,'fosas');
- });
-
- /* 4 cámara */
- const mCam=mat('--conc','cam',.8),mCamT=mat('--conc','cam',.4);
- const cx1=3.57,cx2=4.17,cy1=0.88,cy2=1.48,e=0.075;
- box(cx1-e,cy1-e,-1.00,cx2+e,cy2+e,-0.95,mCam,'cam');
- box(cx1-e,cy1-e,-0.95,cx1,cy2+e,-0.55,mCam,'cam');box(cx2,cy1-e,-0.95,cx2+e,cy2+e,-0.55,mCam,'cam');
- box(cx1,cy1-e,-0.95,cx2,cy1,-0.55,mCam,'cam');box(cx1,cy2,-0.95,cx2,cy2+e,-0.55,mCam,'cam');
- box(cx1-e,cy1-e,-0.55,cx2+e,cy2+e,-0.50,mCamT,'cam');
- // media caña
- pipe([[3.57,1.18,-0.84+0.02],[4.17,1.18,-0.90+0.02]],0.05,'--conc','cam',{nofit:true});
-
- /* 5 sifón desconector + tramos */
- pipe([[4.08,1.18,-0.845],[4.12,1.18,-1.00],[4.26,1.18,-1.00],[4.30,1.18,-0.85]],R110*.9,'--pri','sd');
- const tram=[[[4.30,1.18,-0.85],[4.65,1.20,-0.87]],[[5.91,1.20,-0.92],[6.31,1.20,-0.92]],[[6.94,1.83,-0.97],[6.94,2.24,-0.97]]];
- tram.forEach(t=>pipe(t,R110,'--pri','tramos'));
- [[4.65,1.20,-0.62,-1.12],[5.91,1.20,-0.67,-1.17],[6.31,1.20,-0.67,-1.17],[6.94,1.83,-0.72,-1.22],[6.94,2.24,-0.72,-1.22]].forEach(t=>pipe([[t[0],t[1],t[2]],[t[0],t[1],t[3]]],R110,'--pri','tramos',{nofit:true}));
- pipe([[7.64,2.87,-0.75],[7.64,2.87,0.70]],R110,'--ven','tramos');
-
- /* 6 zanja */
- const mZ=mat('--earthd','zanja',.38,true);
- const ZS=[];for(let i=1;i<MAIN.length;i++)ZS.push([MAIN[i-1],MAIN[i],hMain(i)-R110-0.10]);
- ZS.push([[3.20,2.78],[3.75,1.58],-0.95],[[3.75,1.58],[3.75,1.48],-0.95]);
- ZS.forEach(z=>slab(z[0],z[1],0.40,z[2],-0.60,mZ,'zanja'));
-
- /* 7 colector */
- const colP=MAIN.map((p,i)=>[p[0],p[1],hMain(i)]);
- pipe(colP,R110,'--pri','col');
- // ramales Y (bocas hacia arriba)
- pipe([[1.84,0.30,hInoY],[1.76,0.30,hInoY+0.08]],R110,'--pri','col',{nofit:true});
- pipe([[1.40,0.30,hCsY],[1.37,0.25,hCsY+0.06]],R50,'--pri','col',{nofit:true});
- const mFit=mat('--ink','col');
- [[1.84,0.30,hInoY],[1.40,0.30,hCsY]].forEach(p=>{const s=new T.Mesh(new T.SphereGeometry(R110*1.4,16,12),mFit);s.position.copy(V(...p));add(s,'col','pop')});
-
- /* 8 CV */
- const cvTop=4.22;
- pipe([[0.25,-0.30,hMain(0)],[0.25,-0.30,cvTop]],R110,'--ven','cv',{nofit:true});
- const cone=new T.Mesh(new T.ConeGeometry(0.11,0.12,24),mat('--ven','cv'));cone.position.copy(V(0.25,-0.30,cvTop+0.08));add(cone,'cv','pop');
- for(let h=0.5;h<cvTop;h+=1.0)ring(0.25,-0.30,h,R110+0.012,0.012,mat('--ink','cv'),'cv');
-
- /* 9 inodoro */
- pipe([[1.68,0.30,0.00],[1.68,0.30,-0.62],[1.76,0.30,hInoY+0.08]],R110,'--pri','ino');
- ring(1.68,0.30,0.0,R110+0.02,0.02,mat('--ink','ino'),'ino');
-
- /* 10 caja sifonada + cocina */
- cyl(1.40,0.18,-0.22,0,0.075,mat('--sec','cs'),'cs');
- pipe([[1.40,0.18,-0.22],[1.40,0.18,hCsY+0.12],[1.37,0.25,hCsY+0.06]],R50,'--sec','cs');
- pipe([[0.40,0.15,0.00],[0.40,0.15,-0.143],[0.55,0.35,-0.145],[1.25,0.35,-0.163],[1.34,0.24,-0.165]],0.02,'--sec','cs',{op:.5,nofit:true});
- pipe([[1.13,0.20,0.00],[1.13,0.20,-0.161],[1.33,0.18,-0.165]],0.02,'--sec','cs',{op:.5,nofit:true});
- pipe([[2.43,0.75,-0.07],[2.43,0.75,-0.141],[1.60,0.55,-0.158],[1.46,0.24,-0.165]],R50,'--sec','cs',{op:.5,nofit:true});
- cyl(3.20,3.14,-0.95,-0.55,0.20,mat('--sec','coc'),'coc');
- box(3.10,2.68,-0.90,3.30,2.88,-0.55,mat('--sec','coc'),'coc');
- pipe([[2.55,3.20,0.55],[2.55,3.20,-0.35],[3.00,3.16,-0.45],[3.00,3.16,-0.65]],R50,'--sec','coc');
- const kitP=[[3.27,2.70,-0.84+1.32*0.02+R110],[3.75,1.58,-0.84+0.10*0.02+R110],[3.75,1.48,-0.84+R110]];
- pipe(kitP,R110,'--pri','coc');
-
- /* 11 prueba */
- const mW=mat('--water','prueba',.55);
- const wet=[colP,[[1.68,0.30,0.00],[1.68,0.30,-0.62],[1.76,0.30,hInoY+0.08]],kitP];
- wet.forEach(pp=>{const P=pp.map(p=>V(...p));for(let i=1;i<P.length;i++)seg(P[i-1],P[i],R110*1.18,mW,'prueba','static')});
- box(cx1,cy1,-0.95,cx2,cy2,-0.62,mW,'prueba','static');
-
- /* 12 tapado */
- const mT=mat('--sand','tapado',.92);
- ZS.forEach(z=>slab(z[0],z[1],0.40,z[2],-0.60,mT,'tapado'));
- [[5.28,1.20],[6.94,1.20],[6.94,2.87]].forEach(f=>{const o=new T.Mesh(new T.RingGeometry(0.86,0.95,48),mat('--sand','tapado',.92,true));o.rotation.x=-Math.PI/2;o.position.copy(V(f[0],f[1],-0.598));add(o,'tapado','pop')});
-
- /* rótulos */
- const LB=[
-  {s:[1],p:[1.40,4.95,0.05],t:'Piso terminado 0,00'},{s:[1],p:[8.0,-0.4,-0.60],t:'Terreno −0,60'},{s:[1,4],p:[3.87,1.18,-0.55],t:'Cámara 1 · CZe −0,84',k:1},
-  {s:[1,2,3],p:[5.28,1.20,-0.45],t:'Fosa 1'},{s:[1,2,3],p:[6.94,1.20,-0.45],t:'Fosa 2'},{s:[1,2,3],p:[6.94,2.87,-0.45],t:'Pozo filtrante'},{s:[1],p:[0.25,-0.30,-0.10],t:'Pie del CV'},
-  {s:[2],p:[6.94,1.20,-2.40],t:'Fondo −2,35',k:1},{s:[2],p:[6.94,2.87,-2.50],t:'Fondo −2,45',k:1},
-  {s:[3],p:[5.28,1.20,-2.30],t:'Fondo HA 10 cm'},{s:[3],p:[6.94,2.87,-2.40],t:'Canto rodado 10 cm'},{s:[3],p:[6.05,1.20,-0.50],t:'Tapa −0,55',k:1},
-  {s:[4],p:[3.57,1.18,-0.84],t:'Entrada −0,84',k:1},{s:[4],p:[4.17,1.18,-0.90],t:'Salida −0,90',k:1},{s:[4],p:[4.20,0.85,-0.50],t:'Tapa −0,55'},
-  {s:[5],p:[4.19,1.18,-1.00],t:'Sifón desconector',k:1},{s:[5],p:[4.65,1.20,-0.60],t:'T 110'},{s:[5],p:[7.64,2.87,0.72],t:'Ventilación pozo (S01)'},
-  {s:[6],p:[1.40,0.30,-0.60],t:'Zanja ≈ 40 cm · 2 %',k:1},{s:[6],p:[3.45,2.15,-0.60],t:'Zanja cocina'},
-  {s:[7],p:[3.57,1.18,hMain(4)],t:fmt(inv(0))},{s:[7],p:[2.60,0.30,hMain(2)],t:'Codo 45° · '+fmt(inv(mainD[2])),k:1},{s:[7],p:[3.48,1.18,hMain(3)],t:'Codo 45°'},
-  {s:[7],p:[1.84,0.30,hInoY+0.06],t:'Ramal Y inodoro · '+fmt(inv(dAtX(1.84))),k:1},{s:[7],p:[1.30,0.30,hCsY+0.42],t:'Ramal Y 110×50'},{s:[7],p:[0.25,-0.30,hMain(0)],t:'Codo 90° · '+fmt(inv(mainD[0])),k:1},{s:[7],p:[0.25,0.30,hMain(1)],t:'Codo 90°'},
-  {s:[8],p:[0.25,-0.30,cvTop+0.15],t:'Sombrerete · +4,22',k:1},{s:[8],p:[0.60,-0.40,3.92],t:'Alero +3,92'},{s:[8],p:[0.25,-0.30,1.5],t:'Abrazadera cada 1 m'},
-  {s:[9],p:[1.68,0.30,0.02],t:'Boca a ras del piso · eje a 0,30',k:1},{s:[9],p:[1.70,0.30,-0.62],t:'Codo 45°'},
-  {s:[10],p:[1.40,0.18,0.02],t:'Caja sifonada · entre bidet e inodoro',k:1},{s:[10],p:[3.20,3.14,-0.52],t:'Interceptor 20 l'},{s:[10],p:[3.20,2.78,-0.52],t:'PPT 20×20'},{s:[10],p:[3.55,2.15,-0.80],t:'110 · 2 % a la cámara',k:1},
-  {s:[11],p:[2.0,0.30,-0.35],t:'Agua hasta el piso · 1 h',k:1},{s:[11],p:[4.17,1.18,-0.60],t:'Salida tapada'},
-  {s:[12],p:[1.40,0.30,-0.55],t:'Arena + tierra en capas',k:1},{s:[12],p:[3.87,1.18,-0.48],t:'Tapa cámara'},
- ];
- const LE=LB.map(l=>{const sp=document.createElement('span');sp.textContent=l.t;if(l.k)sp.className='k';lab.appendChild(sp);return{...l,el:sp,v:V(...l.p)}});
-
- /* vistas */
- const VIEWS={
-  all:{t:[3.7,1.4,-0.9],p:[11.0,-6.5,5.2]},
-  trat:{t:[5.8,1.8,-1.3],p:[10.8,-4.2,2.6]},
-  cam:{t:[3.95,1.15,-0.80],p:[6.4,-1.6,1.15]},
-  zanja:{t:[2.1,0.8,-0.75],p:[6.2,-4.2,2.6]},
-  col:{t:[1.9,0.6,-0.75],p:[5.4,-3.8,1.9]},
-  cv:{t:[0.9,0.1,1.6],p:[5.6,-6.6,3.6]},
-  ino:{t:[1.85,0.4,-0.45],p:[4.0,-2.3,0.9]},
-  coc:{t:[2.9,1.7,-0.55],p:[7.0,-1.6,2.5]},
- };
- const orb={t:new T.Vector3(),r:10,th:0,ph:1};
- function sph(pos,tg){const o=new T.Vector3().subVectors(pos,tg);const r=o.length();return{t:tg.clone(),r,th:Math.atan2(o.x,o.z),ph:Math.acos(Math.max(-1,Math.min(1,o.y/r)))}}
- function viewState(key){const v=VIEWS[key]||VIEWS.all;return sph(V(...v.p),V(...v.t))}
- let tw=null;
- function setOrb(s){orb.t.copy(s.t);orb.r=s.r;orb.th=s.th;orb.ph=s.ph}
- function tweenTo(s,ms=900){const a={t:orb.t.clone(),r:orb.r,th:orb.th,ph:orb.ph};let dth=s.th-a.th;while(dth>Math.PI)dth-=2*Math.PI;while(dth<-Math.PI)dth+=2*Math.PI;tw={a,b:s,dth,t0:performance.now(),ms}}
- function placeCam(){const sp=Math.sin(orb.ph);camera.position.set(orb.t.x+orb.r*sp*Math.sin(orb.th),orb.t.y+orb.r*Math.cos(orb.ph),orb.t.z+orb.r*sp*Math.cos(orb.th));camera.lookAt(orb.t)}
-
- /* interacción */
- const pts=new Map();let pinch0=0,r0=0;
- canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});tw=null;if(pts.size===2){const [a,b]=[...pts.values()];pinch0=Math.hypot(a.x-b.x,a.y-b.y);r0=orb.r}});
- canvas.addEventListener('pointermove',e=>{const p=pts.get(e.pointerId);if(!p)return;
-  if(pts.size===1){orb.th-=(e.clientX-p.x)*0.008;orb.ph=Math.max(0.12,Math.min(1.62,orb.ph-(e.clientY-p.y)*0.008))}
-  p.x=e.clientX;p.y=e.clientY;
-  if(pts.size===2){const [a,b]=[...pts.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);if(pinch0>0)orb.r=Math.max(1.2,Math.min(30,r0*pinch0/d))}});
- const up=e=>{pts.delete(e.pointerId);pinch0=0};
- canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',up);
- canvas.addEventListener('wheel',e=>{e.preventDefault();tw=null;orb.r=Math.max(1.2,Math.min(30,orb.r*(1+Math.sign(e.deltaY)*0.08)))},{passive:false});
- $('p3-reset').addEventListener('click',()=>tweenTo(viewState(STEPS[step].v)));
- const tgl=(id,fn)=>$(id).addEventListener('click',e=>{const on=e.currentTarget.getAttribute('aria-pressed')!=='true';e.currentTarget.setAttribute('aria-pressed',on);fn(on)});
- let showHouse=true,showGround=true;
- tgl('p3-house',on=>{showHouse=on;applyVis()});
- tgl('p3-ground',on=>{showGround=on;ground.visible=on});
-
- /* estado por paso */
- let anim=null;
- const selC=()=>tok('--sel');
- function applyVis(){
-  const s=step+1;
-  for(const id in G){const [a,b]=META[id]||[0,99];const vis=(id==='house'?showHouse:true)&&s>=a&&s<=b;G[id].objs.forEach(o=>o.visible=vis)}
- }
- function apply(animate){
-  const s=step+1;applyVis();
-  const sc=selC();
-  for(const id in G){const cur=(META[id]||[0])[0]===s&&id!=='house';G[id].mats.forEach(m=>{if(m.emissive){m.emissive.copy(cur?sc:new T.Color(0));m.emissiveIntensity=cur?0.35:0}})}
-  for(const id in G){G[id].grow.forEach(o=>o.scale.set(1,1,1));G[id].pop.forEach(o=>o.scale.set(1,1,1))}
-  if(animate){const list=[];for(const id in G){if((META[id]||[0])[0]!==s)continue;G[id].grow.forEach((o,i)=>{o.scale.set(1,0.001,1);list.push({o,k:'g',d:i*0.12})});G[id].pop.forEach(o=>{o.scale.set(0.001,0.001,0.001);list.push({o,k:'p',d:0.05})})}anim={t0:performance.now(),list}}
-  tweenTo(viewState(STEPS[step].v),animate?900:1);
-  if(!animate)setOrb(viewState(STEPS[step].v));
- }
-
- /* tema */
- function recolor(){MATS.forEach(({m,token})=>m.color.copy(tok(token)));scene.background=tok('--p3bg');apply(false)}
- scene.background=tok('--p3bg');
- try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',recolor)}catch(e){}
- new MutationObserver(recolor).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
-
- /* tamaño */
- function resize(){const w=wrap.clientWidth,h=wrap.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
- new ResizeObserver(resize).observe(wrap);
-
- /* bucle */
- let raf=0,running=false;const tmp=new T.Vector3();
- const ease=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
- function frame(now){
-  if(!running)return;raf=requestAnimationFrame(frame);
-  if(tw){const k=Math.min(1,(now-tw.t0)/tw.ms),e=ease(k);orb.t.lerpVectors(tw.a.t,tw.b.t,e);orb.r=tw.a.r+(tw.b.r-tw.a.r)*e;orb.th=tw.a.th+tw.dth*e;orb.ph=tw.a.ph+(tw.b.ph-tw.a.ph)*e;if(k>=1)tw=null}
-  if(anim){const t=(now-anim.t0)/1000;let done=true;anim.list.forEach(a=>{const k=Math.max(0,Math.min(1,(t-a.d)/0.45));if(k<1)done=false;const v=Math.max(0.001,ease(k));if(a.k==='g')a.o.scale.set(1,v,1);else a.o.scale.set(v,v,v)});if(done)anim=null}
-  if(step+1===11){mW.opacity=0.35+0.25*Math.sin(now/350)}
-  placeCam();renderer.render(scene,camera);
-  const w=wrap.clientWidth,h=wrap.clientHeight,s=step+1;
-  LE.forEach(l=>{if(!l.s.includes(s)){l.el.style.display='none';return}tmp.copy(l.v).project(camera);if(tmp.z>1||tmp.x<-1.1||tmp.x>1.1||tmp.y<-1.1||tmp.y>1.1){l.el.style.display='none';return}l.el.style.display='block';l.el.style.left=((tmp.x+1)/2*w)+'px';l.el.style.top=((1-tmp.y)/2*h)+'px'});
- }
- resize();
- return{apply,start(){if(running)return;running=true;resize();raf=requestAnimationFrame(frame)},stop(){running=false;cancelAnimationFrame(raf)}};
-}
-
-if(!sec.hidden)window.primaria3d.visible(true);
-})();
-</script>
 <script>
 /* ================= COCINA Y VENTILACIÓN ================= */
 (function(){
@@ -1759,6 +1444,571 @@ $('kGuia').innerHTML=G.map(([t,d])=>`<li><b>${t}</b>${d}</li>`).join('');
 $('pModo').addEventListener('change',draw);
 draw();
 window.kitchenVent=K;
+window.SANIT.cocina=K;
+})();
+</script>
+<script>
+/* ================= INSTALACIÓN 3D ================= */
+(function(){
+const sec=document.getElementById('P-3d');if(!sec)return;
+const $=id=>document.getElementById(id);
+const SN=window.SANIT||{};
+const fmt=SN.fmt||((n,d=2)=>Number(n).toLocaleString('es-UY',{minimumFractionDigits:d,maximumFractionDigits:d}));
+const f=v=>fmt(v).replace('-','−');
+
+/* ---------- pasos del armado de la primaria ---------- */
+const STEPS=[
+ {t:'Replanteo y niveles',v:'gen',b:[
+  'Marcá con estacas la cámara, las dos fosas, el pozo y el pie del CV, igual que en Desagües · Plano.',
+  'La referencia es el piso terminado (0,00). El terreno bajo la casa está a −0,60 y el colector entra a la cámara a −0,84.',
+  'Tendé un hilo por el recorrido del colector para marcar la zanja.'],p:['Estacas','Hilo','Nivel de manguera o láser']},
+ {t:'Excavación',v:'trat',b:[
+  'Pozos de unos 1,90 m de diámetro para las dos fosas y el pozo filtrante: hasta −2,35 las fosas y −2,45 el pozo.',
+  'Pozo de unos 0,90 × 0,90 para la cámara, hasta −1,00.',
+  'Dejá la tierra lejos del borde de los pozos.'],p:['Pala','Pico']},
+ {t:'Fosas y pozo filtrante',v:'trat',b:[
+  'Fosas: fondo de hormigón armado de 10 cm. Pozo: fondo de canto rodado de 10 cm.',
+  'Bajá los aros de Ø 1,50 a nivel y a plomo hasta que la tapa quede a −0,55.',
+  'Las tapas se dejan apoyadas hasta terminar las conexiones.'],p:['Aros Ø 1,50','Malla + hormigón','Canto rodado','Tapas ×3']},
+ {t:'Cámara de inspección 1',v:'cam',b:[
+  'Cámara de 0,60 × 0,60 interior con la tapa a −0,55.',
+  'Zampeado con media caña: entrada a −0,84 y salida a −0,90.',
+  'Dejá las bocas de entrada al oeste (baño) y al norte (cocina).'],p:['Cámara 0,60 × 0,60','Tapa y contratapa']},
+ {t:'Sifón desconector y tramos a fosas',v:'trat',b:[
+  'El sifón desconector va en la salida de la cámara.',
+  'PVC 110 de la cámara a la fosa 1, de la fosa 1 a la 2 y de la 2 al pozo.',
+  'Cada entrada y salida de fosa lleva una T 110 con la pata hacia abajo.'],p:['Sifón desconector 110','T 110 ×5','Caño PVC 110']},
+ {t:'Zanja del colector',v:'zanja',b:[
+  'Zanja de unos 40 cm de ancho desde la cámara hasta el pie del CV, y otra desde la pileta de patio a la cámara.',
+  'Fondo parejo al 2 %: baja 2 cm por cada metro hacia la cámara.',
+  'Cama de arena de 5 cm en el fondo.'],p:['Arena']},
+ {t:'Colector PVC 110',v:'col',b:[
+  'Empezá desde la cámara y avanzá hacia la casa.',
+  'Van dos codos de 45°, el ramal Y del inodoro y el ramal Y 110 × 50 de la caja sifonada (X 1,40), con las bocas mirando hacia arriba.',
+  'Bajo el lavatorio gira con un codo de 90° y termina en otro codo de 90° al pie del CV.',
+  'Controlá el 2 % con el nivel en cada tramo antes de pegar.'],p:['Caño PVC 110','Codo 45° ×2','Ramal Y 110','Ramal Y 110 × 50','Codo 90° ×2','Adhesivo + limpiador']},
+ {t:'Ventilación CV 110',v:'cv',b:[
+  'Desde el codo del pie, sube por fuera del muro sur detrás del lavatorio.',
+  'Lleva abrazaderas cada 1 m fijadas a la estructura.',
+  'Termina 0,30 m sobre el alero (+3,92) con sombrerete.'],p:['Caño PVC 110','Abrazaderas','Sombrerete 110']},
+ {t:'Bajada del inodoro',v:'ino',b:[
+  'Tubo vertical desde el piso, después un codo de 45° que entra al ramal Y.',
+  'Eje a 0,30 de la pared terminada. Verificalo con la ficha del inodoro.',
+  'La boca queda a ras del piso terminado y tapada hasta colocar el inodoro.'],p:['Caño PVC 110','Codo 45°','Manguito de inodoro']},
+ {t:'Caja sifonada y cocina',v:'cs',b:[
+  'La caja sifonada va entre el bidet y el inodoro, colgada bajo las vigas con su prolongador. Su salida de 50 baja casi vertical al ramal Y.',
+  'Llegan lavatorio y bidet en 40 y la ducha en 50, todos al 2 %.',
+  'Cocina: bajada de 50, interceptor de grasa, pileta de patio tapada y PVC 110 al 2 % que entra a la cámara por el norte.'],p:['Caja sifonada + prolongador','Caño PVC 40 y 50','Interceptor de grasa 20 l','PPT 20 × 20','Caño PVC 110','Codo 45°']},
+ {t:'Prueba de agua',v:'col',b:[
+  'Tapá la salida de la cámara y las bocas de inodoro, caja y pileta de patio.',
+  'Llená con agua hasta el nivel del piso y esperá 1 hora.',
+  'Si el nivel no baja y no hay pérdidas en las uniones, vaciá.'],p:['Tapones de prueba','Manguera']},
+ {t:'Tapado y cierre',v:'gen',b:[
+  'Primero arena alrededor del caño, después tierra en capas, compactando sin golpear el caño.',
+  'Antes de tapar, sacá fotos del recorrido con cinta métrica a la vista.',
+  'Colocá las tapas de la cámara, las fosas y el pozo.'],p:['Arena','Tierra']},
+];
+const N=STEPS.length;
+const VIEWS=[
+ ['gen','General',{t:[2.7,1.5,0.0],p:[9.2,-5.6,4.9]}],
+ ['bano','Baño',{t:[1.30,0.10,0.45],p:[1.35,3.70,1.95]}],
+ ['ducha','Ducha',{t:[2.80,0.75,1.05],p:[0.75,1.55,1.55]}],
+ ['cocina','Cocina',{t:[2.85,3.15,0.45],p:[1.10,3.55,1.00]}],
+ ['calef','Calefón',{t:[1.43,-0.25,1.00],p:[1.80,-3.90,1.95]}],
+ ['bajo','Bajo el piso',{t:[1.50,0.45,-0.35],p:[3.20,-2.30,-0.25]}],
+ ['trat','Cámara y fosas',{t:[5.6,1.8,-1.2],p:[10.6,-4.0,2.7]}],
+];
+const VMORE={cam:{t:[3.95,1.15,-0.80],p:[6.4,-1.6,1.15]},zanja:{t:[2.1,0.8,-0.75],p:[6.2,-4.2,2.6]},col:{t:[1.9,0.6,-0.75],p:[5.4,-3.8,1.9]},
+ cv:{t:[0.9,0.1,1.6],p:[5.6,-6.6,3.6]},ino:{t:[1.75,0.4,-0.35],p:[3.9,-2.2,0.7]},cs:{t:[1.9,0.9,-0.35],p:[5.6,-2.4,1.6]}};
+const LAYERS=[['fria','Agua fría','--cold',1],['cal','Agua caliente','--hot',1],['des','Desagües','--pri',1],['ven','Ventilación','--ven',1],['flujo','Agua circulando','--water',1],['art','Artefactos','--fix',1],['muros','Placas y tabiques','--fix',0],['rot','Rótulos','--sel',1],['terr','Terreno','--earth',1]];
+const st={mode:'exp',step:0,view:'gen',lay:{}};
+LAYERS.forEach(l=>st.lay[l[0]]=!!l[3]);
+try{const v=JSON.parse(localStorage.getItem('sanit-sayago-p3v2')||'null');if(v){if(v.mode)st.mode=v.mode;if(v.step>=0&&v.step<N)st.step=v.step;if(v.lay)Object.assign(st.lay,v.lay)}}catch(e){}
+const saveSt=()=>{try{localStorage.setItem('sanit-sayago-p3v2',JSON.stringify({mode:st.mode,step:st.step,lay:st.lay}))}catch(e){}};
+
+/* ---------- UI ---------- */
+$('p3-views').innerHTML=VIEWS.map(v=>`<button type="button" data-view="${v[0]}" aria-pressed="false">${v[1]}</button>`).join('');
+$('p3-layers').innerHTML=LAYERS.map(l=>`<button type="button" data-lay="${l[0]}" aria-pressed="${st.lay[l[0]]}"><i style="background:var(${l[2]})"></i>${l[1]}</button>`).join('');
+$('p3-list').innerHTML=STEPS.map((s,i)=>`<li><button type="button" data-i="${i}"><b>${String(i+1).padStart(2,'0')}</b>${s.t}</button></li>`).join('');
+$('p3-dots').innerHTML=STEPS.map((s,i)=>`<button type="button" role="tab" data-i="${i}" aria-label="Paso ${i+1}: ${s.t}"></button>`).join('');
+function renderUI(){
+ document.querySelectorAll('[data-p3mode]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.p3mode===st.mode));
+ $('p3-exp').hidden=st.mode!=='exp';$('p3-arm').hidden=st.mode!=='arm';$('p3-dots').hidden=st.mode!=='arm';$('p3-layers').hidden=st.mode!=='exp';
+ document.querySelectorAll('[data-view]').forEach(b=>b.setAttribute('aria-pressed',st.mode==='exp'&&b.dataset.view===st.view));
+ const s=STEPS[st.step];
+ $('p3-count').textContent=`Paso ${st.step+1} de ${N}`;$('p3-stitle').textContent=s.t;
+ $('p3-bul').innerHTML=s.b.map(x=>`<li>${x}</li>`).join('');$('p3-pz').innerHTML=s.p.map(x=>`<span>${x}</span>`).join('');
+ $('p3-prev').disabled=st.step===0;$('p3-next').disabled=st.step===N-1;
+ document.querySelectorAll('#p3-list button').forEach((b,i)=>{if(i===st.step)b.setAttribute('aria-current','step');else b.removeAttribute('aria-current')});
+ document.querySelectorAll('#p3-dots button').forEach((b,i)=>{b.setAttribute('aria-selected',i===st.step);b.classList.toggle('done',i<st.step)});
+}
+function go(i){st.step=Math.max(0,Math.min(N-1,i));saveSt();renderUI();if(W)W.apply(true)}
+document.querySelectorAll('#p3-list [data-i],#p3-dots [data-i]').forEach(b=>b.addEventListener('click',()=>{stopPlay();go(+b.dataset.i)}));
+$('p3-prev').addEventListener('click',()=>{stopPlay();go(st.step-1)});
+$('p3-next').addEventListener('click',()=>{stopPlay();go(st.step+1)});
+let playT=null;
+function stopPlay(){if(playT){clearInterval(playT);playT=null;$('p3-play').textContent='Ver armado'}}
+$('p3-play').addEventListener('click',()=>{if(playT){stopPlay();return}if(st.step===N-1)go(0);$('p3-play').textContent='Pausa';playT=setInterval(()=>{if(st.step>=N-1){stopPlay();return}go(st.step+1)},3800)});
+document.querySelectorAll('[data-p3mode]').forEach(b=>b.addEventListener('click',()=>{stopPlay();st.mode=b.dataset.p3mode;saveSt();renderUI();if(W)W.apply(false)}));
+document.querySelectorAll('[data-view]').forEach(b=>b.addEventListener('click',()=>{st.view=b.dataset.view;if(st.mode!=='exp'){st.mode='exp';saveSt()}renderUI();if(W){W.apply(false,true);W.goView(st.view)}}));
+document.querySelectorAll('[data-lay]').forEach(b=>b.addEventListener('click',()=>{const k=b.dataset.lay;st.lay[k]=!st.lay[k];b.setAttribute('aria-pressed',st.lay[k]);saveSt();if(W)W.apply(false,true)}));
+renderUI();
+
+/* ---------- 3D ---------- */
+let W=null,inited=false;
+window.primaria3d={visible(v){if(v){if(!inited){inited=true;try{W=build();W.apply(false)}catch(e){console.error(e);W=null;$('p3-fallback').hidden=false}}if(W)W.start()}else{stopPlay();if(W)W.stop()}}};
+
+function build(){
+ if(!window.THREE) throw new Error('THREE no cargó');
+ if(!SN.NA||!SN.SEGS||!SN.DSEG) throw new Error('faltan datos de la guía');
+ const T=window.THREE;
+ const canvas=$('p3-canvas'),wrap=$('p3-wrap'),lab=$('p3-labels');
+ const renderer=new T.WebGLRenderer({canvas,antialias:true});
+ renderer.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+ const scene=new T.Scene();
+ const camera=new T.PerspectiveCamera(40,4/3,0.02,120);
+ scene.add(new T.HemisphereLight(0xffffff,0x8a7a66,0.80));
+ const dl=new T.DirectionalLight(0xffffff,0.70);dl.position.set(5,9,6);scene.add(dl);
+ const dl2=new T.DirectionalLight(0xffffff,0.30);dl2.position.set(-6,4,-3);scene.add(dl2);
+ const V=(x,y,h)=>new T.Vector3(x,h,-y);
+ const cssv=n=>getComputedStyle(document.documentElement).getPropertyValue(n).trim()||'#888888';
+ const tok=n=>new T.Color(cssv(n));
+
+ /* datos de la guía */
+ const {SEGS,NA,DSEG,ND,SM,LW,CSX,distToCam,CZE,dsegL}=SN;
+ const c=CSX(), S=0.02;
+ const K=SN.cocina?SN.cocina():{sif:0.45,igIn:-0.65,igOut:-0.70,ter:-0.55,zUnder:-0.135,zWall:-0.145,pptIn:-0.70,pptOut:-0.81,vf:2.20,ra:-0.25,pz:1.45,vfH:1.74};
+ const zc=(x,y)=>CZE+distToCam(x,y)*S;      // zampeado del colector bajo (x,y)
+ const R20=0.012,R25=0.0145,R40=0.021,R50=0.026,R110=0.056;
+
+ /* ---------- registro de objetos ---------- */
+ // layer: base|art|muros|fria|cal|des|ven|terr|trat ; g: grupo del armado (o null)
+ const OBJ=[],MATS=[],cache={};
+ const META={rep:[1,5],hoyos:[2,11],fosas:[3,99],cam:[4,99],sd:[5,99],tramos:[5,99],zanja:[6,11],col:[7,99],cv:[8,99],ino:[9,99],cs:[10,99],coc:[10,99],prueba:[11,11],tapado:[12,99]};
+ const CONSTR=new Set(['rep','hoyos','zanja','prueba','tapado']);
+ function mat(token,key='',op=1,dbl=false,extra={}){
+  const k=token+'|'+key+'|'+op+'|'+dbl+'|'+JSON.stringify(extra);if(cache[k])return cache[k];
+  const m=new T.MeshStandardMaterial(Object.assign({color:tok(token),roughness:.5,metalness:.05,transparent:op<1,opacity:op,side:dbl?T.DoubleSide:T.FrontSide,depthWrite:op>=.6},extra));
+  MATS.push({m,token,op});cache[k]=m;return m;
+ }
+ function reg(o,layer,g,info,kind){scene.add(o);const r={o,layer,g,kind:kind||'pop',info};o.userData.r=r;OBJ.push(r);return r}
+ const UP=new T.Vector3(0,1,0);
+ function seg(a,b,r,m,layer,g,info,kind='grow'){
+  const d=new T.Vector3().subVectors(b,a),L=d.length();if(L<1e-4)return null;
+  const geo=new T.CylinderGeometry(r,r,L,16,1);geo.translate(0,L/2,0);
+  const o=new T.Mesh(geo,m);o.position.copy(a);o.quaternion.setFromUnitVectors(UP,d.normalize());return reg(o,layer,g,info,kind);
+ }
+ function poly(P,r,m,layer,g,info,joint=true,jm){
+  for(let i=1;i<P.length;i++)seg(P[i-1],P[i],r,m,layer,g,info);
+  if(joint)for(let i=1;i<P.length-1;i++){const s=new T.Mesh(new T.SphereGeometry(r*1.3,12,10),jm||m);s.position.copy(P[i]);reg(s,layer,g,info)}
+ }
+ function box(x1,y1,h1,x2,y2,h2,m,layer,g,info,edges){
+  const o=new T.Mesh(new T.BoxGeometry(Math.abs(x2-x1),Math.abs(h2-h1),Math.abs(y2-y1)),m);
+  o.position.copy(V((x1+x2)/2,(y1+y2)/2,(h1+h2)/2));reg(o,layer,g,info);
+  if(edges){const e=new T.LineSegments(new T.EdgesGeometry(o.geometry),edgeM);e.position.copy(o.position);reg(e,layer,g,null,'static')}
+  return o;
+ }
+ function cyl(x,y,h1,h2,r,m,layer,g,info,open=false,seg_=32){const o=new T.Mesh(new T.CylinderGeometry(r,r,h2-h1,seg_,1,open),m);o.position.copy(V(x,y,(h1+h2)/2));reg(o,layer,g,info);return o}
+ function ring(x,y,h,R,t,m,layer,g){const o=new T.Mesh(new T.TorusGeometry(R,t,8,40),m);o.rotation.x=Math.PI/2;o.position.copy(V(x,y,h));reg(o,layer,g,null);return o}
+ function slab(a,b,w,hb,ht,m,layer,g){const dx=b[0]-a[0],dy=b[1]-a[1],L=Math.hypot(dx,dy);const o=new T.Mesh(new T.BoxGeometry(L,ht-hb,w),m);o.position.copy(V((a[0]+b[0])/2,(a[1]+b[1])/2,(hb+ht)/2));o.rotation.y=Math.atan2(dy,dx);reg(o,layer,g,null);return o}
+ function lathe(pts,x,y,h,sx,sz,m,layer,info){const g=new T.LatheGeometry(pts.map(p=>new T.Vector2(p[0],p[1])),40);const o=new T.Mesh(g,m);o.position.copy(V(x,y,h));o.scale.set(sx,1,sz);reg(o,layer,null,info);return o}
+ const edgeM=new T.LineBasicMaterial({color:tok('--ink'),transparent:true,opacity:.22});MATS.push({m:edgeM,token:'--ink',op:.22});
+
+ /* ---------- casa: entrepiso, pilotes, steel frame ---------- */
+ const mStud=mat('--steel'),mFloor=mat('--line','',.55),mBeam=mat('--steel','b',.9),mConc=mat('--conc'),mBoard=mat('--fixw','board',.16,true),mWallT=mat('--fix','tab',.12,true);
+ const XE0=2.83,XE1=2.98,YS0=-0.15,YS1=0;              // muros este y sur
+ const YS=-0.075,XE=2.905,YEXT=-0.19;                    // ejes de cavidad y cara exterior
+ const piso=c.piso,viga=c.viga;
+ box(-0.10,YS0,-piso,XE1,4.95,0,mFloor,'base',null,{t:'Piso terminado',x:'0,00 · espesor '+fmt(piso*100,0)+' cm'});
+ for(let x=0.0;x<=2.90;x+=0.40)box(x-0.02,YS0,-piso-viga,x+0.02,4.95,-piso,mBeam,'base',null,{t:'Viga del entrepiso',x:fmt(viga*100,0)+' cm de alto'});
+ [-0.05,1.45,2.93].forEach(x=>[-0.10,1.55,3.25,4.90].forEach(y=>box(x-0.1,y-0.1,-0.60,x+0.1,y+0.1,-piso-viga,mConc,'base',null,{t:'Pilote',x:'Terreno −0,60'})));
+ // montantes muro sur (húmedo) y muro este
+ const studS=[];for(let x=0;x<=2.80;x+=0.40)studS.push(x);studS.push(2.83);
+ studS.forEach(x=>box(x-0.02,-0.125,0,x+0.02,-0.025,2.40,mStud,'base',null,{t:'Montante PGC 100 · muro sur',x:'cada 40 cm'}));
+ const studE=[];for(let y=0;y<=4.80;y+=0.40)studE.push(y);
+ studE.forEach(y=>box(2.855,y-0.02,0,2.955,y+0.02,2.40,mStud,'base',null,{t:'Montante PGC 100 · muro este',x:'cada 40 cm'}));
+ box(-0.10,-0.125,0,2.98,-0.025,0.04,mStud,'base',null,null);box(-0.10,-0.125,2.36,2.98,-0.025,2.40,mStud,'base',null,null);
+ box(2.855,-0.15,0,2.955,4.95,0.04,mStud,'base',null,null);box(2.855,-0.15,2.36,2.955,4.95,2.40,mStud,'base',null,null);
+ // placas (capa muros)
+ box(-0.10,-0.0125,0,2.83,0,2.40,mBoard,'muros',null,null);box(-0.10,-0.15,0,2.98,-0.1375,2.40,mBoard,'muros',null,null);
+ box(2.83,0,0,2.8425,4.80,2.40,mBoard,'muros',null,null);box(2.9675,-0.15,0,2.98,4.95,2.40,mBoard,'muros',null,null);
+ [[-0.10,0,0,1.60],[0.80,1.50,2.83,1.60],[-0.10,4.80,2.83,4.95]].forEach(w=>box(w[0],w[1],0,w[2],w[3],2.40,mWallT,'muros',null,null,true));
+
+ /* ---------- artefactos ---------- */
+ const mW=mat('--fixw','art'),mWood=mat('--wood','art'),mWoodT=mat('--wood','artT',.32,true),mTop=mat('--top','art'),mChrome=mat('--chrome','art',1,false,{metalness:.6,roughness:.25}),mSteelS=mat('--steel','sink',1,false,{metalness:.5,roughness:.3}),mGlass=mat('--cold','glass',.12,true);
+ // lavatorio
+ box(0.02,0.0,0.10,0.78,0.46,0.80,mWoodT,'art',null,{t:'Lavatorio (vanitory)',x:'Eje X 0,40'},true);
+ box(0.0,0.0,0.80,0.80,0.50,0.84,mW,'art',null,{t:'Lavatorio',x:'Mesada a 0,84'});
+ lathe([[0,0],[0.10,0.0],[0.17,0.07],[0.19,0.11],[0.18,0.11],[0.16,0.075],[0.09,0.015],[0,0.015]],0.40,0.26,0.74,1,0.75,mW,'art',{t:'Bacha del lavatorio',x:'X 0,40'});
+ cyl(0.40,0.06,0.84,0.98,0.012,mChrome,'art',null,{t:'Grifería del lavatorio',x:''});
+ seg(V(0.40,0.06,0.98),V(0.40,0.20,0.96),0.010,mChrome,'art',null,null,'static');
+ // bidet
+ lathe([[0,0],[0.12,0],[0.15,0.10],[0.18,0.34],[0.19,0.40],[0.16,0.40],[0.14,0.36],[0.06,0.30],[0,0.30]],1.13,0.31,0,1,1.45,mW,'art',{t:'Bidet',x:'Eje X 1,13'});
+ // inodoro + mochila
+ lathe([[0,0],[0.11,0],[0.13,0.12],[0.18,0.34],[0.19,0.40],[0.16,0.40],[0.13,0.34],[0.05,0.22],[0,0.22]],1.68,0.40,0,1,1.25,mW,'art',{t:'Inodoro con mochila apoyada',x:'Eje X 1,68 · desagüe a 0,30 de la pared'});
+ const seat=new T.Mesh(new T.TorusGeometry(0.15,0.022,8,32),mW);seat.rotation.x=Math.PI/2;seat.scale.set(1,1.3,1);seat.position.copy(V(1.68,0.42,0.42));reg(seat,'art',null,{t:'Inodoro',x:''});
+ box(1.50,0.0,0.42,1.86,0.18,0.80,mW,'art',null,{t:'Mochila del inodoro',x:'Toma fría a 0,20, 15 cm a la izquierda del eje'},true);
+ // ducha
+ box(2.03,0.0,0.0,2.83,1.50,0.006,mat('--fixw','plato',.9),'art',null,{t:'Piso de la ducha',x:'Pendiente a la rejilla'});
+ box(2.38,0.70,0.006,2.48,0.80,0.012,mChrome,'art',null,{t:'Rejilla de ducha',x:'(2,43 ; 0,75) · salida 50'});
+ box(2.025,0.62,0.0,2.035,1.50,2.00,mGlass,'art',null,{t:'Mampara',x:''});
+ const plate=new T.Mesh(new T.CylinderGeometry(0.075,0.075,0.012,32),mChrome);plate.rotation.z=Math.PI/2;plate.position.copy(V(2.824,0.75,1.10));reg(plate,'art',null,{t:'Monocomando de ducha',x:'Muro este · s 0,75 · h 1,10'});
+ seg(V(2.82,0.75,1.10),V(2.74,0.75,1.10),0.011,mChrome,'art',null,null,'static');seg(V(2.74,0.75,1.10),V(2.74,0.69,1.10),0.009,mChrome,'art',null,null,'static');
+ seg(V(2.83,0.75,2.05),V(2.56,0.75,2.00),0.011,mChrome,'art',null,{t:'Brazo de ducha',x:'Salida a 2,05'},'static');
+ cyl(2.53,0.75,1.96,1.985,0.10,mChrome,'art',null,{t:'Flor de ducha',x:''});
+ // cocina
+ box(2.28,1.60,0.10,2.83,4.80,0.86,mWoodT,'art',null,{t:'Bajo mesada',x:''},true);
+ [[2.28,1.60,2.83,2.98],[2.28,3.42,2.83,4.80],[2.28,2.98,2.35,3.42],[2.75,2.98,2.83,3.42]].forEach(q=>box(q[0],q[1],0.86,q[2],q[3],0.90,mTop,'art',null,{t:'Mesada',x:'0,90'}));
+ box(2.35,2.98,0.72,2.75,3.42,0.90,mSteelS,'art',null,{t:'Pileta de cocina',x:'s 3,20 sobre el muro este'});
+ cyl(2.80,3.20,0.90,1.18,0.014,mChrome,'art',null,{t:'Grifería de la cocina',x:''});
+ seg(V(2.80,3.20,1.18),V(2.60,3.20,1.12),0.012,mChrome,'art',null,null,'static');
+ // casilla y calefón
+ box(1.10,-0.55,0,1.76,-0.15,2.25,mat('--fix','casilla',.14,true),'art',null,{t:'Casilla del calefón',x:'Exterior, muro sur'},true);
+ cyl(1.43,-0.40,1.25,2.12,0.21,mW,'art',null,{t:'Calefón 40 l',x:'Exterior · eje X 1,43'});
+ cyl(1.43,-0.40,2.12,2.15,0.17,mW,'art',null,null);
+
+ /* ---------- AGUA: desde los datos de Agua · Plano ---------- */
+ const mCold=mat('--cold'),mHot=mat('--hot'),mMix=mat('--mix');
+ const mOf=cc=>cc==='F'?mCold:cc==='C'?mHot:mMix, layOf=cc=>cc==='F'?'fria':'cal';
+ const toP=(D,h,side)=>{
+  if(side==='ext')return [SM+LW-D,YEXT,h];
+  if(D>SM+1e-6)return [SM+LW-D,YS,h];
+  if(D<SM-1e-6)return [XE,SM-D,h];
+  return [XE,YS,h];
+ };
+ const sobre=NA.filter(n=>n.k==='sobre');
+ const flowPaths=[];
+ SEGS.forEach(s=>{
+  // insertar la esquina cuando un tramo cruza de muro
+  let pts=[];
+  s.pts.forEach((p,i)=>{
+   if(i>0&&s.side!=='ext'){const q=s.pts[i-1];if((q[0]-SM)*(p[0]-SM)<0)pts.push(toP(SM,q[1],s.side))}
+   pts.push(toP(p[0],p[1],s.side));
+  });
+  // curvas de sobrepaso en los tramos verticales
+  const out=[pts[0]];
+  for(let i=1;i<pts.length;i++){
+   const a=pts[i-1],b=pts[i];
+   if(Math.abs(a[0]-b[0])<1e-6&&Math.abs(a[1]-b[1])<1e-6){
+    sobre.forEach(n=>{
+     const q=n.w==='S'?[SM+LW-(SM+LW-n.p),YS]:[XE,n.p];
+     const qx=n.w==='S'?n.p:XE, qy=n.w==='S'?YS:n.p;
+     if(Math.abs(qx-a[0])<1e-6&&Math.abs(qy-a[1])<1e-6&&n.h>Math.min(a[2],b[2])&&n.h<Math.max(a[2],b[2])){
+      const dir=b[2]>a[2]?1:-1, off=n.w==='S'?[0,0.03]:[-0.03,0];
+      out.push([a[0],a[1],n.h-dir*0.06],[a[0]+off[0],a[1]+off[1],n.h-dir*0.025],[a[0]+off[0],a[1]+off[1],n.h+dir*0.025],[a[0],a[1],n.h+dir*0.06]);
+     }
+    });
+   }
+   out.push(b);
+  }
+  const P=out.map(p=>V(...p));
+  const info={t:`Caño PPR ${s.d} · ${s.c==='F'?'agua fría':s.c==='C'?'agua caliente':'salida de ducha'}`,x:s.side==='ext'?'Exterior, en la casilla':'Dentro del muro'};
+  poly(P,s.d===25?R25:R20,mOf(s.c),s.c==='M'?'cal':layOf(s.c),null,info);
+  flowPaths.push({P,c:s.c});
+ });
+ // llegada desde OSE (bajo tierra) y pasamuros
+ const ose=[V(1.50,-0.85,-0.45),V(1.50,YEXT,-0.45),V(1.50,YEXT,0)];
+ poly(ose,R25,mCold,'fria',null,{t:'Llegada PPR 25 desde el medidor de OSE',x:'Enterrada, unos 10 m'});
+ flowPaths.unshift({P:ose,c:'F'});
+ [['F',1.50,0.30],['C',1.36,0.45]].forEach(([cc,x,h])=>{const P=[V(x,YEXT,h),V(x,YS,h)];seg(P[0],P[1],R20,mOf(cc),layOf(cc),null,{t:'Pasamuro '+(cc==='F'?'fría':'caliente'),x:`X ${fmt(x)} · h ${fmt(h)}`});flowPaths.push({P:cc==='F'?P:P,c:cc})});
+ // piezas con la ficha del plano
+ const mFitF=mat('--cold','fit',1,false,{roughness:.35}),mFitC=mat('--hot','fit',1,false,{roughness:.35});
+ const mValve=mat('--sel','v'),mBrass=mat('--brass','v',1,false,{metalness:.5,roughness:.3});
+ NA.forEach(n=>{
+  const D=n.D!=null?n.D:(n.w==='S'?SM+LW-n.p:SM-n.p);
+  const pt=toP(D,n.h,n.side), p=V(...pt), cc=n.c==='M'?'C':n.c;
+  const info={code:n.id,t:n.n,x:(n.w==='S'?`Muro sur · X ${fmt(n.p)}`:`Muro este · s ${fmt(n.p)}`)+` · h ${fmt(n.h)}`+(n.side==='ext'?' · exterior':''),d:n.t,sys:n.c};
+  const L=n.c==='M'?'cal':layOf(n.c);
+  let o=null;
+  const mF=cc==='F'?mFitF:mFitC;
+  switch(n.k){
+   case 'tee':o=new T.Mesh(new T.BoxGeometry(0.042,0.042,0.042),mF);break;
+   case 'codo':o=new T.Mesh(new T.SphereGeometry(0.019,12,10),mF);break;
+   case 'red':o=new T.Mesh(new T.CylinderGeometry(0.016,0.02,0.04,12),mF);break;
+   case 'union':o=new T.Mesh(new T.CylinderGeometry(0.024,0.024,0.04,6),mBrass);break;
+   case 'valv':o=new T.Mesh(new T.BoxGeometry(0.05,0.035,0.035),mValve);break;
+   case 'llave':{o=new T.Group();const b=new T.Mesh(new T.SphereGeometry(0.024,12,10),mF);const h=new T.Mesh(new T.BoxGeometry(0.09,0.012,0.02),mValve);h.position.set(0.03,0,-0.03);o.add(b,h);break}
+   case 'pas':o=new T.Mesh(new T.TorusGeometry(0.03,0.006,6,24),mat('--ink','pas'));o.rotation.x=0;break;
+   case 'sobre':o=null;break;
+   case 'toma':{
+    o=new T.Mesh(new T.SphereGeometry(0.02,12,10),mF);
+    const face=n.w==='S'?V(pt[0],0.005,n.h):V(2.825,pt[1],n.h);
+    seg(p,face,R20,mOf(n.c),L,null,info,'static');
+    const col_=new T.Mesh(new T.CylinderGeometry(0.022,0.022,0.02,16),mBrass);col_.position.copy(face);if(n.w==='S')col_.rotation.x=Math.PI/2;else col_.rotation.z=Math.PI/2;reg(col_,L,null,info);
+    break}
+   case 'grif':{o=new T.Mesh(new T.BoxGeometry(0.07,0.15,0.10),mBrass);break}
+  }
+  if(o){o.position.copy(p);reg(o,L,null,info)}
+ });
+ // flexibles de artefactos
+ const mFlex=mat('--chrome','flex',1,false,{metalness:.6,roughness:.3});
+ const flex=(a,b,info)=>poly([V(...a),V(a[0]+(b[0]-a[0])*0.3,a[1]+(b[1]-a[1])*0.7,a[2]+(b[2]-a[2])*0.4),V(...b)],0.006,mFlex,'art',null,info,false);
+ flex([0.50,0.01,0.60],[0.43,0.08,0.84],{t:'Flexible caliente · lavatorio',x:''});flex([0.30,0.01,0.60],[0.37,0.08,0.84],{t:'Flexible fría · lavatorio',x:''});
+ flex([1.23,0.01,0.20],[1.16,0.06,0.33],{t:'Flexible caliente · bidet',x:''});flex([1.03,0.01,0.20],[1.10,0.06,0.33],{t:'Flexible fría · bidet',x:''});
+ flex([1.83,0.01,0.20],[1.80,0.09,0.44],{t:'Flexible · mochila',x:''});
+ flex([2.82,3.30,0.55],[2.79,3.22,0.90],{t:'Flexible caliente · cocina',x:''});flex([2.82,3.10,0.55],[2.79,3.18,0.90],{t:'Flexible fría · cocina',x:''});
+
+ /* ---------- DESAGÜES: Desagües · Plano + cortes + cocina ---------- */
+ const mSec=mat('--sec'),mPri=mat('--pri'),mVen=mat('--ven'),mInk=mat('--ink','fit');
+ const dsg=id=>DSEG.find(s=>s.id===id).pts;
+ const drainPaths=[];
+ const along=(pts,z0)=>{let acc=0;return pts.map((p,i)=>{if(i)acc+=Math.hypot(p[0]-pts[i-1][0],p[1]-pts[i-1][1]);return [p[0],p[1],z0-acc*S]})};
+ const CSx=1.40,CSy=0.18;
+ // ramales secundarios a la caja
+ const lav=[[0.40,0.15,0.74]].concat(along(dsg('lav'),c.zL));
+ const bid=[[1.13,0.20,0.02]].concat(along(dsg('bid'),c.zB));
+ const duc=[[2.43,0.75,0.0],[2.43,0.75,-c.rj]].concat(along(dsg('duch'),c.zD));
+ [[lav,R40,'Desagüe lavatorio · PVC 40',`Arranque a ${f(c.zL)} · 2 % a la caja`,'cs'],[bid,R40,'Desagüe bidet · PVC 40',`Arranque a ${f(c.zB)} · 2 % a la caja`,'cs'],[duc,R50,'Desagüe ducha · PVC 50',`Rejilla ${f(-c.rj)} · arranque ${f(c.zD)} · 2 %`,'cs']]
+  .forEach(([pp,r,t,x,g])=>{const P=pp.map(p=>V(...p));poly(P,r,mSec,'des',g,{t,x,sys:'S'});drainPaths.push(P)});
+ // caja sifonada + prolongador
+ cyl(CSx,CSy,c.zBody,0,0.055,mat('--sec','cs',.85),'des','cs',{code:'CS',t:'Caja sifonada PVC 100 + prolongador',x:`Entre bidet e inodoro (1,40 ; 0,18) · prolongador ${fmt(c.prol*100,0)} cm`,d:(ND.find(n=>n.id==='CS')||{}).t,sys:'S'});
+ cyl(CSx,CSy,c.zBot,c.zBody,0.075,mSec,'des','cs',{code:'CS',t:'Caja sifonada · cuerpo',x:`Entradas a ${f(c.zIn)} · salida a ${f(c.zOut)} · fondo ${f(c.zBot)}`,sys:'S'});
+ box(CSx-0.075,CSy-0.075,0,CSx+0.075,CSy+0.075,0.008,mChrome,'des','cs',{code:'CS',t:'Tapa de la caja sifonada',x:'A ras del piso terminado'});
+ const zcCS=zc(CSx,0.30)+R110;
+ const csOut=[V(CSx,CSy+0.075,c.zOut),V(CSx,0.26,c.zOut-0.03),V(CSx,0.30,zcCS+0.07)];
+ poly(csOut,R50,mSec,'des','cs',{t:'Salida de la caja · PVC 50',x:`Baja al ramal Y 110 × 50 en X 1,40`,sys:'S'});drainPaths.push(csOut);
+ // colector 110
+ const main=dsg('main').map(p=>[p[0],p[1],zc(p[0],p[1])+R110]);
+ const mainP=main.map(p=>V(...p));
+ poly(mainP,R110,mPri,'des','col',{t:'Colector PVC 110 · 2 %',x:`De ${f(main[0][2]-R110)} en el pie del CV a ${f(CZE)} en la cámara`,sys:'P'},true,mInk);
+ drainPaths.push(mainP);
+ // ramales Y
+ [[CSx,'Ramal Y 110 × 50 · caja sifonada'],[1.80,'Ramal Y 110 · inodoro']].forEach(([x,t])=>{const s=new T.Mesh(new T.SphereGeometry(R110*1.35,14,10),mInk);s.position.copy(V(x,0.30,zc(x,0.30)+R110));reg(s,'des','col',{t,x:`X ${fmt(x)} · ${f(zc(x,0.30))}`,sys:'P'})});
+ // inodoro
+ const ino=[V(1.68,0.30,0),V(1.68,0.30,-0.62),V(1.80,0.30,zc(1.80,0.30)+R110+0.03)];
+ poly(ino,R110,mPri,'des','ino',{code:'INO',t:'Bajada del inodoro · PVC 110',x:'Eje a 0,30 de la pared · codo 45° al ramal Y',d:(ND.find(n=>n.id==='INO')||{}).t,sys:'P'});
+ ring(1.68,0.30,0.004,R110+0.015,0.012,mInk,'des','ino');drainPaths.push(ino);
+ // CV del baño
+ const cvTop=(K.cvTop||3.92)+0.30;
+ poly([mainP[0],V(0.25,-0.30,cvTop)],R110,mVen,'ven','cv',{code:'CV1',t:'CV · ventilación PVC 110',x:`Del colector (${f(main[0][2]-R110)}) a +${fmt(cvTop)}`,d:(ND.find(n=>n.id==='CV1')||{}).t,sys:'V'},false);
+ const cone=new T.Mesh(new T.ConeGeometry(0.11,0.12,24),mVen);cone.position.copy(V(0.25,-0.30,cvTop+0.08));reg(cone,'ven','cv',{t:'Sombrerete',x:'0,30 sobre el alero'});
+ for(let h=0.5;h<cvTop;h+=1.0)ring(0.25,-0.30,h,R110+0.012,0.012,mInk,'ven','cv');
+ // cocina
+ const ter=K.ter;
+ const kit=[V(2.55,3.20,0.72),V(2.55,3.20,K.sif+0.10),V(2.55,3.26,K.sif),V(2.55,3.20,K.sif-0.06),V(2.55,3.20,K.zUnder),V(3.05,3.16,K.zWall),V(3.05,3.16,K.igIn)];
+ poly(kit,R50,mSec,'des','coc',{code:'PCK',t:'Desagüe pileta de cocina · PVC 50',x:`Sifón, bajada y salida bajo el muro este a ${f(K.zWall)}`,d:(ND.find(n=>n.id==='PCK')||{}).t,sys:'S'});drainPaths.push(kit);
+ cyl(3.20,3.14,ter-0.40,ter,0.15,mat('--sec','ig',.9),'des','coc',{code:'IG',t:'Interceptor de grasa 20 l',x:`Entrada ${f(K.igIn)} · salida ${f(K.igOut)} · tapa ${f(ter)}`,d:(ND.find(n=>n.id==='IG')||{}).t,sys:'S'});
+ const igp=[V(3.20,2.99,K.igOut),V(3.20,2.88,K.pptIn)];poly(igp,R50,mSec,'des','coc',{t:'Interceptor → pileta de patio · PVC 50',x:'',sys:'S'});drainPaths.push(igp);
+ box(3.10,2.68,K.pptOut-0.06,3.30,2.88,ter,mat('--sec','ppt',.9),'des','coc',{code:'PPT',t:'Pileta de patio tapada 20 × 20',x:`Salida 110 a ${f(K.pptOut)} · tapa ${f(ter)}`,d:(ND.find(n=>n.id==='PPT')||{}).t,sys:'S'});
+ const pc=dsg('pptci'),Lpc=dsegL('pptci');
+ const kitP=[V(pc[0][0],pc[0][1],K.pptOut+R110),V(pc[1][0],pc[1][1],CZE+segLen2(pc[1],pc[2])*S+R110),V(pc[2][0],pc[2][1],CZE+R110)];
+ function segLen2(a,b){return Math.hypot(b[0]-a[0],b[1]-a[1])}
+ poly(kitP,R110,mPri,'des','coc',{t:'PPT → cámara 1 · PVC 110 · 2 %',x:`${fmt(Lpc)} m · de ${f(K.pptOut)} a ${f(CZE)}`,sys:'P'},true,mInk);drainPaths.push(kitP);
+ // ventilaciones de la cocina
+ const vfz=K.zUnder-0.3*S, vfH=K.vfH||1.74;
+ poly([V(2.85,3.18,vfz),V(XE,3.18,0.35),V(XE,1.45,0.35+vfH*S),V(3.05,1.45,0.40+vfH*S),V(3.05,1.45,K.vf),V(3.12,1.45,K.vf+0.07)],R50,mVen,'ven','coc',{code:'VFK',t:'VF · ventilación PVC 50 de la cocina',x:`Embutida en el muro este · remate a ${f(K.vf)}`,d:(ND.find(n=>n.id==='VFK')||{}).t,sys:'V'});
+ poly([V(3.30,2.78,-0.65),V(3.45,2.72,-0.65),V(3.45,2.72,K.ra),V(3.52,2.72,K.ra+0.06)],R50,mVen,'ven','coc',{code:'RA',t:'RA · ventilación PVC 50 de la pileta de patio',x:`Remate a ${f(K.ra)}`,sys:'V'});
+
+ /* ---------- tratamiento: cámara, sifón desconector, fosas, pozo ---------- */
+ const mCam=mat('--conc','cam',.8),mCamT=mat('--conc','camt',.4),mWaterS=mat('--water','agua',.55,true);
+ const cx1=3.57,cx2=4.17,cy1=0.88,cy2=1.48,e=0.075;
+ const infoCam={code:'CI',t:'Cámara de inspección 1 · 0,60 × 0,60',x:'CT −0,55 · CZe −0,84 · CZs −0,90',d:(ND.find(n=>n.id==='CI')||{}).t,sys:'P'};
+ box(cx1-e,cy1-e,-1.00,cx2+e,cy2+e,-0.95,mCam,'trat','cam',infoCam);
+ box(cx1-e,cy1-e,-0.95,cx1,cy2+e,-0.55,mCam,'trat','cam',infoCam);box(cx2,cy1-e,-0.95,cx2+e,cy2+e,-0.55,mCam,'trat','cam',infoCam);
+ box(cx1,cy1-e,-0.95,cx2,cy1,-0.55,mCam,'trat','cam',infoCam);box(cx1,cy2,-0.95,cx2,cy2+e,-0.55,mCam,'trat','cam',infoCam);
+ box(cx1-e,cy1-e,-0.55,cx2+e,cy2+e,-0.50,mCamT,'trat','cam',infoCam);
+ poly([V(3.57,1.18,-0.82),V(4.17,1.18,-0.88)],0.05,mat('--conc','mc'),'trat','cam',infoCam,false);
+ box(cx1,cy1,-0.95,cx2,cy2,-0.86,mWaterS,'agua','cam',null);
+ const sdP=[V(4.08,1.18,-0.845),V(4.12,1.18,-1.00),V(4.26,1.18,-1.00),V(4.30,1.18,-0.85)];
+ poly(sdP,R110*.9,mPri,'trat','sd',{code:'SD',t:'Sifón desconector 110',x:'Salida de la cámara 1',d:(ND.find(n=>n.id==='SD')||{}).t,sys:'P'});
+ const tram=[[[4.30,1.18,-0.85],[4.65,1.20,-0.87]],[[5.91,1.20,-0.92],[6.31,1.20,-0.92]],[[6.94,1.83,-0.97],[6.94,2.24,-0.97]]];
+ tram.forEach(t=>{const P=t.map(p=>V(...p));poly(P,R110,mPri,'trat','tramos',{t:'Tramo PVC 110',x:'Cámara → fosa 1 → fosa 2 → pozo',sys:'P'});drainPaths.push(P)});
+ [[4.65,1.20,-0.62,-1.12],[5.91,1.20,-0.67,-1.17],[6.31,1.20,-0.67,-1.17],[6.94,1.83,-0.72,-1.22],[6.94,2.24,-0.72,-1.22]].forEach(t=>poly([V(t[0],t[1],t[2]),V(t[0],t[1],t[3])],R110,mPri,'trat','tramos',{t:'T 110 sumergida',x:'Entrada / salida de fosa',sys:'P'},false));
+ poly([V(7.30,2.87,-0.60),V(7.30,2.87,K.pz)],R110,mVen,'ven','tramos',{t:'CV del pozo filtrante · PVC 110',x:`Remate a ${f(K.pz)}`,sys:'V'},false);
+ const cone2=new T.Mesh(new T.ConeGeometry(0.11,0.12,24),mVen);cone2.position.copy(V(7.30,2.87,K.pz+0.08));reg(cone2,'ven','tramos',null);
+ const mAro=mat('--conc','aro',.5,true),mAroL=mat('--conc','arol'),mCanto=mat('--sand','canto'),mTapa=mat('--conc','tapa',.45);
+ [[5.28,1.20,-2.35,0,'FS1',-0.92],[6.94,1.20,-2.35,0,'FS2',-0.97],[6.94,2.87,-2.45,1,'PZ',-1.20]].forEach(([x,y,hb,pz,id,wl])=>{
+  const nd=ND.find(n=>n.id===id)||{};const info={code:id,t:nd.n||id,x:'Aros Ø 1,50 · prof. útil 1,40',d:nd.t,sys:'P'};
+  cyl(x,y,hb,hb+0.10,0.81,pz?mCanto:mConc,'trat','fosas',info);
+  cyl(x,y,hb+0.10,-0.55,0.81,mAro,'trat','fosas',info,true,40);
+  for(let h=hb+0.10;h<-0.55+0.01;h+=0.50)ring(x,y,h,0.81,0.02,mAroL,'trat','fosas');
+  ring(x,y,-0.55,0.81,0.03,mAroL,'trat','fosas');
+  cyl(x,y,-0.55,-0.49,0.86,mTapa,'trat','fosas',info);
+  cyl(x,y,hb+0.10,wl,0.75,mWaterS,'agua','fosas',null);
+ });
+ // agua quieta en caja, interceptor y PPT
+ cyl(CSx,CSy,c.zBot+0.01,c.zOut-0.01,0.07,mWaterS,'agua','cs',null);
+ cyl(3.20,3.14,ter-0.39,K.igOut-0.01,0.14,mWaterS,'agua','coc',null);
+
+ /* ---------- terreno y obra (armado) ---------- */
+ const mGround=mat('--earth','ground',.30,true);
+ const ground=new T.Mesh(new T.PlaneGeometry(13,10),mGround);ground.rotation.x=-Math.PI/2;ground.position.copy(V(3.6,1.4,-0.60));reg(ground,'terr',null,{t:'Terreno',x:'−0,60 bajo la casa · −0,55 afuera'},'static');
+ const mStake=mat('--sel','rep');
+ [[3.87,1.18],[5.28,1.20],[6.94,1.20],[6.94,2.87],[0.25,-0.30],[2.60,0.30],[3.20,2.78]].forEach(p=>box(p[0]-0.02,p[1]-0.02,-0.60,p[0]+0.02,p[1]+0.02,-0.15,mStake,'obra','rep',null));
+ {const lm=new T.LineBasicMaterial({color:tok('--sel')});MATS.push({m:lm,token:'--sel',op:1});
+  const l1=new T.Line(new T.BufferGeometry().setFromPoints(main.map(p=>V(p[0],p[1],-0.22))),lm);reg(l1,'obra','rep',null,'static');
+  const l2=new T.Line(new T.BufferGeometry().setFromPoints([V(3.20,2.78,-0.22),V(3.75,1.48,-0.22)]),lm);reg(l2,'obra','rep',null,'static')}
+ const mHole=mat('--earthd','hoyos',.33,true);
+ [[5.28,1.20,-2.35],[6.94,1.20,-2.35],[6.94,2.87,-2.45]].forEach(q=>cyl(q[0],q[1],q[2]-0.05,-0.60,0.95,mHole,'obra','hoyos',null,true,40));
+ box(3.42,0.73,-1.00,4.32,1.63,-0.60,mHole,'obra','hoyos',null);
+ const ZS=[];for(let i=1;i<main.length;i++)ZS.push([main[i-1],main[i],Math.min(main[i-1][2],main[i][2])-R110-0.10]);
+ ZS.push([[3.27,2.70],[3.75,1.58],K.pptOut-0.10],[[3.75,1.58],[3.75,1.48],CZE-0.10]);
+ const mZ=mat('--earthd','zanja',.38,true),mT=mat('--sand','tapado',.92);
+ ZS.forEach(z=>slab(z[0],z[1],0.40,z[2],-0.60,mZ,'obra','zanja'));
+ ZS.forEach(z=>slab(z[0],z[1],0.40,z[2],-0.60,mT,'obra','tapado'));
+ const mWt=mat('--water','prueba',.55);
+ [mainP,ino,kitP].forEach(P=>{for(let i=1;i<P.length;i++)seg(P[i-1],P[i],R110*1.2,mWt,'obra','prueba',null,'static')});
+ box(cx1,cy1,-0.95,cx2,cy2,-0.62,mWt,'obra','prueba',null);
+
+ /* ---------- agua circulando ---------- */
+ const FL=[];
+ function addFlow(P,token,speed,gap,r,layer){
+  const L=[];let tot=0;for(let i=1;i<P.length;i++){const l=P[i].distanceTo(P[i-1]);L.push(l);tot+=l}
+  if(tot<0.05)return;const n=Math.max(1,Math.floor(tot/gap));
+  const im=new T.InstancedMesh(new T.SphereGeometry(r,8,6),mat(token,'flow',1,false,{emissive:tok(token),emissiveIntensity:.35}),n);
+  im.userData.noPick=true;im.material.userData.flow=true;reg(im,layer,null,null,'static');FL.push({P,L,tot,n,im,speed,gap});
+ }
+ flowPaths.forEach(fp=>addFlow(fp.P,fp.c==='F'?'--cold':fp.c==='C'?'--hot':'--mix',0.30,0.16,R20*1.25,'flujo'));
+ drainPaths.forEach(P=>addFlow(P,'--water',0.22,0.20,0.016,'flujod'));
+ const dummy=new T.Object3D(),tmpV=new T.Vector3();
+ function updFlow(t){FL.forEach(fl=>{for(let k=0;k<fl.n;k++){let d=(t*fl.speed+k*fl.gap)%fl.tot;let i=0;while(i<fl.L.length-1&&d>fl.L[i]){d-=fl.L[i];i++}
+  tmpV.copy(fl.P[i]).lerp(fl.P[i+1],Math.min(1,d/fl.L[i]));dummy.position.copy(tmpV);dummy.updateMatrix();fl.im.setMatrixAt(k,dummy.matrix)}fl.im.instanceMatrix.needsUpdate=true})}
+
+ /* ---------- rótulos ---------- */
+ const LB=[
+  {m:'exp',l:'cal',p:[1.43,-0.40,2.22],t:'Calefón 40 l (exterior)',k:1},
+  {m:'exp',l:'cal',p:[2.83,0.75,1.22],t:'Monocomando · muro este',k:1},
+  {m:'exp',l:'art',p:[0.40,0.25,0.95],t:'Lavatorio',n:1},{m:'exp',l:'art',p:[1.13,0.30,0.48],t:'Bidet',n:1},{m:'exp',l:'art',p:[1.68,0.10,0.86],t:'Inodoro',n:1},
+  {m:'exp',l:'des',p:[CSx,CSy,0.05],t:'Caja sifonada',k:1},{m:'exp',l:'des',p:[2.43,0.75,0.05],t:'Rejilla ducha',n:1},
+  {m:'exp',l:'art',p:[2.55,3.20,1.00],t:'Pileta de cocina'},
+  {m:'exp',l:'des',p:[3.20,3.14,-0.50],t:'Interceptor',n:1},{m:'exp',l:'des',p:[3.20,2.78,-0.50],t:'PPT',n:1},
+  {m:'exp',l:'trat',p:[3.87,1.18,-0.48],t:'Cámara 1',k:1},{m:'exp',l:'trat',p:[5.28,1.20,-0.42],t:'Fosa 1'},{m:'exp',l:'trat',p:[6.94,1.20,-0.42],t:'Fosa 2'},{m:'exp',l:'trat',p:[6.94,2.87,-0.42],t:'Pozo filtrante'},
+  {m:'exp',l:'ven',p:[0.25,-0.30,cvTop+0.18],t:'CV 110'},{m:'exp',l:'ven',p:[3.05,1.45,K.vf+0.12],t:'VF 50'},
+  {m:'exp',l:'des',p:[2.60,0.30,main[2][2]],t:'Colector 110 · 2 %'},
+  // armado
+  {s:[1],p:[1.40,4.95,0.05],t:'Piso terminado 0,00'},{s:[1],p:[8.0,-0.4,-0.60],t:'Terreno −0,60'},{s:[1,4],p:[3.87,1.18,-0.55],t:'Cámara 1 · CZe −0,84',k:1},
+  {s:[1,2,3],p:[5.28,1.20,-0.45],t:'Fosa 1'},{s:[1,2,3],p:[6.94,1.20,-0.45],t:'Fosa 2'},{s:[1,2,3],p:[6.94,2.87,-0.45],t:'Pozo filtrante'},{s:[1],p:[0.25,-0.30,-0.10],t:'Pie del CV'},
+  {s:[2],p:[6.94,1.20,-2.40],t:'Fondo −2,35',k:1},{s:[2],p:[6.94,2.87,-2.50],t:'Fondo −2,45',k:1},
+  {s:[3],p:[5.28,1.20,-2.30],t:'Fondo HA 10 cm'},{s:[3],p:[6.94,2.87,-2.40],t:'Canto rodado 10 cm'},{s:[3],p:[6.05,1.20,-0.50],t:'Tapa −0,55',k:1},
+  {s:[4],p:[3.57,1.18,-0.84],t:'Entrada −0,84',k:1},{s:[4],p:[4.17,1.18,-0.90],t:'Salida −0,90',k:1},{s:[4],p:[4.20,0.85,-0.50],t:'Tapa −0,55'},
+  {s:[5],p:[4.19,1.18,-1.00],t:'Sifón desconector',k:1},{s:[5],p:[4.65,1.20,-0.60],t:'T 110'},{s:[5],p:[7.30,2.87,K.pz+0.15],t:'CV del pozo'},
+  {s:[6],p:[1.40,0.30,-0.60],t:'Zanja ≈ 40 cm · 2 %',k:1},{s:[6],p:[3.45,2.15,-0.60],t:'Zanja cocina'},
+  {s:[7],p:[3.57,1.18,main[4][2]],t:f(CZE)},{s:[7],p:[2.60,0.30,main[2][2]],t:'Codo 45° · '+f(main[2][2]-R110),k:1},{s:[7],p:[3.48,1.18,main[3][2]],t:'Codo 45°'},
+  {s:[7],p:[1.80,0.30,zc(1.80,0.30)+0.15],t:'Ramal Y inodoro'},{s:[7],p:[CSx,0.30,zc(CSx,0.30)+0.15],t:'Ramal Y 110×50 · '+f(zc(CSx,0.30)),k:1},
+  {s:[7],p:[0.25,-0.30,main[0][2]],t:'Codo 90° · '+f(main[0][2]-R110),k:1},{s:[7],p:[0.25,0.30,main[1][2]],t:'Codo 90°'},
+  {s:[8],p:[0.25,-0.30,cvTop+0.15],t:'Sombrerete · +'+fmt(cvTop),k:1},{s:[8],p:[0.25,-0.30,1.5],t:'Abrazadera cada 1 m'},
+  {s:[9],p:[1.68,0.30,0.05],t:'Boca a ras del piso · eje a 0,30',k:1},{s:[9],p:[1.70,0.30,-0.62],t:'Codo 45°'},
+  {s:[10],p:[CSx,CSy,0.05],t:'Caja sifonada · prolongador '+fmt(c.prol*100,0)+' cm',k:1},{s:[10],p:[3.20,3.14,-0.50],t:'Interceptor 20 l'},{s:[10],p:[3.20,2.78,-0.50],t:'PPT 20×20'},{s:[10],p:[3.55,2.15,-0.80],t:'110 · 2 % a la cámara',k:1},
+  {s:[11],p:[2.0,0.30,-0.35],t:'Agua hasta el piso · 1 h',k:1},{s:[11],p:[4.17,1.18,-0.60],t:'Salida tapada'},
+  {s:[12],p:[1.40,0.30,-0.55],t:'Arena + tierra en capas',k:1},{s:[12],p:[3.87,1.18,-0.48],t:'Tapa cámara'},
+ ];
+ const LE=LB.map(l=>{const sp=document.createElement('span');sp.textContent=l.t;if(l.k)sp.className='k';lab.appendChild(sp);return{...l,el:sp,v:V(...l.p)}});
+
+ /* ---------- cámara y controles ---------- */
+ const orb={t:new T.Vector3(),r:10,th:0,ph:1};
+ const sph=(pos,tg)=>{const o=new T.Vector3().subVectors(pos,tg);const r=o.length();return{t:tg.clone(),r,th:Math.atan2(o.x,o.z),ph:Math.acos(Math.max(-1,Math.min(1,o.y/r)))}};
+ const viewDef=k=>{const v=(VIEWS.find(x=>x[0]===k)||[])[2]||VMORE[k]||VIEWS[0][2];return sph(V(...v.p),V(...v.t))};
+ let tw=null;
+ const setOrb=s=>{orb.t.copy(s.t);orb.r=s.r;orb.th=s.th;orb.ph=s.ph};
+ function tweenTo(s,ms=900){const a={t:orb.t.clone(),r:orb.r,th:orb.th,ph:orb.ph};let dth=s.th-a.th;while(dth>Math.PI)dth-=2*Math.PI;while(dth<-Math.PI)dth+=2*Math.PI;tw={a,b:s,dth,t0:performance.now(),ms}}
+ function placeCam(){const sp=Math.sin(orb.ph);camera.position.set(orb.t.x+orb.r*sp*Math.sin(orb.th),orb.t.y+orb.r*Math.cos(orb.ph),orb.t.z+orb.r*sp*Math.cos(orb.th));camera.lookAt(orb.t)}
+ const pts=new Map();let pinch0=0,r0=0,mid0=null,moved=0,btn=0;
+ const pan=(dx,dy)=>{const k=orb.r*0.0016;const right=new T.Vector3().setFromMatrixColumn(camera.matrix,0),up=new T.Vector3().setFromMatrixColumn(camera.matrix,1);orb.t.addScaledVector(right,-dx*k).addScaledVector(up,dy*k)};
+ canvas.addEventListener('contextmenu',e=>e.preventDefault());
+ canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY,x0:e.clientX,y0:e.clientY});tw=null;moved=0;btn=e.button;
+  if(pts.size===2){const [a,b]=[...pts.values()];pinch0=Math.hypot(a.x-b.x,a.y-b.y);r0=orb.r;mid0={x:(a.x+b.x)/2,y:(a.y+b.y)/2}}});
+ canvas.addEventListener('pointermove',e=>{const p=pts.get(e.pointerId);if(!p)return;const dx=e.clientX-p.x,dy=e.clientY-p.y;moved+=Math.abs(dx)+Math.abs(dy);
+  if(pts.size===1){if(btn===2||e.shiftKey||e.ctrlKey)pan(dx,dy);else{orb.th-=dx*0.008;orb.ph=Math.max(0.10,Math.min(2.2,orb.ph-dy*0.008))}}
+  p.x=e.clientX;p.y=e.clientY;
+  if(pts.size===2){const [a,b]=[...pts.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);if(pinch0>0)orb.r=Math.max(0.4,Math.min(30,r0*pinch0/d));const m={x:(a.x+b.x)/2,y:(a.y+b.y)/2};if(mid0){pan(m.x-mid0.x,m.y-mid0.y)}mid0=m}});
+ const up=e=>{const p=pts.get(e.pointerId);pts.delete(e.pointerId);pinch0=0;mid0=null;if(p&&pts.size===0&&moved<6&&st.mode==='exp')pick(e)};
+ canvas.addEventListener('pointerup',up);canvas.addEventListener('pointercancel',e=>{pts.delete(e.pointerId);pinch0=0;mid0=null});
+ canvas.addEventListener('wheel',e=>{e.preventDefault();tw=null;orb.r=Math.max(0.4,Math.min(30,orb.r*(1+Math.sign(e.deltaY)*0.08)))},{passive:false});
+ $('p3-reset').addEventListener('click',()=>tweenTo(st.mode==='arm'?viewDef(STEPS[st.step].v):viewDef(st.view)));
+
+ /* ---------- selección ---------- */
+ const ray=new T.Raycaster(),ndc=new T.Vector2();let selR=null;
+ const selC=()=>tok('--sel');
+ function pick(e){
+  const rc=canvas.getBoundingClientRect();ndc.set(((e.clientX-rc.left)/rc.width)*2-1,-((e.clientY-rc.top)/rc.height)*2+1);
+  ray.setFromCamera(ndc,camera);
+  const cand=OBJ.filter(r=>r.o.visible&&r.info&&!r.o.userData.noPick&&r.layer!=='terr'&&!(r.o.material&&r.o.material.transparent&&r.o.material.opacity<0.35)).map(r=>r.o);
+  const hit=ray.intersectObjects(cand,true)[0];
+  let r=null;if(hit){let o=hit.object;while(o&&!o.userData.r)o=o.parent;r=o&&o.userData.r}
+  select(r);
+ }
+ function select(r){
+  if(selR){(selR.o.isGroup?selR.o.children:[selR.o]).forEach(m=>{if(m.userData.mat0){m.material=m.userData.mat0;delete m.userData.mat0}})}
+  selR=r;const box_=$('p3-info');
+  if(!r){box_.innerHTML=`<div class="p3-count">Pieza</div><h3>Tocá una pieza</h3><p class="p3-txt">Cualquier caño, accesorio o artefacto del modelo muestra acá qué es, dónde va y su cota.</p>`;return}
+  (r.o.isGroup?r.o.children:[r.o]).forEach(m=>{if(m.material&&m.material.emissive){m.userData.mat0=m.material;const mm=m.material.clone();mm.emissive=selC();mm.emissiveIntensity=.55;m.material=mm}});
+  const i=r.info;const sys={F:'Agua fría',C:'Agua caliente',M:'Salida de ducha',P:'Desagüe primario',S:'Desagüe secundario',V:'Ventilación'}[i.sys]||'Pieza';
+  box_.innerHTML=`<div class="p3-count">${i.code?i.code+' · ':''}${sys}</div><h3>${i.t}</h3>${i.x?`<div class="p3-where">${i.x}</div>`:''}${i.d?`<p class="p3-txt">${i.d}</p>`:''}`;
+ }
+
+ /* ---------- visibilidad ---------- */
+ const LAYMAP={fria:'fria',cal:'cal',des:'des',ven:'ven',flujo:'flujo',flujod:'flujo',art:'art',muros:'muros',terr:'terr',agua:'des',trat:'des'};
+ let anim=null;
+ function apply(animate,keepCam){
+  const arm=st.mode==='arm',s=st.step+1;
+  OBJ.forEach(r=>{
+   let vis;
+   if(!arm){
+    if(r.g&&CONSTR.has(r.g)||r.layer==='obra')vis=false;
+    else if(r.layer==='base')vis=true;
+    else vis=!!st.lay[LAYMAP[r.layer]||r.layer];
+    if(r.layer==='flujod')vis=st.lay.flujo&&st.lay.des;
+   }else{
+    if(r.layer==='base')vis=true;
+    else if(r.layer==='art')vis=true;
+    else if(r.layer==='muros')vis=false;
+    else if(r.layer==='terr')vis=true;
+    else if(r.layer==='fria'||r.layer==='cal'||r.layer==='flujo'||r.layer==='flujod')vis=false;
+    else if(r.g&&META[r.g]){const [a,b]=META[r.g];vis=s>=a&&s<=b}
+    else vis=false;
+    if(r.layer==='agua'&&s<12)vis=false;
+   }
+   r.o.visible=vis;
+  });
+  const sc=selC();
+  MATS.forEach(({m})=>{if(m.emissive&&!m.userData.flow){m.emissive.setRGB(0,0,0);m.emissiveIntensity=0}});
+  if(arm){
+   const cur=new Set(OBJ.filter(r=>r.g&&META[r.g]&&META[r.g][0]===s&&r.o.material).map(r=>r.o.material));
+   cur.forEach(m=>{if(m.emissive){m.emissive.copy(sc);m.emissiveIntensity=.3}});
+   OBJ.forEach(r=>r.o.scale.set(1,1,1));
+   if(animate){const list=[];let gi=0;OBJ.forEach(r=>{if(!r.g||!META[r.g]||META[r.g][0]!==s||r.kind==='static')return;if(r.kind==='grow'){r.o.scale.set(1,0.001,1);list.push({o:r.o,k:'g',d:(gi++)*0.08})}else{r.o.scale.set(0.001,0.001,0.001);list.push({o:r.o,k:'p',d:0.05})}});anim={t0:performance.now(),list}}
+   if(!keepCam){animate?tweenTo(viewDef(STEPS[s-1].v)):setOrb(viewDef(STEPS[s-1].v))}
+   if(selR)select(null);
+  }else{
+   OBJ.forEach(r=>r.o.scale.set(1,1,1));anim=null;
+   if(!keepCam)tweenTo(viewDef(st.view),animate?900:600);
+  }
+ }
+
+ /* ---------- tema y tamaño ---------- */
+ function recolor(){MATS.forEach(({m,token})=>m.color.copy(tok(token)));FL.forEach(fl=>{});scene.background=tok('--p3bg');apply(false,true)}
+ scene.background=tok('--p3bg');
+ try{matchMedia('(prefers-color-scheme: dark)').addEventListener('change',recolor)}catch(e){}
+ new MutationObserver(recolor).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+ function resize(){const w=wrap.clientWidth,h=wrap.clientHeight;if(!w||!h)return;renderer.setSize(w,h,false);camera.aspect=w/h;camera.updateProjectionMatrix()}
+ new ResizeObserver(resize).observe(wrap);
+
+ /* ---------- bucle ---------- */
+ let raf=0,running=false;const tmp=new T.Vector3(),t00=performance.now();
+ const ease=x=>x<.5?2*x*x:1-Math.pow(-2*x+2,2)/2;
+ function frame(now){
+  if(!running)return;raf=requestAnimationFrame(frame);
+  if(tw){const k=Math.min(1,(now-tw.t0)/tw.ms),e=ease(k);orb.t.lerpVectors(tw.a.t,tw.b.t,e);orb.r=tw.a.r+(tw.b.r-tw.a.r)*e;orb.th=tw.a.th+tw.dth*e;orb.ph=tw.a.ph+(tw.b.ph-tw.a.ph)*e;if(k>=1)tw=null}
+  if(anim){const t=(now-anim.t0)/1000;let done=true;anim.list.forEach(a=>{const k=Math.max(0,Math.min(1,(t-a.d)/0.45));if(k<1)done=false;const v=Math.max(0.001,ease(k));if(a.k==='g')a.o.scale.set(1,v,1);else a.o.scale.set(v,v,v)});if(done)anim=null}
+  if(st.mode==='arm'&&st.step+1===11)mWt.opacity=0.35+0.25*Math.sin(now/350);
+  if(st.mode==='exp'&&st.lay.flujo)updFlow((now-t00)/1000);
+  placeCam();renderer.render(scene,camera);
+  const w=wrap.clientWidth,h=wrap.clientHeight,s=st.step+1,arm=st.mode==='arm';
+  LE.forEach(l=>{
+   let show=arm?(l.s&&l.s.includes(s)):(l.m==='exp'&&st.lay.rot&&(l.l==='trat'?st.lay.des:l.l?st.lay[l.l]:true));
+   if(show&&l.n&&camera.position.distanceTo(l.v)>4.5)show=false;
+   if(show&&!arm&&l.l==='trat'&&orb.r<4.5)show=false;
+   if(!show){l.el.style.display='none';return}
+   tmp.copy(l.v).project(camera);
+   if(tmp.z>1||tmp.x<-1.05||tmp.x>1.05||tmp.y<-1.05||tmp.y>1.05){l.el.style.display='none';return}
+   l.el.style.display='block';l.el.style.left=((tmp.x+1)/2*w)+'px';l.el.style.top=((1-tmp.y)/2*h)+'px';
+  });
+ }
+ resize();setOrb(viewDef(st.mode==='arm'?STEPS[st.step].v:st.view));
+ return{apply,goView(k){tweenTo(viewDef(k))},start(){if(running)return;running=true;resize();raf=requestAnimationFrame(frame)},stop(){running=false;cancelAnimationFrame(raf)}};
+}
+
+if(!sec.hidden)window.primaria3d.visible(true);
 })();
 </script>
 </body>
