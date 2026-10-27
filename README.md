@@ -5,6 +5,7 @@ Todo junto en un solo repo, ordenado por obra. Portada: https://smartbuildinguru
 ## Vivienda Sayago
 
 - [Sanitaria baño y cocina](sanitaria-sayago/) — agua, desagües, cocina y ventilación, con PDFs.
+- [Eléctrica en 3D](electrica-sayago/) — puntos que se mueven en 3D o planta, circuitos, tablero y despiece.
 
 ## Casa Eden Rock
 

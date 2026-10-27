@@ -1,0 +1,505 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Eléctrica Casa Sayago</title>
+<style>
+@font-face{font-family:'Barlow Condensed';font-weight:700;font-display:swap;src:url(../sanitaria-sayago/fonts/barlow-condensed-latin-700-normal.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Sans';font-weight:400;font-display:swap;src:url(../sanitaria-sayago/fonts/ibm-plex-sans-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Sans';font-weight:600;font-display:swap;src:url(../sanitaria-sayago/fonts/ibm-plex-sans-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Mono';font-weight:400;font-display:swap;src:url(../sanitaria-sayago/fonts/ibm-plex-mono-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Mono';font-weight:500;font-display:swap;src:url(../sanitaria-sayago/fonts/ibm-plex-mono-latin-500-normal.woff2) format('woff2')}
+:root{
+ --paper:#edf1f0;--panel:#fbfcfc;--ink:#17252a;--muted:#5a6a6d;--line:#cbd5d4;--grid:#e3e9e8;--wall:#2a3a48;
+ --acc:#d9531e;--accs:#fbe6dc;--warn:#b3261e;--warns:#fbe4e2;--ok:#2f8a3c;--p3bg:#e6ecec;
+ --c1:#c77700;--c2:#1f6fb2;--c3:#0e8a7e;--c4:#7a4fb5;--c5:#b5476a;--c6:#5c7f1e;
+ --f-d:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;--f-b:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;--f-m:'IBM Plex Mono',ui-monospace,Menlo,monospace;
+ color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
+ --paper:#12191b;--panel:#1a2427;--ink:#e3eaea;--muted:#9aabab;--line:#2f3d40;--grid:#223034;--wall:#b9c7d2;
+ --acc:#ef7a46;--accs:#3a2116;--warn:#ff8a80;--warns:#3a1e1c;--ok:#6cc45a;--p3bg:#172124;
+ --c1:#f0a33a;--c2:#5aa8ec;--c3:#3cc4b4;--c4:#b08ae8;--c5:#ec7fa2;--c6:#9dc45a;color-scheme:dark}}
+:root[data-theme="dark"]{
+ --paper:#12191b;--panel:#1a2427;--ink:#e3eaea;--muted:#9aabab;--line:#2f3d40;--grid:#223034;--wall:#b9c7d2;
+ --acc:#ef7a46;--accs:#3a2116;--warn:#ff8a80;--warns:#3a1e1c;--ok:#6cc45a;--p3bg:#172124;
+ --c1:#f0a33a;--c2:#5aa8ec;--c3:#3cc4b4;--c4:#b08ae8;--c5:#ec7fa2;--c6:#9dc45a;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 15px/1.45 var(--f-b)}
+.wrap{max-width:1180px;margin:0 auto;padding:18px 16px 48px;display:flex;flex-direction:column;gap:16px}
+a{color:var(--acc)}
+.crumb{font:500 .78rem var(--f-m);color:var(--muted);text-decoration:none}
+h1{font:700 clamp(1.7rem,5vw,2.3rem)/1 var(--f-d);letter-spacing:.03em;text-transform:uppercase;margin:4px 0 6px}
+h2{font:700 1.2rem/1.1 var(--f-d);letter-spacing:.04em;text-transform:uppercase;margin:0}
+.lead{color:var(--muted);margin:0;max-width:72ch}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:14px;display:flex;flex-direction:column;gap:10px;min-width:0}
+.tools{display:flex;gap:6px;overflow-x:auto;padding-bottom:2px;-webkit-overflow-scrolling:touch}
+.tool{flex:0 0 auto;display:flex;align-items:center;gap:6px;padding:6px 11px;border:1px solid var(--line);border-radius:999px;background:var(--paper);color:var(--ink);font:500 .84rem var(--f-b);cursor:pointer}
+.tool .dot{width:18px;height:18px;border-radius:50%;display:grid;place-items:center;font:600 9px var(--f-m);color:#fff}
+.tool[aria-pressed="true"]{border-color:var(--acc);background:var(--accs)}
+.hint{font-size:.84rem;color:var(--muted);margin:0}
+.views{display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.vt{border:1px solid var(--line);background:var(--paper);color:var(--muted);border-radius:6px;padding:5px 12px;font:600 .82rem var(--f-b);cursor:pointer}
+.vt[aria-selected="true"]{color:var(--ink);border-color:var(--ink);background:var(--panel)}
+.stage{position:relative;width:100%;aspect-ratio:16/10;max-height:74vh;min-height:320px;background:var(--p3bg);border:1px solid var(--line);border-radius:10px;overflow:hidden;touch-action:none}
+@media (max-width:640px){.stage{aspect-ratio:4/5}.ovh{display:none}}
+.stage canvas{display:block;width:100%;height:100%;cursor:grab}
+.stage canvas.dragging{cursor:grabbing}
+.labels{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+.labels span{position:absolute;transform:translate(-50%,-100%);margin-top:-8px;white-space:nowrap;font:600 11px/1.2 var(--f-m);color:var(--ink);background:var(--panel);border:1px solid var(--line);border-radius:5px;padding:2px 6px}
+.labels span.s{border-color:var(--acc);color:var(--acc)}
+.ov{position:absolute;top:8px;right:8px;display:flex;gap:6px;flex-wrap:wrap;justify-content:flex-end}
+.ov button{background:var(--panel);border:1px solid var(--line);color:var(--muted);border-radius:99px;padding:4px 10px;font:500 .76rem var(--f-b);cursor:pointer}
+.ov button[aria-pressed="true"]{color:var(--ink);border-color:var(--ink)}
+.ovh{position:absolute;left:10px;bottom:8px;font:500 .72rem var(--f-m);color:var(--muted);pointer-events:none}
+.fb{position:absolute;inset:0;display:grid;place-items:center;padding:20px;text-align:center;color:var(--muted)}
+.planbox{border:1px solid var(--line);border-radius:10px;background:var(--panel);overflow:auto;touch-action:none}
+#plan{display:block;width:100%;min-width:560px;height:auto;user-select:none}
+.sel{display:flex;flex-wrap:wrap;gap:10px;align-items:flex-end;padding:10px 12px;border-radius:8px;background:var(--accs)}
+.sel strong{font:700 1.05rem var(--f-d);letter-spacing:.03em}
+.field{display:flex;flex-direction:column;gap:2px}
+.field label{font:500 .7rem var(--f-m);color:var(--muted);letter-spacing:.04em;text-transform:uppercase}
+.field input,.field select{width:96px;padding:6px 8px;border:1px solid var(--line);border-radius:5px;background:var(--panel);color:var(--ink);font:500 .9rem var(--f-m)}
+.field select{width:auto;min-width:120px}
+.btn{padding:7px 12px;border-radius:6px;border:1px solid var(--line);background:var(--panel);color:var(--ink);font:500 .84rem var(--f-b);cursor:pointer}
+.btn.danger{border-color:var(--warn);color:var(--warn)}
+.btn.primary{border-color:var(--acc);background:var(--acc);color:#fff}
+button:focus-visible,input:focus-visible,select:focus-visible{outline:2px solid var(--acc);outline-offset:2px}
+.grid2{display:grid;grid-template-columns:1fr;gap:16px}
+@media(min-width:900px){.grid2{grid-template-columns:1.15fr .85fr}}
+.tbl{overflow-x:auto}
+table{border-collapse:collapse;width:100%;font-size:.86rem}
+th{text-align:left;font:500 .68rem var(--f-m);letter-spacing:.06em;text-transform:uppercase;color:var(--muted);border-bottom:1px solid var(--line);padding:6px 8px;white-space:nowrap}
+td{border-bottom:1px solid var(--grid);padding:7px 8px;vertical-align:top}
+td.num{font-family:var(--f-m);font-variant-numeric:tabular-nums;text-align:right;white-space:nowrap}
+.cid{display:inline-flex;align-items:center;gap:6px;font:600 .84rem var(--f-m)}
+.cid i{width:10px;height:10px;border-radius:2px;display:inline-block}
+.sw{display:inline-block;width:22px;height:8px;border-radius:2px;vertical-align:middle;margin-right:6px;border:1px solid var(--line)}
+.warn{background:var(--warns);color:var(--warn);padding:8px 10px;border-radius:6px;font-size:.86rem}
+.okmsg{color:var(--ok);font-size:.86rem;margin:0}
+.small{font-size:.78rem;color:var(--muted)}
+.notes{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:.9rem}
+textarea{width:100%;min-height:130px;font:12px var(--f-m);background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:8px}
+.row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font-size:.78rem;color:var(--muted)}
+.legend i{display:inline-block;width:14px;height:4px;border-radius:2px;vertical-align:middle;margin-right:5px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<header>
+ <a class="crumb" href="../">← SBU · documentos de obra</a>
+ <h1>Eléctrica Casa Sayago</h1>
+ <p class="lead">Mové tomas, luces, llaves y equipos en el 3D o en la planta. Los tomas y llaves se deslizan por los muros y las luces por el cielorraso. Circuitos, tendidos y despiece se recalculan solos.</p>
+</header>
+
+<section class="panel">
+ <div class="tools" id="tools" role="toolbar" aria-label="Elemento a colocar"></div>
+ <p class="hint" id="hint"></p>
+ <div class="views" role="tablist" aria-label="Vista">
+  <button type="button" class="vt" role="tab" data-v="3d" aria-selected="true">3D</button>
+  <button type="button" class="vt" role="tab" data-v="plan" aria-selected="false">Planta</button>
+  <span class="legend" id="legend"></span>
+ </div>
+ <div id="v3d">
+  <div class="stage" id="stage">
+   <canvas id="cv" aria-label="Modelo 3D de la casa con los puntos eléctricos"></canvas>
+   <div class="labels" id="labels" aria-hidden="true"></div>
+   <div class="ov">
+    <button type="button" id="bRoutes" aria-pressed="true">Tendidos</button>
+    <button type="button" id="bCodes" aria-pressed="false">Códigos</button>
+    <button type="button" id="bTop" aria-pressed="false">Vista superior</button>
+    <button type="button" id="bReset">Recentrar</button>
+   </div>
+   <div class="ovh" id="ovh">Arrastrá un punto para moverlo · arrastrá el fondo para girar · pellizco o rueda para acercar</div>
+   <div class="fb" id="fb" hidden>No se pudo iniciar el 3D en este navegador. Usá la vista Planta.</div>
+  </div>
+ </div>
+ <div id="vplan" hidden>
+  <div class="planbox"><svg id="plan" xmlns="http://www.w3.org/2000/svg" aria-label="Planta con puntos eléctricos"></svg></div>
+ </div>
+ <div class="sel" id="selPanel" hidden></div>
+</section>
+
+<div class="grid2">
+ <section class="panel"><h2>Circuitos</h2><div class="tbl"><table id="circTbl"></table></div><div id="warns" style="display:flex;flex-direction:column;gap:6px"></div></section>
+ <section class="panel"><h2>Tablero</h2><div class="tbl"><table id="tabTbl"></table></div>
+  <p class="small">Diferencial 1: luces y tomas generales. Diferencial 2: circuitos dedicados. Si saltan los tomas, la heladera sigue andando.</p></section>
+</div>
+
+<section class="panel">
+ <h2>Despiece de materiales</h2>
+ <p class="small">Metros por recorrido ortogonal por cielorraso, con 0,40 m por conexión y 10 % de desperdicio. Es para pedir material, no reemplaza el replanteo en obra.</p>
+ <div class="tbl"><table id="bomTbl"></table></div>
+</section>
+
+<section class="panel">
+ <h2>Criterios</h2>
+ <ul class="notes">
+  <li>Iluminación en 1,5 mm² con térmica de 10 A. Tomas y equipos en 2,5 mm² con térmica de 16 A. La tierra va en la misma sección que el circuito.</li>
+  <li>Heladera, lavavajillas, lavarropas y calefón llevan circuito propio.</li>
+  <li>Colores: fase marrón, neutro celeste, tierra verde-amarillo, retorno de llaves gris.</li>
+  <li>Steel frame: caño corrugado de 20 mm por las perforaciones de los montantes, siempre con pasacables de PVC. La estructura metálica se conecta a la puesta a tierra.</li>
+  <li>Alturas tipo a eje de caja: tomas 0,30 · heladera y lavavajillas 0,40 · llaves y lavarropas 1,10 · tablero 1,60 · calefón 1,80. Cada punto se puede subir o bajar.</li>
+  <li>Muros y ambientes son de referencia, sin aberturas. Validar con el electricista autorizado y el reglamento de baja tensión de UTE.</li>
+ </ul>
+</section>
+
+<section class="panel">
+ <h2>Exportar o cargar distribución</h2>
+ <p class="small">Copiá el texto para pasármelo y armar manual y planos. Para cargar una distribución, pegala acá y tocá Cargar.</p>
+ <textarea id="exportTxt" aria-label="Distribución en texto"></textarea>
+ <div class="row">
+  <button class="btn primary" id="copyBtn" type="button">Copiar</button>
+  <button class="btn" id="loadBtn" type="button">Cargar lo pegado</button>
+  <button class="btn" id="resetBtn" type="button">Volver a la del 26/10</button>
+  <span class="small" id="copyMsg" aria-live="polite"></span>
+ </div>
+ <div class="row" id="resetConfirm" hidden>
+  <span class="small">Se reemplaza tu distribución actual.</span>
+  <button class="btn danger" id="resetYes" type="button">Sí, reemplazar</button>
+  <button class="btn" id="resetNo" type="button">Cancelar</button>
+ </div>
+</section>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script>
+(function(){
+/* ================= datos ================= */
+const CIRC={
+ C1:{name:'Iluminación',sec:1.5,brk:10,col:'--c1',diff:1},
+ C2:{name:'Tomas uso general',sec:2.5,brk:16,col:'--c2',diff:1},
+ C3:{name:'Heladera',sec:2.5,brk:16,col:'--c3',diff:2},
+ C4:{name:'Lavavajillas',sec:2.5,brk:16,col:'--c4',diff:2},
+ C5:{name:'Lavarropas',sec:2.5,brk:16,col:'--c5',diff:2},
+ C6:{name:'Calefón',sec:2.5,brk:16,col:'--c6',diff:2}};
+const T={
+ tablero:{label:'Tablero',s:'TG',z:1.6,c:null},
+ toma:{label:'Toma',s:'T',z:0.3,c:'C2',W:0},
+ heladera:{label:'Heladera',s:'HE',z:0.4,c:'C3',W:300},
+ lavavajillas:{label:'Lavavajillas',s:'LV',z:0.4,c:'C4',W:2000},
+ lavarropas:{label:'Lavarropas',s:'LR',z:1.1,c:'C5',W:2200},
+ calefon:{label:'Calefón',s:'CA',z:1.8,c:'C6',W:1500},
+ luz:{label:'Luz',s:'L',z:null,c:'C1',W:60},
+ llave:{label:'Llave de luz',s:'LL',z:1.1,c:'C1',W:0}};
+const ROOMS=[{n:'Estar · Cocina',x:0,y:0,w:.6,h:1},{n:'Dormitorio',x:.6,y:0,w:.4,h:.6},{n:'Baño · Lavadero',x:.6,y:.6,w:.4,h:.4}];
+// distribución exportada el 26/10 (segunda versión)
+const BASE={L:10,A:5,H:2.4,items:[
+ ['tablero',5.8,3.8,1.6],
+ ['toma',0.1,2.65],['toma',5.85,1.8],['toma',1.4,4.85],['toma',2.4,4.85],['toma',6.15,1.2],['toma',9.85,1],['toma',8.2,0.15],['toma',6.6,3.15],
+ ['heladera',9.95,2.4],['lavavajillas',9.95,1.75],['lavarropas',8.05,5],['calefon',7.55,5],
+ ['luz',2,1.6],['luz',2,3.9],['luz',3.8,2.85],['luz',8,1.5],['luz',8,4],
+ ['llave',6,0.05],['llave',3,4.85],['llave',6.15,2.6],['llave',6.15,3.5]]};
+const KEY='sbu-elec-sayago-3d';
+let st,nid=1,sel=null,tool='select',view='3d';
+const $=id=>document.getElementById(id);
+const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim()||'#888';
+const fmt=(n,d=2)=>Number(n).toLocaleString('es-UY',{minimumFractionDigits:d,maximumFractionDigits:d});
+const r2=n=>Math.round(n*100)/100, snap=v=>Math.round(v*20)/20;
+const clamp=(v,a,b)=>Math.min(b,Math.max(a,v));
+
+function fromBase(){nid=1;return {L:BASE.L,A:BASE.A,H:BASE.H,showRoutes:true,codes:false,
+ items:BASE.items.map(([t,x,y,z])=>({id:nid++,t,x,y,z:t==='luz'?null:(z??T[t].z)}))}}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&Array.isArray(s.items)){nid=Math.max(0,...s.items.map(i=>i.id))+1;return s}}catch(e){}return fromBase()}
+function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
+st=load();
+
+/* ================= muros ================= */
+// segmentos de muro en planta: exteriores + tabiques de los ambientes de referencia
+function walls(){const L=st.L,A=st.A,W=[[0,0,L,0],[L,0,L,A],[L,A,0,A],[0,A,0,0]];
+ W.push([0.6*L,0,0.6*L,A],[0.6*L,0.6*A,L,0.6*A]);return W}
+
+/* ================= cálculo ================= */
+const zOf=i=>i.t==='luz'?st.H:(i.z??T[i.t].z);
+const hd=(a,b)=>Math.abs(a.x-b.x)+Math.abs(a.y-b.y);
+const route=(a,b)=>(a.t==='luz'?0:st.H-zOf(a))+(b.t==='luz'?0:st.H-zOf(b))+hd(a,b);
+function compute(){
+ const tab=st.items.find(i=>i.t==='tablero');
+ const res={circ:{},segs:[],links:[],warns:[],cond:{},cano:0,label:{},asig:{}};
+ const add=(sec,col,m)=>{const k=sec+'|'+col;res.cond[k]=(res.cond[k]||0)+m};
+ for(const c in CIRC)res.circ[c]={pts:[],len:0,cond:0,W:0};
+ if(!tab){res.warns.push('Falta ubicar el tablero.');return res}
+ res.label[tab.id]='TG';
+ for(const cid in CIRC){const c=CIRC[cid];
+  const pts=st.items.filter(i=>T[i.t].c===cid&&i.t!=='llave');const r=res.circ[cid];r.pts=pts;if(!pts.length)continue;
+  let cur=tab,left=pts.slice(),n=1;
+  while(left.length){left.sort((a,b)=>route(cur,a)-route(cur,b));const nx=left.shift(),L=route(cur,nx);
+   res.segs.push({c:cid,a:cur,b:nx,L});r.len+=L;res.label[nx.id]=cid+'.'+(n++);cur=nx}
+  const m3=r.len+0.4*pts.length;['marrón','celeste','verde-amarillo'].forEach(col=>add(c.sec,col,m3));
+  r.cond=m3*3;res.cano+=r.len;r.W=pts.reduce((s,i)=>s+T[i.t].W,0);if(cid==='C2')r.W=Math.min(pts.length*200,3500)}
+ const luces=st.items.filter(i=>i.t==='luz'),llaves=st.items.filter(i=>i.t==='llave');
+ let nl=1;llaves.forEach(k=>res.label[k.id]='C1.LL'+(nl++));
+ const asig={};
+ luces.forEach(l=>{if(!llaves.length)return;
+  let k=l.ll!=null?llaves.find(x=>x.id===l.ll):null;
+  if(!k)k=llaves.slice().sort((a,b)=>hd(a,l)-hd(b,l))[0];
+  res.asig[l.id]=k.id;(asig[k.id]=asig[k.id]||[]).push(l)});
+ llaves.forEach(k=>{const ls=asig[k.id];
+  if(!ls){res.warns.push(res.label[k.id]+': llave sin luz asignada. Elegí una luz y asignale esta llave.');return}
+  ls.sort((a,b)=>hd(a,k)-hd(b,k));const near=ls[0],Lk=route(near,k);
+  add(1.5,'marrón',Lk+0.4);res.cano+=Lk;res.circ.C1.cond+=Lk;
+  ls.forEach(l=>{const Lr=Lk+hd(near,l)+0.4;add(1.5,'gris',Lr);res.circ.C1.cond+=Lr;res.links.push({a:k,b:l})})});
+ if(luces.length&&!llaves.length)res.warns.push('Hay luces sin ninguna llave de luz.');
+ const nt=res.circ.C2.pts.length;if(nt>15)res.warns.push('C2 tiene '+nt+' tomas. Conviene dividir en dos circuitos (máx. ~15).');
+ ['C3','C4','C5','C6'].forEach(c=>{const n=res.circ[c].pts.length;
+  if(n>1)res.warns.push(c+' ('+CIRC[c].name+') tiene '+n+' puntos. Va uno solo por circuito dedicado.');
+  if(n===0)res.warns.push(c+' ('+CIRC[c].name+') sin ubicar.')});
+ st.items.forEach(i=>{if(i.x<0||i.y<0||i.x>st.L||i.y>st.A)res.warns.push(T[i.t].label+' quedó fuera de la planta.')});
+ for(const k in res.cond)res.cond[k]*=1.10;res.cano*=1.10;
+ return res}
+
+/* ================= herramientas ================= */
+function buildTools(){const box=$('tools');box.innerHTML='';
+ const mk=(id,label,s,col)=>{const b=document.createElement('button');b.type='button';b.className='tool';
+  b.setAttribute('aria-pressed',tool===id);b.innerHTML=(s?`<span class="dot" style="background:${col}">${s}</span>`:'')+label;
+  b.onclick=()=>{tool=id;buildTools();hint()};box.appendChild(b)};
+ mk('select','Mover / editar','','');
+ for(const k in T){const c=T[k].c;mk(k,T[k].label,T[k].s,c?`var(${CIRC[c].col})`:'var(--ink)')}}
+function hint(){$('hint').textContent=tool==='select'
+ ?'Tocá un punto para ver sus datos y arrastralo para moverlo. Para agregar, elegí un elemento arriba.'
+ :(tool==='luz'?'Tocá el cielorraso o el piso donde va la luz.':'Tocá el muro donde va: '+T[tool].label.toLowerCase()+'. Queda a la altura tipo y después la ajustás.')}
+function legend(){$('legend').innerHTML=Object.keys(CIRC).map(c=>`<span><i style="background:var(${CIRC[c].col})"></i>${c} ${CIRC[c].name}</span>`).join('')}
+
+/* ================= panel de selección ================= */
+function selPanel(res){const p=$('selPanel'),it=st.items.find(i=>i.id===sel);
+ if(!it){p.hidden=true;p.innerHTML='';return}
+ p.hidden=false;const c=T[it.t].c;
+ const llaves=st.items.filter(i=>i.t==='llave');
+ let extra='';
+ if(it.t==='luz'){extra=`<div class="field"><label for="selLL">Llave</label><select id="selLL"><option value="">Más cercana${res.asig[it.id]?' ('+res.label[res.asig[it.id]]+')':''}</option>${llaves.map(k=>`<option value="${k.id}" ${it.ll===k.id?'selected':''}>${res.label[k.id]}</option>`).join('')}</select></div>`}
+ else extra=`<div class="field"><label for="selZ">Altura (m)</label><input id="selZ" type="number" step="0.05" min="0.1" max="${st.H}" value="${zOf(it)}"></div><button class="btn" id="zBtn" type="button">Altura tipo ${fmt(T[it.t].z)}</button>`;
+ if(it.t==='llave'){const ls=st.items.filter(l=>l.t==='luz'&&res.asig[l.id]===it.id).map(l=>res.label[l.id]);extra+=`<span class="small">Prende: ${ls.length?ls.join(', '):'ninguna luz'}</span>`}
+ p.innerHTML=`<div style="display:flex;flex-direction:column;gap:2px;min-width:160px"><strong>${T[it.t].label}${res.label[it.id]?' · '+res.label[it.id]:''}</strong>
+  <span class="small">${c?CIRC[c].name+' · '+fmt(CIRC[c].sec,1)+' mm²':'Tablero general'}</span></div>
+  <div class="field"><label for="selX">X (m)</label><input id="selX" type="number" step="0.05" value="${it.x}"></div>
+  <div class="field"><label for="selY">Y (m)</label><input id="selY" type="number" step="0.05" value="${it.y}"></div>
+  ${extra}<button class="btn danger" id="delBtn" type="button">Eliminar</button>`;
+ $('selX').onchange=e=>{it.x=clamp(+e.target.value||0,0,st.L);commit()};
+ $('selY').onchange=e=>{it.y=clamp(+e.target.value||0,0,st.A);commit()};
+ if($('selZ')){$('selZ').onchange=e=>{it.z=clamp(+e.target.value||T[it.t].z,0.1,st.H);commit()};$('zBtn').onclick=()=>{it.z=T[it.t].z;commit()}}
+ if($('selLL'))$('selLL').onchange=e=>{it.ll=e.target.value?+e.target.value:null;commit()};
+ $('delBtn').onclick=()=>{st.items=st.items.filter(i=>i.id!==it.id);st.items.forEach(l=>{if(l.ll===it.id)l.ll=null});sel=null;commit()}}
+
+/* ================= tablas ================= */
+function tables(res){
+ let h='<tr><th>Circuito</th><th>Uso</th><th>Ptos</th><th>Sección</th><th>Térmica</th><th>Potencia</th><th>Cable</th></tr>';
+ for(const cid in CIRC){const c=CIRC[cid],r=res.circ[cid];const nll=cid==='C1'?st.items.filter(i=>i.t==='llave').length:0;
+  h+=`<tr><td><span class="cid"><i style="background:var(${c.col})"></i>${cid}</span></td><td>${c.name}</td><td class="num">${r.pts.length}${nll?' + '+nll+' ll':''}</td><td class="num">${fmt(c.sec,1)} mm²</td><td class="num">${c.brk} A</td><td class="num">${r.W?fmt(r.W,0)+' W':'—'}</td><td class="num">${fmt(r.cond*1.1,0)} m</td></tr>`}
+ $('circTbl').innerHTML=h;
+ $('warns').innerHTML=res.warns.length?res.warns.map(x=>`<div class="warn">${x}</div>`).join(''):'<p class="okmsg">Sin observaciones.</p>';
+ const used=Object.keys(CIRC).filter(c=>res.circ[c].pts.length);const mods=2+4+used.length*2;const box=[12,18,24,36].find(n=>n>=mods)||36;
+ $('tabTbl').innerHTML=`<tr><th>Elemento</th><th>Cant.</th></tr>
+ <tr><td>Interruptor general termomagnético bipolar (según potencia contratada, ej. 32 A)</td><td class="num">1</td></tr>
+ <tr><td>Diferencial bipolar 40 A · 30 mA</td><td class="num">2</td></tr>
+ <tr><td>Termomagnética bipolar 10 A (C1)</td><td class="num">${used.includes('C1')?1:0}</td></tr>
+ <tr><td>Termomagnética bipolar 16 A (${used.filter(c=>c!=='C1').join(', ')||'—'})</td><td class="num">${used.filter(c=>c!=='C1').length}</td></tr>
+ <tr><td>Gabinete de embutir ${box} módulos con barra de neutro y de tierra</td><td class="num">1</td></tr>`;
+ const order=[['1.5','marrón'],['1.5','celeste'],['1.5','verde-amarillo'],['1.5','gris'],['2.5','marrón'],['2.5','celeste'],['2.5','verde-amarillo']];
+ const swc={'marrón':'#7B4A2A','celeste':'#7EC8E8','verde-amarillo':'linear-gradient(90deg,#2E9E3E 50%,#E8D21E 50%)','gris':'#9AA3A9'};
+ let b='<tr><th>Material</th><th>Detalle</th><th>Cantidad</th><th>Pedido</th></tr>';
+ order.forEach(([s,col])=>{const m=res.cond[s+'|'+col];if(!m)return;const n=Math.ceil(m/100);
+  b+=`<tr><td><span class="sw" style="background:${swc[col]}"></span>Cable ${s.replace('.',',')} mm² ${col}</td><td class="small">Unipolar flexible antillama${col==='gris'?' · retorno':''}</td><td class="num">${fmt(m,0)} m</td><td class="num">${n} rollo${n>1?'s':''} 100 m</td></tr>`});
+ const cnt=t=>st.items.filter(i=>i.t===t).length;
+ const eq=cnt('toma')+cnt('heladera')+cnt('lavavajillas')+cnt('lavarropas')+cnt('calefon'),rect=eq+cnt('llave');
+ [['Caño corrugado 20 mm','Ignífugo, por montantes y cielorraso',fmt(res.cano,0)+' m',Math.ceil(res.cano/25)+' rollos 25 m'],
+  ['Pasacables de PVC','Perforaciones de montantes (estimado)',Math.ceil(res.cano/0.6/2)+' u',''],
+  ['Caja rectangular 5×10','Tomas, equipos y llaves',rect+' u',''],
+  ['Caja octogonal','Bocas de luz en cielorraso',cnt('luz')+' u',''],
+  ['Caja de paso / derivación','Estimado 1 cada 2 bocas',Math.ceil((st.items.length-1)/2)+' u',''],
+  ['Módulo toma 10/16 A con tierra','Incluye equipos',eq+' u',''],
+  ['Módulo llave de un punto','',cnt('llave')+' u',''],
+  ['Bastidor + tapa','Tomas y llaves',rect+' u',''],
+  ['Jabalina de cobre 1,5 m + tomacable','Puesta a tierra','1 u',''],
+  ['Cable 6 mm² verde-amarillo','Jabalina a tablero y unión a estructura','10 m',''],
+  ['Bornes de conexión tipo Wago','Empalmes en cajas (3 por boca)',(st.items.length-1)*3+' u','']
+ ].forEach(r=>b+=`<tr><td>${r[0]}</td><td class="small">${r[1]}</td><td class="num">${r[2]}</td><td class="num">${r[3]}</td></tr>`);
+ $('bomTbl').innerHTML=b;
+ const ex={obra:'Casa Sayago',planta:{largo:st.L,ancho:st.A,cielorraso:st.H},
+  puntos:st.items.map(i=>({id:res.label[i.id]||'?',tipo:i.t,x:i.x,y:i.y,z:r2(zOf(i)),circuito:T[i.t].c,...(i.t==='luz'&&res.asig[i.id]?{llave:res.label[res.asig[i.id]]}:{})})),
+  circuitos:Object.fromEntries(Object.keys(CIRC).map(c=>[c,{uso:CIRC[c].name,seccion_mm2:CIRC[c].sec,termica_A:CIRC[c].brk,diferencial:CIRC[c].diff,metros_cable:Math.round(res.circ[c].cond*1.1)}])),
+  cable_m:Object.fromEntries(Object.entries(res.cond).map(([k,v])=>[k,Math.round(v)])),cano_20mm_m:Math.round(res.cano),observaciones:res.warns};
+ if(document.activeElement!==$('exportTxt'))$('exportTxt').value=JSON.stringify(ex,null,1)}
+
+/* ================= planta 2D ================= */
+const svg=$('plan'),PAD=0.7;
+function sel_(tag,a,p){const n=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const k in a)n.setAttribute(k,a[k]);if(p)p.appendChild(n);return n}
+function svgPt(e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;const m=svg.getScreenCTM();return m?p.matrixTransform(m.inverse()):{x:0,y:0}}
+function drawPlan(res){svg.innerHTML='';const L=st.L,A=st.A;
+ svg.setAttribute('viewBox',`${-PAD} ${-PAD} ${L+PAD*2} ${A+PAD*2}`);const g=sel_('g',{},svg);
+ sel_('rect',{x:-PAD,y:-PAD,width:L+PAD*2,height:A+PAD*2,fill:css('--panel')},g);
+ for(let x=0;x<=L+1e-6;x+=0.5)sel_('line',{x1:x,y1:0,x2:x,y2:A,stroke:css('--grid'),'stroke-width':Math.abs(x%1)<1e-6?0.02:0.01},g);
+ for(let y=0;y<=A+1e-6;y+=0.5)sel_('line',{x1:0,y1:y,x2:L,y2:y,stroke:css('--grid'),'stroke-width':Math.abs(y%1)<1e-6?0.02:0.01},g);
+ ROOMS.forEach(r=>{sel_('rect',{x:r.x*L,y:r.y*A,width:r.w*L,height:r.h*A,fill:'none',stroke:css('--wall'),'stroke-width':0.06},g);
+  const t=sel_('text',{x:r.x*L+r.w*L/2,y:r.y*A+r.h*A/2,'text-anchor':'middle','font-size':0.24,fill:css('--muted'),'font-family':'Barlow Condensed,sans-serif','font-weight':700,opacity:.7},g);t.textContent=r.n.toUpperCase()});
+ sel_('rect',{x:0,y:0,width:L,height:A,fill:'none',stroke:css('--wall'),'stroke-width':0.12},g);
+ const cot=(x1,y1,x2,y2,txt,tx,ty,rot)=>{sel_('line',{x1,y1,x2,y2,stroke:css('--muted'),'stroke-width':0.015},g);const t=sel_('text',{x:tx,y:ty,'text-anchor':'middle','font-size':0.2,fill:css('--muted'),'font-family':'IBM Plex Mono,monospace',transform:rot?`rotate(-90 ${tx} ${ty})`:''},g);t.textContent=txt};
+ cot(0,-0.35,L,-0.35,fmt(L)+' m',L/2,-0.43);cot(-0.35,0,-0.35,A,fmt(A)+' m',-0.43,A/2,true);
+ if(st.showRoutes){res.segs.forEach(s=>sel_('path',{d:`M${s.a.x} ${s.a.y} H${s.b.x} V${s.b.y}`,fill:'none',stroke:css(CIRC[s.c].col),'stroke-width':0.035,'stroke-dasharray':'0.12 0.07',opacity:.85},g));
+  res.links.forEach(s=>sel_('path',{d:`M${s.a.x} ${s.a.y} L${s.b.x} ${s.b.y}`,fill:'none',stroke:css('--c1'),'stroke-width':0.02,'stroke-dasharray':'0.03 0.06'},g))}
+ st.items.forEach(i=>{const ty=T[i.t],col=ty.c?css(CIRC[ty.c].col):css('--ink');const n=sel_('g',{'data-id':i.id,style:'cursor:pointer'},g);
+  if(i.id===sel)sel_('circle',{cx:i.x,cy:i.y,r:0.3,fill:'none',stroke:css('--acc'),'stroke-width':0.05},n);
+  if(i.t==='tablero')sel_('rect',{x:i.x-0.24,y:i.y-0.16,width:0.48,height:0.32,rx:0.03,fill:css('--ink')},n);
+  else if(i.t==='luz'){sel_('circle',{cx:i.x,cy:i.y,r:0.2,fill:css('--panel'),stroke:col,'stroke-width':0.05},n);sel_('path',{d:`M${i.x-0.14} ${i.y-0.14} L${i.x+0.14} ${i.y+0.14} M${i.x+0.14} ${i.y-0.14} L${i.x-0.14} ${i.y+0.14}`,stroke:col,'stroke-width':0.035},n)}
+  else if(i.t==='llave')sel_('rect',{x:i.x-0.15,y:i.y-0.15,width:0.3,height:0.3,fill:css('--panel'),stroke:col,'stroke-width':0.045},n);
+  else sel_('circle',{cx:i.x,cy:i.y,r:0.18,fill:col},n);
+  if(i.t!=='luz'){const t=sel_('text',{x:i.x,y:i.y+0.055,'text-anchor':'middle','font-size':i.t==='toma'?0.16:0.13,'font-weight':600,fill:i.t==='llave'?col:(i.t==='tablero'?css('--panel'):'#fff'),'font-family':'IBM Plex Mono,monospace','pointer-events':'none'},n);t.textContent=ty.s}
+  if(res.label[i.id]){const t=sel_('text',{x:i.x,y:i.y+0.4,'text-anchor':'middle','font-size':0.13,fill:css('--muted'),'font-family':'IBM Plex Mono,monospace','pointer-events':'none'},n);t.textContent=res.label[i.id]}
+  sel_('circle',{cx:i.x,cy:i.y,r:0.32,fill:'transparent'},n)})}
+let pdrag=null;
+svg.addEventListener('pointerdown',e=>{const p=svgPt(e),g=e.target.closest('[data-id]');
+ if(g){sel=+g.dataset.id;pdrag=sel;svg.setPointerCapture(e.pointerId);refresh();return}
+ if(tool!=='select'){addAt(snap(clamp(p.x,0,st.L)),snap(clamp(p.y,0,st.A)),null);return}
+ sel=null;refresh()});
+svg.addEventListener('pointermove',e=>{if(pdrag==null)return;const p=svgPt(e),it=st.items.find(i=>i.id===pdrag);if(!it)return;
+ it.x=snap(clamp(p.x,0,st.L));it.y=snap(clamp(p.y,0,st.A));drawPlan(compute())});
+const pend=()=>{if(pdrag!=null){pdrag=null;commit()}};svg.addEventListener('pointerup',pend);svg.addEventListener('pointercancel',pend);
+
+function addAt(x,y,z){
+ if(tool==='tablero'){const tb=st.items.find(i=>i.t==='tablero');if(tb){tb.x=x;tb.y=y;if(z!=null)tb.z=z;sel=tb.id;commit();return}}
+ st.items.push({id:nid,t:tool,x,y,z:tool==='luz'?null:T[tool].z});sel=nid++;commit()}
+
+/* ================= 3D ================= */
+let G=null;
+try{if(!window.THREE)throw new Error('sin three');G=init3D()}catch(e){$('fb').hidden=false;$('ovh').hidden=true;console.warn(e)}
+function init3D(){
+ const TH=window.THREE,cv=$('cv'),stage=$('stage');
+ const ren=new TH.WebGLRenderer({canvas:cv,antialias:true,alpha:true});ren.setPixelRatio(Math.min(2,window.devicePixelRatio||1));
+ const scene=new TH.Scene(),cam=new TH.PerspectiveCamera(42,1,0.05,200);
+ scene.add(new TH.HemisphereLight(0xffffff,0x8a9a9a,0.95));const dl=new TH.DirectionalLight(0xffffff,0.55);dl.position.set(6,10,4);scene.add(dl);
+ // plano x→X, y→Z, altura→Y
+ const V=(x,y,z)=>new TH.Vector3(x,z,y);
+ const col=t=>new TH.Color(css(t));
+ const groups={house:new TH.Group(),pts:new TH.Group(),routes:new TH.Group()};Object.values(groups).forEach(g=>scene.add(g));
+ let wallMeshes=[],ceil=null,floor=null,ptMesh=new Map();
+ const WT=0.10;
+ function buildHouse(){groups.house.clear();wallMeshes=[];const L=st.L,A=st.A,H=st.H;
+  const fm=new TH.MeshLambertMaterial({color:col('--panel')});
+  floor=new TH.Mesh(new TH.BoxGeometry(L,0.04,A),fm);floor.position.copy(V(L/2,A/2,-0.02));groups.house.add(floor);
+  const grid=new TH.GridHelper(Math.max(L,A),Math.max(L,A)*2,col('--line'),col('--grid'));grid.position.copy(V(L/2,A/2,0.002));
+  grid.scale.set(L/Math.max(L,A),1,A/Math.max(L,A));groups.house.add(grid);
+  walls().forEach((w,i)=>{const [x1,y1,x2,y2]=w,len=Math.hypot(x2-x1,y2-y1),ext=i<4;
+   const m=new TH.MeshLambertMaterial({color:col('--wall'),transparent:true,opacity:ext?0.16:0.12,depthWrite:false,side:TH.DoubleSide});
+   const g=new TH.BoxGeometry(len+(ext?WT*2:0),H,WT);const mesh=new TH.Mesh(g,m);
+   // exteriores hacia afuera de la planta, tabiques centrados
+   let cx=(x1+x2)/2,cy=(y1+y2)/2;if(ext){if(y1===y2)cy+=(y1===0?-WT/2:WT/2);else cx+=(x1===0?-WT/2:WT/2)}
+   mesh.position.copy(V(cx,cy,H/2));mesh.rotation.y=-Math.atan2(y2-y1,x2-x1);mesh.userData={wall:w,ext};groups.house.add(mesh);wallMeshes.push(mesh);
+   const eg=new TH.LineSegments(new TH.EdgesGeometry(g),new TH.LineBasicMaterial({color:col('--wall'),transparent:true,opacity:0.45}));eg.position.copy(mesh.position);eg.rotation.copy(mesh.rotation);groups.house.add(eg)});
+  ceil=new TH.Mesh(new TH.PlaneGeometry(L,A),new TH.MeshBasicMaterial({visible:false,side:TH.DoubleSide}));ceil.rotation.x=-Math.PI/2;ceil.position.copy(V(L/2,A/2,H));groups.house.add(ceil);
+  const ce=new TH.LineSegments(new TH.EdgesGeometry(new TH.BoxGeometry(L,0.001,A)),new TH.LineBasicMaterial({color:col('--muted'),transparent:true,opacity:0.35}));ce.position.copy(V(L/2,A/2,H));groups.house.add(ce)}
+ const geo={sph:new TH.SphereGeometry(0.11,20,14),box:new TH.BoxGeometry(0.16,0.2,0.06),tab:new TH.BoxGeometry(0.42,0.5,0.1),disk:new TH.CylinderGeometry(0.14,0.14,0.05,24),hit:new TH.SphereGeometry(0.24,10,8)};
+ const hitMat=new TH.MeshBasicMaterial({visible:false});
+ // orienta tomas y llaves según el muro más cercano
+ function wallAt(x,y){let best=null;walls().forEach(w=>{const [x1,y1,x2,y2]=w;const vert=x1===x2;
+   const d=vert?(y>=Math.min(y1,y2)-0.05&&y<=Math.max(y1,y2)+0.05?Math.abs(x-x1):9):(x>=Math.min(x1,x2)-0.05&&x<=Math.max(x1,x2)+0.05?Math.abs(y-y1):9);
+   if(!best||d<best.d)best={d,vert,w}});return best}
+ function buildPts(res){groups.pts.clear();ptMesh.clear();
+  st.items.forEach(i=>{const ty=T[i.t],c=ty.c?col(CIRC[ty.c].col):col('--ink');const z=zOf(i);
+   const g=new TH.Group();g.position.copy(V(i.x,i.y,z));
+   const mat=new TH.MeshLambertMaterial({color:c,emissive:i.id===sel?col('--acc'):new TH.Color(0),emissiveIntensity:i.id===sel?0.55:0});
+   let m;if(i.t==='luz'){m=new TH.Mesh(geo.disk,mat);m.position.y=-0.03}
+   else if(i.t==='tablero')m=new TH.Mesh(geo.tab,mat);
+   else if(i.t==='toma'||i.t==='llave')m=new TH.Mesh(geo.box,mat);
+   else m=new TH.Mesh(geo.sph,mat);
+   if(i.t!=='luz'){const wa=wallAt(i.x,i.y);if(wa&&wa.vert)m.rotation.y=Math.PI/2}
+   g.add(m);
+   if(i.id===sel){const ring=new TH.Mesh(new TH.TorusGeometry(0.22,0.018,8,32),new TH.MeshBasicMaterial({color:col('--acc')}));
+    if(i.t==='luz'){ring.rotation.x=Math.PI/2;ring.position.y=-0.03}else{const wa=wallAt(i.x,i.y);if(wa&&wa.vert)ring.rotation.y=Math.PI/2}g.add(ring)}
+   // bajada a la altura del punto, como referencia visual
+   if(i.t!=='luz'){const lg=new TH.BufferGeometry().setFromPoints([new TH.Vector3(0,0,0),new TH.Vector3(0,-z,0)]);g.add(new TH.Line(lg,new TH.LineDashedMaterial({color:col('--muted'),dashSize:0.05,gapSize:0.05,transparent:true,opacity:0.35})).computeLineDistances())}
+   const h=new TH.Mesh(geo.hit,hitMat);h.userData.id=i.id;g.add(h);
+   groups.pts.add(g);ptMesh.set(i.id,{g,h})})}
+ function buildRoutes(res){groups.routes.clear();if(!st.showRoutes)return;const H=st.H;
+  const ks=Object.keys(CIRC);
+  res.segs.forEach(s=>{const k=ks.indexOf(s.c),zc=H-0.03-k*0.025;const a=s.a,b=s.b;
+   const P=[V(a.x,a.y,a.t==='luz'?H:zOf(a)),V(a.x,a.y,zc),V(b.x,a.y,zc),V(b.x,b.y,zc),V(b.x,b.y,b.t==='luz'?H:zOf(b))];
+   groups.routes.add(new TH.Line(new TH.BufferGeometry().setFromPoints(P),new TH.LineBasicMaterial({color:col(CIRC[s.c].col)})))});
+  res.links.forEach(s=>{const zc=H-0.03-ks.length*0.025;const P=[V(s.a.x,s.a.y,zOf(s.a)),V(s.a.x,s.a.y,zc),V(s.b.x,s.b.y,zc),V(s.b.x,s.b.y,H)];
+   const ln=new TH.Line(new TH.BufferGeometry().setFromPoints(P),new TH.LineDashedMaterial({color:col('--c1'),dashSize:0.06,gapSize:0.06}));ln.computeLineDistances();groups.routes.add(ln)})}
+ // cámara orbital
+ const orb={t:V(st.L/2,st.A/2,0.9),r:12,th:-0.7,ph:0.95};
+ const home=()=>({t:V(st.L/2,st.A/2,0.9),r:Math.max(st.L,st.A)*1.25,th:-0.75,ph:0.95});
+ const topV=()=>({t:V(st.L/2,st.A/2,0),r:Math.max(st.L,st.A)*1.15,th:0,ph:0.02});
+ let tw=null;
+ function setOrb(s){orb.t.copy(s.t);orb.r=s.r;orb.th=s.th;orb.ph=s.ph}
+ function tweenTo(s,ms=700){tw={a:{t:orb.t.clone(),r:orb.r,th:orb.th,ph:orb.ph},b:s,t0:performance.now(),ms};need()}
+ function placeCam(){const sp=Math.sin(orb.ph);cam.position.set(orb.t.x+orb.r*sp*Math.sin(orb.th),orb.t.y+orb.r*Math.cos(orb.ph),orb.t.z+orb.r*sp*Math.cos(orb.th));cam.up.set(0,1,0);if(orb.ph<0.05)cam.up.set(0,0,-1);cam.lookAt(orb.t)}
+ setOrb(home());
+ // etiquetas
+ function labels(res){const box=$('labels');let h='';const w=cv.clientWidth,hh=cv.clientHeight;
+  st.items.forEach(i=>{if(!(st.codes||i.id===sel||i.t==='tablero'))return;const v=V(i.x,i.y,zOf(i)+0.12).project(cam);if(v.z>1)return;
+   const x=(v.x+1)/2*w,y=(1-v.y)/2*hh;h+=`<span class="${i.id===sel?'s':''}" style="left:${x}px;top:${y}px">${res.label[i.id]||T[i.t].s}${i.id===sel&&i.t!=='luz'?' · '+fmt(zOf(i)):''}</span>`});
+  box.innerHTML=h}
+ let lastRes=null,needs=true;function need(){needs=true}
+ function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;ren.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();need()}
+ new ResizeObserver(resize).observe(stage);
+ function loop(now){requestAnimationFrame(loop);
+  if(tw){const k=Math.min(1,(now-tw.t0)/tw.ms),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;let dth=tw.b.th-tw.a.th;while(dth>Math.PI)dth-=2*Math.PI;while(dth<-Math.PI)dth+=2*Math.PI;
+   orb.t.lerpVectors(tw.a.t,tw.b.t,e);orb.r=tw.a.r+(tw.b.r-tw.a.r)*e;orb.th=tw.a.th+dth*e;orb.ph=tw.a.ph+(tw.b.ph-tw.a.ph)*e;if(k>=1)tw=null;needs=true}
+  if(!needs||view!=='3d')return;needs=false;placeCam();ren.render(scene,cam);if(lastRes)labels(lastRes)}
+ requestAnimationFrame(loop);
+ // interacción: arrastre de puntos y órbita
+ const ray=new TH.Raycaster(),ndc=new TH.Vector2();
+ function cast(e,objs){const r=cv.getBoundingClientRect();ndc.set((e.clientX-r.left)/r.width*2-1,-((e.clientY-r.top)/r.height)*2+1);ray.setFromCamera(ndc,cam);return ray.intersectObjects(objs,false)}
+ const touches=new Map();let drag=null,pinch0=0,r0=0,down=null;
+ function moveTo(it,e){
+  if(it.t==='luz'){const hit=cast(e,[ceil])[0];if(hit){it.x=snap(clamp(hit.point.x,0.1,st.L-0.1));it.y=snap(clamp(hit.point.z,0.1,st.A-0.1))}return}
+  const hit=cast(e,wallMeshes)[0];if(!hit)return;const w=hit.object.userData.wall,[x1,y1,x2,y2]=w,vert=x1===x2;
+  // queda sobre la cara del muro que mira a la cámara
+  const off=0.03;let x=hit.point.x,y=hit.point.z;
+  if(vert){const side=hit.object.userData.ext?(x1===0?1:-1):(cam.position.x>x1?1:-1);x=x1+side*(hit.object.userData.ext?off:WT/2+off);y=clamp(y,Math.min(y1,y2)+0.05,Math.max(y1,y2)-0.05)}
+  else{const side=hit.object.userData.ext?(y1===0?1:-1):(cam.position.z>y1?1:-1);y=y1+side*(hit.object.userData.ext?off:WT/2+off);x=clamp(x,Math.min(x1,x2)+0.05,Math.max(x1,x2)-0.05)}
+  it.x=snap(clamp(x,0,st.L));it.y=snap(clamp(y,0,st.A));it.z=snap(clamp(hit.point.y,0.15,st.H-0.15))}
+ cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);touches.set(e.pointerId,{x:e.clientX,y:e.clientY});tw=null;
+  if(touches.size===2){drag=null;const [a,b]=[...touches.values()];pinch0=Math.hypot(a.x-b.x,a.y-b.y);r0=orb.r;return}
+  down={x:e.clientX,y:e.clientY,moved:false};
+  const hit=cast(e,[...ptMesh.values()].map(v=>v.h))[0];
+  if(hit){const id=hit.object.userData.id;sel=id;drag={id};cv.classList.add('dragging');refresh()}});
+ cv.addEventListener('pointermove',e=>{const p=touches.get(e.pointerId);if(!p)return;
+  if(down&&Math.hypot(e.clientX-down.x,e.clientY-down.y)>4)down.moved=true;
+  if(touches.size===2){p.x=e.clientX;p.y=e.clientY;const [a,b]=[...touches.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);if(pinch0>0)orb.r=clamp(r0*pinch0/d,2,40);need();return}
+  if(drag){const it=st.items.find(i=>i.id===drag.id);if(it){moveTo(it,e);const res=compute();lastRes=res;buildPts(res);buildRoutes(res);need()}}
+  else{orb.th-=(e.clientX-p.x)*0.008;orb.ph=clamp(orb.ph-(e.clientY-p.y)*0.008,0.02,1.55);need()}
+  p.x=e.clientX;p.y=e.clientY});
+ const up=e=>{touches.delete(e.pointerId);pinch0=0;cv.classList.remove('dragging');
+  if(drag){drag=null;commit();down=null;return}
+  if(down&&!down.moved&&e.type==='pointerup'){
+   if(tool!=='select'){
+    if(tool==='luz'){const h=cast(e,[ceil,floor])[0];if(h)addAt(snap(clamp(h.point.x,0.1,st.L-0.1)),snap(clamp(h.point.z,0.1,st.A-0.1)),null)}
+    else{const h=cast(e,wallMeshes)[0];if(h){const tmp={t:tool,x:0,y:0,z:T[tool].z};moveTo(tmp,e);tmp.z=T[tool].z;
+      if(tool==='tablero'){const tb=st.items.find(i=>i.t==='tablero');if(tb){tb.x=tmp.x;tb.y=tmp.y;sel=tb.id;commit()}else addAt(tmp.x,tmp.y,null)}
+      else addAt(tmp.x,tmp.y,null)}}}
+   else{sel=null;refresh()}}
+  down=null};
+ cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ cv.addEventListener('wheel',e=>{e.preventDefault();tw=null;orb.r=clamp(orb.r*(1+Math.sign(e.deltaY)*0.08),2,40);need()},{passive:false});
+ $('bReset').onclick=()=>{$('bTop').setAttribute('aria-pressed','false');tweenTo(home())};
+ $('bTop').onclick=e=>{const on=e.currentTarget.getAttribute('aria-pressed')!=='true';e.currentTarget.setAttribute('aria-pressed',on);tweenTo(on?topV():home())};
+ function project(x,y,z){placeCam();cam.updateMatrixWorld();const v=V(x,y,z).project(cam),r=cv.getBoundingClientRect();return {x:r.left+(v.x+1)/2*r.width,y:r.top+(1-v.y)/2*r.height}}
+ return {update(res,full){lastRes=res;if(full)buildHouse();buildPts(res);buildRoutes(res);need()},need,resize,project}}
+
+/* ================= ciclo ================= */
+function refresh(){const res=compute();if(G)G.update(res,false);if(view==='plan')drawPlan(res);selPanel(res);tables(res)}
+function commit(){save();refresh()}
+document.querySelectorAll('.vt').forEach(b=>b.onclick=()=>{view=b.dataset.v;document.querySelectorAll('.vt').forEach(x=>x.setAttribute('aria-selected',x===b));
+ $('v3d').hidden=view!=='3d';$('vplan').hidden=view!=='plan';if(view==='3d'&&G){G.resize();G.need()}refresh()});
+const tg=(id,k)=>{const b=$(id);b.setAttribute('aria-pressed',!!st[k]);b.onclick=()=>{st[k]=!st[k];b.setAttribute('aria-pressed',st[k]);commit()}};
+tg('bRoutes','showRoutes');tg('bCodes','codes');
+$('copyBtn').onclick=()=>{const t=$('exportTxt');navigator.clipboard.writeText(t.value).then(()=>$('copyMsg').textContent='Copiado.',()=>{t.focus();t.select();$('copyMsg').textContent='Seleccioné el texto, copialo a mano.'})};
+$('loadBtn').onclick=()=>{try{const d=JSON.parse($('exportTxt').value);if(!d.puntos)throw 0;nid=1;
+ const items=d.puntos.map(p=>({id:nid++,t:p.tipo,x:+p.x,y:+p.y,z:p.tipo==='luz'?null:+p.z,_ll:p.llave||null}));
+ const lab={};let n=1;items.filter(i=>i.t==='llave').forEach(k=>lab['C1.LL'+(n++)]=k.id);
+ items.forEach(i=>{if(i._ll)i.ll=lab[i._ll]??null;delete i._ll});
+ st={L:d.planta?.largo||10,A:d.planta?.ancho||5,H:d.planta?.cielorraso||2.4,showRoutes:true,codes:st.codes,items};sel=null;save();if(G)G.update(compute(),true);refresh();$('copyMsg').textContent='Distribución cargada.'}
+ catch(e){$('copyMsg').textContent='No pude leer ese texto. Pegá la distribución completa.'}};
+$('resetBtn').onclick=()=>$('resetConfirm').hidden=false;$('resetNo').onclick=()=>$('resetConfirm').hidden=true;
+$('resetYes').onclick=()=>{st=fromBase();sel=null;save();$('resetConfirm').hidden=true;if(G)G.update(compute(),true);refresh()};
+const rethemeAll=()=>{if(G)G.update(compute(),true);refresh()};
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',rethemeAll);
+new MutationObserver(rethemeAll).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
+window.__elec={get st(){return st},project:(x,y,z)=>G&&G.project(x,y,z)};
+buildTools();hint();legend();if(G)G.update(compute(),true);refresh();
+})();
+</script>
+</body>
+</html>
