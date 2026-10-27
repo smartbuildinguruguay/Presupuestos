@@ -1,0 +1,524 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Casa Mateo — Visor de Etapas Constructivas (Sketchfab)</title>
+<script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js"></script>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=JetBrains+Mono:wght@400;700&display=swap');
+
+  :root {
+    --azul: #1F3864;
+    --azul-claro: #2E4D7A;
+    --fondo: #F4F6F9;
+    --borde: #DDE3EC;
+    --texto: #1E293B;
+    --texto-sec: #64748B;
+    --ok: #16A34A;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--fondo);
+    color: var(--texto);
+    height: 100vh;
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  header {
+    background: var(--azul);
+    color: white;
+    padding: 14px 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.12);
+    z-index: 10;
+    flex-shrink: 0;
+  }
+
+  header h1 { font-size: 14px; font-weight: 800; text-transform: uppercase; letter-spacing: 0.05em; }
+  header .sub { font-size: 10px; font-weight: 400; color: #B9C7DE; margin-top: 2px; }
+  header .brand {
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 9px;
+    background: rgba(255,255,255,0.12);
+    padding: 4px 10px;
+    border-radius: 6px;
+    letter-spacing: 0.04em;
+  }
+
+  main {
+    flex: 1;
+    display: grid;
+    grid-template-columns: 1fr 300px;
+    min-height: 0;
+  }
+
+  @media (max-width: 860px) {
+    main { grid-template-columns: 1fr; grid-template-rows: 50vh 1fr; }
+  }
+
+  .viewer-wrap { position: relative; background: #11161F; }
+  #sk-iframe { width: 100%; height: 100%; border: 0; display: block; }
+
+  .panel {
+    background: white;
+    border-left: 1px solid var(--borde);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden;
+  }
+
+  .panel-header { padding: 14px 16px 10px; border-bottom: 1px solid var(--borde); flex-shrink: 0; }
+  .panel-header h2 {
+    font-size: 10px; font-weight: 800; text-transform: uppercase;
+    letter-spacing: 0.08em; color: var(--texto-sec); margin-bottom: 8px;
+  }
+  .panel-actions { display: flex; gap: 6px; }
+
+  .sequence-bar {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--borde);
+    background: #F8FAFC;
+    flex-shrink: 0;
+  }
+  .btn-seq {
+    width: 30px; height: 30px;
+    border-radius: 8px;
+    border: 1px solid var(--borde);
+    background: white;
+    color: var(--azul);
+    font-size: 16px;
+    font-weight: 700;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.15s ease;
+    flex-shrink: 0;
+  }
+  .btn-seq:hover:not(:disabled) { background: var(--azul); color: white; border-color: var(--azul); }
+  .btn-seq:active:not(:disabled) { transform: scale(0.94); }
+  .btn-seq:disabled { opacity: 0.3; cursor: not-allowed; }
+
+  .sequence-label {
+    flex: 1;
+    text-align: center;
+    font-size: 11px;
+    font-weight: 700;
+    color: var(--texto);
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .layer-item.active {
+    outline: 2px solid var(--ok);
+    outline-offset: -2px;
+    background: #F0FDF4;
+  }
+
+  .btn-mini {
+    flex: 1; font-size: 10px; font-weight: 700; padding: 7px 8px;
+    border-radius: 7px; border: 1px solid var(--borde); background: #F8FAFC;
+    color: var(--texto); cursor: pointer; transition: all 0.15s ease; font-family: inherit;
+  }
+  .btn-mini:hover { background: #EEF2F8; border-color: #C7D2E0; }
+  .btn-mini:active { transform: scale(0.97); }
+  .btn-mini:disabled { opacity: 0.4; cursor: not-allowed; }
+
+  .layer-list { flex: 1; overflow-y: auto; padding: 8px; }
+
+  .layer-item {
+    display: flex; align-items: center; gap: 10px; padding: 10px;
+    border-radius: 9px; cursor: pointer; transition: background 0.12s ease; user-select: none;
+  }
+  .layer-item:hover { background: #F4F7FB; }
+
+  .layer-stage {
+    font-family: 'JetBrains Mono', monospace; font-size: 10px; font-weight: 700;
+    color: white; background: var(--azul-claro); width: 20px; height: 20px;
+    border-radius: 6px; display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+  }
+  .layer-item.off .layer-stage { background: #C7D2E0; }
+
+  .layer-label { flex: 1; font-size: 12px; font-weight: 600; color: var(--texto); line-height: 1.3; }
+  .layer-item.off .layer-label { color: var(--texto-sec); text-decoration: line-through; text-decoration-color: #C7D2E0; }
+
+  .switch { width: 34px; height: 19px; border-radius: 999px; background: var(--ok); position: relative; flex-shrink: 0; transition: background 0.15s ease; }
+  .layer-item.off .switch { background: #CBD5E1; }
+  .switch::after {
+    content: ''; position: absolute; top: 2px; left: 17px; width: 15px; height: 15px;
+    border-radius: 50%; background: white; box-shadow: 0 1px 3px rgba(0,0,0,0.25); transition: left 0.15s ease;
+  }
+  .layer-item.off .switch::after { left: 2px; }
+
+  .panel-footer { padding: 12px 16px; border-top: 1px solid var(--borde); font-size: 10px; color: var(--texto-sec); line-height: 1.5; flex-shrink: 0; }
+  .panel-footer strong { color: var(--texto); }
+
+  .status-msg { padding: 16px; font-size: 11px; color: #94A3B8; line-height: 1.6; }
+  .status-msg.error { color: #DC2626; }
+
+  /* Inspector de nodos crudos (debug, colapsable) */
+  .inspector-toggle {
+    font-size: 9px; color: var(--texto-sec); text-align: center; padding: 6px;
+    cursor: pointer; border-top: 1px dashed var(--borde); flex-shrink: 0;
+  }
+  .inspector-toggle:hover { color: var(--azul); }
+  #rawInspector {
+    display: none; max-height: 160px; overflow-y: auto; padding: 8px 16px;
+    font-family: 'JetBrains Mono', monospace; font-size: 9px; color: #94A3B8;
+    border-top: 1px solid var(--borde); background: #FAFBFC; flex-shrink: 0;
+  }
+  #rawInspector div { padding: 2px 0; border-bottom: 1px solid #F0F2F5; }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Casa Mateo · Visor de Etapas</h1>
+    <div class="sub">Modelo 3D (Sketchfab) con activación de capas constructivas</div>
+  </div>
+  <div class="brand">SMART BUILDING URUGUAY</div>
+</header>
+
+<main>
+  <div class="viewer-wrap">
+    <iframe id="sk-iframe" title="Casa Mateo" src="" allow="autoplay; fullscreen; xr-spatial-tracking"></iframe>
+  </div>
+
+  <div class="panel">
+    <div class="panel-header">
+      <h2>Etapas constructivas</h2>
+      <div class="panel-actions">
+        <button class="btn-mini" id="btnAll" disabled>Mostrar todo</button>
+        <button class="btn-mini" id="btnNone" disabled>Ocultar todo</button>
+      </div>
+    </div>
+
+    <div class="sequence-bar">
+      <button class="btn-seq" id="btnPrev" disabled title="Etapa anterior">‹</button>
+      <div class="sequence-label" id="sequenceLabel">—</div>
+      <button class="btn-seq" id="btnNext" disabled title="Siguiente etapa">›</button>
+    </div>
+
+    <div class="layer-list" id="layerList">
+      <div class="status-msg">Cargando modelo desde Sketchfab…</div>
+    </div>
+    <div class="inspector-toggle" id="inspectorToggle">Ver nodos crudos detectados (debug)</div>
+    <div id="rawInspector"></div>
+    <div class="panel-footer">
+      Usá <strong>‹ ›</strong> para reproducir la obra paso a paso, o tocá una etapa para mostrarla/ocultarla manualmente. <strong>Casa Eden Rock — Smart Building Uruguay.</strong>
+    </div>
+  </div>
+</main>
+
+<script>
+  // ── Configuración del modelo ──────────────────────────────
+  const MODEL_UID = '920918b0bc1d4485b06a95327028dafc';
+
+  const iframeEl = document.getElementById('sk-iframe');
+  const layerList = document.getElementById('layerList');
+  const btnAll = document.getElementById('btnAll');
+  const btnNone = document.getElementById('btnNone');
+  const btnPrev = document.getElementById('btnPrev');
+  const btnNext = document.getElementById('btnNext');
+  const sequenceLabel = document.getElementById('sequenceLabel');
+  const rawInspector = document.getElementById('rawInspector');
+  const inspectorToggle = document.getElementById('inspectorToggle');
+
+  inspectorToggle.addEventListener('click', () => {
+    rawInspector.style.display = rawInspector.style.display === 'none' ? 'block' : 'none';
+  });
+
+  let api = null;
+  let layerGroups = []; // { name, instanceIDs: [...], visible }
+  // sequenceIndex = cuántas etapas están "reveladas" en el modo secuencial.
+  // 0 = nada visible. layerGroups.length = todo visible.
+  let sequenceIndex = 0;
+
+  const client = new Sketchfab(iframeEl);
+
+  client.init(MODEL_UID, {
+    autostart: 1,
+    preload: 1,
+    ui_theme: 'dark',
+    ui_infos: 0,
+    ui_watermark: 0,
+    ui_controls: 1,
+    success: function (apiInstance) {
+      api = apiInstance;
+      api.start();
+      api.addEventListener('viewerready', () => {
+        api.getNodeMap((err, nodes) => {
+          if (err) {
+            showError('No se pudo leer la lista de nodos del modelo.');
+            return;
+          }
+          processNodes(nodes);
+        });
+      });
+    },
+    error: function () {
+      showError('No se pudo cargar el modelo de Sketchfab. Verificá el UID o tu conexión.');
+    }
+  });
+
+  function showError(msg) {
+    layerList.innerHTML = `<div class="status-msg error">${msg}</div>`;
+  }
+
+  // Agrupa los nodos crudos de Sketchfab por etapa, según nombres "N - Descripción"
+  function processNodes(nodes) {
+    const nodeArray = Object.values(nodes);
+
+    // Debug: mostrar todos los nodos con nombre en el inspector
+    rawInspector.innerHTML = nodeArray
+      .filter(n => n.name)
+      .map(n => `<div>[${n.instanceID}] ${n.name}</div>`)
+      .join('') || '<div>No se encontraron nodos con nombre.</div>';
+
+    // Agrupamos: cualquier nodo cuyo nombre empiece con "N - " es la raíz de una etapa.
+    // Sus descendientes (hijos en la jerarquía que Sketchfab nos da via node.children)
+    // se agregan a esa etapa para que el show/hide cubra el grupo completo.
+    const stageRoots = nodeArray.filter(n => n.name && /^\d+\s*-/.test(n.name));
+
+    if (stageRoots.length === 0) {
+      // Fallback: si Sketchfab renombró/aplanó los nodos y no encontramos las raíces
+      // por nombre exacto, mostramos el inspector abierto para diagnosticar a mano.
+      layerList.innerHTML = `
+        <div class="status-msg">
+          No se detectaron automáticamente los grupos de etapa por nombre.<br><br>
+          Abrí "Ver nodos crudos detectados" abajo para revisar los nombres reales
+          que devolvió Sketchfab y ajustamos la detección.
+        </div>`;
+      rawInspector.style.display = 'block';
+      return;
+    }
+
+    // Para cada raíz de etapa, recolectamos todos los instanceID de su subárbol
+    const nodeById = {};
+    nodeArray.forEach(n => { nodeById[n.instanceID] = n; });
+
+    function collectSubtreeIDs(node, acc) {
+      acc.push(node.instanceID);
+      if (node.children && node.children.length) {
+        node.children.forEach(childId => {
+          const child = nodeById[childId];
+          if (child) collectSubtreeIDs(child, acc);
+        });
+      }
+    }
+
+    layerGroups = stageRoots.map(root => {
+      const ids = [];
+      collectSubtreeIDs(root, ids);
+      return {
+        name: root.name,
+        instanceIDs: ids,
+        visible: true
+      };
+    });
+
+    sortLayerGroups();
+
+    // Modo secuencial inicia con todo oculto, listo para reproducir paso a paso
+    sequenceIndex = 0;
+    layerGroups.forEach(l => { l.visible = false; applyVisibility(l); });
+
+    renderLayerList();
+    btnAll.disabled = false;
+    btnNone.disabled = false;
+    btnPrev.disabled = false;
+    btnNext.disabled = false;
+    updateSequenceLabel();
+  }
+
+  // Orden explícito de obra. En vez de comparar el nombre completo y exacto
+  // (frágil ante espacios extra, mayúsculas, etc. que Sketchfab podría alterar
+  // al procesar el archivo), cada etapa se identifica por una palabra clave
+  // distintiva que buscamos dentro del nombre real del nodo, sin importar
+  // mayúsculas/minúsculas ni espacios repetidos.
+  const STAGE_ORDER_KEYS = [
+    'dados',
+    'tirantes 8',
+    'tirantes 6',
+    'contrapiso euca',
+    'muros',
+    'palos euca',
+    'osb euca',
+    '2x1 vert',
+    'tyvek',
+    'clavaderas',
+    'teja asfaltica'
+  ];
+
+  function normalize(str) {
+    return str
+      .toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '') // saca acentos
+      .replace(/\s+/g, ' ')
+      .trim();
+  }
+
+  function stageOrderIndex(name) {
+    const n = normalize(name);
+    for (let i = 0; i < STAGE_ORDER_KEYS.length; i++) {
+      if (n.includes(STAGE_ORDER_KEYS[i])) return i;
+    }
+    return -1;
+  }
+
+  function sortLayerGroups() {
+    layerGroups.forEach(l => {
+      if (stageOrderIndex(l.name) === -1) {
+        console.warn('[orden] Nombre sin palabra clave reconocida:', JSON.stringify(l.name));
+      }
+    });
+
+    layerGroups.sort((a, b) => {
+      const ia = stageOrderIndex(a.name);
+      const ib = stageOrderIndex(b.name);
+      if (ia !== -1 && ib !== -1) return ia - ib;
+      if (ia !== -1) return -1;
+      if (ib !== -1) return 1;
+      const na = parseInt(a.name.match(/^\d+/)?.[0] || '99', 10);
+      const nb = parseInt(b.name.match(/^\d+/)?.[0] || '99', 10);
+      if (na !== nb) return na - nb;
+      return a.name.localeCompare(b.name);
+    });
+  }
+
+  function renderLayerList() {
+    layerList.innerHTML = '';
+
+    layerGroups.forEach((layer, i) => {
+      const stageNum = layer.name.match(/^\d+/)[0];
+      const label = layer.name.replace(/^\d+\s*-\s*/, '');
+
+      const item = document.createElement('div');
+      item.className = 'layer-item';
+      item.dataset.index = i;
+      item.innerHTML = `
+        <div class="layer-stage">${stageNum}</div>
+        <div class="layer-label">${label}</div>
+        <div class="switch"></div>
+      `;
+      item.addEventListener('click', () => toggleLayer(i));
+      layerList.appendChild(item);
+    });
+  }
+
+  function toggleLayer(i) {
+    const layer = layerGroups[i];
+    layer.visible = !layer.visible;
+    applyVisibility(layer);
+
+    const item = layerList.querySelector(`[data-index="${i}"]`);
+    item.classList.toggle('off', !layer.visible);
+
+    // El toggle manual de una capa individual rompe la noción de "paso secuencial
+    // limpio" (por ejemplo, si apagás una etapa intermedia a mano). Recalculamos
+    // sequenceIndex como la cantidad de capas visibles desde el principio en orden,
+    // y dejamos de marcar un paso "activo" si el estado ya no es un prefijo limpio.
+    recalcSequenceIndexFromState();
+  }
+
+  function recalcSequenceIndexFromState() {
+    let count = 0;
+    for (let i = 0; i < layerGroups.length; i++) {
+      if (layerGroups[i].visible) count++;
+      else break;
+    }
+    sequenceIndex = count;
+    updateSequenceLabel();
+    highlightActiveStep();
+  }
+
+  function applyVisibility(layer) {
+    if (!api) return;
+    layer.instanceIDs.forEach(id => {
+      if (layer.visible) {
+        api.show(id);
+      } else {
+        api.hide(id);
+      }
+    });
+  }
+
+  btnAll.addEventListener('click', () => {
+    layerGroups.forEach((l, i) => {
+      l.visible = true;
+      applyVisibility(l);
+      layerList.querySelector(`[data-index="${i}"]`)?.classList.remove('off');
+    });
+    sequenceIndex = layerGroups.length;
+    updateSequenceLabel();
+    highlightActiveStep();
+  });
+
+  btnNone.addEventListener('click', () => {
+    layerGroups.forEach((l, i) => {
+      l.visible = false;
+      applyVisibility(l);
+      layerList.querySelector(`[data-index="${i}"]`)?.classList.add('off');
+    });
+    sequenceIndex = 0;
+    updateSequenceLabel();
+    highlightActiveStep();
+  });
+
+  // ── Modo secuencial: avanza/retrocede mostrando una etapa más/menos,
+  // de forma acumulativa (las etapas previas quedan visibles). ──────────
+  function goToSequenceStep(newIndex) {
+    newIndex = Math.max(0, Math.min(layerGroups.length, newIndex));
+    layerGroups.forEach((layer, i) => {
+      layer.visible = i < newIndex;
+      applyVisibility(layer);
+      const item = layerList.querySelector(`[data-index="${i}"]`);
+      if (item) item.classList.toggle('off', !layer.visible);
+    });
+    sequenceIndex = newIndex;
+    updateSequenceLabel();
+    highlightActiveStep();
+  }
+
+  function highlightActiveStep() {
+    layerList.querySelectorAll('.layer-item').forEach(el => el.classList.remove('active'));
+    if (sequenceIndex > 0 && sequenceIndex <= layerGroups.length) {
+      const lastVisible = layerList.querySelector(`[data-index="${sequenceIndex - 1}"]`);
+      if (lastVisible) lastVisible.classList.add('active');
+    }
+  }
+
+  function updateSequenceLabel() {
+    if (layerGroups.length === 0) {
+      sequenceLabel.textContent = '—';
+      return;
+    }
+    if (sequenceIndex === 0) {
+      sequenceLabel.textContent = 'Sin construir';
+    } else {
+      const current = layerGroups[sequenceIndex - 1];
+      const stageNum = current.name.match(/^\d+/)[0];
+      sequenceLabel.textContent = `Paso ${sequenceIndex}/${layerGroups.length} · Etapa ${stageNum}`;
+    }
+    btnPrev.disabled = sequenceIndex <= 0;
+    btnNext.disabled = sequenceIndex >= layerGroups.length;
+  }
+
+  btnPrev.addEventListener('click', () => goToSequenceStep(sequenceIndex - 1));
+  btnNext.addEventListener('click', () => goToSequenceStep(sequenceIndex + 1));
+
+</script>
+
+</body>
+</html>

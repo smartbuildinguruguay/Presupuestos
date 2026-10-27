@@ -1,0 +1,580 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Eden Rock · Visor de Etapas Constructivas</title>
+<style>
+  :root{
+    --navy:#1F3864; --navy-light:#2E5395; --paper:#F4F6F9; --line:#E2E0D8;
+    --accent:#D97757; --texto:#20242C; --texto-sec:#6B7280; --fondo:#F7F8FA;
+    --borde:#E4E7EC;
+  }
+  *{box-sizing:border-box;}
+  html,body{height:100%;margin:0;font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;background:var(--fondo);color:var(--texto);}
+
+  header{
+    height:56px;display:flex;align-items:center;justify-content:space-between;
+    padding:0 18px;background:var(--navy);color:#fff;flex-shrink:0;
+  }
+  header h1{font-size:15px;margin:0;font-weight:700;}
+  header .sub{font-size:11px;opacity:.75;margin-top:1px;}
+  header .brand{font-size:11px;font-weight:700;letter-spacing:.04em;opacity:.85;}
+
+  main{display:flex;height:calc(100% - 56px);}
+
+  #viewer-wrap{flex:1;position:relative;background:#dde3ea;}
+  #canvas-container{position:absolute;inset:0;}
+  #canvas-container canvas{display:block;width:100%;height:100%;cursor:grab;}
+  #canvas-container canvas:active{cursor:grabbing;}
+
+  #loading-overlay{
+    position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;
+    background:var(--fondo);gap:10px;z-index:20;
+  }
+  .spinner{width:34px;height:34px;border:3px solid var(--borde);border-top-color:var(--accent);border-radius:50%;animation:spin .8s linear infinite;}
+  @keyframes spin{to{transform:rotate(360deg);}}
+  #loading-overlay .msg{font-size:13px;color:var(--texto-sec);}
+  #loading-overlay .pct{font-size:20px;font-weight:700;color:var(--navy);}
+
+  #hint{
+    position:absolute;bottom:14px;left:14px;background:rgba(20,24,32,0.72);color:#fff;
+    font-size:11px;padding:6px 10px;border-radius:6px;z-index:10;pointer-events:none;
+  }
+
+  #zoom-controls{
+    position:absolute;bottom:14px;right:14px;display:flex;flex-direction:column;gap:6px;z-index:10;
+  }
+  #zoom-controls button, #center-btn{
+    width:34px;height:34px;border-radius:8px;border:1px solid var(--borde);background:#fff;
+    font-size:16px;cursor:pointer;box-shadow:0 1px 3px rgba(0,0,0,0.12);color:var(--navy);
+  }
+  #zoom-controls button:hover, #center-btn:hover{background:var(--paper);}
+
+  #panel{
+    width:300px;flex-shrink:0;background:#fff;border-left:1px solid var(--borde);
+    display:flex;flex-direction:column;overflow:hidden;
+  }
+  .panel-header{padding:14px 16px 10px;border-bottom:1px solid var(--borde);}
+  .panel-header h2{font-size:13px;margin:0 0 2px 0;color:var(--navy);}
+  .panel-header p{font-size:11px;color:var(--texto-sec);margin:0;line-height:1.5;}
+
+  #layer-list{flex:1;overflow-y:auto;padding:10px 14px;}
+
+  .layer-block{margin-bottom:16px;}
+  .layer-block-title{
+    font-size:10.5px;font-weight:700;color:var(--texto-sec);text-transform:uppercase;
+    letter-spacing:.04em;margin-bottom:6px;
+  }
+
+  .layer-row{
+    display:flex;align-items:center;gap:9px;padding:8px 9px;border-radius:8px;cursor:pointer;
+    border:1px solid transparent;
+  }
+  .layer-row:hover{background:var(--fondo);}
+  .layer-row.locked{cursor:default;opacity:.8;}
+  .layer-row input{width:15px;height:15px;accent-color:var(--accent);cursor:pointer;flex-shrink:0;}
+  .layer-row .dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+  .layer-row .label{font-size:12.5px;flex:1;color:var(--texto);}
+  .layer-row .count{font-size:10px;color:var(--texto-sec);}
+  .layer-row.active-pair{border-color:var(--accent);background:#FFF4F0;}
+
+  .exclusive-note{
+    font-size:10.5px;color:var(--texto-sec);background:var(--fondo);border:1px dashed var(--borde);
+    border-radius:7px;padding:7px 9px;margin:2px 0 10px;line-height:1.5;
+  }
+
+  .panel-footer{
+    padding:10px 16px;border-top:1px dashed var(--borde);font-size:10.5px;color:var(--texto-sec);flex-shrink:0;
+  }
+  .panel-footer strong{color:var(--texto);}
+
+  @media (max-width: 760px){
+    main{flex-direction:column;}
+    #panel{width:100%;height:46vh;border-left:none;border-top:1px solid var(--borde);}
+    #viewer-wrap{height:auto;flex:1;}
+  }
+</style>
+</head>
+<body>
+
+<header>
+  <div>
+    <h1>Eden Rock · Visor de Etapas Constructivas</h1>
+    <div class="sub">Propuesta 3 · Steel framing · SketchUp → GLB → Three.js</div>
+  </div>
+  <div class="brand">SMART BUILDING URUGUAY</div>
+</header>
+
+<main>
+  <div id="viewer-wrap">
+    <div id="canvas-container"></div>
+
+    <div id="loading-overlay">
+      <div class="spinner"></div>
+      <div class="msg">Cargando modelo 3D…</div>
+      <div class="pct" id="loading-pct">0%</div>
+    </div>
+
+    <div id="hint">Click + arrastrar: orbitar · Rueda: zoom · Click derecho: pan</div>
+
+    <div id="zoom-controls">
+      <button id="zoomIn" title="Acercar">＋</button>
+      <button id="zoomOut" title="Alejar">－</button>
+      <button id="center-btn" title="Centrar vista">🎯</button>
+    </div>
+  </div>
+
+  <div id="panel">
+    <div class="panel-header">
+      <h2>Capas / Etapas Constructivas</h2>
+      <p>Tildá o destildá cada capa para mostrarla u ocultarla en el modelo.</p>
+    </div>
+    <div id="layer-list">
+      <div style="padding:20px;text-align:center;color:var(--texto-sec);font-size:12px;">Cargando estructura del modelo…</div>
+    </div>
+    <div class="panel-footer">
+      <strong>Eden Rock — Smart Building Uruguay.</strong> Propuesta 3, 262&nbsp;m².
+    </div>
+  </div>
+</main>
+
+<script type="importmap">
+{
+  "imports": {
+    "three": "https://unpkg.com/three@0.160.0/build/three.module.js",
+    "three/addons/": "https://unpkg.com/three@0.160.0/examples/jsm/"
+  }
+}
+</script>
+
+<script type="module">
+import * as THREE from 'three';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
+
+const MODEL_URL = './ESTRUCTURA_EDEN_ROCK_FINAL.glb';
+
+// ============== DEFINICIÓN DE CAPAS ==============
+// Cada capa se identifica por el ancestro nombrado MÁS CERCANO de cada mesh
+// (recorriendo hacia arriba desde la malla). Esto resuelve casos como
+// "Cerchas Hierro" anidado dentro de "Fachadas Ext/Int": como Cerchas Hierro
+// es el ancestro más próximo, esas mallas van al grupo "hierro" y no a "fachadas".
+const GROUP_DEFS = [
+  { id: 'steel',       label: 'Steel Framing (Estructura)',   color: '#2E5395', test: n => /^wall\d+$/i.test(n) },
+  { id: 'hierro',      label: 'Estructura de Hierro (Cerchas)', color: '#8A6100', test: n => /cerchas hierro/i.test(n) || /estructura metalica/i.test(n), alwaysOn: true },
+  { id: 'techo',       label: 'Techo Isoroof',                color: '#D97757', test: n => /isoroof/i.test(n) },
+  { id: 'pergola',     label: 'Pérgola de Madera',            color: '#6B8E4E', test: n => /pergola/i.test(n) },
+  { id: 'terminacion', label: 'Fachadas y Aberturas (Terminación)', color: '#B65C9C', test: n => /fachadas/i.test(n) || /^aberturas$/i.test(n) },
+  { id: 'platea',      label: 'Platea de Hormigón',           color: '#9AA3AF', test: n => /^ground/i.test(n) || /platea/i.test(n), alwaysOn: true },
+  { id: 'sinclasificar', label: '⚠️ Sin clasificar (a identificar)', color: '#DC2626', test: () => false },
+];
+// Par mutuamente excluyente: mostrar uno oculta el otro automáticamente
+const EXCLUSIVE_PAIR = ['terminacion', 'steel'];
+// Al activar un lado del par excluyente, se arrastran estas capas con él
+// (Terminación = fachadas+techo+pérgola puestos; Estructura = solo steel+hierro)
+const MODE_BUNDLE = {
+  terminacion: { show: ['techo', 'pergola'], hide: [] },
+  steel:       { show: [], hide: ['techo', 'pergola'] },
+};
+
+// Estado inicial (visible / oculto) por capa
+const INITIAL_STATE = {
+  platea: true, terminacion: true, steel: false,
+  hierro: true, techo: true, pergola: true,
+  sinclasificar: true,
+};
+
+// ============== ESCENA THREE.JS ==============
+const container = document.getElementById('canvas-container');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0xdde3ea);
+
+const camera = new THREE.PerspectiveCamera(45, container.clientWidth / container.clientHeight, 0.05, 3000);
+camera.position.set(18, 14, 20);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true, logarithmicDepthBuffer: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(container.clientWidth, container.clientHeight);
+renderer.outputColorSpace = THREE.SRGBColorSpace;
+container.appendChild(renderer.domElement);
+
+const hemi = new THREE.HemisphereLight(0xffffff, 0x556677, 2.2);
+scene.add(hemi);
+const dir1 = new THREE.DirectionalLight(0xffffff, 2.2);
+dir1.position.set(30, 40, 20);
+scene.add(dir1);
+const dir2 = new THREE.DirectionalLight(0xffffff, 1.3);
+dir2.position.set(-20, 15, -25);
+scene.add(dir2);
+// Tercera luz de relleno: un techo a cuatro aguas tiene faldones mirando a
+// direcciones bien distintas, y con solo 2 luces direccionales quedaban 1 o 2
+// bien iluminados y el resto oscuros. Esta cubre el ángulo que faltaba.
+const dir3 = new THREE.DirectionalLight(0xffffff, 1.1);
+dir3.position.set(-25, 25, 30);
+scene.add(dir3);
+
+const controls = new OrbitControls(camera, renderer.domElement);
+controls.enableDamping = true;
+controls.dampingFactor = 0.08;
+controls.target.set(0, 2, 0);
+controls.enableZoom = true;
+controls.zoomSpeed = 2.2;
+controls.panSpeed = 0.9;
+controls.rotateSpeed = 0.75;
+controls.mouseButtons = {
+  LEFT: THREE.MOUSE.ROTATE,
+  MIDDLE: THREE.MOUSE.DOLLY,
+  RIGHT: THREE.MOUSE.PAN,
+};
+renderer.domElement.addEventListener('contextmenu', e => e.preventDefault());
+
+window.addEventListener('resize', () => {
+  camera.aspect = container.clientWidth / container.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(container.clientWidth, container.clientHeight);
+});
+
+document.getElementById('zoomIn').onclick = () => { camera.position.lerp(controls.target, 0.15); };
+document.getElementById('zoomOut').onclick = () => { camera.position.lerp(controls.target, -0.2); };
+
+let modelRoot = null;
+document.getElementById('center-btn').onclick = () => {
+  if (!modelRoot) return;
+  fitCameraToVisible();
+};
+
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  renderer.render(scene, camera);
+}
+animate();
+
+// ============== CARGA DEL MODELO ==============
+const loadingOverlay = document.getElementById('loading-overlay');
+const loadingPct = document.getElementById('loading-pct');
+
+const dracoLoader = new DRACOLoader();
+dracoLoader.setDecoderPath('https://unpkg.com/three@0.160.0/examples/jsm/libs/draco/');
+const loader = new GLTFLoader();
+loader.setDRACOLoader(dracoLoader);
+
+// Grupos: cada uno acumula referencias directas a los Object3D que poseen mesh
+const GROUPS = {};
+GROUP_DEFS.forEach(g => GROUPS[g.id] = { def: g, nodes: [] });
+GROUPS['otros'] = { def: { id: 'otros', label: 'Otros elementos' }, nodes: [] };
+
+function classify(meshObject) {
+  let cur = meshObject.parent;
+  let anyNamedAncestor = false;
+  while (cur) {
+    // GLTFLoader sanitiza espacios a guion bajo en los nombres de nodo (ej. "CERCHAS HIERRO"
+    // exportado por SketchUp llega acá como "CERCHAS_HIERRO"). Normalizamos antes de testear
+    // o los regex con espacio literal nunca matchean y el nodo cae siempre a "otros"
+    // (grupo que se renderiza sí o sí, sin poder ocultarlo con los checkboxes).
+    // "Geom3D" (a veces con sufijo _N) es el nombre genérico que deja SketchUp cuando
+    // una pieza pierde su agrupación real (ej. la pérgola quedó suelta con este nombre
+    // en vez de "PERGOLA DE MADERA"). No cuenta como nombre real, si no cae en "otros"
+    // (grupo siempre visible, imposible de ocultar con los checkboxes).
+    if (cur.name && !/^Assembly-\d+$/.test(cur.name) && !/^Geom3D_?\d*$/.test(cur.name)) anyNamedAncestor = true;
+    const name = (cur.name || '').replace(/[_-]+/g, ' ');
+    for (const g of GROUP_DEFS) {
+      if (g.test(name)) return g.id;
+    }
+    cur = cur.parent;
+  }
+  // 71 piezas de este export quedaron sin ningún nombre (mezcla de hojas de puertas/ventanas
+  // y correas de hierro, sin forma de distinguirlas por texto). Van a un grupo aparte,
+  // visible por default, para identificarlas una por una antes de reclasificarlas bien.
+  // Confirmado en varias exportaciones seguidas (LAPS5-8): lo que no tiene ningún
+  // nombre real termina siendo siempre la pérgola de madera (perdió su agrupación
+  // "PERGOLA DE MADERA" en SketchUp). Va directo a ese grupo para que el checkbox
+  // la controle de verdad, en vez de a "sin clasificar".
+  if (!anyNamedAncestor) return 'pergola';
+  return 'otros';
+}
+
+loader.load(
+  MODEL_URL,
+  (gltf) => {
+    modelRoot = gltf.scene;
+    scene.add(modelRoot);
+
+    modelRoot.traverse((obj) => {
+      if (obj.isMesh) {
+        obj.castShadow = false;
+        obj.receiveShadow = false;
+        // Varias piezas (114 de 160 en el techo Isoroof, por ejemplo) vienen con las
+        // normales invertidas — un patrón típico de cómo SketchUp espeja copias de
+        // tejas/paneles. Con material a una sola cara, esas piezas se ven negras al
+        // mirarlas desde el lado "de atrás" (ej. el cielorraso). Doble cara lo evita
+        // sin tener que corregir cada pieza individualmente en el modelo fuente.
+        const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+        mats.forEach((m) => { if (m) m.side = THREE.DoubleSide; });
+        // El exportador de SketchUp le pone metallic=0.5 por defecto a CUALQUIER
+        // material sin flujo de metalicidad definido a mano — incluidas madera,
+        // hormigón y contrachapado, que deberían ser 0 (mate). Sin un mapa de
+        // entorno para reflejar, un material "medio metálico" se ve oscuro y con
+        // brillo raro salvo justo donde pega el specular. Se corrige a 0 en todo
+        // lo que no sea metal de verdad (por nombre de material).
+        mats.forEach((m) => {
+          if (m && typeof m.metalness === 'number') {
+            const isRealMetal = /metal/i.test(m.name || '');
+            if (!isRealMetal) {
+              m.metalness = 0;
+              if (m.roughness < 0.7) m.roughness = 0.85;
+            }
+          }
+        });
+        const gid = classify(obj);
+        // Piso de brillo mínimo SOLO en el techo: algunas piezas (con transform casi
+        // degenerado) dan una normal mal calculada en el shader y quedan en negro
+        // puro sin importar el lado. En vez de perseguir cada caso, se les da un
+        // poco de luz propia (emissive tenue) para que nunca caigan a negro total.
+        if (gid === 'techo') {
+          mats.forEach((m) => {
+            if (m && m.color) {
+              m.emissive = m.emissive || new THREE.Color(0x000000);
+              m.emissive.copy(m.color).multiplyScalar(0.12);
+            }
+          });
+        }
+        // A pedido: no se oculta nada del componente de techo, se deja tal cual
+        // viene del .glb (incluida la cara sin material, sin tocarla).
+        const firstMat = Array.isArray(obj.material) ? obj.material[0] : obj.material;
+        if (gid !== 'techo' && firstMat && firstMat.name === '') {
+          obj.visible = false;
+          return;
+        }
+        // Tabla de piso de madera (material "Wood_Floor_01_1K") que quedó agrupada por
+        // error dentro de "Estructura Metálica" al reorganizar componentes en SketchUp
+        // (el mismo material se usa correctamente en 2 lugares más — Fachadas y Platea —
+        // así que se excluye por la combinación grupo+material, no por el material solo).
+        const matName = Array.isArray(obj.material) ? (obj.material[0] && obj.material[0].name) : (obj.material && obj.material.name);
+        if (gid === 'hierro' && matName === 'Wood_Floor_01_1K') {
+          obj.visible = false;
+          return;
+        }
+        GROUPS[gid].nodes.push(obj);
+        // Las cerchas de hierro son barras muy finas (relación largo/espesor ~78:1).
+        // A ciertos ángulos, las caras casi coplanares "z-fightean" y dan la sensación
+        // visual de que el fierro se dobla o quiebra en diagonal — no es la geometría
+        // real (confirmado: los datos del .glb son rectas y consistentes entre instancias),
+        // es un artefacto de render. polygonOffset separa las caras en el depth buffer.
+        if (gid === 'hierro' && obj.material) {
+          const mats = Array.isArray(obj.material) ? obj.material : [obj.material];
+          mats.forEach((m) => {
+            m.polygonOffset = true;
+            m.polygonOffsetFactor = -1;
+            m.polygonOffsetUnits = -1;
+            m.side = THREE.DoubleSide;
+          });
+          // Las barras SIMPLES de hierro (correas: cajas rectas de un solo miembro, pocos
+          // vértices) miden ~0,08-0,17 de espesor por hasta ~20 de largo — de canto casi
+          // desaparecen y parecen "dobladas" (geometría verificada recta, es óptico).
+          // Las CERCHAS completas en cambio son mallas complejas (100-200 vértices, varios
+          // miembros en ángulos distintos: parantes, cabriadas, riostras) — a esas NO hay
+          // que aplicarles este engrosado por eje único, porque distorsiona cada miembro
+          // interno de forma distinta y deforma la pieza (se ve como una "Y" rota).
+          const posCount = obj.geometry.attributes.position ? obj.geometry.attributes.position.count : 0;
+          if (posCount > 0 && posCount <= 60) {
+            const geom = obj.geometry.clone();
+            obj.geometry = geom;
+            geom.computeBoundingBox();
+            const bb = geom.boundingBox;
+            const dims = ['x', 'y', 'z'];
+            const extents = { x: bb.max.x - bb.min.x, y: bb.max.y - bb.min.y, z: bb.max.z - bb.min.z };
+            const longAxis = dims.reduce((a, b) => (extents[a] > extents[b] ? a : b));
+            const THICKEN = 10;
+            // Solo engrosar un eje si es realmente fino en relación al eje largo
+            // (>15:1, como las correas reales). Si no, es más una placa/cartela
+            // achatada que una barra, y engrosarla la infla en un bloque gigante.
+            const MIN_RATIO = 15;
+            const scaleFor = (axis) => {
+              if (axis === longAxis) return 1;
+              const ratio = extents[longAxis] / Math.max(extents[axis], 0.0001);
+              return ratio > MIN_RATIO ? THICKEN : 1;
+            };
+            const center = new THREE.Vector3();
+            bb.getCenter(center);
+            geom.translate(-center.x, -center.y, -center.z);
+            geom.scale(scaleFor('x'), scaleFor('y'), scaleFor('z'));
+            geom.translate(center.x, center.y, center.z);
+          }
+          // Contorno adicional (a todas las piezas de hierro, simples o complejas) para
+          // que el borde se lea nítido desde cualquier ángulo.
+          const edges = new THREE.EdgesGeometry(obj.geometry, 25);
+          const outline = new THREE.LineSegments(
+            edges,
+            new THREE.LineBasicMaterial({ color: 0x5c3d00, transparent: true, opacity: 0.85 })
+          );
+          obj.add(outline);
+        }
+      }
+    });
+
+    // Aplicar estado inicial
+    Object.keys(GROUPS).forEach((gid) => {
+      const visible = gid === 'otros' ? true : (INITIAL_STATE[gid] ?? true);
+      setGroupVisible(gid, visible, false);
+    });
+
+    // Fuerza la actualización de matrices del modelo recién cargado antes de encuadrar
+    // la cámara. Sin esto, el primer fitCameraToModel() puede correr antes de que
+    // Three.js termine de propagar transforms en árboles muy grandes (7000+ nodos),
+    // dando una posición de cámara absurda (a miles de unidades) y canvas en blanco
+    // hasta tocar "Centrar" a mano.
+    modelRoot.updateMatrixWorld(true);
+    fitCameraToModel();
+    buildLayerPanel();
+    loadingOverlay.style.display = 'none';
+  },
+  (xhr) => {
+    if (xhr.total) {
+      const pct = Math.round((xhr.loaded / xhr.total) * 100);
+      loadingPct.textContent = pct + '%';
+    }
+  },
+  (err) => {
+    console.error(err);
+    loadingOverlay.querySelector('.msg').textContent = 'Error cargando el modelo. Revisá la consola.';
+    loadingPct.textContent = '';
+  }
+);
+
+function fitCameraToModel() {
+  fitCameraToVisible();
+}
+
+// Encuadra la cámara según lo que esté VISIBLE en este momento (no el modelo completo fijo).
+// Así, al aislar una sola capa (p.ej. solo Hierro), el botón 🎯 Centrar la enmarca bien de frente
+// en vez de mantener el ángulo pensado para la casa completa.
+function fitCameraToVisible() {
+  const box = new THREE.Box3();
+  let any = false;
+  Object.values(GROUPS).forEach((g) => {
+    g.nodes.forEach((n) => {
+      if (n.visible) {
+        box.expandByObject(n);
+        any = true;
+      }
+    });
+  });
+  if (!any) return;
+
+  const size = box.getSize(new THREE.Vector3());
+  const center = box.getCenter(new THREE.Vector3());
+  const dist = Math.max(size.x, size.y, size.z, 1) * 1.3;
+  // Vista más frontal/elevada (menos oblicua) para que geometría fina no se distorsione tanto por perspectiva
+  camera.position.set(center.x + dist * 0.35, center.y + dist * 0.5, center.z + dist * 0.85);
+  controls.target.copy(center);
+  camera.near = Math.max(dist / 200, 0.01);
+  camera.far = dist * 30;
+  camera.updateProjectionMatrix();
+}
+
+function setGroupVisible(gid, visible, updateUI = true) {
+  const g = GROUPS[gid];
+  if (!g) return;
+  g.nodes.forEach(n => { n.visible = visible; });
+  if (updateUI) {
+    const cb = document.querySelector(`input[data-gid="${gid}"]`);
+    if (cb) cb.checked = visible;
+    const row = document.querySelector(`.layer-row[data-gid="${gid}"]`);
+    if (row) row.classList.toggle('active-pair', visible && EXCLUSIVE_PAIR.includes(gid));
+  }
+}
+
+function isExclusive(gid) { return EXCLUSIVE_PAIR.includes(gid); }
+
+function toggleGroup(gid, checked) {
+  setGroupVisible(gid, checked);
+  if (checked && isExclusive(gid)) {
+    // Apagar el otro miembro del par excluyente
+    EXCLUSIVE_PAIR.filter(x => x !== gid).forEach(other => setGroupVisible(other, false));
+    // Arrastrar las capas asociadas a este modo (Terminación: techo+pérgola puestos,
+    // hierro apagado / Estructura: hierro puesto, techo+pérgola apagados)
+    const bundle = MODE_BUNDLE[gid];
+    if (bundle) {
+      bundle.show.forEach(id => setGroupVisible(id, true));
+      bundle.hide.forEach(id => setGroupVisible(id, false));
+    }
+  }
+}
+
+// ============== PANEL LATERAL ==============
+function buildLayerPanel() {
+  const list = document.getElementById('layer-list');
+  list.innerHTML = '';
+
+  // --- Platea y Estructura de Hierro (siempre visibles, bloqueadas) ---
+  const blockPlatea = document.createElement('div');
+  blockPlatea.className = 'layer-block';
+  blockPlatea.innerHTML = `<div class="layer-block-title">Base</div>`;
+  ['platea', 'hierro'].forEach((gid) => {
+    const def = GROUP_DEFS.find(g => g.id === gid);
+    const row = document.createElement('div');
+    row.className = 'layer-row locked';
+    row.innerHTML = `
+      <span class="dot" style="background:${def.color}"></span>
+      <span class="label">${def.label}</span>
+      <span class="count">siempre visible</span>
+    `;
+    blockPlatea.appendChild(row);
+  });
+  list.appendChild(blockPlatea);
+
+  // --- Par excluyente: Fachadas vs Steel Framing ---
+  const blockPair = document.createElement('div');
+  blockPair.className = 'layer-block';
+  blockPair.innerHTML = `<div class="layer-block-title">Terminación vs. Estructura</div>`;
+  blockPair.appendChild(makeRow('terminacion'));
+  blockPair.appendChild(makeRow('steel'));
+  const note = document.createElement('div');
+  note.className = 'exclusive-note';
+  note.textContent = 'Mutuamente excluyentes: al mostrar una, la otra se oculta automáticamente para que no se superpongan.';
+  blockPair.appendChild(note);
+  list.appendChild(blockPair);
+
+  // --- Opcionales independientes ---
+  const blockOpc = document.createElement('div');
+  blockOpc.className = 'layer-block';
+  blockOpc.innerHTML = `<div class="layer-block-title">Pestañas opcionales</div>`;
+  ['techo', 'pergola'].forEach(gid => blockOpc.appendChild(makeRow(gid)));
+  list.appendChild(blockOpc);
+
+  // --- Sin clasificar (piezas del último export sin agrupar, a identificar) ---
+  const blockSin = document.createElement('div');
+  blockSin.className = 'layer-block';
+  blockSin.innerHTML = `<div class="layer-block-title">Por identificar</div>`;
+  blockSin.appendChild(makeRow('sinclasificar'));
+  list.appendChild(blockSin);
+
+  function makeRow(gid) {
+    const g = GROUPS[gid];
+    const row = document.createElement('div');
+    row.className = 'layer-row';
+    row.dataset.gid = gid;
+    const checked = INITIAL_STATE[gid] ? 'checked' : '';
+    row.innerHTML = `
+      <input type="checkbox" data-gid="${gid}" ${checked}>
+      <span class="dot" style="background:${g.def.color}"></span>
+      <span class="label">${g.def.label}</span>
+      <span class="count">${g.nodes.length}</span>
+    `;
+    const cb = row.querySelector('input');
+    cb.addEventListener('change', () => toggleGroup(gid, cb.checked));
+    row.addEventListener('click', (e) => {
+      if (e.target === cb) return;
+      cb.checked = !cb.checked;
+      toggleGroup(gid, cb.checked);
+    });
+    if (checked && isExclusive(gid)) row.classList.add('active-pair');
+    return row;
+  }
+}
+</script>
+</body>
+</html>

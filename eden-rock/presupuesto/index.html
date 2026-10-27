@@ -1,0 +1,405 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Casa Eden Rock — Presupuesto</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+:root{--c1:#1F3864;--c2:#2E75B6;--cm:#6A1B9A;--cg:#3B6D11;--light:#EBF3FB;--pale:#F4F6F9;--border:#E0E4EA}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F0F3F7;color:#1a1a1a;min-height:100vh}
+
+/* HEADER */
+.hdr{background:var(--c1);padding:28px 32px;text-align:center}
+.hdr h1{color:white;font-size:22px;font-weight:700;letter-spacing:.3px;margin-bottom:6px}
+.hdr p{color:rgba(255,255,255,.65);font-size:13px}
+
+/* MAIN */
+.wrap{max-width:820px;margin:0 auto;padding:28px 20px}
+
+/* PROPUESTA SELECTOR */
+.prop-selector{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:24px}
+.prop-btn{border:2px solid var(--border);border-radius:12px;padding:18px 20px;cursor:pointer;background:#fff;transition:all .2s;text-align:left}
+.prop-btn:hover{border-color:var(--c2);background:var(--light)}
+.prop-btn.active{border-color:var(--c1);background:var(--c1);color:white}
+.prop-btn .pb-label{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;opacity:.7;margin-bottom:6px}
+.prop-btn.active .pb-label{opacity:.75;color:white}
+.prop-btn .pb-title{font-size:16px;font-weight:700;margin-bottom:8px}
+.prop-btn .pb-items{font-size:12px;line-height:1.7;opacity:.75}
+.prop-btn.active .pb-items{color:white;opacity:.8}
+.prop-btn .pb-price{font-size:13px;font-weight:600;margin-top:10px;padding-top:10px;border-top:1px solid var(--border)}
+.prop-btn.active .pb-price{border-top-color:rgba(255,255,255,.2);color:white}
+
+/* TECHO SELECTOR */
+.techo-wrap{background:#fff;border-radius:12px;border:1px solid var(--border);padding:20px;margin-bottom:24px}
+.techo-wrap h3{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#888;margin-bottom:14px}
+.techo-btns{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.techo-btn{border:2px solid var(--border);border-radius:10px;padding:14px 16px;cursor:pointer;background:#fff;transition:all .2s}
+.techo-btn:hover{border-color:var(--c2)}
+.techo-btn.active-trad{border-color:var(--c1);background:var(--light)}
+.techo-btn.active-iso{border-color:var(--cm);background:#F3E5F5}
+.techo-btn .tb-icon{font-size:22px;margin-bottom:6px}
+.techo-btn .tb-name{font-size:13px;font-weight:600;color:#1a1a1a;margin-bottom:4px}
+.techo-btn.active-iso .tb-name{color:var(--cm)}
+.techo-btn.active-trad .tb-name{color:var(--c1)}
+.techo-btn .tb-desc{font-size:11px;color:#888;line-height:1.5}
+.techo-btn .tb-price{font-size:12px;font-weight:600;margin-top:8px;color:#555}
+.techo-btn.active-iso .tb-price{color:var(--cm)}
+.techo-btn.active-trad .tb-price{color:var(--c1)}
+
+/* TOTAL CARD */
+.total-card{border-radius:14px;overflow:hidden;margin-bottom:24px;box-shadow:0 4px 20px rgba(0,0,0,.1)}
+.tc-hdr{background:var(--c1);padding:20px 24px;display:flex;justify-content:space-between;align-items:center}
+.tc-hdr.iso{background:var(--cm)}
+.tc-label{color:rgba(255,255,255,.75);font-size:12px;margin-bottom:4px}
+.tc-val{color:white;font-size:28px;font-weight:700}
+.tc-sub{color:rgba(255,255,255,.6);font-size:12px;margin-top:4px}
+.tc-ratio{text-align:right}
+.tc-body{background:#fff;padding:0}
+.tc-row{display:flex;justify-content:space-between;padding:13px 24px;border-bottom:.5px solid var(--border);font-size:13px}
+.tc-row:last-child{border-bottom:none}
+.tc-row.bold{font-weight:600;background:var(--pale)}
+.tc-row.highlight{background:#FFF8E1;font-weight:600}
+.tc-row.highlight.iso{background:#F3E5F5}
+.tc-row-left{color:#444}
+.tc-row-right{font-weight:500;color:#1a1a1a}
+.tc-row.bold .tc-row-right{color:var(--c1)}
+.tc-row.highlight .tc-row-right{color:var(--c1)}
+.tc-row.highlight.iso .tc-row-right{color:var(--cm)}
+.tc-footer{background:var(--c1);padding:16px 24px;display:flex;justify-content:space-between;align-items:center}
+.tc-footer.iso{background:var(--cm)}
+.tc-footer span{color:white;font-size:14px;font-weight:700}
+.tc-footer .tf-sub{font-size:11px;opacity:.7;margin-top:2px}
+
+/* AHORRO BADGE */
+.ahorro{background:#EAF3DE;border:1.5px solid #3B6D11;border-radius:10px;padding:14px 18px;margin-bottom:24px;display:flex;align-items:center;gap:14px}
+.ahorro-icon{font-size:28px}
+.ahorro-text strong{display:block;color:var(--cg);font-size:15px;font-weight:700;margin-bottom:2px}
+.ahorro-text span{font-size:12px;color:#555}
+
+/* INCLUYE */
+.incluye{background:#fff;border-radius:12px;border:1px solid var(--border);padding:20px;margin-bottom:24px}
+.incluye h3{font-size:11px;font-weight:600;text-transform:uppercase;letter-spacing:.8px;color:#888;margin-bottom:14px}
+.inc-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.inc-item{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#444;line-height:1.5}
+.inc-dot{width:6px;height:6px;border-radius:50%;background:var(--c2);flex-shrink:0;margin-top:5px}
+
+/* NOTAS */
+.notas{font-size:11px;color:#999;text-align:center;line-height:1.7;padding:0 10px}
+
+/* FOOTER */
+.footer{text-align:center;padding:24px;background:var(--c1);color:rgba(255,255,255,.6);font-size:12px;margin-top:32px}
+.footer strong{color:white}
+
+@media(max-width:600px){
+  .prop-selector,.techo-btns,.inc-grid{grid-template-columns:1fr}
+  .hdr h1{font-size:18px}
+  .tc-val{font-size:22px}
+  .wrap{padding:16px 12px}
+}
+</style>
+</head>
+<body>
+
+<div class="hdr">
+  <h1>Casa Eden Rock</h1>
+  <p>Presupuesto de construcción &nbsp;·&nbsp; Steel framing + acero tubular &nbsp;·&nbsp; Maldonado, Uruguay</p>
+</div>
+
+<div class="wrap">
+
+  <!-- SELECTOR PROPUESTA -->
+  <div class="prop-selector">
+    <div class="prop-btn active" id="btn-p1" onclick="setProp('p1')">
+      <div class="pb-label">Propuesta 1</div>
+      <div class="pb-title">Casa completa</div>
+      <div class="pb-items">
+        · 210 ml perímetro exterior<br>
+        · 4 baños (uno por dormitorio)<br>
+        · Porche 30 m² con losa<br>
+        · Cruz lapacho 6×6<br>
+        · Deck parrillero 40 m²
+      </div>
+      <div class="pb-price" id="pp1-price">Cargando...</div>
+    </div>
+    <div class="prop-btn" id="btn-p2" onclick="setProp('p2')">
+      <div class="pb-label">Propuesta 2</div>
+      <div class="pb-title">Casa reducida</div>
+      <div class="pb-items">
+        · 160 ml perímetro exterior<br>
+        · 2 baños completos + 1 de servicio<br>
+        · Porche 24 m² con losa<br>
+        · Cruz lapacho 6×6<br>
+        · Deck parrillero 40 m²
+      </div>
+      <div class="pb-price" id="pp2-price">Cargando...</div>
+    </div>
+  </div>
+
+  <!-- SELECTOR TECHO -->
+  <div class="techo-wrap">
+    <h3>Sistema de cubierta</h3>
+    <div class="techo-btns">
+      <div class="techo-btn active-trad" id="btn-trad" onclick="setSist('trad')">
+        <div class="tb-icon">🏗</div>
+        <div class="tb-name">Chapa acanalada tradicional</div>
+        <div class="tb-desc">Chapa galvanizada N°25 · Correas C150 · Lana de vidrio 100mm · Barrera vapor</div>
+        <div class="tb-price" id="t-trad-price">Cargando...</div>
+      </div>
+      <div class="techo-btn" id="btn-iso" onclick="setSist('iso')">
+        <div class="tb-icon">⚡</div>
+        <div class="tb-name">Panel Isoroof</div>
+        <div class="tb-desc">Panel doble chapa con aislación incorporada · Sin correas · Sin lana · Instalación rápida</div>
+        <div class="tb-price" id="t-iso-price">Cargando...</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TOTAL CARD -->
+  <div class="total-card">
+    <div class="tc-hdr" id="tc-hdr">
+      <div>
+        <div class="tc-label">Total de la obra</div>
+        <div class="tc-val" id="tc-total">—</div>
+        <div class="tc-sub" id="tc-sub">—</div>
+      </div>
+      <div class="tc-ratio">
+        <div class="tc-label">Ratio</div>
+        <div class="tc-val" style="font-size:20px" id="tc-ratio">—</div>
+        <div class="tc-sub">por m² construido</div>
+      </div>
+    </div>
+    <div class="tc-body" id="tc-body">
+      <!-- rubros dinámicos -->
+    </div>
+    <div class="tc-footer" id="tc-footer">
+      <div>
+        <div>Total final obra</div>
+        <div class="tf-sub">Materiales + mano de obra + beneficio empresa</div>
+      </div>
+      <span id="tc-footer-val">—</span>
+    </div>
+  </div>
+
+  <!-- AHORRO ISO (solo si iso activo) -->
+  <div class="ahorro" id="ahorro-card" style="display:none">
+    <div class="ahorro-icon">💰</div>
+    <div class="ahorro-text">
+      <strong id="ahorro-val">—</strong>
+      <span>de ahorro con sistema Isoroof vs chapa tradicional · instalación ~80% más rápida</span>
+    </div>
+  </div>
+
+  <!-- INCLUYE -->
+  <div class="incluye">
+    <h3>El presupuesto incluye</h3>
+    <div class="inc-grid" id="inc-grid">
+      <!-- dinámico -->
+    </div>
+  </div>
+
+  <p class="notas">
+    Precios de referencia · TC $41,50 UYU/USD · Laudos Grupo 9 Sub01 Maldonado mayo 2026<br>
+    No incluye honorarios de proyecto, permisos municipales ni conexiones OSE/UTE<br>
+    <strong>Smart Building Uruguay</strong> · Arq. Carolina Mannise
+  </p>
+</div>
+
+<div class="footer">
+  <strong>Smart Building Uruguay</strong> &nbsp;·&nbsp; Casa Eden Rock &nbsp;·&nbsp; Maldonado, Uruguay &nbsp;·&nbsp; 2026
+</div>
+
+<script>
+const TC=41.50, CS=0.758, ROPA=103.44;
+const JOF=2938.33, JAY=1894.57, JCAP=3371.14;
+
+function moC(jof,jay,jcap){return((jof*JOF)+(jay*JAY)+(jcap*JCAP)+(jof+jay+jcap)*ROPA)*(1+CS)}
+function usd(u){return u/TC}
+function fD(v){return"USD "+Math.round(v).toLocaleString("es-UY")}
+function fR(v){return"USD "+Math.round(v).toLocaleString("es-UY")+"/m²"}
+
+const IMPREV=0.10, BENEF=0.25;
+
+const P1={A:187.90,SE:544,SI:73,SC:308.8,MC:68,CUMB:20,LIM:56,TORN:2717,
+  C150:526.8,PORCHE:30,DECK:40,BANOS:4,H:257,MLE:210,MLI:26,
+  MO:[[6.5,13.0,1.6],[15.5,38.8,4.7],[54.3,49.5,12.4],[27.2,65.2,0],
+      [0,40.8,0],[18.5,34.0,3.1],[22.0,38.0,0],[16.4,19.2,2.7],
+      [11.0,9.6,0],[38.0,31.2,1.8],[21.9,19.2,1.4],[0,40.9,0],[0,12.0,0]]};
+
+const P2={A:187.90,SE:414,SI:98,SC:306.0,MC:68,CUMB:18,LIM:64,TORN:2693,
+  C150:513.0,PORCHE:24,DECK:40,BANOS:3,H:257,MLE:160,MLI:35,
+  MO:[[5.5,11.0,1.4],[13.7,34.3,4.1],[44.0,40.2,10.1],[20.7,49.8,0],
+      [0,31.1,0],[16.0,29.3,2.5],[24.0,41.5,0],[16.4,19.2,2.7],
+      [9.5,8.3,0],[28.5,23.4,1.4],[21.9,19.2,1.4],[0,40.9,0],[0,12.0,0]]};
+
+function tradCub(P){
+  return Math.round(P.SC*1.10)*1050+P.TORN*25+P.MC*80+P.MC*920+
+         Math.round(P.MC/15)*6*580+P.CUMB*1100+P.LIM*780+15.4*850;
+}
+function isoCub(P){
+  return Math.round(P.SC*1.05)*75*TC+(P.CUMB+P.LIM)*850+
+         Math.round(P.SC*4)*45+P.MC*920+Math.round(P.MC/15)*6*580+15.4*850;
+}
+function matCap(P,i,sist){
+  const A=P.A,SE=P.SE,SI=P.SI,H=P.H,MLE=P.MLE,MLI=P.MLI;
+  const c150=sist==='trad'?P.C150*2200:0;
+  const lanaCub=sist==='trad'?H*520:0;
+  const mats=[
+    H*80+2500+18000,
+    A*0.30*280+A*0.15*1100+Math.round(A*1.10)*95+A*0.20*7800+MLE*0.12*7800+Math.round(A*6.17)*130+MLE*0.20*2*520,
+    MLE*2.5*480+MLE*2*440+MLI*2.5*420+MLI*2*380+c150+2200*175+38000+Math.round(MLE*2.1)*340,
+    SE*780+Math.round(SE*1.10)*260+SE*1650+SE*165+Math.round(MLE*2)*380,
+    SE*440+lanaCub+Math.round(SI*0.5)*340+Math.round((SE+H)*1.05)*85,
+    sist==='trad'?tradCub(P):isoCub(P),
+    Math.round(SI*2)*440+P.BANOS*14*580+A*440+Math.round(SI*2+A)*160+A*200,
+    A*620+P.BANOS*14*2100+Math.round(A-P.BANOS*14)*3500+Math.round(MLI+MLE)*420,
+    58000+(P.BANOS+3)*16500+20000+P.BANOS*26000+44000+39000+P.BANOS*8800+2*20000+4.2*11000,
+    85*360+60*490+70*390+(P.BANOS===4?340000:260000)+(P.BANOS===4?160000:120000)+44000+135000,
+    62000+380*165+720*110+38*1650+35*1100+6*2000+11000+16000,
+    Math.round(SI*2+A)*165+SE*200+A*145,
+    P.PORCHE*3200+95000+Math.round(P.PORCHE*1.4)*1850+P.DECK*2800+85000+16000+7000,
+  ];
+  return mats[i];
+}
+function moCap(P,i,sist){
+  let mo=moC(...P.MO[i]);
+  if(sist==='iso'){
+    if(i===4){ // aislación: reducir prop sin lana cubierta
+      const full=P.SE*440+P.H*520+Math.round(P.SI*0.5)*340+Math.round((P.SE+P.H)*1.05)*85;
+      const red=P.SE*440+Math.round(P.SI*0.5)*340+Math.round((P.SE+P.H)*1.05)*85;
+      mo=moC(...P.MO[i])*(red/full);
+    } else if(i===5){ // cubierta iso
+      const j=P.SC/35;
+      mo=moC(j*0.5,j*0.5,j*0.08);
+    } else if(i===2){ // steel sin correas
+      const full=P.MLE*2.5*480+P.MLE*2*440+P.MLI*2.5*420+P.MLI*2*380+P.C150*2200+2200*175+38000+Math.round(P.MLE*2.1)*340;
+      const red=P.MLE*2.5*480+P.MLE*2*440+P.MLI*2.5*420+P.MLI*2*380+2200*175+38000+Math.round(P.MLE*2.1)*340;
+      mo=moC(...P.MO[i])*(red/full);
+    }
+  }
+  return mo;
+}
+
+function calcTotal(P,sist){
+  let sub=0;
+  for(let i=0;i<13;i++) sub+=matCap(P,i,sist)+moCap(P,i,sist);
+  const fin=sub*(1+IMPREV)*(1+BENEF);
+  return {sub,fin};
+}
+
+const NOMBRES=[
+  "Trabajos preliminares",
+  "Fundaciones y platea",
+  "Estructura steel framing + acero",
+  "Cerramiento exterior · siding madera",
+  "Aislación térmica",
+  "Cubierta",
+  "Cerramiento interior · drywall",
+  "Pisos y revestimientos",
+  "Aberturas y carpinterías",
+  "Instalación sanitaria",
+  "Instalación eléctrica",
+  "Pintura y terminaciones",
+  "Obras exteriores · porche · deck · parrillero",
+];
+
+let prop='p1', sist='trad';
+
+function render(){
+  const P=prop==='p1'?P1:P2;
+  const isIso=sist==='iso';
+  const {sub,fin}=calcTotal(P,sist);
+  const {fin:finOtro}=calcTotal(P,sist==='trad'?'iso':'trad');
+  const ratio=usd(fin)/P.A;
+
+  // badges propuestas
+  ['p1','p2'].forEach(p=>{
+    const Px=p==='p1'?P1:P2;
+    const {fin:fx}=calcTotal(Px,sist);
+    document.getElementById(`pp${p[1]}-price`).textContent=
+      `desde ${fD(usd(fx))} · ${Math.round(usd(fx)/Px.A)} USD/m²`;
+  });
+
+  // techo prices
+  const {fin:fTrad}=calcTotal(P,'trad');
+  const {fin:fIso}=calcTotal(P,'iso');
+  document.getElementById("t-trad-price").textContent=fD(usd(fTrad));
+  document.getElementById("t-iso-price").textContent=
+    `${fD(usd(fIso))} · ahorra ${fD(usd(fTrad-fIso))}`;
+
+  // active states
+  document.getElementById("btn-p1").className="prop-btn"+(prop==='p1'?" active":"");
+  document.getElementById("btn-p2").className="prop-btn"+(prop==='p2'?" active":"");
+  document.getElementById("btn-trad").className="techo-btn"+(sist==='trad'?" active-trad":"");
+  document.getElementById("btn-iso").className="techo-btn"+(sist==='iso'?" active-iso":"");
+
+  // header card
+  const hdr=document.getElementById("tc-hdr");
+  hdr.className="tc-hdr"+(isIso?" iso":"");
+  document.getElementById("tc-footer").className="tc-footer"+(isIso?" iso":"");
+  document.getElementById("tc-total").textContent=fD(usd(fin));
+  document.getElementById("tc-sub").textContent=
+    (prop==='p1'?"Propuesta 1 — Casa completa":"Propuesta 2 — Casa reducida")+
+    (isIso?" · Sistema isoroof":" · Sistema chapa tradicional");
+  document.getElementById("tc-ratio").textContent=Math.round(ratio)+" USD";
+  document.getElementById("tc-footer-val").textContent=fD(usd(fin));
+
+  // rubros
+  let bodyHtml="";
+  for(let i=0;i<13;i++){
+    const mat=matCap(P,i,sist), mo=moCap(P,i,sist);
+    const tot=mat+mo;
+    const isCub=i===5;
+    const cls="tc-row"+(isCub?(isIso?" highlight iso":" highlight"):"");
+    const icon=isCub?(isIso?"⚡ ":"🏗 "):"";
+    bodyHtml+=`<div class="${cls}">
+      <span class="tc-row-left">${icon}${NOMBRES[i]}</span>
+      <span class="tc-row-right">${fD(usd(tot))}</span>
+    </div>`;
+  }
+  const dif=usd(sub)*(IMPREV+BENEF+IMPREV*BENEF);
+  bodyHtml+=`<div class="tc-row bold">
+    <span class="tc-row-left">Imprevistos + honorarios empresa</span>
+    <span class="tc-row-right">${fD(dif)}</span>
+  </div>`;
+  document.getElementById("tc-body").innerHTML=bodyHtml;
+
+  // ahorro
+  const ahorroCard=document.getElementById("ahorro-card");
+  if(isIso){
+    const ahorro=usd(fTrad-fIso);
+    ahorroCard.style.display="flex";
+    document.getElementById("ahorro-val").textContent=
+      `Ahorrás ${fD(ahorro)} eligiendo Isoroof`;
+  } else {
+    ahorroCard.style.display="none";
+  }
+
+  // incluye
+  const inc=[
+    "Estructura steel framing galvanizada G550",
+    "Acero tubular estructura central",
+    `Siding madera machimbrada (pino o lapacho)`,
+    isIso?"Panel isoroof doble chapa c/aislación":"Chapa acanalada galvanizada N°25",
+    isIso?"Sin correas ni lana de vidrio bajo cubierta":"Correas C150 + lana vidrio 100mm",
+    "Drywall interior + cielorraso suspendido",
+    "Pisos flotante madera + porcelanato baños",
+    `${P.BANOS} baños completos${P===P2?" + 1 de servicio":""}`,
+    "Instalación sanitaria completa",
+    "Instalación eléctrica completa",
+    `Porche ${P.PORCHE}m² · losa + cubierta 2 aguas`,
+    "Cruz lapacho macizo 6×6",
+    `Deck parrillero ${P.DECK}m² · parrilla + lavatorio`,
+    "Platea de hormigón H-21",
+  ];
+  document.getElementById("inc-grid").innerHTML=
+    inc.map(t=>`<div class="inc-item"><div class="inc-dot"></div><span>${t}</span></div>`).join("");
+}
+
+function setProp(p){prop=p;render();}
+function setSist(s){sist=s;render();}
+
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,1009 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Casa Eden Rock — Propuestas 1 y 2</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif;background:#F0F2F5;color:#1a1a1a;font-size:13px}
+
+/* HEADER */
+header{background:#1F3864;color:white;padding:14px 24px;position:sticky;top:0;z-index:200;box-shadow:0 2px 10px rgba(0,0,0,0.25)}
+.hdr-top{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+header h1{font-size:16px;font-weight:600}
+header .sub{font-size:11px;opacity:0.72;margin-top:2px}
+.hdr-badges{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
+.badge{font-size:11px;padding:3px 10px;border-radius:20px;white-space:nowrap;font-weight:500}
+.badge.blue{background:#2E75B6;color:white}
+.badge.green{background:#3B6D11;color:white}
+.badge.orange{background:#E65100;color:white}
+
+/* TAB SELECTOR */
+.tab-bar{background:#1F3864;border-top:1px solid rgba(255,255,255,0.12);display:flex;gap:0;padding:0 24px}
+.tab{padding:10px 22px;color:rgba(255,255,255,0.6);font-size:13px;font-weight:500;cursor:pointer;border-bottom:3px solid transparent;transition:all 0.2s}
+.tab:hover{color:rgba(255,255,255,0.9)}
+.tab.active{color:white;border-bottom-color:#64B5F6}
+.tab-compare{margin-left:auto}
+
+/* LAYOUT */
+.layout{display:grid;grid-template-columns:240px 1fr;min-height:calc(100vh - 88px)}
+.sidebar{background:#fff;border-right:1px solid #e0e4ea;padding:14px;position:sticky;top:88px;height:calc(100vh - 88px);overflow-y:auto}
+.sidebar h3{font-size:10px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:0.8px;margin-bottom:8px}
+.cap-link{display:flex;justify-content:space-between;align-items:center;padding:6px 9px;border-radius:6px;font-size:12px;margin-bottom:2px;cursor:pointer;border:none;background:none;width:100%;text-align:left;color:#333;transition:background 0.12s}
+.cap-link:hover{background:#EBF3FB;color:#185FA5}
+.cap-link.active{background:#1F3864;color:white}
+.cap-link .cap-amt{font-size:11px;opacity:0.75}
+.sb-totals{margin-top:12px;padding-top:12px;border-top:1px solid #e0e4ea}
+.st{display:flex;justify-content:space-between;font-size:12px;padding:3px 0;color:#444}
+.st.bold{font-weight:600;color:#1F3864;border-top:1px solid #eee;margin-top:4px;padding-top:5px}
+.st.final{background:#1F3864;color:white;padding:7px 9px;border-radius:6px;margin-top:5px;font-weight:600;font-size:13px}
+.laudos-box{background:#EAF3DE;border:1px solid #3B6D11;border-radius:6px;padding:8px 10px;margin-top:12px}
+.laudos-box strong{display:block;color:#3B6D11;font-size:10px;font-weight:600;text-transform:uppercase;letter-spacing:0.4px;margin-bottom:5px}
+.laudos-box table{width:100%;font-size:11px}
+.laudos-box td{padding:1px 0;color:#333}
+.laudos-box td:last-child{text-align:right;font-weight:500;color:#27500A}
+
+/* MAIN */
+.main{padding:20px 24px;overflow-y:auto}
+.controls{display:flex;gap:8px;margin-bottom:16px;flex-wrap:wrap;align-items:center}
+.controls input,.controls select{padding:6px 10px;border:1px solid #d0d5de;border-radius:6px;font-size:12px;background:#fff;color:#1a1a1a;outline:none}
+.controls input:focus,.controls select:focus{border-color:#2E75B6}
+.btn{padding:6px 12px;border-radius:6px;border:1px solid #d0d5de;background:#fff;font-size:12px;cursor:pointer;color:#333;transition:all 0.12s}
+.btn:hover{background:#EBF3FB;border-color:#2E75B6;color:#185FA5}
+.btn.primary{background:#1F3864;color:white;border-color:#1F3864}
+.btn.primary:hover{background:#2E75B6}
+
+/* PROPUESTA PILLS */
+.prop-tag{display:inline-block;font-size:10px;padding:1px 7px;border-radius:10px;font-weight:500;margin-left:4px}
+.prop-tag.p1{background:#1F3864;color:white}
+.prop-tag.p2{background:#E65100;color:white}
+
+/* INFO BARS */
+.info-bar{border-radius:8px;padding:9px 14px;margin-bottom:10px;font-size:11px;line-height:1.6}
+.info-bar.green{background:#EAF3DE;border:1px solid #3B6D11;color:#27500A}
+.info-bar.blue{background:#EBF3FB;border:1px solid #2E75B6;color:#0C447C}
+.info-bar.orange{background:#FFF3E0;border:1px solid #E65100;color:#5a2a0a}
+.info-bar strong{font-weight:600}
+
+/* RESUMEN CARDS */
+.res-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:16px}
+.res-card{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,0.08);overflow:hidden}
+.res-card-hdr{padding:10px 16px;font-size:13px;font-weight:600;color:white}
+.res-card-hdr.p1{background:#1F3864}
+.res-card-hdr.p2{background:#E65100}
+.metrics-row{display:grid;grid-template-columns:repeat(3,1fr);gap:0;border-bottom:1px solid #e0e4ea}
+.metric{padding:10px 14px;border-right:1px solid #e0e4ea}
+.metric:last-child{border-right:none}
+.metric-label{font-size:10px;color:#888;margin-bottom:3px}
+.metric-val{font-size:14px;font-weight:600;color:#1F3864}
+.metric-sub{font-size:11px;color:#2E75B6;margin-top:1px}
+.fin-rows{padding:0 14px 8px}
+.fr{display:flex;justify-content:space-between;padding:6px 0;border-bottom:0.5px solid #eef0f3;font-size:12px}
+.fr:last-child{border-bottom:none}
+.fr.bold{font-weight:600}
+.fr.total{background:#1F3864;color:white;margin:6px -14px -8px;padding:10px 14px;font-weight:700;font-size:14px;border-radius:0 0 10px 10px}
+.fr.total.p2{background:#E65100}
+.fr-right{text-align:right}
+.fr-usd{font-size:11px;color:#2E75B6;margin-top:1px}
+.fr.total .fr-usd{color:rgba(255,255,255,0.7)}
+
+/* COMPARE CARD */
+.compare-card{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,0.08);overflow:hidden;margin-bottom:16px}
+.compare-hdr{background:#2E75B6;color:white;padding:10px 16px;font-size:13px;font-weight:600}
+
+/* SECTION */
+.section{margin-bottom:20px;scroll-margin-top:104px}
+.cap-header{padding:8px 14px;border-radius:8px 8px 0 0;display:flex;justify-content:space-between;align-items:center}
+.cap-header.p1{background:#1F3864}
+.cap-header.p2{background:#E65100}
+.cap-header.compare{background:#2E75B6}
+.cap-header h2{font-size:12px;font-weight:600;color:white}
+.cap-header .ct{font-size:11px;color:rgba(255,255,255,0.8);text-align:right}
+
+/* TABLE */
+table{width:100%;border-collapse:collapse;background:#fff;border-radius:0 0 8px 8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.06)}
+thead th{background:#EBF3FB;color:#185FA5;font-size:10px;font-weight:600;padding:5px 7px;text-align:right;white-space:nowrap;border-bottom:1px solid #D6E4F0}
+thead th:first-child{text-align:left}
+thead th.p2-col{background:#FFF3E0;color:#E65100}
+thead th.diff-col{background:#F3E5F5;color:#6A1B9A}
+tbody tr:nth-child(even){background:#FAFBFC}
+tbody tr:hover{background:#EBF3FB}
+tbody td{padding:5px 7px;border-bottom:0.5px solid #eef0f3;text-align:right;color:#222;font-size:12px}
+tbody td:first-child{text-align:left}
+.editable{border:none;background:transparent;font-size:12px;text-align:right;width:100%;font-family:inherit;color:#1a1a1a;padding:1px 3px;border-radius:3px;cursor:text}
+.editable:focus{outline:2px solid #2E75B6;background:#fff}
+.editable.changed{background:#FFF3CD}
+.subtotal-row td{background:#D6E4F0;font-weight:600;font-size:11px;color:#1F3864;border-top:1.5px solid #2E75B6}
+.subtotal-row.p2 td{background:#FFE0B2;color:#E65100;border-top-color:#E65100}
+.note-row td{background:#F4F6F9;font-size:10px;color:#666}
+.diff-pos{color:#3B6D11;font-weight:500}
+.diff-neg{color:#A32D2D;font-weight:500}
+
+/* COMPARE TABLE */
+table.compare-tbl thead th{background:#E3F2FD;color:#1565C0}
+
+.sist-selector{background:#fff;border-radius:10px;box-shadow:0 1px 4px rgba(0,0,0,0.08);padding:16px 20px;margin-bottom:18px}
+.sist-selector h3{font-size:12px;font-weight:600;color:#888;text-transform:uppercase;letter-spacing:.6px;margin-bottom:14px}
+.sist-cards{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px}
+.sist-card{border:2px solid #e0e4ea;border-radius:10px;padding:14px 16px;cursor:pointer;transition:all .15s}
+.sist-card:hover{border-color:#2E75B6;background:#EBF3FB}
+.sist-card.active.trad{border-color:#1F3864;background:#EBF3FB}
+.sist-card.active.iso{border-color:#6A1B9A;background:#EDE7F6}
+.sist-card h4{font-size:13px;font-weight:600;margin-bottom:6px}
+.sist-card.active.trad h4{color:#1F3864}
+.sist-card.active.iso h4{color:#6A1B9A}
+.sist-card p{font-size:11px;color:#666;line-height:1.5}
+.sist-card .sist-total{font-size:13px;font-weight:600;margin-top:8px}
+.sist-card.active.trad .sist-total{color:#1F3864}
+.sist-card.active.iso .sist-total{color:#6A1B9A}
+.sist-param{display:flex;align-items:center;gap:10px;background:#F4F6F9;border-radius:8px;padding:10px 14px;margin-bottom:14px}
+.sist-param label{font-size:12px;color:#555;white-space:nowrap}
+.sist-param input{width:80px;padding:4px 8px;border:1px solid #d0d5de;border-radius:5px;font-size:13px;font-weight:500;color:#6A1B9A;background:#fff}
+.sist-param input:focus{outline:none;border-color:#6A1B9A}
+.sist-param .param-note{font-size:11px;color:#888}
+.iso-tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:8px;background:#EDE7F6;color:#6A1B9A;font-weight:500;margin-left:4px}
+.trad-tag{display:inline-block;font-size:10px;padding:1px 6px;border-radius:8px;background:#EBF3FB;color:#1F3864;font-weight:500;margin-left:4px}
+.deleted-rub td{color:#bbb;text-decoration:line-through;font-size:11px}
+.new-rub td{color:#6A1B9A;font-weight:500}
+.diff-win{background:#EAF3DE;border-radius:8px;padding:12px 16px;margin-bottom:14px;font-size:12px;color:#27500A;line-height:1.7}
+.diff-win strong{color:#3B6D11}
+.diff-lose{background:#FCE4D6;border-radius:8px;padding:12px 16px;margin-bottom:14px;font-size:12px;color:#5a2a0a;line-height:1.7}
+@media print{
+  .controls,.sidebar,.tab-bar,.btn{display:none!important}
+  .layout{display:block}
+  .main{padding:0}
+  header{position:relative;print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  .res-card-hdr,.fr.total,.cap-header{print-color-adjust:exact;-webkit-print-color-adjust:exact}
+  .section{page-break-inside:avoid}
+  .res-grid{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="hdr-top">
+    <div>
+      <h1>Casa Eden Rock — Presupuestos Propuesta 1 y Propuesta 2</h1>
+      <div class="sub">Smart Building Uruguay &nbsp;|&nbsp; Steel framing + acero tubular &nbsp;|&nbsp; Maldonado &nbsp;|&nbsp; TC $41,50 UYU/USD</div>
+    </div>
+    <div class="hdr-badges">
+      <span class="badge blue" id="badge-p1">P1 cargando...</span>
+      <span class="badge orange" id="badge-p2">P2 cargando...</span>
+      <span class="badge green">Laudos mayo 2026 · 3,5 j/m²</span>
+    <span class="badge" id="badge-sistema" style="background:#6A1B9A;color:white">Tradicional</span>
+      <button class="btn primary" onclick="window.print()">🖨 Imprimir</button>
+    </div>
+  </div>
+  <div class="tab-bar">
+    <div class="tab active" onclick="setTab('p1')">Propuesta 1</div>
+    <div class="tab" onclick="setTab('p2')">Propuesta 2</div>
+    <div class="tab tab-compare" onclick="setTab('compare')">⚡ Comparar P1 vs P2</div>
+    <div class="tab" onclick="setTab('cubierta')">🏠 Sistema cubierta</div>
+  </div>
+</header>
+
+<div class="layout">
+<nav class="sidebar">
+  <h3 id="sb-title">Propuesta 1</h3>
+  <div id="nav-caps"></div>
+  <div class="sb-totals" id="sb-totals"></div>
+  <div class="laudos-box">
+    <strong>Laudos G9 Sub01 — mayo 2026</strong>
+    <table>
+      <tr><td>Cat I — Peón</td><td>$1.894,57/día</td></tr>
+      <tr><td>Cat VII — Oficial</td><td>$2.938,33/día</td></tr>
+      <tr><td>Cat VIII — Capataz</td><td>$3.371,14/día</td></tr>
+      <tr><td>Ropa/j</td><td>$103,44</td></tr>
+      <tr><td>CS total</td><td>75,8%</td></tr>
+      <tr><td>Ratio MO</td><td>3,5 j/m²</td></tr>
+    </table>
+  </div>
+</nav>
+
+<main class="main" id="main-content">
+  <!-- Contenido dinámico -->
+</main>
+</div>
+
+<script>
+const TC=41.50, CS=0.758, ROPA=103.44;
+const JOF=2938.33, JAY=1894.57, JCAP=3371.14;
+
+function moC(jof,jay,jcap){return((jof*JOF)+(jay*JAY)+(jcap*JCAP)+(jof+jay+jcap)*ROPA)*(1+CS)}
+function usd(u){return u/TC}
+function fUYU(v){return"$ "+Math.round(v).toLocaleString("es-UY")}
+function fUSD(v){return"USD "+Math.round(usd(v)).toLocaleString("es-UY")}
+function fR(v){return"USD "+Math.round(v).toLocaleString("es-UY")+"/m²"}
+
+// ══════════════════════════════════════════════
+// DATOS PROPUESTA 1
+// ══════════════════════════════════════════════
+const P1 = {
+  label: "Propuesta 1",
+  color: "#1F3864",
+  tag: "p1",
+  AREA: 187.90,
+  ML_EXT: 210.0,    // perimetrales exteriores
+  ML_INT: 26.0,     // paredes interiores
+  SUP_EXT: Math.round(210*2.59), // sup muros ext corregida h=2.59m (hasta alero, NO cumbrera)
+  SUP_INT: 26*2.8,  // sup muros int
+  PORCHE: 30.0,     // m² porche frontal con losa
+  BANOS: 4,
+  DECK: 40.0,
+  HUELLA: 257.0,
+  SUP_CUB: 308.8,  // 2×20×4.5 + 2×14×4.6   // cubierta barn proporcionalmente mayor
+  ML_CUB: 68.0,    // canaleta P1: 2×20+2×14
+  ML_CUMBRERA: 20.0, // largo faldones sup P1
+  ML_LIMATESA: 56.0, // 4 limatesas × 14m P1
+  PERLINES: 612.0,   // ml perlines 150mm c/60cm P1
+  TORNILLOS: 2717,   // tornillos autoperforantes P1
+  N_CERCHAS: 44,         // cant. cerchas P1
+  ML_PERF_TECHO: 526.8,  // ml total correas C150 (caída del techo, c/60cm) P1
+  BARRAS_C150: 88,        // barras 6m necesarias P1
+  PF_C150: 116,           // perfiles individuales P1
+  // MO capítulos (jof, jay, jcap) a 3.5j/m² sobre (187.9+30+40*0.5)=237.9m²
+  MO:[
+    [6.5,13.0,1.6],  // 1 Preliminares
+    [15.5,38.8,4.7], // 2 Fundaciones
+    [54.3,49.5,12.4],// 3 Steel
+    [27.2,65.2,0.0], // 4 Cerr ext corregido h=2.59m
+    [0.0,40.8,0.0],  // 5 Aislación corregido
+    [18.5,34.0,3.1], // 6 Cubierta
+    [22.0,38.0,0.0], // 7 Drywall
+    [16.4,19.2,2.7], // 8 Pisos
+    [11.0,9.6,0.0],  // 9 Aberturas
+    [38.0,31.2,1.8], // 10 Sanitaria (4 baños)
+    [21.9,19.2,1.4], // 11 Eléctrica
+    [0.0,40.9,0.0],  // 12 Pintura corregido
+    [0.0,12.0,0.0],  // 13 Exteriores (deck+parrillero)
+  ],
+};
+
+// ══════════════════════════════════════════════
+// DATOS PROPUESTA 2
+// ══════════════════════════════════════════════
+const P2 = {
+  label: "Propuesta 2",
+  color: "#E65100",
+  tag: "p2",
+  AREA: 187.90,
+  ML_EXT: 160.0,
+  ML_INT: 35.0,
+  SUP_EXT: Math.round(160*2.59),
+  SUP_INT: 35*2.8,
+  PORCHE: 24.0,
+  BANOS: 3,         // 2 completos + 1 servicio s/ducha
+  DECK: 40.0,
+  HUELLA: 257.0,
+  SUP_CUB: 306.0,  // 2×18×4.5 + 2×16×4.5
+  ML_CUB: 68.0,    // canaleta P2: 2×18+2×16
+  ML_CUMBRERA: 18.0, // largo faldones centrales P2 (corregido 8→18m)
+  ML_LIMATESA: 64.0, // 4 limatesas × 16m P2
+  PERLINES: 432.0,   // ml perlines 150mm c/60cm P2
+  TORNILLOS: 2693,   // tornillos autoperforantes P2 (18m corregido)
+  N_CERCHAS: 38,         // cant. cerchas P2
+  ML_PERF_TECHO: 513.0,  // ml total correas C150 (caída del techo, c/60cm) P2 (18m corregido)
+  BARRAS_C150: 86,        // barras 6m necesarias P2 (18m corregido)
+  PF_C150: 114,           // perfiles individuales P2 (18m corregido)
+  MO:[
+    [5.5,11.0,1.4],  // 1
+    [13.7,34.3,4.1], // 2
+    [44.0,40.2,10.1],// 3 (menos estructura ext)
+    [20.7,49.8,0.0], // 4 Cerr ext corregido h=2.59m
+    [0.0,31.1,0.0],  // 5 Aislación corregido
+    [16.0,29.3,2.5], // 6
+    [24.0,41.5,0.0], // 7 (más tabiques int 35ml)
+    [16.4,19.2,2.7], // 8
+    [9.5,8.3,0.0],   // 9
+    [28.5,23.4,1.4], // 10 (3 baños)
+    [21.9,19.2,1.4], // 11
+    [0.0,52.1,0.0],  // 12
+    [0.0,12.0,0.0],  // 13
+  ],
+};
+
+// ══════════════════════════════════════════════
+// RUBROS (función generadora por propuesta)
+// ══════════════════════════════════════════════
+function getRubros(P){
+  const A=P.AREA, H=P.HUELLA, SE=P.SUP_EXT, SI=P.SUP_INT;
+  const ML_E=P.ML_EXT, ML_I=P.ML_INT, SC=P.SUP_CUB, MC=P.ML_CUB;
+  return [
+    {cap:"1. Trabajos preliminares",ci:0,rubros:[
+      {d:"Limpieza y nivelación terreno",u:"m²",c:H,mu:80,n:""},
+      {d:"Replanteo y marcación",u:"gl",c:1,mu:2500,n:""},
+      {d:"Instalación obrador",u:"gl",c:1,mu:18000,n:""},
+    ]},
+    {cap:"2. Fundaciones / platea",ci:1,rubros:[
+      {d:"Excavación mecánica retro",u:"m³",c:+(A*0.30).toFixed(1),mu:280,n:"Prof. 0,30m"},
+      {d:"Relleno y compactación",u:"m³",c:+(A*0.15).toFixed(1),mu:1100,n:"Tosca/ripio"},
+      {d:"Film polietileno 200 mic.",u:"m²",c:Math.round(A*1.10),mu:95,n:"Barrera vapor"},
+      {d:"Hormigón platea H-21 e=20cm",u:"m³",c:+(A*0.20).toFixed(2),mu:7800,n:`${(A*0.20).toFixed(2)} m³ bombeado`},
+      {d:"Hormigón vigas perimetrales",u:"m³",c:+(ML_E*0.12).toFixed(2),mu:7800,n:`${(ML_E*0.12).toFixed(2)} m³ · sección 30×40cm`},
+      {d:"Acero malla platea φ8 c/20",u:"kg",c:Math.round(A*6.17),mu:130,n:"Malla 188"},
+      {d:"Encofrado lateral platea",u:"m²",c:+(ML_E*0.20*2).toFixed(1),mu:520,n:""},
+    ]},
+    {cap:"3. Estructura steel framing + acero tubular",ci:2,rubros:[
+      {d:"Perfil montante 89mm muro ext.",u:"ml",c:+(ML_E*2.5).toFixed(1),mu:480,n:"G550 galv."},
+      {d:"Perfil solera 89mm muro ext.",u:"ml",c:+(ML_E*2).toFixed(1),mu:440,n:"Inf+sup"},
+      {d:"Perfil montante 65mm tabiques",u:"ml",c:+(ML_I*2.5).toFixed(1),mu:420,n:""},
+      {d:"Perfil solera 65mm tabiques",u:"ml",c:+(ML_I*2).toFixed(1),mu:380,n:""},
+      {d:"Correas C150 estructura techo",u:"ml",c:P.ML_PERF_TECHO,mu:2200,n:`Sentido caída del techo · c/60cm · ${P.BARRAS_C150} barras 6m · ${P.PF_C150} perfiles individuales`},
+      {d:"Acero tubular estructura central",u:"kg",c:2200,mu:175,n:"Tubo 100×100+80×80"},
+      {d:"Tornillería autoperforante",u:"gl",c:1,mu:38000,n:""},
+      {d:"Anclajes químicos platea↔estr.",u:"un",c:Math.round(ML_E*2.1),mu:340,n:"Hilti/Fischer"},
+    ]},
+    {cap:"4. Cerramiento exterior",ci:3,rubros:[
+      {d:"OSB 11mm sheathing exterior",u:"m²",c:SE,mu:780,n:"Bajo revestimiento"},
+      {d:"Barrera hidrófuga (Tyvek)",u:"m²",c:Math.round(SE*1.10),mu:260,n:"Entre OSB y siding"},
+      {d:"Siding pino machimbrado (Op.A)",u:"m²",c:SE,mu:1650,n:"Tratado CCA — ACTIVO"},
+      {d:"Siding lapacho (Op.B)",u:"m²",c:0,mu:2900,n:"Poner cant para activar"},
+      {d:"Tratamiento / sellador madera",u:"m²",c:SE,mu:165,n:"2 manos lasur"},
+      {d:"Buñas y esquineros",u:"ml",c:Math.round(ML_E*2),mu:380,n:""},
+    ]},
+    {cap:"5. Aislación térmica",ci:4,rubros:[
+      {d:"Lana vidrio 75mm muros ext.",u:"m²",c:SE,mu:440,n:""},
+      {d:"Lana vidrio 100mm bajo cubierta",u:"m²",c:H,mu:520,n:""},
+      {d:"Lana vidrio 50mm tabiques",u:"m²",c:Math.round(SI*0.50),mu:340,n:""},
+      {d:"Barrera vapor interior (film PE)",u:"m²",c:Math.round((SE+H)*1.05),mu:85,n:"Entre estr. y drywall"},
+    ]},
+    {cap:"6. Cubierta chapa acanalada",ci:5,rubros:[
+      {d:"Chapa acanalada galv. N°25",u:"m²",c:Math.round(SC*1.10),mu:1050,n:"+10% cortes"},
+      {d:"Tornillos autoperf. techo",u:"un",c:P.TORNILLOS,mu:25,n:"8 tornillos/m²"},
+      {d:"Burletes EPDM ondas",u:"ml",c:MC,mu:80,n:""},
+      {d:"Canaleta zinc/Al. c/soporte",u:"ml",c:MC,mu:920,n:""},
+      {d:"Bajadas pluviales Ø100mm",u:"ml",c:Math.round(MC/15)*6,mu:580,n:""},
+      {d:"Cumbrera ventilada",u:"ml",c:P.ML_CUMBRERA,mu:1100,n:""},
+      {d:"Limatesas",u:"ml",c:P.ML_LIMATESA,mu:780,n:"Chapa doblada"},
+      {d:"Cierre hastiales N/S",u:"m²",c:15.4,mu:850,n:"Pared vertical"},
+    ]},
+    {cap:"7. Cerramiento interior — drywall",ci:6,rubros:[
+      {d:"Placa yeso 12,5mm (2 caras tab.)",u:"m²",c:Math.round(SI*2),mu:440,n:""},
+      {d:"Placa yeso RH baños",u:"m²",c:P.BANOS*14,mu:580,n:`${P.BANOS} baños`},
+      {d:"Placa yeso cielorraso",u:"m²",c:A,mu:440,n:"Suspendido"},
+      {d:"Masilla + cinta + terminación",u:"m²",c:Math.round(SI*2+A),mu:160,n:""},
+      {d:"Perfilería omega/canal cielorraso",u:"m²",c:A,mu:200,n:""},
+    ]},
+    {cap:"8. Pisos y revestimientos",ci:7,rubros:[
+      {d:"Contrapiso H-8 e=5cm",u:"m²",c:A,mu:620,n:""},
+      {d:"Porcelanato 60×60 baños+cocina",u:"m²",c:P.BANOS*14,mu:2100,n:`${P.BANOS} baños`},
+      {d:"Piso flotante madera click",u:"m²",c:Math.round(A-P.BANOS*14),mu:3500,n:"Living+dorms"},
+      {d:"Zócalos madera pintada",u:"ml",c:Math.round(ML_I+ML_E),mu:420,n:""},
+    ]},
+    {cap:"9. Aberturas",ci:8,rubros:[
+      {d:"Puerta acceso doble Al./PVC",u:"un",c:1,mu:58000,n:"1.80×2.10m"},
+      {d:"Puerta interior madera c/marco",u:"un",c:P.BANOS+3,mu:16500,n:`${P.BANOS+3} unid.`},
+      {d:"Puerta exterior / parrillero",u:"un",c:1,mu:20000,n:""},
+      {d:"Ventana dorm. corredera Al.",u:"un",c:P.BANOS,mu:26000,n:`${P.BANOS} dorms`},
+      {d:"Ventana living amplia Al.",u:"un",c:1,mu:44000,n:"2.40×1.20m"},
+      {d:"Ventana cocina-comedor Al.",u:"un",c:1,mu:39000,n:"2.40×1.20m"},
+      {d:"Ventana SSHH translúcida",u:"un",c:P.BANOS,mu:8800,n:`${P.BANOS} baños`},
+      {d:"Ventana hall corredera Al.",u:"un",c:2,mu:20000,n:""},
+      {d:"Vidriería fija parrillero",u:"m²",c:4.2,mu:11000,n:"Vidrio 6mm"},
+    ]},
+    {cap:"10. Instalación sanitaria",ci:9,rubros:[
+      {d:"Cañería agua fría PVC Ø20-25mm",u:"ml",c:Math.round(85+(P.BANOS-4)*15),mu:360,n:""},
+      {d:"Cañería agua caliente PPR",u:"ml",c:Math.round(60+(P.BANOS-4)*10),mu:490,n:""},
+      {d:"Cañería desagüe PVC Ø50-110mm",u:"ml",c:Math.round(70+(P.BANOS-4)*10),mu:390,n:""},
+      {d:`Artefactos sanitarios (${P.BANOS} baños)`,u:"gl",c:1,mu:P.BANOS===4?340000:260000,n:`${P.BANOS===4?"4 baños completos":"2 completos + 1 servicio s/ducha"}`},
+      {d:"Grifería",u:"gl",c:1,mu:P.BANOS===4?160000:120000,n:`${P.BANOS} juegos`},
+      {d:"Tanque agua 750lts + soporte",u:"un",c:1,mu:44000,n:""},
+      {d:"Fosa séptica + pozo absorbente",u:"gl",c:1,mu:135000,n:"Pref. hormigón"},
+    ]},
+    {cap:"11. Instalación eléctrica",ci:10,rubros:[
+      {d:"Tablero principal c/diferenciales",u:"gl",c:1,mu:62000,n:""},
+      {d:"Cañería conduit Ø20mm",u:"ml",c:380,mu:165,n:""},
+      {d:"Cableado NYA 1.5+2.5mm²",u:"ml",c:720,mu:110,n:""},
+      {d:"Bocas iluminación c/LED embutido",u:"un",c:38,mu:1650,n:""},
+      {d:"Tomas dobles polarizadas",u:"un",c:35,mu:1100,n:""},
+      {d:"Tomas especiales 20A",u:"un",c:6,mu:2000,n:""},
+      {d:"Puesta a tierra",u:"gl",c:1,mu:11000,n:""},
+      {d:"Preinst. TV/datos/CCTV",u:"gl",c:1,mu:16000,n:""},
+    ]},
+    {cap:"12. Pintura",ci:11,rubros:[
+      {d:"Pintura interior látex 2 manos",u:"m²",c:Math.round(SI*2+A),mu:165,n:""},
+      {d:"Tratamiento exterior madera",u:"m²",c:SE,mu:200,n:""},
+      {d:"Pintura cielorraso 2 manos",u:"m²",c:A,mu:145,n:""},
+    ]},
+    {cap:"13. Obras exteriores",ci:12,rubros:[
+      {d:`Porche frontal ${P.PORCHE}m² c/losa`,u:"m²",c:P.PORCHE,mu:3200,n:`Losa H-21 + terminación. ${P===P1?"30m²":"24m²"}`},
+      {d:"Cruz madera macisa 6×6 lapacho",u:"un",c:1,mu:95000,n:"Pieza estructural decorativa rancho"},
+      {d:"Cubierta porche 2 aguas",u:"m²",c:Math.round(P.PORCHE*1.4),mu:1850,n:"Chapa+estructura+cumbrera"},
+      {d:`Deck parrillero ${P.DECK}m²`,u:"m²",c:P.DECK,mu:2800,n:"Deck madera tratada"},
+      {d:"Parrilla + lavatorio parrillero",u:"gl",c:1,mu:85000,n:"Parrilla inox + lavatorio c/grifo"},
+      {d:"Movimiento de tierra final",u:"gl",c:1,mu:16000,n:""},
+      {d:"Limpieza final de obra",u:"gl",c:1,mu:7000,n:""},
+    ]},
+  ];
+}
+
+// ══════════════════════════════════════════════
+// CÁLCULOS
+// ══════════════════════════════════════════════
+function calcCap(cap, P){
+  const mat = cap.rubros.reduce((s,r)=>s+(r.mu||0)*r.c, 0);
+  const mo  = moC(...P.MO[cap.ci]);
+  return {mat, mo, tot: mat+mo};
+}
+function calcAll(propuesta){
+  const tag = propuesta===dataP1?'p1':'p2';
+  const sist = sistCubierta[tag];
+  const rubros = getRubros(propuesta);
+  let mat=0, mo=0;
+
+  rubros.forEach(cap=>{
+    let matCap=0, moCap=0;
+
+    if(sist==='iso' && cap.ci===2){
+      // Cap 3 STEEL: eliminar correas C150 con iso
+      const filtRubs = cap.rubros.filter(r=>!r.d.includes('Perfil C 150mm') && !r.d.includes('Correas C150'));
+      matCap = filtRubs.reduce((s,r)=>s+(r.mu||0)*(r.c||0),0);
+      const origMat = cap.rubros.reduce((s,r)=>s+(r.mu||0)*(r.c||0),0);
+      moCap = origMat>0 ? moC(...propuesta.MO[cap.ci])*(matCap/origMat) : moC(...propuesta.MO[cap.ci]);
+      cap._filtRubs = filtRubs; cap._iso=true;
+
+    } else if(sist==='iso' && cap.ci===4){
+      // Cap 5 AISLACIÓN: eliminar lana 100mm bajo cubierta (incluida en isoroof)
+      const filtRubs = cap.rubros.filter(r=>!r.d.includes('100mm bajo cubierta'));
+      matCap = filtRubs.reduce((s,r)=>s+(r.mu||0)*(r.c||0),0);
+      const origMat = cap.rubros.reduce((s,r)=>s+(r.mu||0)*(r.c||0),0);
+      moCap = origMat>0 ? moC(...propuesta.MO[cap.ci])*(matCap/origMat) : moC(...propuesta.MO[cap.ci]);
+      cap._filtRubs = filtRubs; cap._iso=true;
+
+    } else if(sist==='iso' && cap.ci===5){
+      // Cap 6 CUBIERTA: reemplazar completamente con isoroof
+      const isoRubs = [
+        {d:"Panel isoroof cubierta",         u:"m²", c:+(propuesta.SUP_CUB*1.05).toFixed(1), mu:Math.round(precioIsoUsd*TC), nuevo:true, n:`${propuesta.SUP_CUB.toFixed(0)}m² +5%`},
+        {d:"Perfiles remate H/J cumbrera",   u:"ml", c:propuesta.ML_CUMBRERA+propuesta.ML_LIMATESA, mu:850, nuevo:true, n:"Unión entre paneles"},
+        {d:"Tornillos especiales isoroof",   u:"un", c:Math.round(propuesta.SUP_CUB*4), mu:45, nuevo:true, n:"4/m² c/arandela EPDM"},
+        {d:"Canaleta zinc/Al. c/soporte",    u:"ml", c:propuesta.ML_CUB, mu:920, nuevo:true, n:"Se mantiene igual"},
+        {d:"Bajadas pluviales Ø100mm",       u:"ml", c:Math.round(propuesta.ML_CUB/15)*6, mu:580, nuevo:true, n:""},
+        {d:"Cierre hastiales N/S",           u:"m²", c:15.4, mu:850, nuevo:true, n:"Pared vertical"},
+      ];
+      matCap = isoRubs.reduce((s,r)=>s+r.mu*r.c,0);
+      const j = propuesta.SUP_CUB/35;
+      moCap = moC(Math.ceil(j*0.5), Math.ceil(j*0.5), Math.ceil(j*0.08));
+      cap._filtRubs = isoRubs; cap._iso=true;
+
+    } else {
+      matCap = cap.rubros.reduce((s,r)=>s+(r.mu||0)*(r.c||0),0);
+      moCap = moC(...propuesta.MO[cap.ci]);
+      cap._filtRubs = null; cap._iso=false;
+    }
+
+    mat+=matCap; mo+=moCap;
+  });
+
+  const neto=mat+mo, imp=neto*0.10, ci=neto+imp, ben=ci*0.25, fin=ci+ben;
+  return {mat,mo,neto,imp,ben,fin,ratio:usd(fin)/propuesta.AREA,rubros};
+}
+
+function calcRubroMO(cap, r, P){
+  const totalMat=cap.rubros.reduce((s,rb)=>s+(rb.mu||0)*rb.c,0);
+  if(!totalMat) return 0;
+  return moC(...P.MO[cap.ci])*(r.mu*r.c/totalMat);
+}
+
+// ══════════════════════════════════════════════
+// ESTADO
+// ══════════════════════════════════════════════
+let currentTab = 'p1';
+let sistCubierta = {p1:'trad', p2:'trad'};
+let precioIsoUsd = 75;
+const dataP1 = JSON.parse(JSON.stringify(P1));
+const dataP2 = JSON.parse(JSON.stringify(P2));
+
+function getPropData(tag){ return tag==='p1'?dataP1:dataP2; }
+function getPropRubros(tag){ return getRubros(getPropData(tag)); }
+
+// ══════════════════════════════════════════════
+// RENDER SIDEBAR
+// ══════════════════════════════════════════════
+function renderSidebar(tag){
+  const P = getPropData(tag);
+  const res = calcAll(P);
+  document.getElementById("sb-title").textContent = P.label;
+
+  const nav = document.getElementById("nav-caps");
+  nav.innerHTML="";
+  if(tag==='compare'){
+    nav.innerHTML=`<div style="font-size:11px;color:#888;padding:6px 4px">Ver tabla comparativa →</div>`;
+    document.getElementById("sb-totals").innerHTML="";
+    return;
+  }
+  res.rubros.forEach(cap=>{
+    const {tot}=calcCap(cap,P);
+    const btn=document.createElement("button");
+    btn.className="cap-link";
+    btn.innerHTML=`<span>${cap.cap}</span><span class="cap-amt">${fUSD(tot)}</span>`;
+    btn.onclick=()=>{
+      document.querySelectorAll(".cap-link").forEach(b=>b.classList.remove("active"));
+      btn.classList.add("active");
+      const el=document.getElementById(`sec-${tag}-${cap.ci}`);
+      if(el) el.scrollIntoView({behavior:"smooth"});
+    };
+    nav.appendChild(btn);
+  });
+
+  const sal=res.mo/(1+CS),cs_=res.mo-sal;
+  document.getElementById("sb-totals").innerHTML=`
+    <div class="st"><span>Materiales</span><span>${fUSD(res.mat)}</span></div>
+    <div class="st"><span>MO (c/CS)</span><span>${fUSD(res.mo)}</span></div>
+    <div class="st bold"><span>Subtotal neto</span><span>${fUSD(res.neto)}</span></div>
+    <div class="st"><span>Imprevistos 10%</span><span>${fUSD(res.imp)}</span></div>
+    <div class="st"><span>Beneficio 25%</span><span>${fUSD(res.ben)}</span></div>
+    <div class="st final" style="background:${P.color}"><span>TOTAL</span><span>${fUSD(res.fin)}</span></div>
+    <div class="st" style="font-size:11px;color:#888;margin-top:5px"><span>Ratio</span><span>${fR(res.ratio)}</span></div>`;
+}
+
+// ══════════════════════════════════════════════
+// RENDER RESUMEN CARDS (vista compare)
+// ══════════════════════════════════════════════
+function renderCompare(){
+  const r1=calcAll(P1), r2=calcAll(P2);
+  const diff_fin=r2.fin-r1.fin;
+  const diff_ratio=r2.ratio-r1.ratio;
+
+  let html=`
+  <div class="info-bar blue" style="margin-bottom:14px">
+    <strong>Comparativo P1 vs P2</strong> &nbsp;|&nbsp;
+    P1: ${P1.ML_EXT}ml ext · ${P1.ML_INT}ml int · ${P1.BANOS} baños · porche ${P1.PORCHE}m²
+    &nbsp;|&nbsp;
+    P2: ${P2.ML_EXT}ml ext · ${P2.ML_INT}ml int · ${P2.BANOS} baños · porche ${P2.PORCHE}m²
+  </div>
+
+  <div class="res-grid">
+  <!-- CARD P1 -->
+  <div class="res-card">
+    <div class="res-card-hdr p1">Propuesta 1 &nbsp;|&nbsp; ${P1.ML_EXT}ml ext · ${P1.BANOS} baños · porche ${P1.PORCHE}m²</div>
+    <div class="metrics-row">
+      <div class="metric"><div class="metric-label">Materiales</div><div class="metric-val">${fUSD(r1.mat)}</div><div class="metric-sub">${fUYU(r1.mat)}</div></div>
+      <div class="metric"><div class="metric-label">MO (c/CS)</div><div class="metric-val">${fUSD(r1.mo)}</div><div class="metric-sub">${fUYU(r1.mo)}</div></div>
+      <div class="metric"><div class="metric-label">Ratio</div><div class="metric-val">${fR(r1.ratio)}</div><div class="metric-sub">187,90 m²</div></div>
+    </div>
+    <div class="fin-rows">
+      <div class="fr"><span>Subtotal neto</span><div class="fr-right"><div>${fUYU(r1.neto)}</div><div class="fr-usd">${fUSD(r1.neto)}</div></div></div>
+      <div class="fr"><span>Imprevistos 10%</span><div class="fr-right"><div>${fUYU(r1.imp)}</div></div></div>
+      <div class="fr"><span>Beneficio 25%</span><div class="fr-right"><div>${fUYU(r1.ben)}</div></div></div>
+      <div class="fr total"><span>TOTAL FINAL</span><div class="fr-right"><div>${fUYU(r1.fin)}</div><div class="fr-usd">${fUSD(r1.fin)}</div></div></div>
+    </div>
+  </div>
+  <!-- CARD P2 -->
+  <div class="res-card">
+    <div class="res-card-hdr p2">Propuesta 2 &nbsp;|&nbsp; ${P2.ML_EXT}ml ext · ${P2.BANOS} baños · porche ${P2.PORCHE}m²</div>
+    <div class="metrics-row">
+      <div class="metric"><div class="metric-label">Materiales</div><div class="metric-val">${fUSD(r2.mat)}</div><div class="metric-sub">${fUYU(r2.mat)}</div></div>
+      <div class="metric"><div class="metric-label">MO (c/CS)</div><div class="metric-val">${fUSD(r2.mo)}</div><div class="metric-sub">${fUYU(r2.mo)}</div></div>
+      <div class="metric"><div class="metric-label">Ratio</div><div class="metric-val">${fR(r2.ratio)}</div><div class="metric-sub">187,90 m²</div></div>
+    </div>
+    <div class="fin-rows">
+      <div class="fr"><span>Subtotal neto</span><div class="fr-right"><div>${fUYU(r2.neto)}</div><div class="fr-usd">${fUSD(r2.neto)}</div></div></div>
+      <div class="fr"><span>Imprevistos 10%</span><div class="fr-right"><div>${fUYU(r2.imp)}</div></div></div>
+      <div class="fr"><span>Beneficio 25%</span><div class="fr-right"><div>${fUYU(r2.ben)}</div></div></div>
+      <div class="fr total p2"><span>TOTAL FINAL</span><div class="fr-right"><div>${fUYU(r2.fin)}</div><div class="fr-usd">${fUSD(r2.fin)}</div></div></div>
+    </div>
+  </div>
+  </div>
+
+  <!-- DIFERENCIA -->
+  <div class="compare-card">
+    <div class="compare-hdr">⚡ Diferencia P2 − P1</div>
+    <table class="compare-tbl">
+      <thead><tr>
+        <th style="text-align:left;width:32%">Capítulo</th>
+        <th class="p1-col" style="background:#EBF3FB;color:#1F3864">P1 USD</th>
+        <th class="p2-col">P2 USD</th>
+        <th style="background:#F3E5F5;color:#6A1B9A">Diferencia USD</th>
+        <th style="text-align:left;background:#F3E5F5;color:#6A1B9A">Motivo</th>
+      </tr></thead>
+      <tbody>`;
+
+  const motivos=[
+    "Mismos trabajos","Vigas perimetrales: P1 210ml vs P2 160ml",
+    "Perfiles y estructura: P1 210ml ext vs P2 160ml","Superficie muros: P1 693m² vs P2 528m²",
+    "Aislación proporcional a sup.muros","Cubierta barn proporcional",
+    "Drywall: P2 más tabiques int (35ml vs 26ml)","Pisos: ajustado por baños",
+    "Aberturas: P1 más puertas/ventanas (4 dorms vs 3)","Sanitaria: P1 4 baños vs P2 3",
+    "Eléctrica: similar","Pintura: proporcional a superficies",
+    "P1: porche 30m² · P2: porche 24m²"
+  ];
+
+  r1.rubros.forEach((cap,i)=>{
+    const c1=calcCap(cap,P1);
+    const c2=calcCap(r2.rubros[i],P2);
+    const diff=c2.tot-c1.tot;
+    const cls=diff>500?"diff-neg":(diff<-500?"diff-pos":"");
+    const sign=diff>=0?"+":"";
+    html+=`<tr>
+      <td>${cap.cap}</td>
+      <td>${fUSD(c1.tot)}</td>
+      <td style="color:#E65100">${fUSD(c2.tot)}</td>
+      <td class="${cls}">${sign}${fUSD(Math.abs(diff)).replace("USD",diff>=0?"USD +":"USD −")}</td>
+      <td style="font-size:11px;color:#555;text-align:left">${motivos[i]}</td>
+    </tr>`;
+  });
+
+  const d_mat=r2.mat-r1.mat, d_mo=r2.mo-r1.mo, d_fin=r2.fin-r1.fin;
+  html+=`<tr style="background:#EBF3FB;font-weight:600">
+    <td>SUBTOTAL NETO</td><td>${fUSD(r1.neto)}</td>
+    <td style="color:#E65100">${fUSD(r2.neto)}</td>
+    <td class="${d_fin>0?"diff-neg":"diff-pos"}">${d_fin>=0?"+":"-"}${fUSD(Math.abs(d_fin))}</td>
+    <td style="text-align:left;font-size:11px"></td></tr>
+  <tr style="background:#1F3864;color:white;font-weight:700">
+    <td>TOTAL FINAL</td><td>${fUSD(r1.fin)}</td>
+    <td style="color:#FFB74D">${fUSD(r2.fin)}</td>
+    <td style="color:${d_fin>0?"#FF8A65":"#A5D6A7"}">${d_fin>=0?"+":"-"}${fUSD(Math.abs(d_fin))}</td>
+    <td style="text-align:left;font-size:11px;color:rgba(255,255,255,0.7)">
+      P2 es ${d_fin>=0?"más cara":"más barata"} en ${fUSD(Math.abs(d_fin))} (${(Math.abs(d_fin/r1.ratio)/P1.AREA*100).toFixed(1)}%)</td>
+  </tr>
+  </tbody></table></div>`;
+
+  document.getElementById("main-content").innerHTML=html;
+}
+
+// ══════════════════════════════════════════════
+// RENDER PROPUESTA (P1 o P2)
+// ══════════════════════════════════════════════
+function renderProp(tag){
+  const P=getPropData(tag);
+  const res=calcAll(P);
+  const sal=res.mo/(1+CS), cs_=res.mo-sal;
+
+  const sist = sistCubierta[tag];
+  let html=`
+  <!-- SELECTOR SISTEMA CUBIERTA -->
+  <div style="display:flex;gap:10px;margin-bottom:14px;align-items:center">
+    <span style="font-size:12px;font-weight:600;color:#555">Sistema cubierta:</span>
+    <button onclick="setSistProp('${tag}','trad')" style="padding:6px 16px;border-radius:20px;border:2px solid ${sist==='trad'?'#1F3864':'#d0d5de'};background:${sist==='trad'?'#1F3864':'#fff'};color:${sist==='trad'?'white':'#555'};font-size:12px;font-weight:500;cursor:pointer">
+      🏗 Chapa + OSB + Lana
+    </button>
+    <button onclick="setSistProp('${tag}','iso')" style="padding:6px 16px;border-radius:20px;border:2px solid ${sist==='iso'?'#6A1B9A':'#d0d5de'};background:${sist==='iso'?'#6A1B9A':'#fff'};color:${sist==='iso'?'white':'#555'};font-size:12px;font-weight:500;cursor:pointer">
+      ⚡ Isoroof (${precioIsoUsd} USD/m²)
+    </button>
+    ${sist==='iso'?`<span style="font-size:11px;color:#6A1B9A;font-weight:500">● Precio: <input type="number" value="${precioIsoUsd}" onchange="precioIsoUsd=parseFloat(this.value)||75;render()" style="width:60px;padding:2px 6px;border:1px solid #9C27B0;border-radius:4px;font-size:12px;color:#6A1B9A;font-weight:500"/> USD/m²</span>`:''}
+    ${sist==='iso'?`<span style="font-size:11px;background:#EDE7F6;color:#6A1B9A;padding:3px 10px;border-radius:10px;font-weight:500">Aislación incluida · ${Math.round(P.SUP_CUB/35)} jornales vs ${Math.round((P.MO[5][0]+P.MO[5][1]+P.MO[5][2]+P.MO[4][1]))} trad.</span>`:''}
+  </div>
+
+  <div class="info-bar ${tag==="p1"?"blue":"orange"}" style="margin-bottom:12px">
+    <strong>${P.label}</strong> &nbsp;|&nbsp;
+    ML perimetrales ext: <strong>${P.ML_EXT}ml</strong> &nbsp;|&nbsp;
+    ML paredes int: <strong>${P.ML_INT}ml</strong> &nbsp;|&nbsp;
+    Baños: <strong>${P.BANOS}</strong> &nbsp;|&nbsp;
+    Porche: <strong>${P.PORCHE}m²</strong> con losa + cubierta 2 aguas + cruz 6×6 lapacho &nbsp;|&nbsp;
+    Deck parrillero: <strong>${P.DECK}m²</strong>
+  </div>
+
+  <!-- RESUMEN FINANCIERO -->
+  <div class="res-card" style="margin-bottom:16px">
+    <div class="res-card-hdr ${tag}">Resumen financiero — ${P.label} &nbsp;|&nbsp; Laudos mayo 2026 · 3,5 j/m² &nbsp;|&nbsp; Cubierta: ${sist==="iso"?"⚡ Isoroof":"🏗 Tradicional"}</div>
+    <div class="metrics-row" style="grid-template-columns:repeat(4,1fr)">
+      <div class="metric"><div class="metric-label">Materiales</div><div class="metric-val">${fUYU(res.mat)}</div><div class="metric-sub">${fUSD(res.mat)}</div></div>
+      <div class="metric"><div class="metric-label">MO (c/CS 75,8%)</div><div class="metric-val">${fUYU(res.mo)}</div><div class="metric-sub">${fUSD(res.mo)}</div></div>
+      <div class="metric"><div class="metric-label">Imprevistos 10%</div><div class="metric-val">${fUYU(res.imp)}</div><div class="metric-sub">${fUSD(res.imp)}</div></div>
+      <div class="metric"><div class="metric-label">Beneficio 25%</div><div class="metric-val">${fUYU(res.ben)}</div><div class="metric-sub">${fUSD(res.ben)}</div></div>
+    </div>
+    <div class="fin-rows">
+      <div class="fr bold"><span>Materiales</span><div class="fr-right"><div>${fUYU(res.mat)}</div><div class="fr-usd">${fUSD(res.mat)}</div></div></div>
+      <div class="fr bold"><span>Mano de obra</span><div class="fr-right"><div>${fUYU(res.mo)}</div><div class="fr-usd">${fUSD(res.mo)}</div></div></div>
+      <div class="fr" style="font-size:11px;color:#666;padding-left:14px"><span>— Salarios brutos (c/ropa)</span><div class="fr-right">${fUYU(sal)}</div></div>
+      <div class="fr" style="font-size:11px;color:#666;padding-left:14px"><span>— Cargas sociales 75,8%</span><div class="fr-right">${fUYU(cs_)}</div></div>
+      <div class="fr bold" style="background:#EBF3FB;margin:0 -14px;padding:6px 14px"><span>Subtotal neto</span><div class="fr-right"><div>${fUYU(res.neto)}</div><div class="fr-usd">${fUSD(res.neto)}</div></div></div>
+      <div class="fr"><span>+ Imprevistos (10%)</span><div class="fr-right"><div>${fUYU(res.imp)}</div></div></div>
+      <div class="fr"><span>+ Beneficio empresa (25%)</span><div class="fr-right"><div>${fUYU(res.ben)}</div></div></div>
+      <div class="fr bold"><span>Ratio USD/m²</span><div class="fr-right" style="color:#1F3864;font-weight:600">${fR(res.ratio)}</div></div>
+      <div class="fr total ${tag}"><span>TOTAL FINAL</span><div class="fr-right"><div>${fUYU(res.fin)}</div><div class="fr-usd">${fUSD(res.fin)}</div></div></div>
+    </div>
+  </div>
+
+  <div class="controls">
+    <select id="filter-cap-${tag}"><option value="">Todos los capítulos</option>
+    ${res.rubros.map(c=>`<option value="${c.ci}">${c.cap}</option>`).join("")}
+    </select>
+    <input type="text" id="search-${tag}" placeholder="🔍 Buscar rubro...">
+    <button class="btn" onclick="resetProp('${tag}')">↺ Resetear</button>
+  </div>`;
+
+  // Capítulos
+  res.rubros.forEach(cap=>{
+    const {mat,mo,tot}=calcCap(cap,P);
+    html+=`
+    <div class="section" id="sec-${tag}-${cap.ci}">
+      <div class="cap-header ${tag}">
+        <h2>${cap.cap}</h2>
+        <div class="ct">${fUYU(tot)} &nbsp;|&nbsp; ${fUSD(tot)}</div>
+      </div>
+      <table>
+        <thead><tr>
+          <th style="width:28%;text-align:left">Descripción</th>
+          <th style="width:5%">Unid.</th>
+          <th style="width:8%">Cantidad</th>
+          <th style="width:9%">Mat. UYU/u</th>
+          <th style="width:10%">MO UYU/u</th>
+          <th style="width:10%">Tot. UYU/u</th>
+          <th style="width:11%">Total UYU</th>
+          <th style="width:10%">Total USD</th>
+        </tr></thead>
+        <tbody>`;
+    cap.rubros.forEach((r,ri)=>{
+      const mo_r=calcRubroMO(cap,r,P);
+      const mo_u=r.c?mo_r/r.c:0;
+      const tu=r.mu+mo_u;
+      const tot_r=tu*r.c;
+      const lbl=r.n?`${r.d}<br><span style="font-size:10px;color:#888">${r.n}</span>`:r.d;
+      html+=`<tr>
+        <td>${lbl}</td>
+        <td style="text-align:center;color:#666">${r.u}</td>
+        <td><input class="editable" data-tag="${tag}" data-ci="${cap.ci}" data-ri="${ri}" data-f="c" value="${r.c}"/></td>
+        <td><input class="editable" data-tag="${tag}" data-ci="${cap.ci}" data-ri="${ri}" data-f="mu" value="${r.mu}"/></td>
+        <td style="color:#555">${fUYU(mo_u)}</td>
+        <td>${fUYU(tu)}</td>
+        <td style="font-weight:600">${fUYU(tot_r)}</td>
+        <td style="font-weight:600;color:#2E75B6">${fUSD(tot_r)}</td>
+      </tr>`;
+    });
+    html+=`<tr class="note-row"><td colspan="8" style="text-align:right">
+      Mat: ${fUYU(mat)} &nbsp;|&nbsp; MO (j.OF:${P.MO[cap.ci][0]} j.AY:${P.MO[cap.ci][1]} j.CAP:${P.MO[cap.ci][2]}): ${fUYU(mo)}
+    </td></tr>
+    <tr class="subtotal-row ${tag}"><td colspan="6">Subtotal ${cap.cap}</td>
+      <td>${fUYU(tot)}</td><td>${fUSD(tot)}</td></tr>
+    </tbody></table></div>`;
+  });
+
+  html+=`<div style="height:24px"></div>`;
+  document.getElementById("main-content").innerHTML=html;
+
+  // Event listeners para edición
+  document.querySelectorAll(`.editable[data-tag="${tag}"]`).forEach(inp=>{
+    inp.addEventListener("change",e=>{
+      const tag=e.target.dataset.tag;
+      const ci=+e.target.dataset.ci;
+      const ri=+e.target.dataset.ri;
+      const f=e.target.dataset.f;
+      const v=parseFloat(e.target.value)||0;
+      const P=getPropData(tag);
+      getRubros(P)[ci].rubros[ri][f]=v;
+      // también actualizar en la propuesta directamente
+      const rubs=getRubros(P);
+      rubs[ci].rubros[ri][f]=v;
+      e.target.classList.add("changed");
+      // solo re-render sidebar totales
+      renderSidebar(tag);
+    });
+  });
+
+  // Filtros
+  document.getElementById(`filter-cap-${tag}`).addEventListener("change",e=>{
+    const val=e.target.value;
+    document.querySelectorAll(`.section[id^="sec-${tag}-"]`).forEach(sec=>{
+      sec.style.display=(!val||sec.id===`sec-${tag}-${val}`)?"":"none";
+    });
+  });
+  document.getElementById(`search-${tag}`).addEventListener("input",e=>{
+    const q=e.target.value.toLowerCase();
+    document.querySelectorAll("tbody tr:not(.note-row):not(.subtotal-row)").forEach(tr=>{
+      const txt=tr.textContent.toLowerCase();
+      tr.style.display=(!q||txt.includes(q))?"":"none";
+    });
+  });
+}
+
+function resetProp(tag){render();}
+
+// ══════════════════════════════════════════════
+// TAB SWITCH
+// ══════════════════════════════════════════════
+function setTab(tab){
+  currentTab=tab;
+  document.querySelectorAll(".tab").forEach(t=>t.classList.remove("active"));
+  const idx=['p1','p2','compare','cubierta'].indexOf(tab);
+  if(idx>=0) document.querySelectorAll(".tab")[idx].classList.add("active");
+  render();
+}
+
+
+// ══════════════════════════════════════════════
+// SISTEMA CUBIERTA — isopanel vs tradicional
+// ══════════════════════════════════════════════
+function getRubrosCubiertaTrad(P){
+  // SOLO cubierta — muros están en cap 4 del presupuesto principal
+  const SC=P.SUP_CUB, H=P.HUELLA;
+  return [
+    {d:"Correas C150 (sentido caída c/60cm)", u:"ml", c:P.ML_PERF_TECHO,     mu:2200, n:`${P.BARRAS_C150} barras 6m · ${P.PF_C150} perfiles`},
+    {d:"Chapa acanalada galv. N°25 +10%",     u:"m²", c:Math.round(SC*1.10),  mu:1050, n:"+10% cortes y solape"},
+    {d:"Tornillos autoperf. techo",           u:"un", c:P.TORNILLOS,          mu:25,   n:"8/m²"},
+    {d:"Burletes EPDM ondas",                 u:"ml", c:P.ML_CUB,             mu:80},
+    {d:"Canaleta zinc/Al. c/soporte",         u:"ml", c:P.ML_CUB,             mu:920},
+    {d:"Cumbrera ventilada",                  u:"ml", c:P.ML_CUMBRERA,        mu:1100},
+    {d:"Limatesas",                           u:"ml", c:P.ML_LIMATESA,        mu:780},
+    {d:"Lana vidrio 100mm bajo cubierta",     u:"m²", c:H,                    mu:520,  n:"Aislación cubierta"},
+    {d:"Cierre hastiales N/S",                u:"m²", c:15.4,                 mu:850,  n:"Pared vertical"},
+  ];
+}
+function getRubrosCubiertaIso(P){
+  // SOLO cubierta — muros siguen igual (steel framing tradicional)
+  const iso_uyu = precioIsoUsd * TC;
+  const SC=P.SUP_CUB;
+  return [
+    {d:"Correas C150 (sentido caída c/60cm)", u:"ml", c:P.ML_PERF_TECHO, mu:2200, elim:true, n:"Eliminado — isoroof es autoportante"},
+    {d:"Chapa acanalada galv. N°25 +10%",     u:"m²", c:Math.round(SC*1.10), mu:1050, elim:true, n:"Reemplazado por isoroof"},
+    {d:"Tornillos autoperf. techo",           u:"un", c:P.TORNILLOS,      mu:25,   elim:true, n:"Incluido en panel"},
+    {d:"Burletes EPDM ondas",                 u:"ml", c:P.ML_CUB,         mu:80,   elim:true, n:"Incluido en panel"},
+    {d:"Lana vidrio 100mm bajo cubierta",     u:"m²", c:P.HUELLA,         mu:520,  elim:true, n:"Aislación incluida en isoroof"},
+    {d:"Panel isoroof cubierta ✅",           u:"m²", c:+(SC*1.05).toFixed(1), mu:Math.round(iso_uyu), nuevo:true, n:`${SC.toFixed(0)}m² +5% cortes`},
+    {d:"Perfiles H/J remate cumbrera ✅",     u:"ml", c:P.ML_CUMBRERA+P.ML_LIMATESA, mu:850, nuevo:true, n:"Perfil de remate unión paneles"},
+    {d:"Tornillos especiales isoroof ✅",      u:"un", c:Math.round(SC*4),   mu:45,  nuevo:true, n:"4 torn/m² autoperf. con arandela EPDM"},
+  ];
+}
+function calcMoCubierta(P, sist){
+  if(sist==='trad'){
+    // cap 6 (cubierta) + cap 5 (aislacion bajo cubierta solamente)
+    // cap 4 (muros) NO va acá — muros siempre son tradicionales
+    return moUyu(...P.MO[5]) + moUyu(...P.MO[4]);
+  }
+  // ISO — solo instalación de paneles isoroof en techo
+  // Rendimiento: 35m²/j (panel más pesado que chapa pero sin correas previas)
+  const j = Math.ceil(P.SUP_CUB / 35);
+  return moUyu(Math.ceil(j*0.5), Math.ceil(j*0.5), Math.ceil(j*0.08));
+}
+function calcJCubierta(P, sist){
+  if(sist==='trad') return P.MO[5].reduce((a,b)=>a+b) + P.MO[4].reduce((a,b)=>a+b);
+  return Math.ceil(P.SUP_CUB/35) * 1.6; // factor OF+AY+CAP
+}
+function calcTotalCubierta(P, sist){
+  const rubros = sist==='trad' ? getRubrosCubiertaTrad(P) : getRubrosCubiertaIso(P).filter(r=>!r.elim);
+  const mat = rubros.reduce((s,r)=>s+r.mu*r.c,0);
+  const mo  = calcMoCubierta(P, sist);
+  return {mat, mo, tot:mat+mo};
+}
+
+function renderCubierta(){
+  const sb = document.getElementById("sb-title");
+  if(sb) sb.textContent="Sistema cubierta";
+
+  // Calcular para ambas propuestas y ambos sistemas
+  const c1t=calcTotalCubierta(dataP1,'trad'), c1i=calcTotalCubierta(dataP1,'iso');
+  const c2t=calcTotalCubierta(dataP2,'trad'), c2i=calcTotalCubierta(dataP2,'iso');
+  const j1t=calcJCubierta(dataP1,'trad'), j1i=calcJCubierta(dataP1,'iso');
+  const j2t=calcJCubierta(dataP2,'trad'), j2i=calcJCubierta(dataP2,'iso');
+  const diff1=usd(c1i.tot)-usd(c1t.tot);
+  const diff2=usd(c2i.tot)-usd(c2t.tot);
+
+  // Actualizar sidebar
+  document.getElementById("nav-caps").innerHTML=`
+    <button class="cap-link ${sistCubierta==='trad'?'active':''}" onclick="setSist('trad')">Sistema tradicional</button>
+    <button class="cap-link ${sistCubierta==='iso'?'active':''}" onclick="setSist('iso')" style="background:${sistCubierta==='iso'?'#6A1B9A':''}">Isopanel / Isoroof</button>`;
+  document.getElementById("sb-totals").innerHTML=`
+    <div class="st" style="font-size:11px;color:#888;margin-bottom:6px">Costo sist. cubierta</div>
+    <div class="st"><span>P1 Tradicional</span><span>${fUSD(c1t.tot)}</span></div>
+    <div class="st"><span>P1 Isopanel</span><span style="color:#6A1B9A">${fUSD(c1i.tot)}</span></div>
+    <div class="st bold" style="color:${diff1<0?'#3B6D11':'#A32D2D'}"><span>P1 diferencia</span><span>${diff1>=0?'+':''}${fUSD(diff1*TC)}</span></div>
+    <div style="border-top:1px solid #eee;margin:6px 0"></div>
+    <div class="st"><span>P2 Tradicional</span><span>${fUSD(c2t.tot)}</span></div>
+    <div class="st"><span>P2 Isopanel</span><span style="color:#6A1B9A">${fUSD(c2i.tot)}</span></div>
+    <div class="st bold" style="color:${diff2<0?'#3B6D11':'#A32D2D'}"><span>P2 diferencia</span><span>${diff2>=0?'+':''}${fUSD(diff2*TC)}</span></div>`;
+
+  document.getElementById("badge-sistema").textContent = sistCubierta==='trad'?'Sistema tradicional':'Sistema isopanel';
+  document.getElementById("badge-sistema").style.background = sistCubierta==='iso'?'#6A1B9A':'#555';
+
+  const rubP1 = sistCubierta==='trad'?getRubrosCubiertaTrad(dataP1):getRubrosCubiertaIso(dataP1);
+  const rubP2 = sistCubierta==='trad'?getRubrosCubiertaTrad(dataP2):getRubrosCubiertaIso(dataP2);
+  const cP1 = sistCubierta==='trad'?c1t:c1i;
+  const cP2 = sistCubierta==='trad'?c2t:c2i;
+  const jP1 = sistCubierta==='trad'?j1t:j1i;
+  const jP2 = sistCubierta==='trad'?j2t:j2i;
+  const dias1=Math.ceil(jP1/4), dias2=Math.ceil(jP2/4);
+
+  function buildTable(rubros, cP, jP, dias, propLabel, color){
+    const activos=rubros.filter(r=>!r.elim);
+    let rows='';
+    rubros.forEach((r,i)=>{
+      const elim=r.elim||false; const nuevo=r.nuevo||false;
+      const cls=elim?'deleted-rub':(nuevo?'new-rub':'');
+      const icon=elim?'🚫 ':(nuevo?'✅ ':'');
+      const val=elim?'—':fUYU(r.mu*r.c);
+      const valUsd=elim?'—':fUSD(r.mu*r.c);
+      rows+=`<tr class="${cls}">
+        <td>${icon}${r.d}${r.n?`<span class="trad-tag">${r.n}</span>`:''}</td>
+        <td style="text-align:center">${r.u}</td>
+        <td>${typeof r.c==='number'?fN(r.c,r.c%1?1:0):r.c}</td>
+        <td>${fUYU(r.mu)}</td>
+        <td>${val}</td>
+        <td>${valUsd}</td>
+      </tr>`;
+    });
+    return `
+    <div class="section">
+      <div class="cap-header" style="background:${color}">
+        <h2>${propLabel} — Cap. 5+6 (Aislación cubierta + Cubierta) — Muros en cap. 4 sin cambios</h2>
+        <div class="ct"><span>${fUYU(cP.tot)}</span><span>${fUSD(cP.tot)}</span></div>
+      </div>
+      <table>
+        <thead><tr>
+          <th style="text-align:left;width:32%">Descripción</th>
+          <th style="width:5%;text-align:center">Unid.</th>
+          <th style="width:8%">Cant.</th>
+          <th style="width:12%">Mat. UYU/u</th>
+          <th style="width:12%">Total UYU</th>
+          <th style="width:11%">Total USD</th>
+        </tr></thead>
+        <tbody>
+          ${rows}
+          <tr class="subtotal-row"><td colspan="4">Materiales</td>
+            <td>${fUYU(cP.mat)}</td><td>${fUSD(cP.mat)}</td></tr>
+          <tr class="subtotal-row"><td colspan="4">MO c/CS — ${jP.toFixed(0)} jornales · ~${dias} días (cuadrilla 4)</td>
+            <td>${fUYU(cP.mo)}</td><td>${fUSD(cP.mo)}</td></tr>
+          <tr class="subtotal-row" style="font-size:12px"><td colspan="4"><strong>SUBTOTAL SISTEMA CUBIERTA</strong></td>
+            <td><strong>${fUYU(cP.tot)}</strong></td><td><strong>${fUSD(cP.tot)}</strong></td></tr>
+        </tbody>
+      </table>
+    </div>`;
+  }
+
+  // Selector sistema
+  const selectorHtml=`
+  <div class="sist-selector">
+    <h3>Elegí el sistema de cerramiento y cubierta</h3>
+    <div class="sist-cards">
+      <div class="sist-card ${sistCubierta==='trad'?'active trad':''}" onclick="setSist('trad')">
+        <h4>🏠 Sistema tradicional</h4>
+        <p>Correas C150 · Chapa acanalada · Lana vidrio 100mm bajo cubierta · cumbrera · limatesas</p>
+        <div class="sist-total">${fUSD(c1t.tot)} P1 &nbsp;|&nbsp; ${fUSD(c2t.tot)} P2</div>
+        <div style="font-size:11px;color:#888;margin-top:4px">~${Math.ceil(j1t/4)} días P1 · ~${Math.ceil(j2t/4)} días P2 (cuadrilla 4)</div>
+      </div>
+      <div class="sist-card ${sistCubierta==='iso'?'active iso':''}" onclick="setSist('iso')">
+        <h4>⚡ Isopanel / Isoroof</h4>
+        <p>Panel isoroof doble chapa con aislación · Reemplaza chapa + correas C150 + lana bajo cubierta</p>
+        <div class="sist-total" style="color:#6A1B9A">${fUSD(c1i.tot)} P1 &nbsp;|&nbsp; ${fUSD(c2i.tot)} P2</div>
+        <div style="font-size:11px;color:#888;margin-top:4px">~${Math.ceil(j1i/4)} días P1 · ~${Math.ceil(j2i/4)} días P2 (cuadrilla 4)</div>
+      </div>
+    </div>
+    <div class="sist-param">
+      <label>Precio isopanel:</label>
+      <input type="number" value="${precioIsoUsd}" onchange="precioIsoUsd=parseFloat(this.value)||75;renderCubierta()"/>
+      <span class="param-note">USD/m²</span>
+      <span style="margin-left:16px;font-size:11px;color:#888">= UYU ${Math.round(precioIsoUsd*TC).toLocaleString("es-UY")}/m²</span>
+      <span style="margin-left:auto;font-size:11px;color:#555">Diferencia vs trad:
+        <strong style="color:${diff1<0?'#3B6D11':'#A32D2D'}">${diff1>=0?'+':''}USD ${Math.round(diff1)} P1</strong> &nbsp;·&nbsp;
+        <strong style="color:${diff2<0?'#3B6D11':'#A32D2D'}">${diff2>=0?'+':''}USD ${Math.round(diff2)} P2</strong>
+      </span>
+    </div>
+    ${(diff1<0||diff2<0)?`<div class="diff-win">
+      ✅ <strong>Isopanel conviene</strong> a USD ${precioIsoUsd}/m² —
+      P1: <strong>${diff1<0?fUSD(Math.abs(diff1*TC))+' más barato':'similar'}</strong>
+      · P2: <strong>${diff2<0?fUSD(Math.abs(diff2*TC))+' más barato':'similar'}</strong>
+      · Ahorro de tiempo: P1 <strong>${Math.ceil(j1t/4)-Math.ceil(j1i/4)} días</strong>
+      · P2 <strong>${Math.ceil(j2t/4)-Math.ceil(j2i/4)} días</strong> menos de obra.
+    </div>`:
+    `<div class="diff-lose">
+      ⚠ A USD ${precioIsoUsd}/m² el sistema tradicional resulta más económico.
+      Bajar el precio o renegociar con proveedor para que isopanel compita.
+    </div>`}
+  </div>`;
+
+  document.getElementById("main-content").innerHTML =
+    selectorHtml +
+    buildTable(rubP1, cP1, jP1, dias1, "Propuesta 1", "#1F3864") +
+    buildTable(rubP2, cP2, jP2, dias2, "Propuesta 2", "#E65100");
+}
+
+function setSist(s){ sistCubierta.p1=s; sistCubierta.p2=s; renderCubierta(); }
+function setSistProp(tag,s){ sistCubierta[tag]=s; render(); }
+
+function render(){
+  // Update badges
+  const r1=calcAll(P1), r2=calcAll(P2);
+  document.getElementById("badge-p1").textContent=`P1: ${fUSD(r1.fin)} · ${fR(r1.ratio)}`;
+  document.getElementById("badge-p2").textContent=`P2: ${fUSD(r2.fin)} · ${fR(r2.ratio)}`;
+
+  renderSidebar(currentTab);
+  if(currentTab==='compare') renderCompare();
+  else if(currentTab==='cubierta') renderCubierta();
+  else renderProp(currentTab);
+}
+
+render();
+</script>
+</body>
+</html>

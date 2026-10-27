@@ -1,0 +1,617 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Eden Rock · Estudio estructural del techo</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans:wght@300;400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap">
+<style>
+:root{--ink:#1C2730;--soft:#4B5661;--line:#D5DADE;--band:#F2F4F5;--wood:#A3481F;--steel:#2B5C7E;--bg:#FFFFFF}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{margin:0;background:var(--bg);color:var(--ink);font-family:'IBM Plex Sans',Arial,sans-serif;font-size:17px;line-height:1.55}
+.wrap{max-width:1120px;margin:0 auto;padding:0 20px}
+header.top{padding:36px 0 20px}
+.eyebrow{font-family:'IBM Plex Mono','Courier New',monospace;font-size:12.5px;letter-spacing:.14em;text-transform:uppercase;color:var(--wood);margin:0 0 10px}
+h1{font-weight:300;font-size:clamp(30px,5vw,50px);line-height:1.08;margin:0 0 10px;text-wrap:balance}
+.meta{font-family:'IBM Plex Mono','Courier New',monospace;font-size:13px;color:var(--soft);margin:0}
+nav.tabs{position:sticky;top:0;z-index:5;background:var(--bg);border-bottom:1px solid var(--ink)}
+nav.tabs .wrap{display:flex;gap:2px;overflow-x:auto;scrollbar-width:thin}
+nav.tabs button{appearance:none;border:0;background:none;font:inherit;font-size:15px;font-weight:500;color:var(--soft);padding:14px 14px 12px;border-bottom:3px solid transparent;cursor:pointer;white-space:nowrap}
+nav.tabs button:hover{color:var(--ink)}
+nav.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--wood)}
+nav.tabs button:focus-visible{outline:2px solid var(--steel);outline-offset:-2px}
+section.panel{display:none;padding:34px 0 70px;scroll-margin-top:56px}
+section.panel.on{display:block}
+.who{display:inline-block;font-family:'IBM Plex Mono','Courier New',monospace;font-size:12.5px;letter-spacing:.06em;color:var(--steel);border:1px solid var(--steel);padding:3px 9px;margin:0 0 14px}
+h2{font-weight:400;font-size:clamp(24px,3.4vw,34px);line-height:1.15;margin:0 0 8px;text-wrap:balance}
+h3{font-weight:600;font-size:19px;margin:38px 0 10px}
+p{margin:0 0 14px;max-width:72ch}
+.lead{font-size:19px;color:var(--soft);max-width:68ch}
+.grid{display:grid;gap:18px;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));margin:22px 0}
+.stat{border-top:2px solid var(--ink);padding-top:12px}
+.stat b{display:block;font-weight:300;font-size:38px;line-height:1.05;font-variant-numeric:tabular-nums}
+.stat.w b{color:var(--wood)}.stat.s b{color:var(--steel)}
+.stat span{display:block;font-size:14.5px;color:var(--soft);margin-top:6px}
+.tw{overflow-x:auto;margin:14px 0 8px}
+table{border-collapse:collapse;width:100%;min-width:520px;font-size:15.5px;font-variant-numeric:tabular-nums}
+th,td{text-align:left;padding:9px 12px;border-bottom:1px solid var(--line);vertical-align:top}
+th{background:var(--band);font-weight:600;font-size:13.5px}
+td.n,th.n{text-align:right;white-space:nowrap}
+table.k td:first-child{white-space:nowrap}
+tr.tot td{background:var(--ink);color:#fff;font-weight:500}
+tr.pick td{background:#F6EEE8;font-weight:500}
+.note{font-size:14px;color:var(--soft);max-width:80ch}
+.callout{border-left:4px solid var(--wood);background:#FBF6F2;padding:14px 18px;margin:20px 0;max-width:80ch}
+.callout.s{border-color:var(--steel);background:#F2F6F9}
+.callout p:last-child{margin:0}
+figure{margin:22px 0}
+figure img,figure svg{display:block;width:100%;height:auto;border:1px solid var(--line);background:#fff}
+figcaption{font-size:13.5px;color:var(--soft);margin-top:8px;max-width:90ch}
+.legend{display:flex;flex-wrap:wrap;gap:8px 22px;font-size:14.5px;margin:10px 0 0;padding:0;list-style:none}
+.legend i{display:inline-block;width:22px;height:8px;vertical-align:middle;margin-right:7px}
+ul.plain{padding-left:20px;max-width:76ch;margin:0 0 14px}
+ul.plain li{margin-bottom:6px}
+footer{border-top:1px solid var(--line);padding:22px 0 40px;font-size:13.5px;color:var(--soft)}
+a{color:var(--steel)}
+@media print{nav.tabs{display:none}section.panel{display:block;page-break-after:always;padding:10px 0}}
+</style>
+</head>
+<body>
+<header class="top"><div class="wrap">
+<p class="eyebrow">Smart Building Uruguay · Casa Eden Rock</p>
+<h1>Estudio estructural del techo</h1>
+<p class="meta">Padrón 27868 · Ruta 10, km 172,500 · Maldonado · Octubre 2026 · Predimensionado</p>
+</div></header>
+
+<nav class="tabs" aria-label="Partes del estudio"><div class="wrap" role="tablist">
+<button role="tab" data-t="resumen">Resumen</button>
+<button role="tab" data-t="cercha">Cercha y herrajes</button>
+<button role="tab" data-t="cargas">Cargas, columnas y encadenado</button>
+<button role="tab" data-t="techo">Techo y cotización</button>
+<button role="tab" data-t="cruces">Viento y cruces</button>
+<button role="tab" data-t="steel">Steel framing</button>
+<button role="tab" data-t="anclajes">Anclajes</button>
+</div></nav>
+<main class="wrap">
+
+<section class="panel" id="resumen">
+<h2>Columnas en caño 100 × 100 × 3,2 y encadenado en 100 × 200 × 3,2 de canto, arriostrados con cruces de steel framing</h2>
+<p class="lead">Nave central de cerchas de lapacho 20 × 20 con 8,05 m de luz, sobre columnas de caño de 3,00 m. Techo a dos aguas de 23,9 m de largo, con panel aislante de 30 mm y machimbre a la vista.</p>
+<div class="grid">
+<div class="stat w"><b>950 kg</b><span>pesa cada cercha de lapacho</span></div>
+<div class="stat"><b>2,1 t</b><span>recibe cada columna en servicio</span></div>
+<div class="stat s"><b>3,2 mm</b><span>de pared: columnas 100 × 100 y encadenado 100 × 200 de canto</span></div>
+<div class="stat"><b>27 cruces</b><span>de San Andrés en fleje: 13 en muros y 14 en el techo</span></div>
+</div>
+<h3>Caños de la estructura</h3>
+<div class="tw"><table>
+<tr><th>Caño</th><th>Uso</th><th class="n">Cantidad</th><th class="n">Largo</th><th class="n">Total</th></tr>
+<tr><td>100 × 100 × 3,2 mm</td><td>Columnas de la nave</td><td class="n">16</td><td class="n">3,00 m</td><td class="n">48 m</td></tr>
+<tr><td>100 × 100 × 3,2 mm</td><td>Columnas de los cuerpos laterales</td><td class="n">11</td><td class="n">2,60 m</td><td class="n">29 m</td></tr>
+<tr class="tot"><td>Total caño 100 × 100 × 3,2</td><td>27 columnas</td><td class="n">13 barras de 6 m</td><td class="n"></td><td class="n">77 m</td></tr>
+<tr><td>100 × 200 × 3,2 mm, de canto</td><td>Encadenado superior de la nave</td><td class="n"></td><td class="n"></td><td class="n">64 m</td></tr>
+<tr><td>100 × 200 × 3,2 mm, de canto</td><td>Encadenado superior de los laterales</td><td class="n"></td><td class="n"></td><td class="n">85 m</td></tr>
+<tr class="tot"><td>Total caño 100 × 200 × 3,2</td><td>Encadenado</td><td class="n">25 barras de 6 m</td><td class="n"></td><td class="n">149 m</td></tr>
+<tr><td>100 × 50 × 2 mm</td><td>Correas del techo de la nave</td><td class="n">7 líneas</td><td class="n">23,9 m</td><td class="n">167 m</td></tr>
+<tr class="tot"><td>Total caño 100 × 50 × 2</td><td>Correas</td><td class="n">28 barras de 6 m</td><td class="n"></td><td class="n">167 m</td></tr>
+</table></div>
+
+<p class="note">Peso: unas 0,7 t de columnas y 2,2 t de encadenado. Barras sin contar desperdicio; el detalle está en la pestaña de columnas.</p>
+<h3>Resultados</h3>
+<div class="tw"><table>
+<tr><th>Tema</th><th>Resultado</th></tr>
+<tr><td>Cercha</td><td>950 kg cada una. Tirante en dos tramos de 4,02 m unidos con planchuela embutida</td></tr>
+<tr><td>Herrajes</td><td>Un solo herraje por cercha: la T invertida del nudo central. El resto, barbilla y tornillos inoxidables</td></tr>
+<tr><td>Columnas</td><td>Caño 100 × 100 × 3,2 mm, acero ASTM A500 Grado B</td></tr>
+<tr><td>Encadenado superior</td><td>Caño 100 × 200 × 3,2 mm puesto de canto, continuo sobre las columnas</td></tr>
+<tr><td>Techo</td><td>Panel aislante de 30 mm: 88 paneles, cotizados en USD 27.438 con IVA</td></tr>
+<tr><td>Arriostramiento</td><td>Cruces de San Andrés con fleje galvanizado de steel framing, en muros y techo</td></tr>
+<tr><td>Anclajes</td><td>Cada apoyo se ancla para tracción por viento</td></tr>
+</table></div>
+</section>
+
+<section class="panel" id="cercha">
+<h2>Cada cercha pesa 950 kg y lleva un solo herraje oculto</h2>
+<figure><svg viewBox="0 0 1400 545" role="img" aria-label="Alzado técnico de la cercha tipo con cotas, ejes y nudos"><style>.o{stroke:#000;stroke-width:1.8;fill:none}.h{stroke:#000;stroke-width:1.1;fill:none}.d{stroke:#000;stroke-width:.8;fill:none}.t{stroke:#000;stroke-width:1.6}.c{stroke:#000;stroke-width:.7;stroke-dasharray:18 4 3 4;fill:none}.hid{stroke:#000;stroke-width:1.2;stroke-dasharray:7 4;fill:none}text{fill:#000}</style><rect x="1" y="1" width="1398" height="543" class="d"/><defs><pattern id="hw" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="9" stroke="#000" stroke-width=".6"/></pattern><pattern id="hs" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><line x1="0" y1="0" x2="0" y2="4" stroke="#000" stroke-width="1.1"/></pattern></defs><polygon points="100,370 1300,370 1300,326.6 700,109 100,326.6" class="o"/><polygon points="149.9,340.2 685.1,340.2 685.1,146.1" class="o"/><polygon points="1250.1,340.2 714.9,340.2 714.9,146.1" class="o"/><polygon points="685.1,340.2 405.7,247.4 450.9,231 685.1,308.8" style="fill:#fff" class="o"/><polygon points="714.9,340.2 994.3,247.4 949.1,231 714.9,308.8" style="fill:#fff" class="o"/><line x1="100" y1="340.2" x2="149.9" y2="340.2" class="h"/><line x1="1250.1" y1="340.2" x2="1300" y2="340.2" class="h"/><line x1="685.1" y1="146.1" x2="685.1" y2="114.4" class="h"/><line x1="714.9" y1="146.1" x2="714.9" y2="114.4" class="h"/><line x1="700" y1="340.2" x2="700" y2="370" class="t"/><line x1="70" y1="355.1" x2="1330" y2="355.1" class="c"/><line x1="700" y1="80" x2="700" y2="390" class="c"/><line x1="80" y1="349.7" x2="712" y2="120.5" class="c"/><line x1="1320" y1="349.7" x2="688" y2="120.5" class="c"/><rect x="107.5" y="371" width="15" height="50" style="fill:url(#hs)" class="o"/><rect x="1277.5" y="371" width="15" height="50" style="fill:url(#hs)" class="o"/><line x1="100.0" y1="449.0" x2="700.0" y2="449.0" class="d"/><line x1="100.0" y1="427.0" x2="100.0" y2="457.0" class="d"/><line x1="93.0" y1="442.0" x2="107.0" y2="456.0" class="t"/><line x1="700.0" y1="427.0" x2="700.0" y2="457.0" class="d"/><line x1="693.0" y1="442.0" x2="707.0" y2="456.0" class="t"/><text x="400.0" y="436.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(0.0 400.0 436.0)" font-size="17" font-family="'IBM Plex Mono','Courier New',monospace">4,02</text><line x1="700.0" y1="449.0" x2="1300.0" y2="449.0" class="d"/><line x1="700.0" y1="427.0" x2="700.0" y2="457.0" class="d"/><line x1="693.0" y1="442.0" x2="707.0" y2="456.0" class="t"/><line x1="1300.0" y1="427.0" x2="1300.0" y2="457.0" class="d"/><line x1="1293.0" y1="442.0" x2="1307.0" y2="456.0" class="t"/><text x="1000.0" y="436.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(0.0 1000.0 436.0)" font-size="17" font-family="'IBM Plex Mono','Courier New',monospace">4,02</text><line x1="100.0" y1="483.0" x2="1300.0" y2="483.0" class="d"/><line x1="100.0" y1="427.0" x2="100.0" y2="491.0" class="d"/><line x1="93.0" y1="476.0" x2="107.0" y2="490.0" class="t"/><line x1="1300.0" y1="427.0" x2="1300.0" y2="491.0" class="d"/><line x1="1293.0" y1="476.0" x2="1307.0" y2="490.0" class="t"/><text x="700.0" y="470.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(0.0 700.0 470.0)" font-size="17" font-family="'IBM Plex Mono','Courier New',monospace">8,05</text><line x1="42.0" y1="370.0" x2="42.0" y2="109.0" class="d"/><line x1="94.0" y1="370.0" x2="34.0" y2="370.0" class="d"/><line x1="49.0" y1="377.0" x2="35.0" y2="363.0" class="t"/><line x1="94.0" y1="109.0" x2="34.0" y2="109.0" class="d"/><line x1="49.0" y1="116.0" x2="35.0" y2="102.0" class="t"/><text x="50.0" y="241.0" text-anchor="start" dominant-baseline="middle" font-size="17" font-family="'IBM Plex Mono','Courier New',monospace">1,75</text><line x1="48" y1="109" x2="690" y2="109" class="d" stroke-dasharray="5 5"/><line x1="1340.0" y1="326.6" x2="1340.0" y2="370.0" class="d"/><line x1="1306.0" y1="326.6" x2="1348.0" y2="326.6" class="d"/><line x1="1333.0" y1="319.6" x2="1347.0" y2="333.6" class="t"/><line x1="1306.0" y1="370.0" x2="1348.0" y2="370.0" class="d"/><line x1="1333.0" y1="363.0" x2="1347.0" y2="377.0" class="t"/><text x="1350.0" y="349.0" text-anchor="start" dominant-baseline="middle" font-size="17" font-family="'IBM Plex Mono','Courier New',monospace">0,29</text><line x1="713.6" y1="71.4" x2="1313.6" y2="289.0" class="d"/><line x1="702.0" y1="103.4" x2="716.4" y2="63.9" class="d"/><line x1="704.7" y1="75.6" x2="722.6" y2="67.2" class="t"/><line x1="1302.0" y1="321.0" x2="1316.4" y2="281.5" class="d"/><line x1="1304.7" y1="293.2" x2="1322.6" y2="284.8" class="t"/><text x="1030.0" y="162.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(19.9 1030.0 162.0)" font-size="17" font-family="'IBM Plex Mono','Courier New',monospace">4,28</text><line x1="215.0" y1="340.2" x2="215.0" y2="370.0" class="d"/><line x1="222.0" y1="333.2" x2="208.0" y2="347.2" class="t"/><line x1="222.0" y1="363.0" x2="208.0" y2="377.0" class="t"/><text x="227.0" y="356.0" text-anchor="start" dominant-baseline="middle" font-size="17" font-family="'IBM Plex Mono','Courier New',monospace">0,20</text><circle cx="72" cy="302" r="15" style="fill:#fff" class="o"/><text x="72" y="303" text-anchor="middle" dominant-baseline="middle" font-size="17" font-weight="500" font-family="'IBM Plex Mono','Courier New',monospace">A</text><line x1="118" y1="336" x2="84" y2="311" class="d"/><circle cx="118" cy="336" r="2.5" fill="#000"/><circle cx="1328" cy="302" r="15" style="fill:#fff" class="o"/><text x="1328" y="303" text-anchor="middle" dominant-baseline="middle" font-size="17" font-weight="500" font-family="'IBM Plex Mono','Courier New',monospace">A</text><line x1="1282" y1="336" x2="1316" y2="311" class="d"/><circle cx="1282" cy="336" r="2.5" fill="#000"/><circle cx="700" cy="54" r="15" style="fill:#fff" class="o"/><text x="700" y="55" text-anchor="middle" dominant-baseline="middle" font-size="17" font-weight="500" font-family="'IBM Plex Mono','Courier New',monospace">B</text><line x1="700" y1="124" x2="700" y2="69" class="d"/><circle cx="700" cy="124" r="2.5" fill="#000"/><circle cx="760" cy="392" r="15" style="fill:#fff" class="o"/><text x="760" y="393" text-anchor="middle" dominant-baseline="middle" font-size="17" font-weight="500" font-family="'IBM Plex Mono','Courier New',monospace">C</text><line x1="704" y1="358" x2="749" y2="384" class="d"/><circle cx="704" cy="358" r="2.5" fill="#000"/><circle cx="380" cy="190" r="15" style="fill:#fff" class="o"/><text x="380" y="191" text-anchor="middle" dominant-baseline="middle" font-size="17" font-weight="500" font-family="'IBM Plex Mono','Courier New',monospace">D</text><line x1="428" y1="238" x2="391" y2="200" class="d"/><circle cx="428" cy="238" r="2.5" fill="#000"/><circle cx="1020" cy="190" r="15" style="fill:#fff" class="o"/><text x="1020" y="191" text-anchor="middle" dominant-baseline="middle" font-size="17" font-weight="500" font-family="'IBM Plex Mono','Courier New',monospace">D</text><line x1="972" y1="238" x2="1009" y2="200" class="d"/><circle cx="972" cy="238" r="2.5" fill="#000"/><rect x="317" y="342" width="26" height="26" style="fill:#fff" class="o"/><text x="330" y="356" text-anchor="middle" dominant-baseline="middle" font-size="16" font-family="'IBM Plex Mono','Courier New',monospace">1</text><rect x="1057" y="342" width="26" height="26" style="fill:#fff" class="o"/><text x="1070" y="356" text-anchor="middle" dominant-baseline="middle" font-size="16" font-family="'IBM Plex Mono','Courier New',monospace">1</text><rect x="267" y="264" width="26" height="26" style="fill:#fff" class="o"/><text x="280" y="278" text-anchor="middle" dominant-baseline="middle" font-size="16" font-family="'IBM Plex Mono','Courier New',monospace">2</text><rect x="1107" y="264" width="26" height="26" style="fill:#fff" class="o"/><text x="1120" y="278" text-anchor="middle" dominant-baseline="middle" font-size="16" font-family="'IBM Plex Mono','Courier New',monospace">2</text><rect x="687" y="217" width="26" height="26" style="fill:#fff" class="o"/><text x="700" y="231" text-anchor="middle" dominant-baseline="middle" font-size="16" font-family="'IBM Plex Mono','Courier New',monospace">3</text><rect x="547" y="270" width="26" height="26" style="fill:#fff" class="o"/><text x="560" y="284" text-anchor="middle" dominant-baseline="middle" font-size="16" font-family="'IBM Plex Mono','Courier New',monospace">4</text><rect x="827" y="270" width="26" height="26" style="fill:#fff" class="o"/><text x="840" y="284" text-anchor="middle" dominant-baseline="middle" font-size="16" font-family="'IBM Plex Mono','Courier New',monospace">4</text><text x="24" y="528" font-size="16" font-family="'IBM Plex Mono','Courier New',monospace">CERCHA TIPO · ALZADO · ESC. 1:50 · COTAS EN METROS · LAPACHO 20 × 20 cm</text><text x="1376" y="528" text-anchor="end" font-size="16" font-family="'IBM Plex Mono','Courier New',monospace">19,9° · PENDIENTE 36 %</text></svg>
+<figcaption>Piezas: 1 tirante en dos tramos, 2 pares, 3 pendolón, 4 diagonales. Nudos: A talón, B cumbrera, C nudo central con empalme, D diagonal con par.</figcaption>
+</figure>
+<h3>Despiece y peso</h3>
+<div class="tw"><table>
+<tr><th>Pieza</th><th class="n">Cant.</th><th class="n">Largo (m)</th><th class="n">Total (ml)</th><th class="n">Peso (kg)</th></tr>
+<tr><td>1 · Tirante inferior, en dos tramos</td><td class="n">2</td><td class="n">4,02</td><td class="n">8,05</td><td class="n">354</td></tr>
+<tr><td>2 · Pares</td><td class="n">2</td><td class="n">4,28</td><td class="n">8,56</td><td class="n">376</td></tr>
+<tr><td>3 · Pendolón</td><td class="n">1</td><td class="n">1,32</td><td class="n">1,32</td><td class="n">58</td></tr>
+<tr><td>4 · Diagonales</td><td class="n">2</td><td class="n">1,87</td><td class="n">3,74</td><td class="n">164</td></tr>
+<tr class="tot"><td>Total por cercha</td><td class="n"></td><td class="n"></td><td class="n">21,66</td><td class="n">≈ 950</td></tr>
+</table></div>
+<p class="note">Lapacho a 1.100 kg/m³: 44 kg por metro lineal de pieza 20 × 20.</p>
+
+<h3>Esfuerzo en cada pieza</h3>
+<div class="tw"><table>
+<tr><th>Pieza</th><th>Trabaja a</th><th class="n">En servicio</th><th class="n">Mayorado</th></tr>
+<tr><td>Tirante</td><td>Tracción</td><td class="n">3,1 t</td><td class="n">4,3 t</td></tr>
+<tr><td>Pares</td><td>Compresión</td><td class="n">3,3 t</td><td class="n">4,6 t</td></tr>
+<tr><td>Pendolón</td><td>Tracción</td><td class="n">0,9 t</td><td class="n">1,2 t</td></tr>
+<tr><td>Diagonales</td><td>Compresión</td><td class="n">1,0 t</td><td class="n">1,4 t</td></tr>
+</table></div>
+<p>El tirante trabaja estirado en toda su longitud: el empalme del centro tiene que transmitir 4,3 t de tracción.</p>
+
+<h3>Empalme del tirante con planchuela embutida</h3>
+<figure><svg viewBox="0 0 1400 610" role="img" aria-label="Detalle del nudo central: planchuela en T invertida embutida en el tirante y el pendolón, con pasadores ocultos; alzado y corte"><style>.o{stroke:#000;stroke-width:1.8;fill:none}.h{stroke:#000;stroke-width:1.1;fill:none}.d{stroke:#000;stroke-width:.8;fill:none}.t{stroke:#000;stroke-width:1.6}.c{stroke:#000;stroke-width:.7;stroke-dasharray:18 4 3 4;fill:none}.hid{stroke:#000;stroke-width:1.2;stroke-dasharray:7 4;fill:none}text{fill:#000}</style><defs><pattern id="hw" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="9" stroke="#000" stroke-width=".6"/></pattern><pattern id="hs" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><line x1="0" y1="0" x2="0" y2="4" stroke="#000" stroke-width="1.1"/></pattern></defs><rect x="1" y="1" width="1398" height="608" class="d"/><line x1="55" y1="290" x2="350.0" y2="290" class="o"/><line x1="510.0" y1="290" x2="805" y2="290" class="o"/><line x1="55" y1="450.0" x2="805" y2="450.0" class="o"/><path d="M55,282 L55,350 L47,362 L63,378 L55,390 L55,458.0" class="d"/><path d="M805,282 L805,350 L797,362 L813,378 L805,390 L805,458.0" class="d"/><line x1="430" y1="290" x2="430" y2="450.0" class="t"/><line x1="350.0" y1="290" x2="350.0" y2="40" class="o"/><line x1="510.0" y1="290" x2="510.0" y2="40" class="o"/><path d="M342.0,40 L400.0,40 L412.0,32 L428.0,48 L440.0,40 L518.0,40" class="d"/><line x1="350.0" y1="290" x2="180.0" y2="233.6" class="o"/><line x1="350.0" y1="121.5" x2="180.0" y2="65.1" class="o"/><path d="M180.0,241.6 L180.0,183.6 L172.0,171.6 L188.0,155.6 L180.0,143.6 L180.0,57.1" class="d"/><line x1="510.0" y1="290" x2="680.0" y2="233.6" class="o"/><line x1="510.0" y1="121.5" x2="680.0" y2="65.1" class="o"/><path d="M680.0,241.6 L680.0,183.6 L672.0,171.6 L688.0,155.6 L680.0,143.6 L680.0,57.1" class="d"/><path d="M210.0,298.0 L370.0,298.0 L370.0,82.0 L490.0,82.0 L490.0,298.0 L650.0,298.0 L650.0,418.0 L210.0,418.0 Z" class="hid"/><circle cx="246.0" cy="334.0" r="7.4" style="fill:#fff" class="o"/><line x1="235.0" y1="334.0" x2="257.0" y2="334.0" class="d"/><line x1="246.0" y1="323.0" x2="246.0" y2="345.0" class="d"/><circle cx="246.0" cy="390.0" r="7.4" style="fill:#fff" class="o"/><line x1="235.0" y1="390.0" x2="257.0" y2="390.0" class="d"/><line x1="246.0" y1="379.0" x2="246.0" y2="401.0" class="d"/><circle cx="334.0" cy="334.0" r="7.4" style="fill:#fff" class="o"/><line x1="323.0" y1="334.0" x2="345.0" y2="334.0" class="d"/><line x1="334.0" y1="323.0" x2="334.0" y2="345.0" class="d"/><circle cx="334.0" cy="390.0" r="7.4" style="fill:#fff" class="o"/><line x1="323.0" y1="390.0" x2="345.0" y2="390.0" class="d"/><line x1="334.0" y1="379.0" x2="334.0" y2="401.0" class="d"/><circle cx="526.0" cy="334.0" r="7.4" style="fill:#fff" class="o"/><line x1="515.0" y1="334.0" x2="537.0" y2="334.0" class="d"/><line x1="526.0" y1="323.0" x2="526.0" y2="345.0" class="d"/><circle cx="526.0" cy="390.0" r="7.4" style="fill:#fff" class="o"/><line x1="515.0" y1="390.0" x2="537.0" y2="390.0" class="d"/><line x1="526.0" y1="379.0" x2="526.0" y2="401.0" class="d"/><circle cx="614.0" cy="334.0" r="7.4" style="fill:#fff" class="o"/><line x1="603.0" y1="334.0" x2="625.0" y2="334.0" class="d"/><line x1="614.0" y1="323.0" x2="614.0" y2="345.0" class="d"/><circle cx="614.0" cy="390.0" r="7.4" style="fill:#fff" class="o"/><line x1="603.0" y1="390.0" x2="625.0" y2="390.0" class="d"/><line x1="614.0" y1="379.0" x2="614.0" y2="401.0" class="d"/><circle cx="430.0" cy="194.0" r="7.4" style="fill:#fff" class="o"/><line x1="419.0" y1="194.0" x2="441.0" y2="194.0" class="d"/><line x1="430.0" y1="183.0" x2="430.0" y2="205.0" class="d"/><circle cx="430.0" cy="130.0" r="7.4" style="fill:#fff" class="o"/><line x1="419.0" y1="130.0" x2="441.0" y2="130.0" class="d"/><line x1="430.0" y1="119.0" x2="430.0" y2="141.0" class="d"/><line x1="210.0" y1="482.0" x2="246.0" y2="482.0" class="d"/><line x1="210.0" y1="456.0" x2="210.0" y2="490.0" class="d"/><line x1="203.0" y1="475.0" x2="217.0" y2="489.0" class="t"/><line x1="246.0" y1="456.0" x2="246.0" y2="490.0" class="d"/><line x1="239.0" y1="475.0" x2="253.0" y2="489.0" class="t"/><text x="228.0" y="497.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(0.0 228.0 497.0)" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">40</text><line x1="246.0" y1="482.0" x2="334.0" y2="482.0" class="d"/><line x1="246.0" y1="456.0" x2="246.0" y2="490.0" class="d"/><line x1="239.0" y1="475.0" x2="253.0" y2="489.0" class="t"/><line x1="334.0" y1="456.0" x2="334.0" y2="490.0" class="d"/><line x1="327.0" y1="475.0" x2="341.0" y2="489.0" class="t"/><text x="290.0" y="497.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(0.0 290.0 497.0)" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">110</text><line x1="334.0" y1="482.0" x2="430.0" y2="482.0" class="d"/><line x1="334.0" y1="456.0" x2="334.0" y2="490.0" class="d"/><line x1="327.0" y1="475.0" x2="341.0" y2="489.0" class="t"/><line x1="430.0" y1="456.0" x2="430.0" y2="490.0" class="d"/><line x1="423.0" y1="475.0" x2="437.0" y2="489.0" class="t"/><text x="382.0" y="497.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(0.0 382.0 497.0)" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">120</text><line x1="430.0" y1="482.0" x2="526.0" y2="482.0" class="d"/><line x1="430.0" y1="456.0" x2="430.0" y2="490.0" class="d"/><line x1="423.0" y1="475.0" x2="437.0" y2="489.0" class="t"/><line x1="526.0" y1="456.0" x2="526.0" y2="490.0" class="d"/><line x1="519.0" y1="475.0" x2="533.0" y2="489.0" class="t"/><text x="478.0" y="497.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(0.0 478.0 497.0)" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">120</text><line x1="526.0" y1="482.0" x2="614.0" y2="482.0" class="d"/><line x1="526.0" y1="456.0" x2="526.0" y2="490.0" class="d"/><line x1="519.0" y1="475.0" x2="533.0" y2="489.0" class="t"/><line x1="614.0" y1="456.0" x2="614.0" y2="490.0" class="d"/><line x1="607.0" y1="475.0" x2="621.0" y2="489.0" class="t"/><text x="570.0" y="497.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(0.0 570.0 497.0)" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">110</text><line x1="614.0" y1="482.0" x2="650.0" y2="482.0" class="d"/><line x1="614.0" y1="456.0" x2="614.0" y2="490.0" class="d"/><line x1="607.0" y1="475.0" x2="621.0" y2="489.0" class="t"/><line x1="650.0" y1="456.0" x2="650.0" y2="490.0" class="d"/><line x1="643.0" y1="475.0" x2="657.0" y2="489.0" class="t"/><text x="632.0" y="497.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(0.0 632.0 497.0)" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">40</text><line x1="210.0" y1="520.0" x2="650.0" y2="520.0" class="d"/><line x1="210.0" y1="456.0" x2="210.0" y2="528.0" class="d"/><line x1="203.0" y1="513.0" x2="217.0" y2="527.0" class="t"/><line x1="650.0" y1="456.0" x2="650.0" y2="528.0" class="d"/><line x1="643.0" y1="513.0" x2="657.0" y2="527.0" class="t"/><text x="430.0" y="535.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(0.0 430.0 535.0)" font-size="16" font-family="'IBM Plex Mono','Courier New',monospace">550</text><line x1="700.0" y1="290.0" x2="700.0" y2="334.0" class="d"/><line x1="707.0" y1="283.0" x2="693.0" y2="297.0" class="t"/><line x1="707.0" y1="327.0" x2="693.0" y2="341.0" class="t"/><text x="712.0" y="313.0" text-anchor="start" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">55</text><line x1="700.0" y1="334.0" x2="700.0" y2="390.0" class="d"/><line x1="707.0" y1="327.0" x2="693.0" y2="341.0" class="t"/><line x1="707.0" y1="383.0" x2="693.0" y2="397.0" class="t"/><text x="712.0" y="363.0" text-anchor="start" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">70</text><line x1="700.0" y1="390.0" x2="700.0" y2="450.0" class="d"/><line x1="707.0" y1="383.0" x2="693.0" y2="397.0" class="t"/><line x1="707.0" y1="443.0" x2="693.0" y2="457.0" class="t"/><text x="712.0" y="421.0" text-anchor="start" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">75</text><line x1="840.0" y1="290.0" x2="840.0" y2="450.0" class="d"/><line x1="847.0" y1="283.0" x2="833.0" y2="297.0" class="t"/><line x1="847.0" y1="443.0" x2="833.0" y2="457.0" class="t"/><text x="852.0" y="371.0" text-anchor="start" dominant-baseline="middle" font-size="16" font-family="'IBM Plex Mono','Courier New',monospace">200</text><line x1="496.0" y1="290" x2="668.0" y2="290" class="d"/><line x1="660.0" y1="290.0" x2="660.0" y2="194.0" class="d"/><line x1="653.0" y1="297.0" x2="667.0" y2="283.0" class="t"/><line x1="653.0" y1="201.0" x2="667.0" y2="187.0" class="t"/><text x="672.0" y="243.0" text-anchor="start" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">120</text><line x1="496.0" y1="194.0" x2="668.0" y2="194.0" class="d"/><line x1="660.0" y1="194.0" x2="660.0" y2="130.0" class="d"/><line x1="653.0" y1="201.0" x2="667.0" y2="187.0" class="t"/><line x1="653.0" y1="137.0" x2="667.0" y2="123.0" class="t"/><text x="672.0" y="163.0" text-anchor="start" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">80</text><line x1="496.0" y1="130.0" x2="668.0" y2="130.0" class="d"/><line x1="660.0" y1="130.0" x2="660.0" y2="82.0" class="d"/><line x1="653.0" y1="137.0" x2="667.0" y2="123.0" class="t"/><line x1="653.0" y1="89.0" x2="667.0" y2="75.0" class="t"/><text x="672.0" y="107.0" text-anchor="start" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">60</text><line x1="496.0" y1="82.0" x2="668.0" y2="82.0" class="d"/><text x="70" y="402" font-size="14" font-family="'IBM Plex Mono','Courier New',monospace">TIRANTE</text><text x="70" y="420" font-size="14" font-family="'IBM Plex Mono','Courier New',monospace">20×20</text><text x="430" y="26" text-anchor="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">PENDOLÓN 20×20</text><line x1="430" y1="324" x2="280" y2="568.0" class="d"/><circle cx="430" cy="324" r="2.5" fill="#000"/><text x="274" y="573.0" text-anchor="end" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">JUNTA A TOPE</text><line x1="628.0" y1="410.0" x2="600" y2="568.0" class="d"/><circle cx="628.0" cy="410.0" r="2.5" fill="#000"/><text x="606" y="573.0" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">PLANCHUELA 8 mm (OCULTA)</text><text x="430" y="592" text-anchor="middle" font-size="16" font-family="'IBM Plex Mono','Courier New',monospace">ALZADO NUDO C · ESC. 1:10 · COTAS EN mm</text><rect x="985" y="70" width="300.0" height="300.0" style="fill:url(#hw)" class="o"/><rect x="1127.5" y="70" width="15.0" height="247.5" style="fill:#fff" class="h"/><rect x="1129.0" y="85.0" width="12.0" height="225.0" style="fill:#000"/><rect x="1127.5" y="70" width="15.0" height="13.5" style="fill:url(#hs)" class="h"/><rect x="992.5" y="140.5" width="285.0" height="24.0" style="fill:#fff" class="o"/><rect x="985" y="139.0" width="7.5" height="27.0" style="fill:url(#hs)" class="h"/><rect x="1277.5" y="139.0" width="7.5" height="27.0" style="fill:url(#hs)" class="h"/><rect x="1129.0" y="140.5" width="12.0" height="24.0" style="fill:#000"/><rect x="992.5" y="245.5" width="285.0" height="24.0" style="fill:#fff" class="o"/><rect x="985" y="244.0" width="7.5" height="27.0" style="fill:url(#hs)" class="h"/><rect x="1277.5" y="244.0" width="7.5" height="27.0" style="fill:url(#hs)" class="h"/><rect x="1129.0" y="245.5" width="12.0" height="24.0" style="fill:#000"/><line x1="985.0" y1="400.0" x2="1285.0" y2="400.0" class="d"/><line x1="985.0" y1="376.0" x2="985.0" y2="408.0" class="d"/><line x1="978.0" y1="393.0" x2="992.0" y2="407.0" class="t"/><line x1="1285.0" y1="376.0" x2="1285.0" y2="408.0" class="d"/><line x1="1278.0" y1="393.0" x2="1292.0" y2="407.0" class="t"/><text x="1135.0" y="415.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(0.0 1135.0 415.0)" font-size="16" font-family="'IBM Plex Mono','Courier New',monospace">200</text><line x1="955.0" y1="70.0" x2="955.0" y2="317.5" class="d"/><line x1="979.0" y1="70.0" x2="947.0" y2="70.0" class="d"/><line x1="962.0" y1="63.0" x2="948.0" y2="77.0" class="t"/><line x1="979.0" y1="317.5" x2="947.0" y2="317.5" class="d"/><line x1="962.0" y1="310.5" x2="948.0" y2="324.5" class="t"/><text x="945.0" y="194.0" text-anchor="end" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">165</text><line x1="1135.0" y1="76.0" x2="1325.0" y2="82" class="d"/><circle cx="1135.0" cy="76.0" r="2.5" fill="#000"/><circle cx="1337.0" cy="82" r="12" style="fill:#fff" class="o"/><text x="1337.0" y="83" text-anchor="middle" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">1</text><line x1="1135.0" y1="208.0" x2="1325.0" y2="208.0" class="d"/><circle cx="1135.0" cy="208.0" r="2.5" fill="#000"/><circle cx="1337.0" cy="208.0" r="12" style="fill:#fff" class="o"/><text x="1337.0" y="209.0" text-anchor="middle" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">2</text><line x1="1210.0" y1="257.5" x2="1325.0" y2="295.0" class="d"/><circle cx="1210.0" cy="257.5" r="2.5" fill="#000"/><circle cx="1337.0" cy="295.0" r="12" style="fill:#fff" class="o"/><text x="1337.0" y="296.0" text-anchor="middle" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">3</text><line x1="1280.5" y1="152.5" x2="1325.0" y2="142.0" class="d"/><circle cx="1280.5" cy="152.5" r="2.5" fill="#000"/><circle cx="1337.0" cy="142.0" r="12" style="fill:#fff" class="o"/><text x="1337.0" y="143.0" text-anchor="middle" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">4</text><text x="945" y="452.0" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">1  LISTÓN DE LAPACHO ENCOLADO</text><text x="945" y="474.0" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">2  PLANCHUELA 8 mm EN RANURA DE 10</text><text x="945" y="496.0" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">3  PASADOR LISO Ø16 × 190</text><text x="945" y="518.0" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">4  TAPÓN DE LAPACHO Ø18</text><text x="1135.0" y="592" text-anchor="middle" font-size="16" font-family="'IBM Plex Mono','Courier New',monospace">CORTE DEL TIRANTE · ESC. 1:5</text></svg>
+<figcaption>Nudo C. Una sola planchuela en T invertida une los dos tramos del tirante y cuelga del pendolón. Queda dentro de una ranura hecha desde la cara superior: desde abajo no se ve.</figcaption>
+</figure>
+<div class="tw"><table>
+<tr><th>Elemento</th><th>Medida</th></tr>
+<tr><td>Planchuela</td><td>8 mm de espesor, 550 mm de largo y 150 mm de alto, con alma de 150 × 260 mm hacia el pendolón</td></tr>
+<tr><td>Corte</td><td>Se saca entera de una chapa de 550 × 410 × 8 mm</td></tr>
+<tr><td>Ranura en la madera</td><td>10 mm de ancho y 165 mm de profundidad, desde la cara superior</td></tr>
+<tr><td>Pasadores</td><td>10 lisos de Ø16 × 190 mm: 4 en cada tramo del tirante y 2 en el pendolón</td></tr>
+<tr><td>Terminación</td><td>Tapón de lapacho Ø18 en cada extremo de pasador y listón encolado cerrando la ranura</td></tr>
+<tr><td>Resistencia</td><td>11,6 t por lado frente a 4,3 t de tracción: trabaja al 37 %</td></tr>
+<tr><td>Material</td><td>Acero galvanizado en caliente; agujeros de 17 mm en la chapa y de 16 mm justos en la madera</td></tr>
+</table></div>
+
+<h3>Los demás nudos: barbilla y tornillos inoxidables</h3>
+<p>La T invertida es el único herraje. En los otros nudos el esfuerzo pasa de madera a madera por una barbilla, que es un rebaje de encastre, y los tornillos sujetan la pieza y resisten cuando el viento invierte los esfuerzos.</p>
+<div class="tw"><table>
+<tr><th>Nudo</th><th>Esfuerzo mayorado</th><th>Cómo se resuelve</th><th class="n">Tornillos</th></tr>
+<tr><td>A · Talón, par con tirante</td><td>4,3 t de empuje del par sobre el tirante</td><td>Barbilla de 40 mm a 20 cm del extremo del tirante: el empuje lo toma la madera</td><td class="n">4 de Ø10 × 300</td></tr>
+<tr><td>B · Cumbrera, pares con pendolón</td><td>1,2 t de tracción en el pendolón</td><td>Barbilla en la cabeza del pendolón, donde apoyan los dos pares</td><td class="n">2 por par, cruzados</td></tr>
+<tr><td>C · Nudo central</td><td>4,3 t de tracción en el tirante</td><td>T invertida de 8 mm con pasadores</td><td class="n">—</td></tr>
+<tr><td>D · Diagonales, los dos extremos</td><td>1,4 t de compresión</td><td>Apoyo a tope con barbilla de 30 mm</td><td class="n">2 de Ø8 × 240 por extremo</td></tr>
+</table></div>
+
+<h3>Talón encastrado</h3>
+<figure><svg viewBox="0 0 1400 720" role="img" aria-label="Detalle del talón: el par encastra en el tirante con una barbilla de 40 mm a 200 mm del extremo, con tornillos inclinados y apoyo sobre la columna"><style>.o{stroke:#000;stroke-width:1.8;fill:none}.h{stroke:#000;stroke-width:1.1;fill:none}.d{stroke:#000;stroke-width:.8;fill:none}.t{stroke:#000;stroke-width:1.6}.c{stroke:#000;stroke-width:.7;stroke-dasharray:18 4 3 4;fill:none}.hid{stroke:#000;stroke-width:1.2;stroke-dasharray:7 4;fill:none}text{fill:#000}</style><defs><pattern id="hw" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="9" stroke="#000" stroke-width=".6"/></pattern><pattern id="hs" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><line x1="0" y1="0" x2="0" y2="4" stroke="#000" stroke-width="1.1"/></pattern></defs><rect x="1" y="1" width="1398" height="718" class="d"/><path d="M170.0,305.0 L370.0,305.0 L370.0,345.0 L508.0,305.0 L730.0,305.0" class="o"/><path d="M170.0,305.0 L170.0,505.0 L730.0,505.0" class="o"/><path d="M730,297 L730,375 L722,387 L738,403 L730,415 L730,513" class="d"/><path d="M170.0,305.0 L170.0,215.0 L730.0,11.9" class="o"/><path d="M508.0,305.0 L730.0,224.6" class="o"/><path d="M730,3.9 L730,81.9 L722,93.9 L738,109.9 L730,121.9 L730,232.6" class="d"/><polygon points="370.0,305.0 370.0,345.0 508.0,305.0" style="fill:url(#hw)" class="h"/><line x1="170" y1="345" x2="370" y2="345" class="hid"/><line x1="140" y1="405" x2="755" y2="405" class="c"/><line x1="140" y1="332.2" x2="755" y2="109.1" class="c"/><line x1="240" y1="189.6" x2="275" y2="487.6" class="t"/><line x1="231" y1="190.6" x2="249" y2="188.6" class="t"/><line x1="425" y1="122.5" x2="460" y2="420.5" class="t"/><line x1="416" y1="123.5" x2="434" y2="121.5" class="t"/><rect x="170" y="505" width="200" height="8" style="fill:#000"/><rect x="220" y="513" width="100" height="70" style="fill:url(#hs)" class="o"/><path d="M212,583 L250,583 L260,575 L275,591 L285,583 L328,583" class="d"/><line x1="690.0" y1="132.4" x2="570.0" y2="175.9" class="t"/><polygon points="570.0,175.9 590.0,159.9 594.0,174.9" style="fill:#000"/><line x1="170.0" y1="615.0" x2="370.0" y2="615.0" class="d"/><line x1="170.0" y1="511.0" x2="170.0" y2="623.0" class="d"/><line x1="163.0" y1="608.0" x2="177.0" y2="622.0" class="t"/><line x1="370.0" y1="511.0" x2="370.0" y2="623.0" class="d"/><line x1="363.0" y1="608.0" x2="377.0" y2="622.0" class="t"/><text x="270.0" y="630.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(0.0 270.0 630.0)" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">200</text><line x1="170.0" y1="645.0" x2="508.0" y2="645.0" class="d"/><line x1="170.0" y1="511.0" x2="170.0" y2="653.0" class="d"/><line x1="163.0" y1="638.0" x2="177.0" y2="652.0" class="t"/><line x1="508.0" y1="511.0" x2="508.0" y2="653.0" class="d"/><line x1="501.0" y1="638.0" x2="515.0" y2="652.0" class="t"/><text x="339.0" y="660.0" text-anchor="middle" dominant-baseline="middle" transform="rotate(0.0 339.0 660.0)" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">338</text><line x1="130.0" y1="305.0" x2="130.0" y2="505.0" class="d"/><line x1="164.0" y1="305.0" x2="122.0" y2="305.0" class="d"/><line x1="137.0" y1="298.0" x2="123.0" y2="312.0" class="t"/><line x1="164.0" y1="505.0" x2="122.0" y2="505.0" class="d"/><line x1="137.0" y1="498.0" x2="123.0" y2="512.0" class="t"/><text x="118.0" y="406.0" text-anchor="end" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">200</text><line x1="130.0" y1="215.0" x2="130.0" y2="305.0" class="d"/><line x1="164.0" y1="215.0" x2="122.0" y2="215.0" class="d"/><line x1="137.0" y1="208.0" x2="123.0" y2="222.0" class="t"/><line x1="164.0" y1="305.0" x2="122.0" y2="305.0" class="d"/><line x1="137.0" y1="298.0" x2="123.0" y2="312.0" class="t"/><text x="118.0" y="261.0" text-anchor="end" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">90</text><line x1="80.0" y1="215.0" x2="80.0" y2="505.0" class="d"/><line x1="164.0" y1="215.0" x2="72.0" y2="215.0" class="d"/><line x1="87.0" y1="208.0" x2="73.0" y2="222.0" class="t"/><line x1="164.0" y1="505.0" x2="72.0" y2="505.0" class="d"/><line x1="87.0" y1="498.0" x2="73.0" y2="512.0" class="t"/><text x="68.0" y="361.0" text-anchor="end" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">290</text><line x1="352.0" y1="305.0" x2="352.0" y2="345.0" class="d"/><line x1="359.0" y1="298.0" x2="345.0" y2="312.0" class="t"/><line x1="359.0" y1="338.0" x2="345.0" y2="352.0" class="t"/><text x="340.0" y="326.0" text-anchor="end" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">40</text><text x="600" y="293" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">19,9°</text><circle cx="670" cy="93.64999999999998" r="13" style="fill:#fff" class="o"/><text x="670" y="94.64999999999998" text-anchor="middle" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">1</text><circle cx="640" cy="455" r="13" style="fill:#fff" class="o"/><text x="640" y="456" text-anchor="middle" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">2</text><line x1="415" y1="319" x2="500" y2="375" class="d"/><circle cx="415" cy="319" r="2.5" fill="#000"/><circle cx="512" cy="383" r="13" style="fill:#fff" class="o"/><text x="512" y="384" text-anchor="middle" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">3</text><line x1="230" y1="345" x2="188" y2="435" class="d"/><circle cx="230" cy="345" r="2.5" fill="#000"/><circle cx="188" cy="448" r="13" style="fill:#fff" class="o"/><text x="188" y="449" text-anchor="middle" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">4</text><line x1="268" y1="439.611" x2="348" y2="463" class="d"/><circle cx="268" cy="439.611" r="2.5" fill="#000"/><circle cx="360" cy="471" r="13" style="fill:#fff" class="o"/><text x="360" y="472" text-anchor="middle" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">5</text><line x1="355" y1="509" x2="432" y2="550" class="d"/><circle cx="355" cy="509" r="2.5" fill="#000"/><circle cx="444" cy="557" r="13" style="fill:#fff" class="o"/><text x="444" y="558" text-anchor="middle" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">6</text><line x1="310" y1="555" x2="390" y2="597" class="d"/><circle cx="310" cy="555" r="2.5" fill="#000"/><circle cx="402" cy="603" r="13" style="fill:#fff" class="o"/><text x="402" y="604" text-anchor="middle" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">7</text><text x="900" y="110" font-size="16" font-weight="500" font-family="'IBM Plex Mono','Courier New',monospace">REFERENCIAS</text><text x="900" y="150" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">1  PAR 20 × 20</text><text x="900" y="176" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">2  TIRANTE 20 × 20</text><text x="900" y="202" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">3  BARBILLA: DIENTE DE 40 mm</text><text x="900" y="228" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">   A 200 mm DEL EXTREMO</text><text x="900" y="254" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">4  PLANO DE CORTE 200 × 200 mm</text><text x="900" y="280" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">5  TORNILLOS INOX Ø10 × 300</text><text x="900" y="306" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">   4 POR TALÓN, 2 A LA VISTA</text><text x="900" y="332" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">6  PLACA DE ASIENTO 200 × 200 × 8</text><text x="900" y="358" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">7  COLUMNA 100 × 100 × 3,2</text><text x="900" y="384" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">→  EMPUJE DEL PAR: 4,6 t</text><text x="900" y="460" font-size="16" font-weight="500" font-family="'IBM Plex Mono','Courier New',monospace">CÓMO TRABAJA</text><text x="900" y="490" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">EL DIENTE DEL PAR EMPUJA CONTRA</text><text x="900" y="514" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">LA CARA VERTICAL DE LA BARBILLA.</text><text x="900" y="538" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">LOS 200 mm DE MADERA HASTA EL</text><text x="900" y="562" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">EXTREMO RESISTEN ESE EMPUJE.</text><text x="900" y="586" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">LOS TORNILLOS MANTIENEN EL NUDO</text><text x="900" y="610" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">CERRADO CUANDO SOPLA VIENTO.</text><text x="470" y="700" text-anchor="middle" font-size="16" font-family="'IBM Plex Mono','Courier New',monospace">NUDO A · TALÓN ENCASTRADO · ESC. 1:5 · COTAS EN mm</text></svg>
+<figcaption>Nudo A. El par calza en el tirante con una barbilla. La cercha apoya en la columna a través de la placa de asiento.</figcaption>
+</figure>
+<div class="callout"><p><b>El talón no puede quedar sólo a tornillos.</b> Sin barbilla, los 4,3 t de empuje pasarían enteros por los tornillos. Con la barbilla, la madera resiste 8 t y trabaja al 54 %.</p></div>
+<div class="tw"><table>
+<tr><th>Tornillos</th><th>Condición</th></tr>
+<tr><td>Tipo</td><td>Estructurales para madera, de rosca larga, en acero inoxidable A2 o A4; no tornillos comunes de deck</td></tr>
+<tr><td>Cantidad</td><td>Unos 20 por cercha</td></tr>
+<tr><td>Colocación</td><td>Siempre con perforación previa: el lapacho es tan duro que el inoxidable se corta al roscar</td></tr>
+<tr><td>Terminación</td><td>Cabeza embutida y tapón de lapacho</td></tr>
+<tr><td>Viento</td><td>Con succión fuerte los pares y las diagonales pasan a tracción: los tornillos son los que mantienen los nudos cerrados</td></tr>
+</table></div>
+
+<h3>Opciones para alivianarla</h3>
+<div class="tw"><table class="k">
+<tr><th>Sección (ancho × canto)</th><th class="n">Peso por cercha</th><th class="n">Ahorro</th><th>Vista de frente</th></tr>
+<tr><td>20 × 20 cm (actual)</td><td class="n">945 kg</td><td class="n">0 %</td><td>Actual</td></tr>
+<tr><td>15 × 20 cm</td><td class="n">710 kg</td><td class="n">24 %</td><td>Idéntica</td></tr>
+<tr><td>10 × 20 cm</td><td class="n">470 kg</td><td class="n">50 %</td><td>Idéntica</td></tr>
+</table></div>
+
+<p>La madera trabaja a unos 10 kg/cm²: la sección 20 × 20 responde a la imagen, no a la carga. Con menos de 15 cm de ancho los pasadores de Ø16 pierden agarre y hay que recalcular los herrajes.</p>
+</section>
+
+<section class="panel" id="cargas">
+<h2>27 columnas en 100 × 100 × 3,2 y 149 m de encadenado en 100 × 200 × 3,2 de canto</h2>
+<figure><svg viewBox="0 0 1400 1000" role="img" aria-label="Planta esquemática de la estructura metálica: 27 columnas de 100 × 100 y encadenado de 100 × 200, 16 en la nave y 11 en los cuerpos laterales, unidas por el encadenado superior; las cerchas cruzan la nave en ocho ejes"><style>.o{stroke:#000;stroke-width:1.8;fill:none}.h{stroke:#000;stroke-width:1.1;fill:none}.d{stroke:#000;stroke-width:.8;fill:none}.t{stroke:#000;stroke-width:1.6}.c{stroke:#000;stroke-width:.7;stroke-dasharray:18 4 3 4;fill:none}.hid{stroke:#000;stroke-width:1.2;stroke-dasharray:7 4;fill:none}text{fill:#000}</style><defs><pattern id="hw" width="9" height="9" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="9" stroke="#000" stroke-width=".6"/></pattern><pattern id="hs" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(-45)"><line x1="0" y1="0" x2="0" y2="4" stroke="#000" stroke-width="1.1"/></pattern></defs><rect x="1" y="1" width="1398" height="998" class="d"/><line x1="1180.0" y1="265.9" x2="1180.0" y2="613.0" class="c"/><line x1="1042.9" y1="265.9" x2="1042.9" y2="613.0" class="c"/><line x1="902.9" y1="265.9" x2="902.9" y2="613.0" class="c"/><line x1="751.8" y1="265.9" x2="751.8" y2="613.0" class="c"/><line x1="592.2" y1="265.9" x2="592.2" y2="613.0" class="c"/><line x1="449.5" y1="265.9" x2="449.5" y2="613.0" class="c"/><line x1="309.5" y1="265.9" x2="309.5" y2="613.0" class="c"/><line x1="150.0" y1="265.9" x2="150.0" y2="613.0" class="c"/><line x1="1180.0" y1="265.9" x2="150.0" y2="265.9" class="o"/><line x1="1180.0" y1="613.0" x2="150.0" y2="613.0" class="o"/><line x1="1180.0" y1="265.9" x2="1180.0" y2="613.0" class="o"/><line x1="150.0" y1="265.9" x2="150.0" y2="613.0" class="o"/><line x1="989.7" y1="70.0" x2="763.0" y2="70.0" class="o"/><line x1="763.0" y1="70.0" x2="620.2" y2="70.0" class="o"/><line x1="620.2" y1="70.0" x2="483.1" y2="70.0" class="o"/><line x1="483.1" y1="70.0" x2="259.2" y2="70.0" class="o"/><line x1="989.7" y1="70.0" x2="989.7" y2="265.9" class="o"/><line x1="763.0" y1="70.0" x2="763.0" y2="265.9" class="o"/><line x1="620.2" y1="70.0" x2="620.2" y2="265.9" class="o"/><line x1="483.1" y1="70.0" x2="483.1" y2="265.9" class="o"/><line x1="259.2" y1="70.0" x2="259.2" y2="265.9" class="o"/><line x1="986.9" y1="803.3" x2="757.4" y2="803.3" class="o"/><line x1="757.4" y1="803.3" x2="617.4" y2="803.3" class="o"/><line x1="617.4" y1="803.3" x2="477.5" y2="803.3" class="o"/><line x1="477.5" y1="803.3" x2="253.6" y2="803.3" class="o"/><line x1="986.9" y1="803.3" x2="986.9" y2="769.7" class="o"/><line x1="986.9" y1="769.7" x2="1174.4" y2="769.7" class="o"/><line x1="1174.4" y1="769.7" x2="1174.4" y2="613.0" class="o"/><line x1="986.9" y1="803.3" x2="986.9" y2="613.0" class="o"/><line x1="757.4" y1="803.3" x2="757.4" y2="613.0" class="o"/><line x1="617.4" y1="803.3" x2="617.4" y2="613.0" class="o"/><line x1="477.5" y1="803.3" x2="477.5" y2="613.0" class="o"/><line x1="253.6" y1="803.3" x2="253.6" y2="613.0" class="o"/><rect x="1173.0" y="258.9" width="14" height="14" style="fill:#000"/><rect x="1035.9" y="258.9" width="14" height="14" style="fill:#000"/><rect x="895.9" y="258.9" width="14" height="14" style="fill:#000"/><rect x="744.8" y="258.9" width="14" height="14" style="fill:#000"/><rect x="585.2" y="258.9" width="14" height="14" style="fill:#000"/><rect x="442.5" y="258.9" width="14" height="14" style="fill:#000"/><rect x="302.5" y="258.9" width="14" height="14" style="fill:#000"/><rect x="143.0" y="258.9" width="14" height="14" style="fill:#000"/><rect x="1173.0" y="606.0" width="14" height="14" style="fill:#000"/><rect x="1035.9" y="606.0" width="14" height="14" style="fill:#000"/><rect x="895.9" y="606.0" width="14" height="14" style="fill:#000"/><rect x="744.8" y="606.0" width="14" height="14" style="fill:#000"/><rect x="585.2" y="606.0" width="14" height="14" style="fill:#000"/><rect x="442.5" y="606.0" width="14" height="14" style="fill:#000"/><rect x="302.5" y="606.0" width="14" height="14" style="fill:#000"/><rect x="143.0" y="606.0" width="14" height="14" style="fill:#000"/><rect x="982.7" y="63.0" width="14" height="14" style="fill:#000"/><rect x="756.0" y="63.0" width="14" height="14" style="fill:#000"/><rect x="613.2" y="63.0" width="14" height="14" style="fill:#000"/><rect x="476.1" y="63.0" width="14" height="14" style="fill:#000"/><rect x="252.2" y="63.0" width="14" height="14" style="fill:#000"/><rect x="1167.4" y="762.7" width="14" height="14" style="fill:#000"/><rect x="979.9" y="796.3" width="14" height="14" style="fill:#000"/><rect x="750.4" y="796.3" width="14" height="14" style="fill:#000"/><rect x="610.4" y="796.3" width="14" height="14" style="fill:#000"/><rect x="470.5" y="796.3" width="14" height="14" style="fill:#000"/><rect x="246.6" y="796.3" width="14" height="14" style="fill:#000"/><circle cx="172" cy="292" r="13" style="fill:#fff" class="o"/><text x="172" y="293" text-anchor="middle" dominant-baseline="middle" font-size="17" font-weight="500" font-family="'IBM Plex Mono','Courier New',monospace">1</text><circle cx="332" cy="292" r="13" style="fill:#fff" class="o"/><text x="332" y="293" text-anchor="middle" dominant-baseline="middle" font-size="17" font-weight="500" font-family="'IBM Plex Mono','Courier New',monospace">2</text><circle cx="471" cy="292" r="13" style="fill:#fff" class="o"/><text x="471" y="293" text-anchor="middle" dominant-baseline="middle" font-size="17" font-weight="500" font-family="'IBM Plex Mono','Courier New',monospace">3</text><circle cx="614" cy="292" r="13" style="fill:#fff" class="o"/><text x="614" y="293" text-anchor="middle" dominant-baseline="middle" font-size="17" font-weight="500" font-family="'IBM Plex Mono','Courier New',monospace">4</text><circle cx="774" cy="292" r="13" style="fill:#fff" class="o"/><text x="774" y="293" text-anchor="middle" dominant-baseline="middle" font-size="17" font-weight="500" font-family="'IBM Plex Mono','Courier New',monospace">5</text><circle cx="925" cy="292" r="13" style="fill:#fff" class="o"/><text x="925" y="293" text-anchor="middle" dominant-baseline="middle" font-size="17" font-weight="500" font-family="'IBM Plex Mono','Courier New',monospace">6</text><circle cx="1065" cy="292" r="13" style="fill:#fff" class="o"/><text x="1065" y="293" text-anchor="middle" dominant-baseline="middle" font-size="17" font-weight="500" font-family="'IBM Plex Mono','Courier New',monospace">7</text><circle cx="1202" cy="292" r="13" style="fill:#fff" class="o"/><text x="1202" y="293" text-anchor="middle" dominant-baseline="middle" font-size="17" font-weight="500" font-family="'IBM Plex Mono','Courier New',monospace">8</text><line x1="150.0" y1="853.3" x2="1180.0" y2="853.3" class="d"/><line x1="143.0" y1="846.3" x2="157.0" y2="860.3" class="t"/><line x1="1173.0" y1="846.3" x2="1187.0" y2="860.3" class="t"/><text x="665.0" y="869.3" text-anchor="middle" dominant-baseline="middle" transform="rotate(0.0 665.0 869.3)" font-size="16" font-family="'IBM Plex Mono','Courier New',monospace">23,86</text><line x1="1240.0" y1="265.9" x2="1240.0" y2="613.0" class="d"/><line x1="1247.0" y1="258.9" x2="1233.0" y2="272.9" class="t"/><line x1="1247.0" y1="606.0" x2="1233.0" y2="620.0" class="t"/><text x="1252.0" y="440.5" text-anchor="start" dominant-baseline="middle" font-size="16" font-family="'IBM Plex Mono','Courier New',monospace">8,05</text><line x1="1240.0" y1="70.0" x2="1240.0" y2="265.9" class="d"/><line x1="1247.0" y1="63.0" x2="1233.0" y2="77.0" class="t"/><line x1="1247.0" y1="258.9" x2="1233.0" y2="272.9" class="t"/><text x="1252.0" y="169.0" text-anchor="start" dominant-baseline="middle" font-size="16" font-family="'IBM Plex Mono','Courier New',monospace">4,31</text><line x1="1240.0" y1="613.0" x2="1240.0" y2="803.3" class="d"/><line x1="1247.0" y1="606.0" x2="1233.0" y2="620.0" class="t"/><line x1="1247.0" y1="796.3" x2="1233.0" y2="810.3" class="t"/><text x="1252.0" y="709.2" text-anchor="start" dominant-baseline="middle" font-size="16" font-family="'IBM Plex Mono','Courier New',monospace">4,33</text><rect x="530" y="426" width="276" height="26" style="fill:#fff"/><text x="668" y="440" text-anchor="middle" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">NAVE · 16 COLUMNAS DE 3,00 m</text><rect x="494" y="155" width="258" height="26" style="fill:#fff"/><text x="623" y="169" text-anchor="middle" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">LATERAL CHICO · 5 COLUMNAS</text><rect x="489" y="695" width="267" height="26" style="fill:#fff"/><text x="623" y="709" text-anchor="middle" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">LATERAL GRANDE · 6 COLUMNAS</text><rect x="60" y="954" width="14" height="14" style="fill:#000"/><text x="84" y="966" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">COLUMNA 100×100×3,2</text><line x1="330" y1="961" x2="390" y2="961" class="o"/><text x="400" y="966" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">ENCADENADO 100×200×3,2</text><line x1="680" y1="961" x2="740" y2="961" class="c"/><text x="750" y="966" dominant-baseline="middle" font-size="15" font-family="'IBM Plex Mono','Courier New',monospace">CERCHA DE LAPACHO</text><text x="1376" y="966" text-anchor="end" dominant-baseline="middle" font-size="16" font-family="'IBM Plex Mono','Courier New',monospace">PLANTA DE ESTRUCTURA · ESC. 1:200</text></svg>
+<figcaption>Las 16 columnas de la nave reciben una cercha cada una. Las de los laterales sostienen el borde exterior de esos techos.</figcaption>
+</figure>
+<h3>Cantidades</h3>
+<div class="tw"><table>
+<tr><th>Caño</th><th>Uso</th><th class="n">Cantidad</th><th class="n">Largo</th><th class="n">Total</th></tr>
+<tr><td>100 × 100 × 3,2 mm</td><td>Columnas de la nave</td><td class="n">16</td><td class="n">3,00 m</td><td class="n">48 m</td></tr>
+<tr><td>100 × 100 × 3,2 mm</td><td>Columnas de los cuerpos laterales</td><td class="n">11</td><td class="n">2,60 m</td><td class="n">29 m</td></tr>
+<tr class="tot"><td>Total caño 100 × 100 × 3,2</td><td>27 columnas</td><td class="n">13 barras de 6 m</td><td class="n"></td><td class="n">77 m</td></tr>
+<tr><td>100 × 200 × 3,2 mm, de canto</td><td>Encadenado superior de la nave</td><td class="n"></td><td class="n"></td><td class="n">64 m</td></tr>
+<tr><td>100 × 200 × 3,2 mm, de canto</td><td>Encadenado superior de los laterales</td><td class="n"></td><td class="n"></td><td class="n">85 m</td></tr>
+<tr class="tot"><td>Total caño 100 × 200 × 3,2</td><td>Encadenado</td><td class="n">25 barras de 6 m</td><td class="n"></td><td class="n">149 m</td></tr>
+<tr><td>100 × 50 × 2 mm</td><td>Correas del techo de la nave</td><td class="n">7 líneas</td><td class="n">23,9 m</td><td class="n">167 m</td></tr>
+<tr class="tot"><td>Total caño 100 × 50 × 2</td><td>Correas</td><td class="n">28 barras de 6 m</td><td class="n"></td><td class="n">167 m</td></tr>
+</table></div>
+
+<div class="tw"><table>
+<tr><th>Columnas</th><th class="n">Cantidad</th><th class="n">Largo</th><th class="n">Espesor</th><th>Carga en servicio</th></tr>
+<tr><td>Nave, bajo cada cercha</td><td class="n">16</td><td class="n">3,00 m</td><td class="n">3,2 mm</td><td>2,1 t</td></tr>
+<tr><td>Lateral chico, borde exterior</td><td class="n">5</td><td class="n">2,60 m</td><td class="n">3,2 mm</td><td>0,6 t</td></tr>
+<tr><td>Lateral grande, borde exterior</td><td class="n">6</td><td class="n">2,60 m</td><td class="n">3,2 mm</td><td>0,6 t</td></tr>
+<tr class="tot"><td>Total</td><td class="n">27</td><td class="n"></td><td class="n"></td><td></td></tr>
+</table></div>
+
+<p class="note">Cantidades tomadas del modelo de estructura. El largo de 2,60 m de las columnas laterales es supuesto.</p>
+<h3>1. Carga sobre cada cercha</h3>
+<div class="tw"><table>
+<tr><th>Concepto</th><th>Cuenta</th><th class="n">kg por cercha</th></tr>
+<tr><td>Cercha de lapacho 20 × 20</td><td>21,66 ml × 44 kg/ml</td><td class="n">950</td></tr>
+<tr><td>Herrajes y pasadores</td><td></td><td class="n">50</td></tr>
+<tr><td>Cubierta: panel de techo, machimbre y correas</td><td>28,8 m² × 26,2 kg/m²</td><td class="n">755</td></tr>
+<tr class="pick"><td>Peso propio</td><td></td><td class="n">1.755</td></tr>
+<tr><td>Sobrecarga de uso y mantenimiento</td><td>27,1 m² × 50 kg/m²</td><td class="n">1.356</td></tr>
+<tr class="tot"><td>Total por cercha</td><td></td><td class="n">3.111</td></tr>
+</table></div>
+<p>Las 3,1 t se verifican: 1,76 t son peso propio permanente y 1,36 t son sobrecarga, que sólo actúa con gente o materiales sobre el techo. Cerchas cada 3,37 m, según el plano de obra.</p>
+<h3>2. Carga sobre cada columna</h3>
+<div class="tw"><table>
+<tr><th>Concepto</th><th class="n">kg por columna</th></tr>
+<tr><td>Media cercha</td><td class="n">500</td></tr>
+<tr><td>Media cubierta de la nave</td><td class="n">378</td></tr>
+<tr><td>Media sobrecarga de la nave</td><td class="n">678</td></tr>
+<tr><td>Techo del cuerpo lateral que apoya en la misma columna</td><td class="n">577</td></tr>
+<tr class="tot"><td>Total en servicio</td><td class="n">2.133</td></tr>
+<tr class="tot"><td>Total mayorado para el cálculo</td><td class="n">2.976</td></tr>
+</table></div>
+
+<h3>3. Espesor de las columnas</h3>
+<div class="tw"><table class="k">
+<tr><th>Caño (mm)</th><th class="n">kg/m</th><th class="n">Resiste</th><th class="n">Uso con carga vertical</th><th class="n">Uso con viento</th><th>Resultado</th></tr>
+<tr><td>100 × 100 × 2,0</td><td class="n">6,1</td><td class="n">13,0 t</td><td class="n">23 %</td><td class="n">49 %</td><td>Se descarta: pared esbelta</td></tr>
+<tr><td>100 × 100 × 2,5</td><td class="n">7,6</td><td class="n">16,3 t</td><td class="n">18 %</td><td class="n">29 %</td><td>Verifica, con poco margen</td></tr>
+<tr class="pick"><td>100 × 100 × 3,2</td><td class="n">9,6</td><td class="n">20,6 t</td><td class="n">14 %</td><td class="n">23 %</td><td>Recomendado</td></tr>
+<tr><td>100 × 100 × 4,0</td><td class="n">11,8</td><td class="n">25,4 t</td><td class="n">12 %</td><td class="n">19 %</td><td>Sobrado</td></tr>
+</table></div>
+
+<p>El peso no es el problema: hasta el caño de 2 mm lo soporta. El de 2 mm se descarta porque su pared abolla antes de agotar el acero, no deja reserva frente al viento y es delicado de soldar.</p>
+<h3>4. Sección del encadenado superior</h3>
+<div class="tw"><table class="k">
+<tr><th>Caño (mm)</th><th class="n">kg/m</th><th class="n">Uso</th><th class="n">Flecha lateral</th><th>Resultado</th></tr>
+<tr><td>100 × 100 × 3,2</td><td class="n">9,6</td><td class="n">81 %</td><td class="n">8 mm</td><td>Verifica justo</td></tr>
+<tr><td>100 × 200 × 2,5, de canto</td><td class="n">11,5</td><td class="n">56 %</td><td class="n">6 mm</td><td>Verifica</td></tr>
+<tr class="pick"><td>100 × 200 × 3,2, de canto</td><td class="n">14,6</td><td class="n">42 %</td><td class="n">5 mm</td><td>Adoptado</td></tr>
+<tr><td>100 × 200 × 4,0, de canto</td><td class="n">18,1</td><td class="n">34 %</td><td class="n">4 mm</td><td>Sobrado</td></tr>
+</table></div>
+
+<p>Con 200 mm de canto el encadenado gana mucha rigidez hacia abajo y queda del mismo ancho que la columna, así que apoya justo sobre ella. Con 3,2 mm de pared el alma de 200 no abolla; con 2,5 mm queda al límite.</p>
+<p>El peso de la cercha no pasa por el encadenado: baja directo a la columna. El encadenado ata las cabezas de columna, recibe el viento del muro en vanos de 3,37 m y trabaja como cordón de las cruces del techo. Por eso necesita resistir de costado tanto como hacia abajo, y el caño cuadrado es el que mejor lo hace.</p>
+<div class="tw"><table>
+<tr><th>Montaje del encadenado</th><th>Detalle</th></tr>
+<tr><td>Posición</td><td>Caño 100 × 200 de canto, continuo, apoyado sobre la cabeza de las columnas; los 100 mm coinciden con el ancho de la columna</td></tr>
+<tr><td>Columna</td><td>Cerrada arriba con tapa de 100 × 100 × 6 mm; para mantener la altura de apoyo de la cercha se corta 20 cm más corta</td></tr>
+<tr><td>Unión</td><td>Soldadura en todo el contorno del apoyo</td></tr>
+<tr><td>Empalmes</td><td>Siempre sobre una columna, nunca a mitad de vano</td></tr>
+<tr><td>Cercha</td><td>Apoya sobre el encadenado con la placa de asiento, justo encima de la columna</td></tr>
+</table></div>
+
+<div class="callout s"><p><b>Condición:</b> cada cercha y cada tirante de los cuerpos laterales apoya sobre una columna, nunca a mitad de vano del encadenado.</p></div>
+<h3>Especificación</h3>
+<div class="tw"><table>
+<tr><th>Ítem</th><th>Especificación</th></tr>
+<tr><td>Columnas</td><td>Caño cuadrado 100 × 100 × 3,2 mm</td></tr>
+<tr><td>Encadenado superior</td><td>Caño rectangular 100 × 200 × 3,2 mm, de canto</td></tr>
+<tr><td>Acero</td><td>ASTM A500 Grado B, con certificado</td></tr>
+<tr><td>Apoyo de la cercha</td><td>Placa de asiento 200 × 200 × 8 mm con horquilla y bulones pasantes</td></tr>
+<tr><td>Protección</td><td>Galvanizado en caliente o epoxi más poliuretano, con extremos tapados</td></tr>
+</table></div>
+</section>
+
+<section class="panel" id="techo">
+<h2>Techo de panel aislante de 30 mm: 88 paneles cotizados en USD 27.438</h2>
+<div class="grid">
+<div class="stat"><b>88 paneles</b><span>de 1,00 m de ancho: 48 en la nave, 22 y 18 en los laterales</span></div>
+<div class="stat"><b>399 m²</b><span>de cubierta colocada: 211 en la nave y 188 en los laterales</span></div>
+<div class="stat"><b>36 %</b><span>de pendiente en la nave</span></div>
+<div class="stat w"><b>USD 27.438</b><span>total con IVA, con flete a obra</span></div>
+</div>
+<h3>El panel cotizado</h3>
+<div class="tw"><table>
+<tr><th>Característica</th><th>Dato</th></tr>
+<tr><td>Producto</td><td>Hiansa-Panel 5G de 30 mm, con núcleo de poliuretano</td></tr>
+<tr><td>Color</td><td>Gris Pizarra</td></tr>
+<tr><td>Ancho útil</td><td>1,00 m</td></tr>
+<tr><td>Largo</td><td>Viene de 4,95 m y el proveedor lo corta: 4,40 m para la nave y 4,70 m para los laterales</td></tr>
+<tr><td>Colocación</td><td>En el sentido de la caída del agua, de cumbrera a alero</td></tr>
+<tr><td>Peso</td><td>Unos 10 kg/m²</td></tr>
+</table></div>
+
+<h3>Cantidad de paneles</h3>
+<div class="tw"><table>
+<tr><th>Sector</th><th class="n">Paneles</th><th class="n">Largo</th><th class="n">Superficie</th></tr>
+<tr><td>Nave principal, 24 por faldón</td><td class="n">48</td><td class="n">4,40 m</td><td class="n">211 m²</td></tr>
+<tr><td>Faldón lateral grande</td><td class="n">22</td><td class="n">4,70 m</td><td class="n">103 m²</td></tr>
+<tr><td>Faldón lateral chico</td><td class="n">18</td><td class="n">4,70 m</td><td class="n">85 m²</td></tr>
+<tr class="tot"><td>Total</td><td class="n">88</td><td class="n"></td><td class="n">399 m²</td></tr>
+</table></div>
+
+<h3>Cotización</h3>
+<p><a href="docs/cotizacion-panel-techo-30mm.pdf" download style="display:inline-block;background:#1C2730;color:#fff;text-decoration:none;padding:11px 18px;font-weight:500">Descargar la cotización en PDF</a></p>
+<div class="tw"><table>
+<tr><th>Rubro</th><th>Detalle</th><th class="n">USD</th></tr>
+<tr><td>Paneles</td><td>435,6 m² a USD 47 el m²; se factura el largo entero de 4,95 m</td><td class="n">20.473,20</td></tr>
+<tr><td>Perfilería</td><td>25 cumbreras de 1,10 m y 42,4 m de babeta</td><td class="n">1.037,87</td></tr>
+<tr><td>Fijaciones</td><td>300 tornillos de 4" con caballete y 1.280 tornillos de perfilería</td><td class="n">341,98</td></tr>
+<tr><td>Selladores</td><td>4 rollos de membrana autoadhesiva y 12 espumas de poliuretano</td><td class="n">130,84</td></tr>
+<tr><td>Flete</td><td>Entrega en obra, El Milagro, José Ignacio</td><td class="n">506,00</td></tr>
+<tr class="pick"><td>Subtotal sin IVA</td><td></td><td class="n">22.489,89</td></tr>
+<tr><td>IVA 22 %</td><td></td><td class="n">4.947,78</td></tr>
+<tr class="tot"><td>Total</td><td></td><td class="n">27.437,67</td></tr>
+</table></div>
+
+<div class="tw"><table>
+<tr><th>Condición</th><th>Detalle</th></tr>
+<tr><td>Proveedor</td><td>BMC Uruguay, cotización HIA-30-20261011 del 11/10/2026</td></tr>
+<tr><td>Validez</td><td>10 días</td></tr>
+<tr><td>Pago</td><td>100 % por adelantado, para generar los cortes</td></tr>
+<tr><td>Entrega</td><td>Hasta 10 días después del pago</td></tr>
+<tr><td>No incluye</td><td>Montaje ni descarga; para descargar hacen falta 2 peones como mínimo</td></tr>
+</table></div>
+
+<div class="callout"><p><b>Fijaciones a revisar con el proveedor.</b> La cotización trae 300 tornillos para 88 paneles, unos 3 por panel. Con cinco líneas de apoyo por faldón y el viento de la zona, cada tornillo quedaría con unos 280 kg de arrancamiento mayorado; con dos tornillos por panel en cada línea harían falta cerca de 880.</p></div>
+<h3>Capas, de abajo hacia arriba</h3>
+<div class="tw"><table>
+<tr><th>Capa</th><th>Se ve desde abajo</th><th>Función</th><th class="n">kg/m²</th></tr>
+<tr><td>1 · Cerchas de lapacho cada 3,37 m</td><td>Sí</td><td>Estructura principal</td><td class="n">—</td></tr>
+<tr><td>2 · Machimbre de pino ¾"</td><td>Sí</td><td>Cielorraso; va entre cerchas, fijado por debajo de las correas</td><td class="n">10,0</td></tr>
+<tr><td>3 · Correas de caño 100 × 50 × 2, cada 1,07 m</td><td>No</td><td>Atornilladas arriba de la cercha; llevan el techo de cercha a cercha</td><td class="n">4,2</td></tr>
+<tr><td>4 · Flejes en cruz de San Andrés</td><td>No</td><td>Arriostran el plano del techo, sobre las correas</td><td class="n">0,3</td></tr>
+<tr><td>5 · Panel de techo de 30 mm</td><td>No</td><td>Cubierta y aislación, fijada a las correas</td><td class="n">10,2</td></tr>
+<tr><td>Fijaciones y babetas</td><td></td><td></td><td class="n">1,0</td></tr>
+<tr class="tot"><td>Total cubierta</td><td></td><td></td><td class="n">≈ 26</td></tr>
+</table></div>
+
+<p>Desde abajo sólo se ven la cercha y el machimbre. El caño de las correas queda escondido entre el machimbre y el panel.</p>
+<div class="callout"><p><b>Correas.</b> Entre cercha y cercha hay 3,37 m: un caño 40 × 40 × 2 no alcanza para esa luz. Con caño 100 × 50 × 2 de canto cada 1,07 m, atornillado a la cara superior de la cercha, la correa trabaja al 81 % con la succión del viento y flecha 8 mm con carga de uso.</p></div>
+</section>
+
+<section class="panel" id="cruces">
+<h2>Cruces de San Andrés en fleje de steel framing, en muros y en los dos faldones</h2>
+<div class="grid">
+<div class="stat"><b>158 km/h</b><span>viento de norma en la faja costera (118 kg/m²)</span></div>
+<div class="stat"><b>10,9 t</b><span>empuje transversal sobre la casa</span></div>
+<div class="stat"><b>6,5 t</b><span>empuje longitudinal</span></div>
+</div>
+<p>Los dos frentes del estar son vidriados y la galería y el parrillero son abiertos: en la nave no hay muros transversales. Los dos faldones del techo trabajan como vigas horizontales de 23,9 m que llevan el empuje hasta los muros de los dormitorios.</p>
+<figure><img src="img/planta-cruces.png" alt="Plano de obra con la cumbrera a lo largo de la nave, una cruz por faldón en cada uno de los siete paños entre cerchas, cinco cruces transversales en muros ciegos, ocho longitudinales y los muros de cierre con placa estructural">
+<ul class="legend">
+<li><i style="background:#1C2730;height:5px"></i>Cumbrera</li>
+<li><i style="background:#8FA5B5;height:5px"></i>Cruz de techo, una por faldón y por paño</li>
+<li><i style="background:#A3481F"></i>Cruz transversal</li>
+<li><i style="background:#2B5C7E"></i>Cruz longitudinal</li>
+<li><i style="background:repeating-linear-gradient(90deg,#A3481F 0 5px,#fff 5px 9px)"></i>Muro o paño con placa estructural</li>
+</ul>
+<figcaption>Sobre el plano de obra de la Arq. Carolina Mannise, lámina L1. Las líneas finas que cruzan la nave son los ejes de cercha.</figcaption></figure>
+<div class="tw"><table>
+<tr><th>Cruces</th><th class="n">Cant.</th><th>Ubicación</th><th>Fleje galvanizado</th><th class="n">Uso</th></tr>
+<tr><td>Techo</td><td class="n">14</td><td>Una por faldón en cada uno de los 7 paños, sobre las correas y bajo el panel</td><td>100 × 1,25 mm</td><td class="n">68 %</td></tr>
+<tr><td>Transversal</td><td class="n">4</td><td>Muros entre dormitorio y baño</td><td>Doble, 150 × 1,25 mm</td><td class="n">32 %</td></tr>
+<tr><td>Transversal</td><td class="n">1</td><td>Muro entre dormitorio 7 y lavadero</td><td>Doble, 150 × 1,25 mm</td><td class="n">86 %</td></tr>
+<tr><td>Longitudinal</td><td class="n">4</td><td>Muros largos del estar</td><td>100 × 1,25 mm</td><td class="n">64 %</td></tr>
+<tr><td>Longitudinal</td><td class="n">4</td><td>Esquinas exteriores de los dormitorios</td><td>150 × 1,25 mm</td><td class="n">71 %</td></tr>
+</table></div>
+<p class="note">Fleje doble: uno por cada cara del muro. Cada fleje se tensa y se fija con cartela a la columna y al encadenado, con un tornillo autoperforante por cada 0,2 t.</p>
+<div class="tw"><table>
+<tr><th>Línea transversal</th><th>Muros</th><th class="n">Empuje en servicio</th></tr>
+<tr><td>Dormitorios 1 y 10, muro de cierre</td><td>2 muros con ventana, con placa estructural</td><td class="n">2,2 t</td></tr>
+<tr><td>Dormitorio y baño, lado galería</td><td>2 cruces</td><td class="n">2,8 t</td></tr>
+<tr><td>Dormitorio y baño, lado parrillero</td><td>2 cruces</td><td class="n">1,7 t</td></tr>
+<tr><td>Lavadero y dormitorio 4</td><td>1 cruz y 1 muro con placa estructural</td><td class="n">3,8 t</td></tr>
+</table></div>
+
+<div class="callout s"><p><b>Cordones.</b> Para que cada faldón trabaje como viga hacen falta dos piezas continuas en los 23,9 m: la cumbrera y el encadenado de alero.</p></div>
+</section>
+
+<section class="panel" id="steel">
+<h2>Steel framing: 102 paneles en dos juegos, unas 4,7 t de perfiles</h2>
+<div class="grid">
+<div class="stat"><b>102</b><span>paneles: 47 en el juego Wall1 a Wall47 y 55 en el juego Wall57 a Wall112</span></div>
+<div class="stat"><b>4,7 t</b><span>de perfiles galvanizados entre los dos juegos</span></div>
+<div class="stat s"><b>C 100 × 40</b><span>montantes de 0,95 mm y soleras U 102 × 35 de 0,95 mm</span></div>
+<div class="stat"><b>2.790</b><span>tornillos en el juego de 47 paneles</span></div>
+</div>
+<figure><img src="img/steel-framing.png" alt="Perspectiva del modelo con los paneles de steel framing, las cerchas de la nave y el encadenado sobre la platea">
+<figcaption>Modelo de estructura con los paneles de steel framing, las cerchas y el encadenado.</figcaption></figure>
+<h3>Modelo 3D</h3>
+<p><a href="modelo-3d.html" target="_blank" rel="noopener" style="display:inline-block;background:#1C2730;color:#fff;text-decoration:none;padding:11px 18px;font-weight:500">Abrir el modelo 3D</a></p>
+<p class="note">Se abre en una página aparte. El modelo pesa 15 MB y puede tardar en cargar.</p>
+<h3>Descargas</h3>
+<p style="display:flex;flex-wrap:wrap;gap:10px">
+<a href="docs/steel-framing-paneles.pdf" download style="display:inline-block;background:#1C2730;color:#fff;text-decoration:none;padding:11px 18px;font-weight:500">Paneles Wall1 a Wall47 (PDF, 47 láminas)</a>
+<a href="docs/steel-framing-lista-de-cortes.pdf" download style="display:inline-block;background:#1C2730;color:#fff;text-decoration:none;padding:11px 18px;font-weight:500">Lista de cortes Wall57 a Wall112 (PDF)</a>
+<a href="docs/estructura-eden-rock.glb" download style="display:inline-block;background:#fff;color:#1C2730;border:1px solid #1C2730;text-decoration:none;padding:10px 18px;font-weight:500">Modelo 3D (GLB, 15 MB)</a>
+</p>
+<h3>Paneles dibujados</h3>
+<p class="note">Los 47 paneles del juego Wall1 a Wall47, con cotas y despiece. Tocá un panel para verlo en grande. La lista de cortes Wall57 a Wall112 no trae dibujos, sólo medidas.</p>
+<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:14px;margin:14px 0 22px">
+<a href="img/paneles/wall01.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall01.png" loading="lazy" alt="Panel Wall1: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall1</b> · 41,1 kg · 32 tornillos</span></a>
+<a href="img/paneles/wall02.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall02.png" loading="lazy" alt="Panel Wall2: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall2</b> · 19,9 kg · 16 tornillos</span></a>
+<a href="img/paneles/wall03.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall03.png" loading="lazy" alt="Panel Wall3: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall3</b> · 25,4 kg · 20 tornillos</span></a>
+<a href="img/paneles/wall04.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall04.png" loading="lazy" alt="Panel Wall4: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall4</b> · 50,9 kg · 40 tornillos</span></a>
+<a href="img/paneles/wall05.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall05.png" loading="lazy" alt="Panel Wall5: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall5</b> · 67,2 kg · 66 tornillos</span></a>
+<a href="img/paneles/wall06.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall06.png" loading="lazy" alt="Panel Wall6: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall6</b> · 45,8 kg · 36 tornillos</span></a>
+<a href="img/paneles/wall07.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall07.png" loading="lazy" alt="Panel Wall7: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall7</b> · 45,8 kg · 36 tornillos</span></a>
+<a href="img/paneles/wall08.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall08.png" loading="lazy" alt="Panel Wall8: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall8</b> · 24,6 kg · 20 tornillos</span></a>
+<a href="img/paneles/wall09.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall09.png" loading="lazy" alt="Panel Wall9: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall9</b> · 19,8 kg · 16 tornillos</span></a>
+<a href="img/paneles/wall10.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall10.png" loading="lazy" alt="Panel Wall10: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall10</b> · 45,8 kg · 36 tornillos</span></a>
+<a href="img/paneles/wall11.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall11.png" loading="lazy" alt="Panel Wall11: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall11</b> · 29,8 kg · 24 tornillos</span></a>
+<a href="img/paneles/wall12.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall12.png" loading="lazy" alt="Panel Wall12: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall12</b> · 50,9 kg · 40 tornillos</span></a>
+<a href="img/paneles/wall13.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall13.png" loading="lazy" alt="Panel Wall13: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall13</b> · 75,1 kg · 72 tornillos</span></a>
+<a href="img/paneles/wall14.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall14.png" loading="lazy" alt="Panel Wall14: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall14</b> · 45,8 kg · 36 tornillos</span></a>
+<a href="img/paneles/wall15.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall15.png" loading="lazy" alt="Panel Wall15: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall15</b> · 97,3 kg · 104 tornillos</span></a>
+<a href="img/paneles/wall16.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall16.png" loading="lazy" alt="Panel Wall16: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall16</b> · 96,8 kg · 100 tornillos</span></a>
+<a href="img/paneles/wall17.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall17.png" loading="lazy" alt="Panel Wall17: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall17</b> · 96,8 kg · 100 tornillos</span></a>
+<a href="img/paneles/wall18.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall18.png" loading="lazy" alt="Panel Wall18: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall18</b> · 96,8 kg · 100 tornillos</span></a>
+<a href="img/paneles/wall19.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall19.png" loading="lazy" alt="Panel Wall19: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall19</b> · 117,7 kg · 144 tornillos</span></a>
+<a href="img/paneles/wall20.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall20.png" loading="lazy" alt="Panel Wall20: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall20</b> · 116,3 kg · 144 tornillos</span></a>
+<a href="img/paneles/wall21.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall21.png" loading="lazy" alt="Panel Wall21: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall21</b> · 116,1 kg · 144 tornillos</span></a>
+<a href="img/paneles/wall22.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall22.png" loading="lazy" alt="Panel Wall22: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall22</b> · 43,6 kg · 36 tornillos</span></a>
+<a href="img/paneles/wall23.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall23.png" loading="lazy" alt="Panel Wall23: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall23</b> · 81,9 kg · 100 tornillos</span></a>
+<a href="img/paneles/wall24.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall24.png" loading="lazy" alt="Panel Wall24: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall24</b> · 43,6 kg · 36 tornillos</span></a>
+<a href="img/paneles/wall25.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall25.png" loading="lazy" alt="Panel Wall25: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall25</b> · 33,8 kg · 28 tornillos</span></a>
+<a href="img/paneles/wall26.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall26.png" loading="lazy" alt="Panel Wall26: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall26</b> · 73,5 kg · 100 tornillos</span></a>
+<a href="img/paneles/wall27.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall27.png" loading="lazy" alt="Panel Wall27: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall27</b> · 77,5 kg · 104 tornillos</span></a>
+<a href="img/paneles/wall28.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall28.png" loading="lazy" alt="Panel Wall28: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall28</b> · 44,7 kg · 36 tornillos</span></a>
+<a href="img/paneles/wall29.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall29.png" loading="lazy" alt="Panel Wall29: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall29</b> · 43,6 kg · 36 tornillos</span></a>
+<a href="img/paneles/wall30.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall30.png" loading="lazy" alt="Panel Wall30: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall30</b> · 33,9 kg · 28 tornillos</span></a>
+<a href="img/paneles/wall31.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall31.png" loading="lazy" alt="Panel Wall31: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall31</b> · 77,8 kg · 104 tornillos</span></a>
+<a href="img/paneles/wall32.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall32.png" loading="lazy" alt="Panel Wall32: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall32</b> · 77,8 kg · 104 tornillos</span></a>
+<a href="img/paneles/wall33.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall33.png" loading="lazy" alt="Panel Wall33: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall33</b> · 58,9 kg · 48 tornillos</span></a>
+<a href="img/paneles/wall34.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall34.png" loading="lazy" alt="Panel Wall34: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall34</b> · 51,0 kg · 44 tornillos</span></a>
+<a href="img/paneles/wall35.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall35.png" loading="lazy" alt="Panel Wall35: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall35</b> · 65,0 kg · 72 tornillos</span></a>
+<a href="img/paneles/wall36.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall36.png" loading="lazy" alt="Panel Wall36: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall36</b> · 55,8 kg · 60 tornillos</span></a>
+<a href="img/paneles/wall37.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall37.png" loading="lazy" alt="Panel Wall37: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall37</b> · 122,0 kg · 136 tornillos</span></a>
+<a href="img/paneles/wall38.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall38.png" loading="lazy" alt="Panel Wall38: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall38</b> · 25,0 kg · 80 tornillos</span></a>
+<a href="img/paneles/wall39.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall39.png" loading="lazy" alt="Panel Wall39: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall39</b> · 14,4 kg · 12 tornillos</span></a>
+<a href="img/paneles/wall40.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall40.png" loading="lazy" alt="Panel Wall40: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall40</b> · 18,8 kg · 16 tornillos</span></a>
+<a href="img/paneles/wall41.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall41.png" loading="lazy" alt="Panel Wall41: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall41</b> · 14,4 kg · 12 tornillos</span></a>
+<a href="img/paneles/wall42.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall42.png" loading="lazy" alt="Panel Wall42: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall42</b> · 18,8 kg · 16 tornillos</span></a>
+<a href="img/paneles/wall43.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall43.png" loading="lazy" alt="Panel Wall43: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall43</b> · 25,0 kg · 80 tornillos</span></a>
+<a href="img/paneles/wall44.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall44.png" loading="lazy" alt="Panel Wall44: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall44</b> · 29,6 kg · 40 tornillos</span></a>
+<a href="img/paneles/wall45.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall45.png" loading="lazy" alt="Panel Wall45: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall45</b> · 29,6 kg · 40 tornillos</span></a>
+<a href="img/paneles/wall46.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall46.png" loading="lazy" alt="Panel Wall46: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall46</b> · 34,9 kg · 48 tornillos</span></a>
+<a href="img/paneles/wall47.png" target="_blank" rel="noopener" style="display:block;border:1px solid #D5DADE;background:#fff;text-decoration:none;color:#1C2730"><img src="img/paneles/wall47.png" loading="lazy" alt="Panel Wall47: alzado con montantes, soleras y aberturas acotados" style="display:block;width:100%;height:auto;border:0"><span style="display:block;padding:7px 10px;font-size:14px;border-top:1px solid #D5DADE"><b>Wall47</b> · 34,9 kg · 48 tornillos</span></a>
+</div>
+<h3>Perfiles</h3>
+<div class="tw"><table>
+<tr><th>Perfil</th><th>Uso</th><th class="n">Juego Wall1–47</th><th class="n">Juego Wall57–112</th><th class="n">Total</th></tr>
+<tr><td>C 100 × 40 × 0,95</td><td>Montantes, kings, jacks y cripples</td><td class="n">1.157 m</td><td class="n">1.024 m</td><td class="n">2.181 m</td></tr>
+<tr><td>U 102 × 35 × 0,95</td><td>Soleras y dinteles</td><td class="n">325 m</td><td class="n">342 m</td><td class="n">667 m</td></tr>
+<tr><td>C 150 × 40, de 2,0 y 1,6 mm</td><td>Vigas de dintel</td><td class="n">72 m</td><td class="n">51 m</td><td class="n">123 m</td></tr>
+<tr class="tot"><td>Peso</td><td></td><td class="n">2.556 kg</td><td class="n">2.106 kg</td><td class="n">4.662 kg</td></tr>
+</table></div>
+
+<p class="note">Los paneles Wall1 a Wall47 tienen montantes de 2,84 m y 22 aberturas con dintel de C 150 × 40 × 2,0. Los Wall57 a Wall112 tienen montantes de 2,51 a 2,98 m y 20 aberturas con dintel de C 150 × 40 × 1,60.</p>
+<h3>Arriostramiento</h3>
+<div class="callout s"><p><b>Las cruces de San Andrés no están en las listas.</b> Ninguno de los dos juegos trae flejes. Hay que sumar las 13 cruces de muro y las 14 de techo de la pestaña Viento y cruces: fleje galvanizado de 100 y 150 × 1,25 mm, con cartelas y tornillos.</p></div>
+<h3>Panel por panel</h3>
+<details><summary style="cursor:pointer;font-weight:600;padding:8px 0">Juego Wall1 a Wall47 · 2.556 kg</summary>
+<div class="tw"><table>
+<tr><th>Panel</th><th class="n">Peso (kg)</th><th class="n">Tornillos</th></tr>
+<tr><td>Wall1</td><td class="n">41,1</td><td class="n">32</td></tr>
+<tr><td>Wall2</td><td class="n">19,9</td><td class="n">16</td></tr>
+<tr><td>Wall3</td><td class="n">25,4</td><td class="n">20</td></tr>
+<tr><td>Wall4</td><td class="n">50,9</td><td class="n">40</td></tr>
+<tr><td>Wall5</td><td class="n">67,2</td><td class="n">66</td></tr>
+<tr><td>Wall6</td><td class="n">45,8</td><td class="n">36</td></tr>
+<tr><td>Wall7</td><td class="n">45,8</td><td class="n">36</td></tr>
+<tr><td>Wall8</td><td class="n">24,6</td><td class="n">20</td></tr>
+<tr><td>Wall9</td><td class="n">19,8</td><td class="n">16</td></tr>
+<tr><td>Wall10</td><td class="n">45,8</td><td class="n">36</td></tr>
+<tr><td>Wall11</td><td class="n">29,8</td><td class="n">24</td></tr>
+<tr><td>Wall12</td><td class="n">50,9</td><td class="n">40</td></tr>
+<tr><td>Wall13</td><td class="n">75,1</td><td class="n">72</td></tr>
+<tr><td>Wall14</td><td class="n">45,8</td><td class="n">36</td></tr>
+<tr><td>Wall15</td><td class="n">97,3</td><td class="n">104</td></tr>
+<tr><td>Wall16</td><td class="n">96,8</td><td class="n">100</td></tr>
+<tr><td>Wall17</td><td class="n">96,8</td><td class="n">100</td></tr>
+<tr><td>Wall18</td><td class="n">96,8</td><td class="n">100</td></tr>
+<tr><td>Wall19</td><td class="n">117,7</td><td class="n">144</td></tr>
+<tr><td>Wall20</td><td class="n">116,3</td><td class="n">144</td></tr>
+<tr><td>Wall21</td><td class="n">116,1</td><td class="n">144</td></tr>
+<tr><td>Wall22</td><td class="n">43,6</td><td class="n">36</td></tr>
+<tr><td>Wall23</td><td class="n">81,9</td><td class="n">100</td></tr>
+<tr><td>Wall24</td><td class="n">43,6</td><td class="n">36</td></tr>
+<tr><td>Wall25</td><td class="n">33,8</td><td class="n">28</td></tr>
+<tr><td>Wall26</td><td class="n">73,5</td><td class="n">100</td></tr>
+<tr><td>Wall27</td><td class="n">77,5</td><td class="n">104</td></tr>
+<tr><td>Wall28</td><td class="n">44,7</td><td class="n">36</td></tr>
+<tr><td>Wall29</td><td class="n">43,6</td><td class="n">36</td></tr>
+<tr><td>Wall30</td><td class="n">33,9</td><td class="n">28</td></tr>
+<tr><td>Wall31</td><td class="n">77,8</td><td class="n">104</td></tr>
+<tr><td>Wall32</td><td class="n">77,8</td><td class="n">104</td></tr>
+<tr><td>Wall33</td><td class="n">58,9</td><td class="n">48</td></tr>
+<tr><td>Wall34</td><td class="n">51,0</td><td class="n">44</td></tr>
+<tr><td>Wall35</td><td class="n">65,0</td><td class="n">72</td></tr>
+<tr><td>Wall36</td><td class="n">55,8</td><td class="n">60</td></tr>
+<tr><td>Wall37</td><td class="n">122,0</td><td class="n">136</td></tr>
+<tr><td>Wall38</td><td class="n">25,0</td><td class="n">80</td></tr>
+<tr><td>Wall39</td><td class="n">14,4</td><td class="n">12</td></tr>
+<tr><td>Wall40</td><td class="n">18,8</td><td class="n">16</td></tr>
+<tr><td>Wall41</td><td class="n">14,4</td><td class="n">12</td></tr>
+<tr><td>Wall42</td><td class="n">18,8</td><td class="n">16</td></tr>
+<tr><td>Wall43</td><td class="n">25,0</td><td class="n">80</td></tr>
+<tr><td>Wall44</td><td class="n">29,6</td><td class="n">40</td></tr>
+<tr><td>Wall45</td><td class="n">29,6</td><td class="n">40</td></tr>
+<tr><td>Wall46</td><td class="n">34,9</td><td class="n">48</td></tr>
+<tr><td>Wall47</td><td class="n">34,9</td><td class="n">48</td></tr>
+</table></div>
+
+</details>
+<details><summary style="cursor:pointer;font-weight:600;padding:8px 0">Juego Wall57 a Wall112 · 2.106 kg</summary>
+<div class="tw"><table>
+<tr><th>Panel</th><th class="n">Peso (kg)</th><th class="n">Piezas</th><th class="n">Montante más alto</th><th>Dintel</th></tr>
+<tr><td>Wall112</td><td class="n">68,2</td><td class="n">30</td><td class="n">2,51 m</td><td>Sí</td></tr>
+<tr><td>Wall90</td><td class="n">58,6</td><td class="n">28</td><td class="n">2,51 m</td><td>Sí</td></tr>
+<tr><td>Wall89</td><td class="n">52,0</td><td class="n">12</td><td class="n">2,91 m</td><td></td></tr>
+<tr><td>Wall94</td><td class="n">25,6</td><td class="n">7</td><td class="n">2,91 m</td><td></td></tr>
+<tr><td>Wall108</td><td class="n">7,7</td><td class="n">8</td><td class="n">0,34 m</td><td></td></tr>
+<tr><td>Wall110</td><td class="n">20,0</td><td class="n">6</td><td class="n">2,91 m</td><td></td></tr>
+<tr><td>Wall82</td><td class="n">52,0</td><td class="n">12</td><td class="n">2,91 m</td><td></td></tr>
+<tr><td>Wall77</td><td class="n">64,4</td><td class="n">29</td><td class="n">2,51 m</td><td>Sí</td></tr>
+<tr><td>Wall101</td><td class="n">92,9</td><td class="n">37</td><td class="n">3,06 m</td><td>Sí</td></tr>
+<tr><td>Wall60</td><td class="n">20,0</td><td class="n">6</td><td class="n">2,91 m</td><td></td></tr>
+<tr><td>Wall84</td><td class="n">22,2</td><td class="n">7</td><td class="n">2,51 m</td><td></td></tr>
+<tr><td>Wall98</td><td class="n">25,6</td><td class="n">7</td><td class="n">2,91 m</td><td></td></tr>
+<tr><td>Wall107</td><td class="n">92,8</td><td class="n">37</td><td class="n">3,05 m</td><td>Sí</td></tr>
+<tr><td>Wall76</td><td class="n">59,5</td><td class="n">30</td><td class="n">—</td><td>Sí</td></tr>
+<tr><td>Wall70</td><td class="n">36,5</td><td class="n">9</td><td class="n">2,91 m</td><td></td></tr>
+<tr><td>Wall74</td><td class="n">17,3</td><td class="n">6</td><td class="n">2,47 m</td><td></td></tr>
+<tr><td>Wall104</td><td class="n">17,3</td><td class="n">6</td><td class="n">2,47 m</td><td></td></tr>
+<tr><td>Wall87</td><td class="n">5,6</td><td class="n">6</td><td class="n">0,65 m</td><td></td></tr>
+<tr><td>Wall57</td><td class="n">17,4</td><td class="n">6</td><td class="n">2,47 m</td><td></td></tr>
+<tr><td>Wall97</td><td class="n">17,3</td><td class="n">6</td><td class="n">2,47 m</td><td></td></tr>
+<tr><td>Wall102</td><td class="n">5,6</td><td class="n">6</td><td class="n">0,65 m</td><td></td></tr>
+<tr><td>Wall71</td><td class="n">39,9</td><td class="n">10</td><td class="n">2,93 m</td><td></td></tr>
+<tr><td>Wall69</td><td class="n">39,6</td><td class="n">10</td><td class="n">2,92 m</td><td></td></tr>
+<tr><td>Wall63</td><td class="n">39,6</td><td class="n">10</td><td class="n">2,92 m</td><td></td></tr>
+<tr><td>Wall65</td><td class="n">63,6</td><td class="n">32</td><td class="n">2,93 m</td><td>Sí</td></tr>
+<tr><td>Wall83</td><td class="n">5,6</td><td class="n">6</td><td class="n">0,65 m</td><td></td></tr>
+<tr><td>Wall91</td><td class="n">54,6</td><td class="n">27</td><td class="n">2,51 m</td><td>Sí</td></tr>
+<tr><td>Wall68</td><td class="n">39,9</td><td class="n">10</td><td class="n">2,93 m</td><td></td></tr>
+<tr><td>Wall59</td><td class="n">36,1</td><td class="n">9</td><td class="n">2,91 m</td><td></td></tr>
+<tr><td>Wall64</td><td class="n">20,3</td><td class="n">6</td><td class="n">2,91 m</td><td></td></tr>
+<tr><td>Wall61</td><td class="n">7,2</td><td class="n">8</td><td class="n">0,26 m</td><td></td></tr>
+<tr><td>Wall109</td><td class="n">92,9</td><td class="n">37</td><td class="n">3,05 m</td><td>Sí</td></tr>
+<tr><td>Wall105</td><td class="n">78,6</td><td class="n">46</td><td class="n">2,51 m</td><td>Sí</td></tr>
+<tr><td>Wall111</td><td class="n">8,9</td><td class="n">9</td><td class="n">0,34 m</td><td></td></tr>
+<tr><td>Wall75</td><td class="n">20,0</td><td class="n">6</td><td class="n">2,91 m</td><td></td></tr>
+<tr><td>Wall58</td><td class="n">20,5</td><td class="n">6</td><td class="n">2,91 m</td><td></td></tr>
+<tr><td>Wall85</td><td class="n">5,8</td><td class="n">6</td><td class="n">0,67 m</td><td></td></tr>
+<tr><td>Wall72</td><td class="n">20,2</td><td class="n">6</td><td class="n">2,91 m</td><td></td></tr>
+<tr><td>Wall99</td><td class="n">57,1</td><td class="n">28</td><td class="n">2,51 m</td><td>Sí</td></tr>
+<tr><td>Wall88</td><td class="n">69,3</td><td class="n">32</td><td class="n">2,51 m</td><td>Sí</td></tr>
+<tr><td>Wall67</td><td class="n">36,6</td><td class="n">9</td><td class="n">2,91 m</td><td></td></tr>
+<tr><td>Wall62</td><td class="n">39,9</td><td class="n">10</td><td class="n">2,93 m</td><td></td></tr>
+<tr><td>Wall100</td><td class="n">47,8</td><td class="n">26</td><td class="n">2,51 m</td><td>Sí</td></tr>
+<tr><td>Wall96</td><td class="n">21,2</td><td class="n">6</td><td class="n">3,15 m</td><td></td></tr>
+<tr><td>Wall73</td><td class="n">39,9</td><td class="n">10</td><td class="n">2,93 m</td><td></td></tr>
+<tr><td>Wall79</td><td class="n">88,1</td><td class="n">36</td><td class="n">3,04 m</td><td>Sí</td></tr>
+<tr><td>Wall66</td><td class="n">14,6</td><td class="n">5</td><td class="n">2,91 m</td><td></td></tr>
+<tr><td>Wall86</td><td class="n">8,8</td><td class="n">9</td><td class="n">0,34 m</td><td></td></tr>
+<tr><td>Wall81</td><td class="n">46,2</td><td class="n">20</td><td class="n">2,47 m</td><td></td></tr>
+<tr><td>Wall106</td><td class="n">55,0</td><td class="n">27</td><td class="n">2,51 m</td><td>Sí</td></tr>
+<tr><td>Wall93</td><td class="n">25,8</td><td class="n">7</td><td class="n">2,91 m</td><td></td></tr>
+<tr><td>Wall80</td><td class="n">58,5</td><td class="n">28</td><td class="n">2,51 m</td><td>Sí</td></tr>
+<tr><td>Wall92</td><td class="n">25,8</td><td class="n">7</td><td class="n">2,91 m</td><td></td></tr>
+<tr><td>Wall95</td><td class="n">52,0</td><td class="n">12</td><td class="n">2,91 m</td><td></td></tr>
+<tr><td>Wall78</td><td class="n">48,3</td><td class="n">26</td><td class="n">2,51 m</td><td>Sí</td></tr>
+</table></div>
+
+</details>
+</section>
+
+<section class="panel" id="anclajes">
+<h2>Los apoyos se anclan para tracción, no sólo para peso</h2>
+<div class="grid">
+<div class="stat"><b>2,1 t</b><span>compresión por columna en servicio</span></div>
+<div class="stat w"><b>0,9 t</b><span>tracción por apoyo de cercha, por succión del viento</span></div>
+<div class="stat w"><b>4,4 t</b><span>tracción mayorada en la columna de la cruz del lavadero; 1,6 t en las demás</span></div>
+</div>
+<p>El viento succiona el techo con unas 3,3 t por cercha y el peso sólo retiene 1,5 t. La diferencia tira de cada apoyo hacia arriba.</p>
+<div class="tw"><table>
+<tr><th>Unión</th><th>Solución</th></tr>
+<tr><td>Cercha a columna</td><td>Placa de asiento con horquilla y bulones pasantes</td></tr>
+<tr><td>Columna a dado</td><td>Placa base con cuatro anclajes</td></tr>
+<tr><td>Dado</td><td>Peso propio mayor que la tracción, o ligado a la viga de riostra</td></tr>
+</table></div>
+</section>
+
+</main>
+<footer><div class="wrap">Smart Building Uruguay · Dirección de obra: Ramiro Portugau · Predimensionado para presentación; el cálculo definitivo lo firma el ingeniero.</div></footer>
+<script>
+(function(){
+var btns=[].slice.call(document.querySelectorAll('nav.tabs button')),panels=[].slice.call(document.querySelectorAll('section.panel'));
+function show(id,push){var ok=panels.some(function(p){return p.id===id});if(!ok)id='resumen';
+panels.forEach(function(p){p.classList.toggle('on',p.id===id)});
+btns.forEach(function(b){var s=b.dataset.t===id;b.setAttribute('aria-selected',s);if(s){var c=b.parentNode;c.scrollLeft=Math.max(0,b.offsetLeft-c.offsetLeft-20)}});
+if(push){try{history.replaceState(null,'','#'+id)}catch(e){}window.scrollTo(0,0)}}
+btns.forEach(function(b){b.addEventListener('click',function(){show(b.dataset.t,true)})});
+window.addEventListener('hashchange',function(){show(location.hash.slice(1))});
+show(location.hash.slice(1)||'resumen');
+})();
+</script>
+</body>
+</html>

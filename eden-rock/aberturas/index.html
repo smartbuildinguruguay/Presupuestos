@@ -1,0 +1,801 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Aberturas Eden Rock — Comparativa de proveedores</title>
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+body {
+  font-family: 'Segoe UI', system-ui, -apple-system, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #1a1a1a;
+  background: #f5f4f1;
+}
+
+.page { max-width: 960px; margin: 0 auto; padding: 2rem 1.5rem 4rem; }
+
+.header { margin-bottom: 2.5rem; }
+.header-eyebrow { font-size: 11px; letter-spacing: 0.08em; text-transform: uppercase; color: #888; margin-bottom: 6px; }
+.header h1 { font-size: 26px; font-weight: 700; color: #111; letter-spacing: -0.5px; line-height: 1.2; }
+.header p { font-size: 13px; color: #777; margin-top: 6px; }
+
+.section-label {
+  font-size: 11px;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #888;
+  margin: 2.5rem 0 1rem;
+}
+
+/* ── ENTREGA HERO ─────────────────────────────────── */
+.entrega-hero {
+  background: #111;
+  border-radius: 14px;
+  padding: 1.75rem;
+  margin-bottom: 1rem;
+}
+.entrega-hero .eh-label {
+  font-size: 11px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #aaa;
+  margin-bottom: 1rem;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.eh-icon { font-size: 14px; }
+.entrega-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
+}
+.eh-card {
+  background: #1e1e1e;
+  border-radius: 10px;
+  padding: 1rem;
+  border: 1px solid #2a2a2a;
+  position: relative;
+}
+.eh-card.winner {
+  background: #0d2a1a;
+  border-color: #1d6a3a;
+}
+.eh-card.loser {
+  background: #2a1a0d;
+  border-color: #6a3a1d;
+}
+.eh-name { font-size: 12px; font-weight: 600; color: #fff; margin-bottom: 4px; }
+.eh-days { font-size: 28px; font-weight: 700; line-height: 1; margin: 8px 0 4px; }
+.eh-card.winner .eh-days { color: #4ade80; }
+.eh-card.loser .eh-days { color: #fb923c; }
+.eh-card:not(.winner):not(.loser) .eh-days { color: #e5e5e5; }
+.eh-sub { font-size: 11px; color: #888; }
+.eh-badge {
+  position: absolute;
+  top: 8px; right: 8px;
+  font-size: 10px;
+  font-weight: 700;
+  padding: 2px 7px;
+  border-radius: 20px;
+  letter-spacing: 0.04em;
+}
+.badge-best { background: #1d6a3a; color: #4ade80; }
+.badge-slow { background: #6a3a1d; color: #fb923c; }
+
+/* ── TIMELINE ────────────────────────────────────── */
+.timeline-wrap {
+  background: #fff;
+  border: 0.5px solid #e5e2d8;
+  border-radius: 14px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+  overflow-x: auto;
+}
+.timeline-label { font-size: 11px; color: #aaa; margin-bottom: 1.25rem; letter-spacing: 0.06em; text-transform: uppercase; }
+.timeline { display: flex; flex-direction: column; gap: 14px; }
+.tl-row { display: flex; align-items: center; gap: 12px; }
+.tl-name { font-size: 12px; font-weight: 600; color: #444; width: 100px; flex-shrink: 0; text-align: right; }
+.tl-track { flex: 1; height: 28px; background: #f5f4f1; border-radius: 6px; position: relative; min-width: 200px; }
+.tl-bar { height: 100%; border-radius: 6px; display: flex; align-items: center; padding-left: 10px; font-size: 12px; font-weight: 600; white-space: nowrap; position: absolute; left: 0; top: 0; }
+.tl-bar.green { background: #d1fae5; color: #065f46; }
+.tl-bar.amber { background: #fef3c7; color: #92400e; }
+.tl-bar.orange { background: #ffedd5; color: #9a3412; }
+.tl-axis { display: flex; gap: 0; margin-top: 8px; padding-left: 112px; }
+.tl-tick { flex: 1; font-size: 10px; color: #bbb; text-align: left; border-left: 1px solid #e5e2d8; padding-left: 4px; }
+
+/* ── CARDS GRID ──────────────────────────────────── */
+.cards-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 14px;
+  margin-bottom: 2rem;
+}
+.pcard {
+  background: #fff;
+  border: 0.5px solid #e5e2d8;
+  border-radius: 14px;
+  padding: 1.25rem 1.5rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+.pcard-top { display: flex; justify-content: space-between; align-items: flex-start; gap: 8px; margin-bottom: 14px; }
+.pcard-name-block {}
+.pcard-name { font-size: 16px; font-weight: 700; color: #111; }
+.pcard-system { font-size: 12px; color: #888; margin-top: 2px; }
+.pcard-total { text-align: right; }
+.pcard-total-num { font-size: 20px; font-weight: 700; color: #111; white-space: nowrap; }
+.pcard-total-note { font-size: 11px; color: #888; }
+
+.chips { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 12px; }
+.chip {
+  font-size: 11px;
+  padding: 2px 9px;
+  border-radius: 20px;
+  font-weight: 500;
+}
+.chip-green { background: #d1fae5; color: #065f46; }
+.chip-amber { background: #fef3c7; color: #92400e; }
+.chip-red { background: #fee2e2; color: #991b1b; }
+.chip-blue { background: #dbeafe; color: #1e40af; }
+.chip-gray { background: #f1f0ec; color: #555; }
+.chip-dark { background: #1a1a1a; color: #e5e5e5; }
+
+.pcard-rows { display: flex; flex-direction: column; border-top: 0.5px solid #f0ede6; margin-top: 4px; }
+.pcard-row { display: flex; justify-content: space-between; align-items: baseline; padding: 7px 0; border-bottom: 0.5px solid #f7f5f0; gap: 8px; }
+.pcard-row:last-child { border-bottom: none; }
+.row-label { font-size: 12px; color: #888; flex-shrink: 0; }
+.row-val { font-size: 12px; color: #222; text-align: right; }
+.row-val.good { color: #065f46; font-weight: 500; }
+.row-val.bad { color: #991b1b; }
+.row-val.warn { color: #92400e; }
+
+.delivery-pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+  margin-top: 10px;
+  border: 1.5px solid;
+}
+.delivery-pill.dp-green { background: #d1fae5; color: #065f46; border-color: #6ee7b7; }
+.delivery-pill.dp-amber { background: #fef3c7; color: #92400e; border-color: #fcd34d; }
+.delivery-pill.dp-orange { background: #ffedd5; color: #9a3412; border-color: #fdba74; }
+.delivery-pill.dp-gray { background: #f1f0ec; color: #555; border-color: #d3d1c7; }
+
+.contact-strip {
+  background: #f7f6f3;
+  border-radius: 8px;
+  padding: 8px 12px;
+  margin-top: 10px;
+  font-size: 11px;
+  color: #666;
+  line-height: 1.8;
+}
+.contact-strip a { color: #1d4ed8; text-decoration: none; }
+
+/* ── TABLA COMPARATIVA ───────────────────────────── */
+.comp-wrap { overflow-x: auto; margin-bottom: 2rem; }
+table.comp {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 0.5px solid #e5e2d8;
+  border-radius: 14px;
+  overflow: hidden;
+  font-size: 12px;
+  min-width: 580px;
+}
+table.comp th {
+  background: #f7f6f3;
+  font-weight: 600;
+  font-size: 11px;
+  color: #666;
+  padding: 10px 12px;
+  text-align: left;
+  border-bottom: 0.5px solid #e5e2d8;
+}
+table.comp td {
+  padding: 9px 12px;
+  border-bottom: 0.5px solid #f5f4f1;
+  vertical-align: middle;
+  color: #333;
+}
+table.comp tr:last-child td { border-bottom: none; }
+table.comp .row-head { font-weight: 500; color: #555; background: #fafaf8; }
+table.comp .good { color: #065f46; font-weight: 500; }
+table.comp .bad { color: #991b1b; }
+table.comp .warn { color: #92400e; }
+table.comp .neutral { color: #888; }
+table.comp .hl { font-weight: 700; color: #111; }
+table.comp tr.total-row td { background: #f7f6f3; font-weight: 700; border-top: 1px solid #e5e2d8; }
+
+/* ── ALERTA ──────────────────────────────────────── */
+.alert {
+  border-radius: 10px;
+  padding: 12px 16px;
+  font-size: 13px;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  border-left: 3px solid;
+  border-radius: 0 10px 10px 0;
+}
+.alert-amber { background: #fef9ec; border-color: #f59e0b; color: #78350f; }
+.alert-green { background: #ecfdf5; border-color: #10b981; color: #064e3b; }
+.alert-red { background: #fef2f2; border-color: #ef4444; color: #7f1d1d; }
+
+/* ── RECOMENDACIÓN ───────────────────────────────── */
+.rec-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; margin-bottom: 2rem; }
+.rec-card {
+  background: #fff;
+  border: 0.5px solid #e5e2d8;
+  border-radius: 14px;
+  padding: 1.25rem;
+}
+.rec-scenario { font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; color: #888; margin-bottom: 6px; }
+.rec-title { font-size: 15px; font-weight: 700; color: #111; margin-bottom: 6px; }
+.rec-body { font-size: 12px; color: #555; line-height: 1.7; }
+
+footer { font-size: 11px; color: #bbb; text-align: center; margin-top: 3rem; }
+
+@media (max-width: 600px) {
+  .entrega-grid { grid-template-columns: repeat(2, 1fr); }
+  .cards-grid { grid-template-columns: 1fr; }
+  .rec-grid { grid-template-columns: 1fr; }
+}
+</style>
+</head>
+<body>
+<div class="page">
+
+  <div class="header">
+    <div class="header-eyebrow">Smart Building Uruguay · Proyecto Eden Rock</div>
+    <h1>Comparativa de aberturas</h1>
+    <p>4 proveedores · Cotizaciones junio 2026 · Enrique Machado · Maldonado</p>
+  </div>
+
+  <!-- ENTREGA HERO -->
+  <div class="section-label">Tiempo de entrega — factor crítico</div>
+
+  <div class="entrega-hero">
+    <div class="eh-label">
+      <span class="eh-icon">&#128197;</span>
+      Días hábiles desde confirmación y pago
+    </div>
+    <div class="entrega-grid">
+      <div class="eh-card winner">
+        <span class="eh-badge badge-best">MÁS RÁPIDO</span>
+        <div class="eh-name">Sin nombre</div>
+        <div class="eh-days">25</div>
+        <div class="eh-sub">días aprox.</div>
+        <div class="eh-sub" style="margin-top:6px; font-size:10px;">Aluminio A78 · Confirmado en texto</div>
+      </div>
+      <div class="eh-card">
+        <div class="eh-name">Impacto</div>
+        <div class="eh-days" style="color:#e5e5e5">?</div>
+        <div class="eh-sub">a coordinar</div>
+        <div class="eh-sub" style="margin-top:6px; font-size:10px;">Sin plazo definido · Aluminio Gala negro</div>
+      </div>
+      <div class="eh-card">
+        <div class="eh-name">Schumacher</div>
+        <div class="eh-days" style="color:#e5e5e5">?</div>
+        <div class="eh-sub">a convenir</div>
+        <div class="eh-sub" style="margin-top:6px; font-size:10px;">Sin plazo definido · PVC Euro-Design</div>
+      </div>
+      <div class="eh-card loser">
+        <span class="eh-badge badge-slow">MÁS LENTO</span>
+        <div class="eh-name">Eurowindows</div>
+        <div class="eh-days">70</div>
+        <div class="eh-sub">días aprox.</div>
+        <div class="eh-sub" style="margin-top:6px; font-size:10px;">PVC CORTIZO · Fabricación en España</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TIMELINE VISUAL -->
+  <div class="timeline-wrap">
+    <div class="timeline-label">Línea de tiempo comparativa (semanas desde confirmación)</div>
+    <div class="timeline">
+      <div class="tl-row">
+        <div class="tl-name">Sin nombre</div>
+        <div class="tl-track">
+          <div class="tl-bar green" style="width: calc(25/70 * 100%)">25 días</div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-name">Impacto</div>
+        <div class="tl-track">
+          <div class="tl-bar amber" style="width: 45%">a coordinar</div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-name">Schumacher</div>
+        <div class="tl-track">
+          <div class="tl-bar amber" style="width: 55%">a convenir</div>
+        </div>
+      </div>
+      <div class="tl-row">
+        <div class="tl-name">Eurowindows</div>
+        <div class="tl-track">
+          <div class="tl-bar orange" style="width: 100%">70 días (~10 semanas)</div>
+        </div>
+      </div>
+    </div>
+    <div class="tl-axis">
+      <div class="tl-tick">sem 1</div>
+      <div class="tl-tick">sem 2</div>
+      <div class="tl-tick">sem 3</div>
+      <div class="tl-tick">sem 4</div>
+      <div class="tl-tick">sem 6</div>
+      <div class="tl-tick">sem 8</div>
+      <div class="tl-tick">sem 10</div>
+    </div>
+  </div>
+
+  <div class="alert alert-amber">
+    <strong>Atención:</strong> El presupuesto de Eurowindows tenía validez de solo 5 días desde el 16/06/2026 — ya está vencido. Hay que solicitar actualización antes de avanzar. Si la obra necesita las aberturas antes de 10 semanas, Eurowindows queda automáticamente descartado.
+  </div>
+
+  <!-- CARDS PROVEEDORES -->
+  <div class="section-label">Fichas de proveedores</div>
+  <div class="cards-grid">
+
+    <!-- SIN NOMBRE -->
+    <div class="pcard">
+      <div class="pcard-top">
+        <div class="pcard-name-block">
+          <div class="pcard-name">Proveedor sin nombre</div>
+          <div class="pcard-system">Aluminio A78 · blanco</div>
+        </div>
+        <div class="pcard-total">
+          <div class="pcard-total-num">$2.810</div>
+          <div class="pcard-total-note">sin IVA · sin colocación</div>
+        </div>
+      </div>
+      <div class="chips">
+        <span class="chip chip-green">25 días ✓</span>
+        <span class="chip chip-amber">sin IVA</span>
+        <span class="chip chip-amber">sin colocación</span>
+        <span class="chip chip-red">vidrio simple</span>
+      </div>
+      <div class="delivery-pill dp-green">&#128197; 25 días aprox.</div>
+      <div class="pcard-rows">
+        <div class="pcard-row">
+          <span class="row-label">Total real estimado</span>
+          <span class="row-val warn">~$3.680 (c/ IVA + coloc.)</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Material</span>
+          <span class="row-val">Aluminio · línea A78</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Color</span>
+          <span class="row-val">Blanco</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Vidrio</span>
+          <span class="row-val bad">Simple 6mm (sin DVH)</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Mosquiteros</span>
+          <span class="row-val warn">No mencionado</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Colocación</span>
+          <span class="row-val bad">No incluida</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">IVA 22%</span>
+          <span class="row-val bad">No incluido</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Ojo de buey ∅1.30</span>
+          <span class="row-val bad">No cotizado</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Forma de pago</span>
+          <span class="row-val">50% seña · 50% entrega</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Garantía</span>
+          <span class="row-val warn">No especificada</span>
+        </div>
+      </div>
+      <div class="contact-strip">Cotización recibida por WhatsApp · sin membrete formal</div>
+    </div>
+
+    <!-- IMPACTO -->
+    <div class="pcard">
+      <div class="pcard-top">
+        <div class="pcard-name-block">
+          <div class="pcard-name">Impacto</div>
+          <div class="pcard-system">Aluminio Serie Gala · negro</div>
+        </div>
+        <div class="pcard-total">
+          <div class="pcard-total-num">$4.603</div>
+          <div class="pcard-total-note">Opc1 fijo · sin IVA</div>
+        </div>
+      </div>
+      <div class="chips">
+        <span class="chip chip-gray">plazo indefinido</span>
+        <span class="chip chip-dark">único en negro</span>
+        <span class="chip chip-amber">sin IVA</span>
+        <span class="chip chip-green">cotiza circular</span>
+      </div>
+      <div class="delivery-pill dp-gray">&#128197; A coordinar (sin plazo)</div>
+      <div class="pcard-rows">
+        <div class="pcard-row">
+          <span class="row-label">Total real estimado</span>
+          <span class="row-val warn">~$6.175 (c/ IVA + coloc.)</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Material</span>
+          <span class="row-val">Aluminio · Serie Gala</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Color</span>
+          <span class="row-val good">Negro (único proveedor)</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Vidrio</span>
+          <span class="row-val bad">Simple 6mm incoloro</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Mosquiteros</span>
+          <span class="row-val good">Incluidos en todo</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Colocación</span>
+          <span class="row-val bad">+$250 USD extra</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">IVA 22%</span>
+          <span class="row-val bad">No incluido</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Ojo de buey ∅1.30</span>
+          <span class="row-val good">Fijo $4.603 · Proyectante $6.143</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Forma de pago</span>
+          <span class="row-val">60% confirmación · 40% entrega</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Garantía</span>
+          <span class="row-val warn">No especificada</span>
+        </div>
+      </div>
+      <div class="contact-strip">
+        &#128222; 091 847 717 · 092 454 445<br>
+        &#9993; soluciones.impacto@gmail.com · solucionesimpacto.uy<br>
+        Cotización A–2814 · San Carlos, Maldonado · 19/06/2026
+      </div>
+    </div>
+
+    <!-- SCHUMACHER -->
+    <div class="pcard">
+      <div class="pcard-top">
+        <div class="pcard-name-block">
+          <div class="pcard-name">Schumacher</div>
+          <div class="pcard-system">PVC Euro-Design · blanco</div>
+        </div>
+        <div class="pcard-total">
+          <div class="pcard-total-num">$7.552</div>
+          <div class="pcard-total-note">IVA + colocación incluidos</div>
+        </div>
+      </div>
+      <div class="chips">
+        <span class="chip chip-gray">plazo a convenir</span>
+        <span class="chip chip-blue">PVC · DVH 4/12/4</span>
+        <span class="chip chip-green">IVA incluido ✓</span>
+        <span class="chip chip-green">colocación incluida ✓</span>
+        <span class="chip chip-amber">circular: no cotizado</span>
+      </div>
+      <div class="delivery-pill dp-amber">&#128197; A convenir (sin plazo definido)</div>
+      <div class="pcard-rows">
+        <div class="pcard-row">
+          <span class="row-label">Total real</span>
+          <span class="row-val good">$7.552 (precio final)</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Sistema</span>
+          <span class="row-val">Euro-Design 60 + Slide</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Vidrio</span>
+          <span class="row-val good">DVH 4/12/4 · A-04 usa 5/9/5</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Aislam. acústico</span>
+          <span class="row-val good">Hasta 45 dB</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Transmit. térmica</span>
+          <span class="row-val good">Uf 1,4 W/m²K</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Mosquiteros</span>
+          <span class="row-val good">Incluidos</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Colocación</span>
+          <span class="row-val good">Incluida ($712)</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Ojo de buey ∅1.30</span>
+          <span class="row-val bad">No cotizado — pedir aparte</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Premarcos / 4ª caña</span>
+          <span class="row-val bad">No incluidos</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Validez oferta</span>
+          <span class="row-val warn">30 días desde 16/06 — vence 16/07</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Perfilería</span>
+          <span class="row-val">REHAU (importada)</span>
+        </div>
+      </div>
+      <div class="contact-strip">
+        &#127760; schumachersas.com · @schumachersas<br>
+        &#9993; comercial@schumacherqcs.com<br>
+        Propuesta P-00283 · MACHADO EDEN ROCK · 16/06/2026
+      </div>
+    </div>
+
+    <!-- EUROWINDOWS -->
+    <div class="pcard">
+      <div class="pcard-top">
+        <div class="pcard-name-block">
+          <div class="pcard-name">Eurowindows S.R.L.</div>
+          <div class="pcard-system">PVC Nazan / CORTIZO · blanco</div>
+        </div>
+        <div class="pcard-total">
+          <div class="pcard-total-num">$9.681</div>
+          <div class="pcard-total-note">IVA + colocación incluidos</div>
+        </div>
+      </div>
+      <div class="chips">
+        <span class="chip chip-red">70 días — más lento</span>
+        <span class="chip chip-blue">PVC europeo</span>
+        <span class="chip chip-green">low-e + argón ✓</span>
+        <span class="chip chip-green">garantía 10 años ✓</span>
+        <span class="chip chip-red">presupuesto vencido</span>
+      </div>
+      <div class="delivery-pill dp-orange">&#128197; ~70 días — confirmar con obra</div>
+      <div class="pcard-rows">
+        <div class="pcard-row">
+          <span class="row-label">Total real</span>
+          <span class="row-val good">$9.681 (precio final)</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Sistema</span>
+          <span class="row-val">Nazan Omnia + Nazan Plania</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Vidrio</span>
+          <span class="row-val good">DVH 6mm low-e / 14Ar / 4mm</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Perfilería</span>
+          <span class="row-val good">CORTIZO · fabricación España</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Herraje</span>
+          <span class="row-val good">Roto Frank (alemán)</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Ojo de buey ∅1.30</span>
+          <span class="row-val good">Cotizado: $1.895 (Nazan Plania fijo)</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Garantía</span>
+          <span class="row-val good">10 años — todo incluido</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Forma de pago</span>
+          <span class="row-val">60% firma · 30% entrega · 10% fin</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Validez oferta</span>
+          <span class="row-val bad">5 días desde 16/06 — VENCIDA</span>
+        </div>
+        <div class="pcard-row">
+          <span class="row-label">Cancelación</span>
+          <span class="row-val bad">40% penalidad si se anula</span>
+        </div>
+      </div>
+      <div class="contact-strip">
+        &#128205; Ruta 10, costanera entre calles 6 y 7 · La Barra, Maldonado<br>
+        &#128222; (+598) 92510166 · direccion@eurowindows.com.uy<br>
+        Presupuesto 173/1 · Ref. Eden Rock · 16/06/2026
+      </div>
+    </div>
+
+  </div>
+
+  <!-- TABLA COMPARATIVA -->
+  <div class="section-label">Comparativa técnica completa</div>
+  <div class="comp-wrap">
+    <table class="comp">
+      <thead>
+        <tr>
+          <th style="width:22%">Criterio</th>
+          <th>Sin nombre</th>
+          <th>Impacto</th>
+          <th>Schumacher</th>
+          <th>Eurowindows</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="row-head">Entrega</td>
+          <td class="good">~25 días</td>
+          <td class="warn">A coordinar</td>
+          <td class="warn">A convenir</td>
+          <td class="bad">~70 días</td>
+        </tr>
+        <tr>
+          <td class="row-head">Precio base</td>
+          <td>$2.810</td>
+          <td>$4.603 / $6.143</td>
+          <td>$6.190</td>
+          <td>$7.936</td>
+        </tr>
+        <tr>
+          <td class="row-head">Precio total real</td>
+          <td class="warn">~$3.680</td>
+          <td class="warn">~$6.175</td>
+          <td class="good hl">$7.552 ✓</td>
+          <td class="good hl">$9.681 ✓</td>
+        </tr>
+        <tr>
+          <td class="row-head">IVA incluido</td>
+          <td class="bad">No</td>
+          <td class="bad">No</td>
+          <td class="good">Sí</td>
+          <td class="good">Sí</td>
+        </tr>
+        <tr>
+          <td class="row-head">Colocación</td>
+          <td class="bad">No</td>
+          <td class="bad">+$250 extra</td>
+          <td class="good">Incluida</td>
+          <td class="good">Incluida</td>
+        </tr>
+        <tr>
+          <td class="row-head">Material</td>
+          <td>Aluminio A78</td>
+          <td>Aluminio Gala</td>
+          <td>PVC REHAU</td>
+          <td>PVC CORTIZO</td>
+        </tr>
+        <tr>
+          <td class="row-head">Color</td>
+          <td>Blanco</td>
+          <td class="good">Negro</td>
+          <td>Blanco</td>
+          <td>Blanco</td>
+        </tr>
+        <tr>
+          <td class="row-head">Vidrio</td>
+          <td class="bad">Simple 6mm</td>
+          <td class="bad">Simple 6mm</td>
+          <td class="good">DVH 4/12/4</td>
+          <td class="good">DVH 6BE/14Ar/4</td>
+        </tr>
+        <tr>
+          <td class="row-head">Aislam. acústico</td>
+          <td class="bad">Bajo</td>
+          <td class="bad">Bajo</td>
+          <td class="good">Hasta 45 dB</td>
+          <td class="good">~35–40 dB</td>
+        </tr>
+        <tr>
+          <td class="row-head">Aislam. térmico</td>
+          <td class="bad">Bajo</td>
+          <td class="bad">Bajo</td>
+          <td class="good">Uf 1,4 W/m²K</td>
+          <td class="good">Low-e + argón</td>
+        </tr>
+        <tr>
+          <td class="row-head">Ojo de buey</td>
+          <td class="bad">No cotizado</td>
+          <td class="good">Sí (fijo o proy.)</td>
+          <td class="bad">No cotizado</td>
+          <td class="good">Sí ($1.895)</td>
+        </tr>
+        <tr>
+          <td class="row-head">Mosquiteros</td>
+          <td class="warn">Sin dato</td>
+          <td class="good">Incluidos</td>
+          <td class="good">Incluidos</td>
+          <td class="warn">Sin dato</td>
+        </tr>
+        <tr>
+          <td class="row-head">Garantía</td>
+          <td class="bad">Sin dato</td>
+          <td class="bad">Sin dato</td>
+          <td class="warn">DVH 10 años</td>
+          <td class="good">10 años todo</td>
+        </tr>
+        <tr>
+          <td class="row-head">Perfilería origen</td>
+          <td class="neutral">Uruguay</td>
+          <td class="neutral">Uruguay</td>
+          <td class="good">REHAU importada</td>
+          <td class="good">CORTIZO España</td>
+        </tr>
+        <tr>
+          <td class="row-head">Herraje</td>
+          <td class="neutral">Nacional</td>
+          <td class="neutral">Nacional</td>
+          <td class="neutral">Sin dato</td>
+          <td class="good">Roto Frank</td>
+        </tr>
+        <tr>
+          <td class="row-head">Forma de pago</td>
+          <td>50/50</td>
+          <td>60/40</td>
+          <td>A convenir</td>
+          <td>60/30/10</td>
+        </tr>
+        <tr>
+          <td class="row-head">Vigencia oferta</td>
+          <td class="warn">Indefinida</td>
+          <td class="warn">Indefinida</td>
+          <td class="warn">Vence 16/07</td>
+          <td class="bad">VENCIDA</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- ALERTAS -->
+  <div class="alert alert-red">
+    <strong>Ojo de buey circular ∅1.30 m:</strong> Solo Impacto y Eurowindows lo cotizaron. Si se elige Schumacher o el proveedor sin nombre, hay que pedir esa pieza aparte — puede cambiar el total significativamente.
+  </div>
+  <div class="alert alert-amber">
+    <strong>Ventana A-04 (2.50 × 2.10 m):</strong> Pesa ~178 kg (Eurowindows). Verificar estructura del vano y capacidad de ruedas antes de confirmar. Schumacher usa vidrio más liviano 5/9/5mm para esta pieza.
+  </div>
+
+  <!-- RECOMENDACIONES -->
+  <div class="section-label">Escenarios de decisión para Enrique</div>
+  <div class="rec-grid">
+    <div class="rec-card">
+      <div class="rec-scenario">Si la entrega es urgente</div>
+      <div class="rec-title">Proveedor sin nombre</div>
+      <div class="rec-body">25 días es el único plazo concreto. Ajustando IVA + colocación queda en ~$3.680. Vidrio simple, sin garantía formal, pero la velocidad de entrega es imbatible. Pedir cotización del ojo de buey antes de cerrar.</div>
+    </div>
+    <div class="rec-card">
+      <div class="rec-scenario">Si el proyecto requiere perfil negro</div>
+      <div class="rec-title">Impacto</div>
+      <div class="rec-body">El único proveedor en aluminio negro Serie Gala. Si la estética de Eden Rock lo exige, esta es la única opción. Total real ~$6.175. Verificar plazo concreto antes de confirmar, ya que no lo especificaron.</div>
+    </div>
+    <div class="rec-card">
+      <div class="rec-scenario">Mejor relación calidad-precio PVC</div>
+      <div class="rec-title">Schumacher</div>
+      <div class="rec-body">$7.552 precio final todo incluido. PVC con hasta 45 dB de aislamiento acústico y transmitancia Uf 1,4 W/m²K. Cotización vence el 16/07. Falta cotizar el ojo de buey circular antes de cerrar.</div>
+    </div>
+    <div class="rec-card">
+      <div class="rec-scenario">Máxima calidad técnica y garantía</div>
+      <div class="rec-title">Eurowindows</div>
+      <div class="rec-body">$9.681 con PVC CORTIZO, herraje Roto Frank, vidrio low-e + argón y garantía 10 años en todo. Los 70 días de fabricación requieren pedido muy anticipado. Solicitar nuevo presupuesto — el anterior ya venció.</div>
+    </div>
+  </div>
+
+  <footer>Smart Building Uruguay · Eden Rock · Enrique Machado · Maldonado · Junio 2026</footer>
+
+</div>
+</body>
+</html>

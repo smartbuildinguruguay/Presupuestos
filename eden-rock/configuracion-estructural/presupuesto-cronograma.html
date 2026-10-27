@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Presupuesto y Cronograma de Pagos — Casa Eden Rock P3</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body { font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background:#F4F6F9; }
+  .navy { color:#1F3864; }
+  .bg-navy { background:#1F3864; }
+  .bg-navy-light { background:#2E5395; }
+  table { border-collapse: collapse; width:100%; }
+  th, td { padding: 10px 14px; text-align:left; border-bottom:1px solid #E2E0D8; }
+  th { background:#1F3864; color:white; font-size:12px; text-transform:uppercase; letter-spacing:0.03em; font-weight:700; }
+  tr:nth-child(even) td { background:#F7F8FA; }
+  .num { text-align:right; font-variant-numeric: tabular-nums; }
+  .total-row td { background:#2E5395 !important; color:white; font-weight:700; }
+  .card { background:white; border-radius:12px; box-shadow:0 1px 3px rgba(0,0,0,0.08); }
+  .sena-row td { background:#FDE9D9 !important; font-weight:600; }
+  @media print {
+    .no-print { display:none; }
+    .card { box-shadow:none; border:1px solid #E2E0D8; }
+  }
+</style>
+</head>
+<body class="text-slate-800">
+
+<div class="bg-navy text-white sticky top-0 z-10 shadow-md no-print">
+  <div class="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between">
+    <div>
+      <div class="text-xs uppercase tracking-widest text-white/60 font-bold">Smart Building Uruguay</div>
+      <div class="text-lg font-bold">Presupuesto y Cronograma de Pagos</div>
+    </div>
+    <button onclick="window.print()" class="bg-white/10 hover:bg-white/20 px-4 py-2 rounded-lg text-sm font-semibold flex items-center gap-2 transition">
+      🖨️ Imprimir / PDF
+    </button>
+  </div>
+</div>
+
+<div class="max-w-5xl mx-auto px-6 py-8 space-y-8">
+
+  <!-- PORTADA / RESUMEN -->
+  <div class="card p-6 md:p-8">
+    <h1 class="text-3xl font-extrabold navy mb-1">Casa Eden Rock — Propuesta 3</h1>
+    <p class="text-slate-500 mb-6">La Barra, Maldonado · Presupuesto emitido 10 de agosto de 2026</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-3 text-sm">
+      <div class="flex justify-between border-b border-slate-100 py-2"><span class="text-slate-500">Cliente</span><span class="font-semibold">—</span></div>
+      <div class="flex justify-between border-b border-slate-100 py-2"><span class="text-slate-500">Superficie</span><span class="font-semibold">262 m²</span></div>
+      <div class="flex justify-between border-b border-slate-100 py-2"><span class="text-slate-500">Sistema constructivo</span><span class="font-semibold">Steel Framing y Estructura Metálica</span></div>
+      <div class="flex justify-between border-b border-slate-100 py-2"><span class="text-slate-500">Cubierta</span><span class="font-semibold">Isoroof (panel estructural)</span></div>
+      <div class="flex justify-between border-b border-slate-100 py-2"><span class="text-slate-500">Aberturas</span><span class="font-semibold">PVC Cortizo Oscilobatiente, DVH</span></div>
+      <div class="flex justify-between border-b border-slate-100 py-2"><span class="text-slate-500">Fachada exterior</span><span class="font-semibold">Lapacho</span></div>
+    </div>
+    <div class="mt-6 bg-navy text-white rounded-xl p-5 flex items-center justify-between">
+      <span class="font-bold uppercase tracking-wide text-sm">Total del presupuesto</span>
+      <span class="text-3xl font-extrabold">USD 465.215</span>
+    </div>
+  </div>
+
+  <!-- SECCION 1: CRONOGRAMA -->
+  <div class="card p-6 md:p-8">
+    <h2 class="text-xl font-bold navy mb-1">1. Cronograma de pagos</h2>
+    <p class="text-sm text-slate-500 mb-4">50% anticipo + 50% saldo por etapa — el saldo de una etapa se abona junto con el anticipo de la siguiente. Firma de contrato: <b>13 de agosto de 2026</b>. Entrega: <b>31 de diciembre de 2026</b> (~20 semanas de obra).</p>
+    <div class="overflow-x-auto">
+    <table id="tbl-pagos">
+      <thead><tr><th>Pago</th><th>Fecha</th><th>Desglose (anticipo / saldo)</th><th class="num">Monto</th><th class="num">% del total</th></tr></thead>
+      <tbody></tbody>
+      <tfoot></tfoot>
+    </table>
+    </div>
+    <p class="text-xs text-slate-400 italic mt-3">La seña (3% del total) se abona al firmar el contrato, como reserva de cupo de obra. Se descuenta en partes iguales (3%) de cada uno de los 9 pagos siguientes — no se carga entera al último pago, sino que se reparte parejo en toda la escalera.</p>
+  </div>
+
+  <!-- SECCION 2: SISTEMA DE AGUA -->
+  <div class="card p-6 md:p-8 border-l-4 border-[#B65C9C]">
+    <h2 class="text-xl font-bold navy mb-1">2. Adicional opcional — Sistema de Agua (Pozo Perforado)</h2>
+    <p class="text-sm text-[#B65C9C] font-semibold mb-4">El padrón no cuenta con conexión OSE cercana. Este ítem NO está incluido en el total — se presenta aparte porque es opcional.</p>
+    <div class="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-1 text-sm mb-4">
+      <div class="flex items-start gap-2 py-1"><span class="navy">●</span><span>Perforación de pozo, 33m de profundidad (USD 150/m + IVA), incluye habilitación DINAGUA</span></div>
+      <div class="flex items-start gap-2 py-1"><span class="navy">●</span><span>Filtro de arena, 2 metros (USD 450/m + IVA)</span></div>
+      <div class="flex items-start gap-2 py-1"><span class="navy">●</span><span>Bomba sumergible</span></div>
+      <div class="flex items-start gap-2 py-1"><span class="navy">●</span><span>Cisterna enterrada</span></div>
+      <div class="flex items-start gap-2 py-1"><span class="navy">●</span><span>Tanque de reserva elevado</span></div>
+      <div class="flex items-start gap-2 py-1"><span class="navy">●</span><span>Sistema de presurización</span></div>
+      <div class="flex items-start gap-2 py-1"><span class="navy">●</span><span>Red hidráulica, 20 metros lineales</span></div>
+      <div class="flex items-start gap-2 py-1"><span class="navy">●</span><span>Circuito eléctrico dedicado para bombeo</span></div>
+      <div class="flex items-start gap-2 py-1"><span class="navy">●</span><span>Filtrado de agua</span></div>
+      <div class="flex items-start gap-2 py-1"><span class="navy">●</span><span>Gestión y trámites ante DINAGUA</span></div>
+    </div>
+    <div class="bg-slate-50 rounded-xl p-4 flex items-center justify-between">
+      <span class="font-bold navy">Total Sistema de Agua</span>
+      <span class="text-2xl font-extrabold navy">USD 20.339</span>
+    </div>
+    <p class="text-xs text-slate-400 italic mt-3">Ya incluye IVA (22% sobre perforación y filtro), imprevistos (10%) y beneficio (30%). Si se confirma, se suma como una etapa más al cronograma — recomendable ejecutar en simultáneo con Fundaciones.</p>
+  </div>
+
+  <!-- SECCION 3: PLANOS -->
+  <div class="card p-6 md:p-8">
+    <h2 class="text-xl font-bold navy mb-1">3. Planos para presentación municipal y BPS</h2>
+    <p class="text-sm text-slate-500 mb-4">Documentación técnica pendiente de adjuntar, a cargo del equipo de ingeniería de SBU:</p>
+    <div class="space-y-2 text-sm">
+      <div class="flex items-center gap-3 bg-slate-50 rounded-lg p-3"><span class="text-slate-300 text-lg">☐</span><span>Plano de instalación sanitaria — <span class="text-slate-400">Arq. Pablo Alcoba</span></span></div>
+      <div class="flex items-center gap-3 bg-slate-50 rounded-lg p-3"><span class="text-slate-300 text-lg">☐</span><span>Plano de instalación eléctrica — <span class="text-slate-400">Arq. Pablo Alcoba / Ing. Ricardo Portugau</span></span></div>
+      <div class="flex items-center gap-3 bg-slate-50 rounded-lg p-3"><span class="text-slate-300 text-lg">☐</span><span>Memoria descriptiva de la obra — <span class="text-slate-400">F3, requerida por BPS para obra nueva</span></span></div>
+      <div class="flex items-center gap-3 bg-slate-50 rounded-lg p-3"><span class="text-slate-300 text-lg">☐</span><span>Inscripción de obra ante BPS — <span class="text-slate-400">formulario F2, 10 días antes a 48h después del inicio</span></span></div>
+    </div>
+    <p class="text-xs text-slate-400 italic mt-4">Estos planos se incorporan como anexo una vez finalizados — este documento queda como base del presupuesto y cronograma, independiente de esa documentación técnica.</p>
+  </div>
+
+  <div class="text-center text-xs text-slate-400 pb-8">Smart Building Uruguay — Casa Eden Rock, Propuesta 3</div>
+</div>
+
+<script>
+const fmt = n => Math.round(n).toLocaleString("es-UY");
+const TOTAL = 465215;
+
+const pagos = [
+  ["Seña", "13/08/2026 (firma)", "Reserva de cupo de obra (3% del total)", 13956, "sena"],
+  ["Pago 1", "13/08/2026 (firma)", "100% Anticipo — 1. Preliminares", 3441],
+  ["Pago 2", "19/08/2026", "12% Saldo 1. Preliminares + 88% Anticipo 2. Fundaciones", 27866],
+  ["Pago 3", "04/09/2026", "48% Saldo 2. Fundaciones + 52% Anticipo 3. Estructura", 50632],
+  ["Pago 4", "25/09/2026", "33% Saldo 3. Estructura + 67% Anticipo 4. Cáscara cerrada", 78881],
+  ["Pago 5", "19/10/2026", "65% Saldo 4. Cáscara cerrada + 35% Anticipo 5. Aberturas", 81599],
+  ["Pago 6", "28/10/2026", "58% Saldo 5. Aberturas + 42% Anticipo 6. Instalaciones", 49662],
+  ["Pago 7", "13/11/2026", "38% Saldo 6. Instalaciones + 62% Anticipo 7. Interior", 53867],
+  ["Pago 8", "07/12/2026", "48% Saldo 7. Interior + 52% Anticipo 8. Terminaciones", 69221],
+  ["Pago 9", "31/12/2026 (entrega)", "100% Saldo — 8. Terminaciones", 36091],
+];
+const tbodyP = document.querySelector("#tbl-pagos tbody");
+const totalP = pagos.reduce((a,p)=>a+p[3],0);
+pagos.forEach(p => {
+  const isSena = p[4]==="sena";
+  const pct = (p[3]/TOTAL*100).toFixed(1) + "%";
+  tbodyP.innerHTML += `<tr class="${isSena?'sena-row':''}"><td class="font-semibold">${p[0]}</td><td>${p[1]}</td><td class="text-slate-600">${p[2]}</td><td class="num font-bold">${fmt(p[3])}</td><td class="num text-slate-500">${pct}</td></tr>`;
+});
+document.querySelector("#tbl-pagos tfoot").innerHTML = `<tr class="total-row"><td>TOTAL</td><td></td><td></td><td class="num">${fmt(totalP)}</td><td class="num">${(totalP/TOTAL*100).toFixed(1)}%</td></tr>`;
+</script>
+</body>
+</html>
