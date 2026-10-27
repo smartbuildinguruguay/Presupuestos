@@ -124,6 +124,7 @@ tr[data-id]{cursor:pointer}
 .guide{stroke:var(--fix);stroke-width:.35;stroke-dasharray:1.5 1.5}
 .csverd{border:1px solid var(--line);border-left:4px solid var(--ven);background:var(--panel);border-radius:8px;padding:9px 12px;font-size:.9rem;margin:0 0 10px;max-width:75ch}
 .csverd.bad{border-left-color:var(--hot)}
+.kguia{margin:0 0 10px;padding-left:22px;font-size:.92rem;max-width:80ch}.kguia li{margin:0 0 6px}.kguia b{display:block}
 h2.sub{font-size:.95rem;margin-top:14px}
 .ok{fill:var(--ven)}.bad{fill:var(--hot)}
 .hatch{stroke:var(--fix);stroke-width:.4}
@@ -161,7 +162,8 @@ h2.sub{font-size:.95rem;margin-top:14px}
  section{break-before:page}
  .drawing{overflow:visible;border-color:var(--line)}
  #svgA,#svgD{min-width:0!important;max-height:150mm}
- #svgCA,#svgCB{max-height:85mm}
+ #svgCA,#svgCB,#svgK,#svgV{max-height:85mm}
+ #D-cocina{page:auto}
  .csverd{break-inside:avoid}
  h2{font-size:1.1rem;margin:12px 0 5px;break-after:avoid}
  .step,.row,.assume div,tr{break-inside:avoid}
@@ -234,6 +236,7 @@ h2.sub{font-size:.95rem;margin-top:14px}
     <button type="button" role="tab" data-sub="plano" aria-selected="true">Plano</button>
     <button type="button" role="tab" data-sub="despiece" aria-selected="false">Despiece</button>
     <button type="button" role="tab" data-sub="guia" aria-selected="false">Guía</button>
+    <button type="button" role="tab" data-sub="cocina" data-only="D" aria-selected="false" hidden>Cocina y ventilación</button>
   </div>
 </div>
 
@@ -356,7 +359,7 @@ h2.sub{font-size:.95rem;margin-top:14px}
     <div><b>Inodoro</b>Desagüe vertical a piso con el eje a 0,30 m de la pared terminada. Revisá la ficha: hay modelos con mochila apoyada que salen a 0,20–0,25.</div>
     <div><b>Cocina</b>Como en S01: pileta con sifón, PVC 50 al interceptor de grasa de 20 l, después a la pileta de patio tapada 20 × 20 y de ahí PVC 110 a la cámara 1. Ventilaciones VF y RA en PVC 50.</div>
     <div><b>Cámara y tratamiento</b>Cámara de inspección 1 de 0,60 × 0,60 con sifón desconector. Después van dos fosas sépticas y el pozo filtrante, todos con aros de Ø 1,50 y 1,40 m de profundidad útil (S01).</div>
-    <div><b>Fuera de alcance</b>Pluviales y la ventilación del pozo filtrante, que se hace según S01.</div>
+    <div><b>Fuera de alcance</b>Pluviales. La cocina y todas las ventilaciones están en Cocina y ventilación.</div>
   </div>
 </section>
 
@@ -366,7 +369,8 @@ h2.sub{font-size:.95rem;margin-top:14px}
   <h2>Parámetros</h2>
   <div class="params">
     <label for="pCV">CV 110 total (m)<input id="pCV" type="number" min="0" step="0.5" value="5"></label>
-    <label for="pVF">VF cocina 50 (m)<input id="pVF" type="number" min="0" step="0.5" value="2.5"></label>
+    <label for="pVF">VF cocina 50 (m)<input id="pVF" type="number" min="0" step="0.5" value="4.5"></label>
+    <label for="pCVP">CV pozo 110 (m)<input id="pCVP" type="number" min="0" step="0.5" value="3"></label>
     <label for="pDespD">Desperdicio (%)<input id="pDespD" type="number" min="0" step="5" value="10"></label>
     <label for="pBarD">Largo de barra PVC (m)<input id="pBarD" type="number" min="1" step="1" value="4"></label>
   </div>
@@ -388,6 +392,38 @@ h2.sub{font-size:.95rem;margin-top:14px}
   <div class="prog"><i id="progD"></i></div>
   <div id="stepsD"></div>
 </section>
+
+<section id="D-cocina" hidden>
+  <div class="printbar"><button type="button" class="btn ghost" data-print="D-cocina">Imprimir esta vista / PDF</button><a href="pdf/desagues-4-cocina-ventilacion.pdf">Descargar PDF</a></div>
+  <div class="ptitle"><small>Vivienda Sayago · Padrón 17428 · Sanitaria baño y cocina · SBU</small>Desagües · Cocina y ventilación</div>
+  <p class="note">Desagüe de la pileta hasta la cámara 1, pasando por el interceptor de grasa y la pileta de patio tapada, y todas las ventilaciones de la instalación. Cotas al eje del caño o al zampeado, desde el piso terminado (0,00). El entrepiso (piso 3 cm + vigas 8 cm) se toma de Plano · Cortes.</p>
+  <h2>Parámetros</h2>
+  <div class="params">
+    <label for="kSif">Salida del sifón (m sobre 0,00)<input id="kSif" type="number" step="0.05" value="0.45"></label>
+    <label for="kIGin">Entrada interceptor (m)<input id="kIGin" type="number" step="0.01" value="-0.65"></label>
+    <label for="kIGdrop">Salida IG más baja que la entrada (m)<input id="kIGdrop" type="number" min="0" step="0.01" value="0.05"></label>
+    <label for="kTer">Terreno exterior (m)<input id="kTer" type="number" step="0.01" value="-0.55"></label>
+    <label for="vVF">Remate VF (m)<input id="vVF" type="number" step="0.1" value="2.20"></label>
+    <label for="vRA">Remate RA sobre terreno (m)<input id="vRA" type="number" min="0" step="0.05" value="0.30"></label>
+    <label for="vPZ">Remate CV pozo sobre terreno (m)<input id="vPZ" type="number" min="0" step="0.1" value="2.00"></label>
+  </div>
+  <div id="kVerd" class="csverd"></div>
+  <h2 class="sub">Corte C–C · desagüe de cocina desarrollado</h2>
+  <div class="drawing"><svg id="svgK" viewBox="0 0 480 300" role="img" aria-label="Corte desarrollado del desagüe de cocina desde la pileta hasta la cámara de inspección"></svg></div>
+  <div class="tbl" style="margin-top:10px"><table id="kTbl"><thead><tr><th>Punto</th><th class="num">Desarrollo</th><th class="num">Cota</th><th>Nota</th></tr></thead><tbody></tbody></table></div>
+  <h2 class="sub">Elevación V–V · ventilaciones</h2>
+  <div class="drawing"><svg id="svgV" viewBox="0 0 480 330" role="img" aria-label="Elevación esquemática de las cuatro ventilaciones con sus arranques y remates"></svg></div>
+  <div class="tbl" style="margin-top:10px"><table id="vTbl"><thead><tr><th>Ventilación</th><th class="num">Ø</th><th class="num">Arranque</th><th class="num">Remate</th><th class="num">Largo aprox.</th><th>Dónde</th></tr></thead><tbody></tbody></table></div>
+  <h2>Paso a paso</h2>
+  <ol class="kguia" id="kGuia"></ol>
+  <h2>A confirmar</h2>
+  <div class="assume">
+    <div><b>Remates</b>S01 marca VF y RA con terminal en curva y el pozo con su CV, pero no da la altura del remate. Los valores de arriba son de partida: ajustalos con la lámina o con el ingeniero.</div>
+    <div><b>Interceptor</b>Medí la entrada y la salida del modelo que compres. La salida tiene que quedar por encima de la entrada a la pileta de patio.</div>
+    <div><b>VF horizontal</b>El tramo que va por dentro del muro este tiene que caer hacia la pileta (1 % mínimo), para que el agua de condensación vuelva al desagüe.</div>
+  </div>
+</section>
+
 <!-- ================= PRIMARIA 3D ================= -->
 <section id="P-3d" data-noprint hidden>
   <div class="p3-grid">
@@ -1097,16 +1133,16 @@ function bomA(){
  ];
 }
 function bomD(){
- const cv=num('pCV',5), vf=num('pVF',2.5), w=num('pDespD',10)/100, bar=Math.max(1,num('pBarD',4));
- const l110=dsegL('main')+0.80+cv+dsegL('pptci')+3*0.60;
- const l50=dsegL('csout')+0.60+dsegL('duch')+dsegL('kit')+1.0+0.40+vf+0.60;
+ const cv=num('pCV',5), vf=num('pVF',4.5), cvp=num('pCVP',3), w=num('pDespD',10)/100, bar=Math.max(1,num('pBarD',4));
+ const l110=dsegL('main')+0.80+cv+cvp+dsegL('pptci')+3*0.60;
+ const l50=dsegL('csout')+0.60+dsegL('duch')+dsegL('kit')+1.0+0.40+vf+1.10;
  const l40=dsegL('lav')+dsegL('bid')+2*0.25;
  const b=(L)=>Math.ceil(L*(1+w)/bar);
  const ab=Math.ceil(cv)+Math.ceil((l50+l40-vf-0.60)/1.0);
  return [
  {g:'Caño PVC sanitario',r:[
-  {id:'p110',q:b(l110),u:'barras',n:'Caño PVC 110',s:`${fmt(l110)} m: colector ${fmt(dsegL('main'))}, inodoro 0,80, CV ${fmt(cv,1)}, cocina a cámara ${fmt(dsegL('pptci'))}, tramos a fosas y pozo 1,80`},
-  {id:'p50',q:b(l50),u:'barras',n:'Caño PVC 50',s:`${fmt(l50)} m: bajada de la caja sifonada, ducha, pileta de cocina a interceptor y pileta de patio, VF ${fmt(vf,1)}, RA 0,60`},
+  {id:'p110',q:b(l110),u:'barras',n:'Caño PVC 110',s:`${fmt(l110)} m: colector ${fmt(dsegL('main'))}, inodoro 0,80, CV ${fmt(cv,1)}, CV pozo ${fmt(cvp,1)}, cocina a cámara ${fmt(dsegL('pptci'))}, tramos a fosas y pozo 1,80`},
+  {id:'p50',q:b(l50),u:'barras',n:'Caño PVC 50',s:`${fmt(l50)} m: bajada de la caja sifonada, ducha, pileta de cocina a interceptor y pileta de patio, VF ${fmt(vf,1)}, RA 1,10`},
   {id:'p40',q:b(l40),u:'barras',n:'Caño PVC 40',s:`${fmt(l40)} m: lavatorio y bidet`}]},
  {g:'Accesorios PVC 110',r:[
   {id:'k90',q:2,u:'u',n:'Codo 90° 110',s:'Pie del CV y giro bajo el lavatorio'},
@@ -1116,7 +1152,8 @@ function bomD(){
   {id:'cino',q:1,u:'u',n:'Conexión / manguito para inodoro 110',s:'Según el modelo del inodoro'},
   {id:'t110',q:5,u:'u',n:'T 110',s:'Entrada y salida de cada fosa y entrada del pozo'},
   {id:'sd',q:1,u:'u',n:'Sifón desconector 110',s:'Cámara de inspección 1'},
-  {id:'som',q:1,u:'u',n:'Sombrerete 110',s:'Remate del CV'}]},
+  {id:'som',q:2,u:'u',n:'Sombrerete 110',s:'Remate del CV del baño y del CV del pozo'},
+  {id:'tpz',q:1,u:'u',n:'Conexión 110 para tapa del pozo',s:'Arranque del CV del pozo'}]},
  {g:'Accesorios PVC 40 / 50',r:[
   {id:'k5090',q:8,u:'u',n:'Codo 90° 50',s:'Ducha, salida de la caja sifonada, cocina ×3, terminales de VF y RA'},
   {id:'k5045',q:2,u:'u',n:'Codo 45° 50',s:'Bajada de la caja al ramal Y y quiebre de la ducha'},
@@ -1192,10 +1229,13 @@ function renderSteps(sys){
 let cur={sys:'A',sub:'plano'};
 try{const v=JSON.parse(localStorage.getItem(KEY+'-nav')||'null');if(v&&v.sys&&v.sub)cur=v}catch(e){}
 function show(sys,sub){
+ if(sub==='cocina'&&sys!=='D')sub='plano';
  cur={sys,sub};try{localStorage.setItem(KEY+'-nav',JSON.stringify(cur))}catch(e){}
  document.querySelectorAll('[data-sys]').forEach(b=>b.setAttribute('aria-selected',b.dataset.sys===sys));
  document.querySelectorAll('[data-sub]').forEach(b=>b.setAttribute('aria-selected',b.dataset.sub===sub));
  ['A','D'].forEach(s=>['plano','despiece','guia'].forEach(x=>document.getElementById(s+'-'+x).hidden=!(s===sys&&x===sub)));
+ document.getElementById('D-cocina').hidden=!(sys==='D'&&sub==='cocina');
+ document.querySelectorAll('[data-only]').forEach(b=>b.hidden=b.dataset.only!==sys);
  document.getElementById('P-3d').hidden=sys!=='P';document.querySelector('.sub').hidden=sys==='P';
  if(window.primaria3d)window.primaria3d.visible(sys==='P');
 }
@@ -1220,6 +1260,7 @@ window.sanitPrintAll=()=>withAllVisible(()=>{});
 document.getElementById('printAll').addEventListener('click',()=>withAllVisible(()=>window.print()));
 document.querySelectorAll('[data-print]').forEach(b=>b.addEventListener('click',()=>{const [sy,sb]=b.dataset.print.split('-');show(sy,sb);window.print()}));
 window.sanitShow=show;
+window.SANIT={fmt,CSX,dsegL,distToCam,CZE,SLOPE};
 renderA();renderD();renderBom('A');renderBom('D');renderSteps('A');renderSteps('D');show(cur.sys,cur.sub);
 })();
 </script>
@@ -1576,6 +1617,148 @@ function build(){
 }
 
 if(!sec.hidden)window.primaria3d.visible(true);
+})();
+</script>
+<script>
+/* ================= COCINA Y VENTILACIÓN ================= */
+(function(){
+const {fmt,CSX,dsegL,distToCam,CZE,SLOPE}=window.SANIT;
+const $=id=>document.getElementById(id);
+const f=v=>(v>0.004?'+':'')+fmt(v).replace('-','−'), m=v=>fmt(v)+' m';
+const nv=(id,d)=>{const v=parseFloat($(id).value);return isNaN(v)?d:v};
+function K(){
+ const c=CSX();                                       // entrepiso desde Plano · Cortes
+ const sif=nv('kSif',0.45), igIn=nv('kIGin',-0.65), igDrop=Math.max(0,nv('kIGdrop',0.05)), ter=nv('kTer',-0.55);
+ const zUnder=-(c.piso+(c.bajo?c.viga:0)+0.025);      // eje de un 50 bajo las vigas
+ const Lk=dsegL('kit');                               // pileta → muro este
+ const zWall=zUnder-Lk*SLOPE;                         // llega al muro
+ const igOut=igIn-igDrop, Lig=dsegL('igppt')+0.20;    // IG → PPT
+ const pptIn=igOut-Lig*SLOPE;
+ const Lpc=dsegL('pptci'), pptOut=CZE+Lpc*SLOPE;      // 110 de la PPT a la cámara, al 2 %
+ const okIG=zWall>=igIn-1e-9, okPPT=pptIn>=pptOut+0.05-1e-9;
+ const vf=nv('vVF',2.20), ra=ter+Math.max(0,nv('vRA',0.30)), pz=ter+Math.max(0,nv('vPZ',2.00));
+ const cvBase=CZE+distToCam(0.25,-0.30)*SLOPE, cvTop=3.92;
+ const vfH=Math.hypot(3.05-2.85,1.45-3.18);           // tramo horizontal en el muro este
+ return {c,sif,igIn,igOut,ter,zUnder,Lk,zWall,Lig,pptIn,Lpc,pptOut,okIG,okPPT,vf,ra,pz,cvBase,cvTop,vfH,
+  V:[
+   {id:'CV',n:'CV baño',d:110,z0:cvBase,z1:cvTop,L:cvTop-cvBase+0.3,w:'Pie del colector bajo el lavatorio; sube por fuera del muro sur hasta 0,30 sobre el alero, con sombrerete.'},
+   {id:'VF',n:'VF cocina',d:50,z0:0.35,z1:vf,L:vfH+(vf-0.35)+0.3,w:'Ramal Y 50 en la bajada de la pileta; corre por el muro este cayendo hacia la pileta, sale en (3,05 ; 1,45) y remata en curva.'},
+   {id:'RA',n:'RA pileta de patio',d:50,z0:-0.65,z1:ra,L:ra+0.65+0.2,w:'Desde la pileta de patio tapada; terminal en curva sobre el terreno.'},
+   {id:'PZ',n:'CV pozo filtrante',d:110,z0:-0.60,z1:pz,L:pz+0.60+0.2,w:'Desde la tapa del pozo, separada de las aberturas; lleva sombrerete.'}]};
+}
+function draw(){
+ const k=K(), c=k.c;
+ const ok=k.okIG&&k.okPPT, v=$('kVerd');
+ v.className='csverd'+(ok?'':' bad');
+ v.innerHTML=ok?`<b>La cocina cae bien de punta a punta.</b> El 50 sale de la casa a ${f(k.zWall)} y baja al interceptor (${f(k.igIn)}). De la pileta de patio sale el 110 a ${f(k.pptOut)} y llega a la cámara 1 a ${f(CZE)}.`
+  :`<b>${!k.okIG?'El 50 de la cocina llega más bajo que la entrada del interceptor.':'La salida del interceptor queda muy baja para la pileta de patio.'}</b> Revisá las cotas del interceptor que vas a usar.`;
+
+ /* --- C–C --- */
+ {const KH=130, KV=130, ox=20, ZT=1.05, oy=10, x=d=>ox+d*KH, z=b=>oy+(ZT-b)*KV;
+  const dW=k.Lk, dIG=dW+0.22, dPPT=dIG+0.20+k.Lig, dCam=dPPT+0.10+k.Lpc;
+  let o=`<defs><pattern id="vgK" width="4" height="4" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="4" stroke="var(--fix)" stroke-width=".5"/></pattern></defs>`;
+  const W=dCam+0.45;
+  // casa: piso + vigas hasta el muro
+  o+=`<rect class="wall" x="${x(-0.10)}" y="${z(0)}" width="${(dW+0.10)*KH}" height="${c.piso*KV}"/>`;
+  o+=`<rect x="${x(-0.10)}" y="${z(-c.piso)}" width="${(dW+0.10)*KH}" height="${c.viga*KV}" fill="url(#vgK)" stroke="var(--fix)" stroke-width=".4"/>`;
+  o+=`<line x1="${x(-0.10)}" y1="${z(0)}" x2="${x(dW)}" y2="${z(0)}" stroke="var(--ink)" stroke-width=".8"/>`;
+  o+=`<rect class="wall" x="${x(dW)}" y="${z(1.00)}" width="${0.12*KH}" height="${(1.00+c.piso+c.viga)*KV}"/>`;
+  o+=`<text class="fxl" x="${x(dW+0.06)}" y="${z(0.98)-3}" text-anchor="middle">Muro este</text>`;
+  // terreno
+  o+=`<line x1="${x(-0.10)}" y1="${z(-0.60)}" x2="${x(dW)}" y2="${z(-0.60)}" stroke="var(--fix)" stroke-width=".6" stroke-dasharray="3 2"/>`;
+  o+=`<line x1="${x(dW+0.12)}" y1="${z(k.ter)}" x2="${x(W)}" y2="${z(k.ter)}" stroke="var(--fix)" stroke-width=".7"/>`;
+  for(let a=dW+0.15;a<W;a+=0.06)o+=`<line class="hatch" x1="${x(a)}" y1="${z(k.ter)}" x2="${x(a-0.03)}" y2="${z(k.ter-0.03)}"/>`;
+  o+=`<text class="dim" x="${x(dPPT+0.70)}" y="${z(k.ter)-3}">Terreno ${f(k.ter)}</text>`;
+  o+=`<text class="dim" x="${x(-0.08)}" y="${z(-0.60)-3}">bajo la casa −0,60</text>`;
+  // mesada y pileta
+  o+=`<rect class="fx" x="${x(-0.08)}" y="${z(0.90)}" width="${0.50*KH}" height="${0.04*KV}"/><path class="fx" d="M${x(0.0)} ${z(0.90)} L${x(0.02)} ${z(0.72)} L${x(0.30)} ${z(0.72)} L${x(0.32)} ${z(0.90)}"/>`;
+  o+=`<text class="fxl" x="${x(0.16)}" y="${z(0.96)}" text-anchor="middle">Pileta</text>`;
+  // sifón
+  o+=`<path class="p pS" stroke-width="${0.04*KH}" d="M${x(0.16)} ${z(0.70)} L${x(0.16)} ${z(k.sif+0.10)} Q${x(0.16)} ${z(k.sif-0.02)} ${x(0.24)} ${z(k.sif-0.02)} Q${x(0.32)} ${z(k.sif-0.02)} ${x(0.32)} ${z(k.sif+0.06)} L${x(0.32)} ${z(k.sif)}"/>`;
+  // bajada 50 con ramal Y para VF
+  const bx=0.40;
+  o+=`<path class="p pS" stroke-width="${0.05*KH}" d="M${x(0.32)} ${z(k.sif)} L${x(bx)} ${z(k.sif)} L${x(bx)} ${z(k.zUnder)} L${x(dW+0.06)} ${z(k.zWall)} L${x(dW+0.16)} ${z(k.zWall-0.08)} L${x(dW+0.16)} ${z(k.igIn+0.06)} L${x(dIG)} ${z(k.igIn)}"/>`;
+  o+=`<path class="p pV" stroke-width="${0.05*KH}" stroke-dasharray="4 2" d="M${x(bx)} ${z(0.35)} L${x(bx+0.08)} ${z(0.43)} L${x(bx+0.08)} ${z(1.00)}"/>`;
+  o+=`<text class="dim" x="${x(bx+0.11)}" y="${z(0.80)}" style="fill:var(--ven)">VF 50 ↑ (ver V–V)</text>`;
+  o+=`<text class="dim" x="${x(bx+0.11)}" y="${z(0.40)}">ramal Y 50 · +0,35</text>`;
+  // interceptor
+  o+=`<rect x="${x(dIG)}" y="${z(k.ter)}" width="${0.40*KH}" height="${0.42*KV}" fill="var(--panel)" stroke="var(--sec)" stroke-width="1.3"/>`;
+  o+=`<text class="fxl" x="${x(dIG+0.20)}" y="${z(k.ter-0.20)}" text-anchor="middle" style="fill:var(--sec)">IG 20 l</text>`;
+  // IG → PPT
+  o+=`<path class="p pS" stroke-width="${0.05*KH}" d="M${x(dIG+0.40)} ${z(k.igOut)} L${x(dPPT)} ${z(k.pptIn)}"/>`;
+  // PPT
+  o+=`<rect x="${x(dPPT)}" y="${z(k.ter)}" width="${0.20*KH}" height="${(k.ter-k.pptOut+0.08)*KV}" fill="var(--panel)" stroke="var(--sec)" stroke-width="1.3"/>`;
+  o+=`<text class="fxl" x="${x(dPPT+0.10)}" y="${z(k.ter)-3}" text-anchor="middle" style="fill:var(--sec)">PPT</text>`;
+  o+=`<path class="p pV" stroke-width="${0.05*KH}" stroke-dasharray="4 2" d="M${x(dPPT+0.16)} ${z(k.ter)} L${x(dPPT+0.16)} ${z(k.ra)} q0 -6 6 -6"/>`;
+  o+=`<text class="dim" x="${x(dPPT+0.22)}" y="${z(k.ra)+2}" style="fill:var(--ven)">RA 50 ${f(k.ra)}</text>`;
+  // 110 a cámara
+  o+=`<path class="p pP" stroke-width="${0.11*KH}" d="M${x(dPPT+0.20)} ${z(k.pptOut+0.055)} L${x(dCam)} ${z(CZE+0.055)}"/>`;
+  o+=`<rect x="${x(dCam)}" y="${z(-0.55)}" width="${0.30*KH}" height="${0.40*KV}" fill="var(--panel)" stroke="var(--pri)" stroke-width="1.3"/>`;
+  o+=`<text class="fxl" x="${x(dCam+0.15)}" y="${z(-0.55)-3}" text-anchor="middle" style="fill:var(--pri)">Cámara 1</text>`;
+  // rótulos de cotas
+  const L=(d,zz,t,a='start',st='')=>`<text class="dim" x="${x(d)}" y="${z(zz)}" text-anchor="${a}" ${st}>${t}</text>`;
+  o+=L(-0.06,k.sif-0.30,`salida sifón +${fmt(k.sif)}`);
+  o+=L(-0.08,k.zUnder-0.10,`50 · 2 % · ${f(k.zUnder)} → ${f(k.zWall)}`);
+  o+=L(dIG-0.08,k.igIn-0.02,`entra ${f(k.igIn)}`,'end');
+  o+=L(dIG+0.42,k.igOut+0.05,`sale ${f(k.igOut)}`);
+  o+=L(dPPT+0.22,k.pptOut-0.08,`110 · 2 % · ${f(k.pptOut)} → ${f(CZE)}`);
+  o+=L(dCam+0.15,-0.99,`CZe ${f(CZE)}`,'middle');
+  o+=`<text class="zl" x="${x(W)}" y="${z(0.98)}" text-anchor="end">C–C · desarrollado · escala real</text>`;
+  $('svgK').innerHTML=o;}
+
+ /* --- V–V --- */
+ {const KV=58, ZT=4.30, oy=10, z=b=>oy+(ZT-b)*KV, cols=[70,190,300,410];
+  let o='';
+  o+=`<line x1="10" y1="${z(0)}" x2="250" y2="${z(0)}" stroke="var(--ink)" stroke-width=".8"/><text class="dim" x="12" y="${z(0)-3}">Piso 0,00</text>`;
+  o+=`<line x1="10" y1="${z(k.ter)}" x2="470" y2="${z(k.ter)}" stroke="var(--fix)" stroke-width=".7"/>`;
+  for(let a=12;a<470;a+=7)o+=`<line class="hatch" x1="${a}" y1="${z(k.ter)}" x2="${a-4}" y2="${z(k.ter)+4}"/>`;
+  o+=`<text class="dim" x="468" y="${z(k.ter)-3}" text-anchor="end">Terreno ${f(k.ter)}</text>`;
+  o+=`<line class="guide" x1="10" y1="${z(3.62)}" x2="250" y2="${z(3.62)}"/><text class="dim" x="12" y="${z(3.62)-3}">Alero +3,62</text>`;
+  o+=`<rect class="wall" x="22" y="${z(3.62)}" width="6" height="${3.62*KV}"/><rect class="wall" x="150" y="${z(3.62)}" width="6" height="${3.62*KV}"/>`;
+  o+=`<text class="fxl" x="25" y="${z(1.8)}" transform="rotate(-90 25 ${z(1.8)})" text-anchor="middle">Muro sur</text>`;
+  o+=`<text class="fxl" x="153" y="${z(1.8)}" transform="rotate(-90 153 ${z(1.8)})" text-anchor="middle">Muro este</text>`;
+  k.V.forEach((t,i)=>{const cx=cols[i], w=t.d===110?6:3.5;
+   o+=`<path class="p pV" stroke-width="${w}" d="M${cx} ${z(t.z0)} L${cx} ${z(t.z1)}${t.d===110?'':` q0 -6 6 -6`}"/>`;
+   if(t.d===110)o+=`<path d="M${cx-8} ${z(t.z1)-2} L${cx} ${z(t.z1)-9} L${cx+8} ${z(t.z1)-2} Z" fill="var(--ven)"/>`;
+   o+=`<circle cx="${cx}" cy="${z(t.z0)}" r="3" fill="var(--panel)" stroke="var(--ven)" stroke-width="1.2"/>`;
+   o+=`<text class="dim" x="${cx+9}" y="${z(t.z1)+4}" style="fill:var(--ink)">${f(t.z1)}</text>`;
+   o+=`<text class="dim" x="${cx+9}" y="${z(t.z0)+3}">${f(t.z0)}</text>`;
+   o+=`<text class="zl" x="${cx}" y="${z(-1.02)}" text-anchor="middle" style="fill:var(--ven)">${t.n}</text>`;
+   o+=`<text class="dim" x="${cx}" y="${z(-1.02)+8}" text-anchor="middle">PVC ${t.d} · ${fmt(t.L,1)} m</text>`;});
+  o+=`<path class="p pS" stroke-width="2" d="M${cols[1]} ${z(0.35)} L${cols[1]-14} ${z(0.35)} L${cols[1]-14} ${z(0.0)}" stroke-dasharray="2 1.5"/>`;
+  o+=`<text class="dim" x="${cols[1]-16}" y="${z(0.55)}" text-anchor="end">pileta</text>`;
+  $('svgV').innerHTML=o;}
+
+ /* --- tablas --- */
+ const R=(a,b,cz,d)=>`<tr><td>${a}</td><td class="num">${b==null?'—':m(b)}</td><td class="num">${f(cz)}</td><td>${d}</td></tr>`;
+ const dW=k.Lk, dIG=dW+0.22, dPPT=dIG+0.20+k.Lig, dCam=dPPT+0.10+k.Lpc;
+ $('kTbl').tBodies[0].innerHTML=
+  R('Salida del sifón',0,k.sif,'Según el sifón; bajo la pileta')+
+  R('Ramal Y 50 de la VF',0,0.35,'En la bajada, con la boca hacia arriba')+
+  R('Horizontal bajo las vigas',0,k.zUnder,c.bajo?`Piso ${fmt(c.piso*100,0)} cm + vigas ${fmt(c.viga*100,0)} cm`:'Entre vigas')+
+  R('Paso bajo el muro este',dW,k.zWall,'Codo 45° y baja afuera')+
+  R('Entrada interceptor',dIG,k.igIn,k.okIG?'✓ el 50 llega por encima':'✗ el 50 llega más bajo')+
+  R('Salida interceptor',dIG+0.40,k.igOut,`${fmt(k.Lig)} m de 50 hasta la PPT`)+
+  R('Entrada pileta de patio',dPPT,k.pptIn,k.okPPT?'✓ por encima de la salida 110':'✗ muy baja')+
+  R('Salida 110 de la PPT',dPPT+0.20,k.pptOut,`${fmt(k.Lpc)} m al 2 %`)+
+  R('Entrada cámara 1 por el norte',dCam,CZE,'CZe de S01');
+ $('vTbl').tBodies[0].innerHTML=k.V.map(t=>`<tr><td>${t.n}</td><td class="num">${t.d}</td><td class="num">${f(t.z0)}</td><td class="num">${f(t.z1)}</td><td class="num">${fmt(t.L,1)} m</td><td>${t.w}</td></tr>`).join('');
+}
+const G=[
+ ['Interceptor y pileta de patio','Excavá junto al muro este, frente a la pileta. Asentá el interceptor con la entrada a −0,65 y la pileta de patio tapada al lado, con la salida 110 apuntando a la cámara.'],
+ ['110 de la pileta de patio a la cámara','PVC 110 al 2 %, sobre cama de arena, entrando a la cámara 1 por el norte con codo de 45°. Probá la pendiente con nivel antes de pegar.'],
+ ['Desagüe de la pileta','Sifón bajo la pileta, ramal Y 50 a +0,35 para la VF, bajada en 50 por el piso y horizontal colgada por debajo de las vigas al 2 % hasta pasar bajo el muro este.'],
+ ['Afuera hasta el interceptor','Codo de 45° al salir, bajada en 50 y entrada al interceptor. Sellá el pasamuro.'],
+ ['VF cocina','Desde el ramal Y sube por el muro este, corre embutida con caída del 1 % hacia la pileta, sale en (3,05 ; 1,45) y remata en curva a la altura de la tabla.'],
+ ['RA pileta de patio','PVC 50 desde la pileta de patio, terminal en curva sobre el terreno.'],
+ ['CV baño y CV del pozo','CV 110 del baño hasta 0,30 sobre el alero con sombrerete. CV 110 del pozo filtrante desde la tapa, también con sombrerete y lejos de aberturas.'],
+ ['Prueba','Tapá la salida de la cámara, llená la pileta de patio y el interceptor y revisá uniones durante 1 hora. Las ventilaciones no se tapan nunca.']];
+$('kGuia').innerHTML=G.map(([t,d])=>`<li><b>${t}</b>${d}</li>`).join('');
+['kSif','kIGin','kIGdrop','kTer','vVF','vRA','vPZ'].forEach(id=>$(id).addEventListener('input',draw));
+['pCsH','pCsIn','pCsOut','pCsProl','pRj','pPiso','pViga'].forEach(id=>$(id).addEventListener('input',draw));
+$('pModo').addEventListener('change',draw);
+draw();
+window.kitchenVent=K;
 })();
 </script>
 </body>

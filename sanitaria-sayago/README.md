@@ -13,9 +13,10 @@ Guía interactiva de la instalación sanitaria, con una pestaña 3D del armado d
 | Agua | Plano (desarrollo muro este + muro húmedo, tabla de tomas) | [agua-1-plano.pdf](pdf/agua-1-plano.pdf) |
 | Agua | Despiece de materiales | [agua-2-despiece.pdf](pdf/agua-2-despiece.pdf) |
 | Agua | Guía de instalación paso a paso | [agua-3-guia.pdf](pdf/agua-3-guia.pdf) |
-| Desagües | Plano en planta + cotas de zampeado | [desagues-1-plano.pdf](pdf/desagues-1-plano.pdf) |
+| Desagües | Plano en planta, cotas de zampeado y cortes de la caja sifonada | [desagues-1-plano.pdf](pdf/desagues-1-plano.pdf) |
 | Desagües | Despiece de materiales | [desagues-2-despiece.pdf](pdf/desagues-2-despiece.pdf) |
 | Desagües | Guía de instalación paso a paso | [desagues-3-guia.pdf](pdf/desagues-3-guia.pdf) |
+| Desagües | Cocina (pileta → interceptor → pileta de patio → cámara) y ventilaciones CV, VF, RA y pozo | [desagues-4-cocina-ventilacion.pdf](pdf/desagues-4-cocina-ventilacion.pdf) |
 | Primaria 3D | Armado paso a paso del colector, cámara, fosas y pozo, en 3D (solo online) | — |
 | Todo | Documento completo | [sanitaria-sayago-completa.pdf](pdf/sanitaria-sayago-completa.pdf) |
 
