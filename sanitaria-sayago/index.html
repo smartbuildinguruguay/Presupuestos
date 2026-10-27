@@ -122,6 +122,11 @@ tr[data-id]{cursor:pointer}
 .dim{fill:var(--muted);font:500 5.2px var(--f-m)}
 .dimln{stroke:var(--muted);stroke-width:.4}
 .guide{stroke:var(--fix);stroke-width:.35;stroke-dasharray:1.5 1.5}
+.csverd{border:1px solid var(--line);border-left:4px solid var(--ven);background:var(--panel);border-radius:8px;padding:9px 12px;font-size:.9rem;margin:0 0 10px;max-width:75ch}
+.csverd.bad{border-left-color:var(--hot)}
+h2.sub{font-size:.95rem;margin-top:14px}
+.ok{fill:var(--ven)}.bad{fill:var(--hot)}
+.hatch{stroke:var(--fix);stroke-width:.4}
 .nd{cursor:pointer}
 .nd .hit{fill:transparent}
 .dimmed{opacity:.18}
@@ -156,6 +161,8 @@ tr[data-id]{cursor:pointer}
  section{break-before:page}
  .drawing{overflow:visible;border-color:var(--line)}
  #svgA,#svgD{min-width:0!important;max-height:150mm}
+ #svgCA,#svgCB{max-height:85mm}
+ .csverd{break-inside:avoid}
  h2{font-size:1.1rem;margin:12px 0 5px;break-after:avoid}
  .step,.row,.assume div,tr{break-inside:avoid}
  .bomg h3{break-after:avoid}
@@ -322,10 +329,27 @@ tr[data-id]{cursor:pointer}
   <p class="note">El piso terminado está a 0,00 y el terreno bajo la casa a −0,58 / −0,60. El colector parte de la entrada a la cámara (−0,84) con pendiente del 2 % hacia la casa, así que bajo la casa queda enterrado unos 20 cm, igual que en el corte AA.</p>
   <div class="tbl"><table id="cotasD"><thead><tr><th>Punto</th><th class="num">Distancia a la cámara</th><th class="num">Cota</th><th>Origen</th></tr></thead><tbody></tbody></table></div>
 
+  <h2>Cortes en la caja sifonada</h2>
+  <p class="note">La caja va entre el bidet y el inodoro, casi contra el muro. Cargá las medidas de la caja, el prolongador y la rejilla que vas a usar y los cortes se recalculan. Las cotas son al eje del caño, desde el piso terminado (0,00).</p>
+  <div class="params">
+    <label for="pCsH">Alto del cuerpo (m)<input id="pCsH" type="number" min="0.05" step="0.005" value="0.10"></label>
+    <label for="pCsIn">Eje entradas bajo el borde (m)<input id="pCsIn" type="number" min="0" step="0.005" value="0.045"></label>
+    <label for="pCsOut">Eje salida bajo el borde (m)<input id="pCsOut" type="number" min="0" step="0.005" value="0.075"></label>
+    <label for="pCsProl">Prolongador (m)<input id="pCsProl" type="number" min="0" step="0.01" value="0.05"></label>
+    <label for="pRj">Salida rejilla ducha, eje (m bajo 0,00)<input id="pRj" type="number" min="0" step="0.005" value="0.07"></label>
+    <label for="pPiso">Paquete de piso (m)<input id="pPiso" type="number" min="0" step="0.005" value="0.04"></label>
+  </div>
+  <div id="csVerd" class="csverd"></div>
+  <h2 class="sub">Corte A–A · a lo largo del muro húmedo</h2>
+  <div class="drawing"><svg id="svgCA" viewBox="0 0 480 215" role="img" aria-label="Corte a lo largo del muro húmedo con la caja sifonada, las bajadas y el colector"></svg></div>
+  <h2 class="sub">Corte B–B · ramales desarrollados hasta la caja (vertical ×4)</h2>
+  <div class="drawing"><svg id="svgCB" viewBox="0 0 480 215" role="img" aria-label="Ramales de lavatorio, bidet y ducha desarrollados con sus niveles de llegada a la caja"></svg></div>
+  <div class="tbl" style="margin-top:10px"><table id="csTbl"><thead><tr><th>Punto</th><th class="num">Largo</th><th class="num">Cota eje</th><th>Control</th></tr></thead><tbody></tbody></table></div>
+
   <h2>Supuestos</h2>
   <div class="assume">
     <div><b>Distribución del baño</b>La de tus croquis: lavatorio, bidet, inodoro y ducha sobre el muro sur. S01 tiene otra distribución en el baño, pero las conexiones exteriores se toman tal cual de la lámina.</div>
-    <div><b>Caja sifonada</b>Junta lavatorio, bidet y ducha y funciona como sifón de los tres, así que esos artefactos no llevan sifón propio. La salida es PVC 50 y entra al colector 110 a 45°.</div>
+    <div><b>Caja sifonada</b>Entre el bidet y el inodoro, casi contra el muro. Junta lavatorio, bidet y ducha y es el sifón de los tres, así que no llevan sifón propio. Sale en PVC 50 y entra al colector 110 a 45°, casi en vertical.</div>
     <div><b>Inodoro</b>Desagüe vertical a piso con el eje a 0,30 m de la pared terminada. Revisá la ficha: hay modelos con mochila apoyada que salen a 0,20–0,25.</div>
     <div><b>Cocina</b>Como en S01: pileta con sifón, PVC 50 al interceptor de grasa de 20 l, después a la pileta de patio tapada 20 × 20 y de ahí PVC 110 a la cámara 1. Ventilaciones VF y RA en PVC 50.</div>
     <div><b>Cámara y tratamiento</b>Cámara de inspección 1 de 0,60 × 0,60 con sifón desconector. Después van dos fosas sépticas y el pozo filtrante, todos con aros de Ø 1,50 y 1,40 m de profundidad útil (S01).</div>
@@ -555,10 +579,10 @@ const CZE=-0.84, CZS=-0.90, CT=-0.55, SLOPE=0.02;
 
 const DSEG=[
  {id:'main',sys:'P',dia:110,pts:[[0.25,-0.30],[0.25,0.30],[2.60,0.30],[3.48,1.18],[3.57,1.18]]},
- {id:'csout',sys:'S',dia:50,pts:[[1.95,0.75],[1.95,0.45],[2.10,0.30]]},
- {id:'lav',sys:'S',dia:40,pts:[[0.40,0.15],[0.40,0.92],[1.85,0.92]]},
- {id:'bid',sys:'S',dia:40,pts:[[1.13,0.20],[1.13,0.80],[1.85,0.80]]},
- {id:'duch',sys:'S',dia:50,pts:[[2.43,0.75],[2.05,0.82]]},
+ {id:'csout',sys:'S',dia:50,pts:[[1.40,0.18],[1.40,0.30]]},
+ {id:'lav',sys:'S',dia:40,pts:[[0.40,0.15],[0.55,0.35],[1.25,0.35],[1.34,0.24]]},
+ {id:'bid',sys:'S',dia:40,pts:[[1.13,0.20],[1.33,0.18]]},
+ {id:'duch',sys:'S',dia:50,pts:[[2.43,0.75],[1.60,0.55],[1.46,0.24]]},
  {id:'kit',sys:'S',dia:50,pts:[[2.55,3.20],[3.05,3.16]]},
  {id:'igppt',sys:'S',dia:50,pts:[[3.20,2.99],[3.20,2.88]]},
  {id:'pptci',sys:'P',dia:110,pts:[[3.27,2.70],[3.75,1.58],[3.75,1.48]]},
@@ -581,13 +605,13 @@ function distToCam(px,py){
 const ND=[
  {id:'CV1',k:'vent',sys:'V',x:0.25,y:-0.30,n:'CV · ventilación PVC 110',t:'Es la cabeza del colector. Sube por fuera del muro sur detrás del lavatorio, con abrazaderas cada 1 m, hasta 0,30 m sobre el alero, y lleva sombrerete. Al pie lleva un codo 90° 110 enterrado a −0,75.'},
  {id:'INO',k:'baj',sys:'P',x:1.68,y:0.30,n:'Bajada de inodoro PVC 110',t:'Conexión del inodoro a piso con el eje a 0,30 m de la pared terminada (confirmar con la ficha). Tubo 110 vertical, codo 45° y ramal Y 110 a 45° en el colector, a −0,80.'},
- {id:'RY',k:'ram',sys:'P',x:2.10,y:0.30,n:'Ramal Y 110 × 50 a 45°',t:'Entrada de la salida de la caja sifonada al colector. La 50 entra desde arriba a 45°, nunca de costado ni desde abajo.'},
+ {id:'RY',k:'ram',sys:'P',x:1.40,y:0.30,n:'Ramal Y 110 × 50 a 45°',t:'Queda casi debajo de la caja sifonada. La salida de 50 baja vertical y entra al colector desde arriba a 45°, nunca de costado ni desde abajo.'},
  {id:'K1',k:'codo',sys:'P',x:2.60,y:0.30,n:'Codo 45° 110',t:'El colector gira hacia la cámara y pasa por debajo del muro este.'},
  {id:'K2',k:'codo',sys:'P',x:3.48,y:1.18,n:'Codo 45° 110',t:'Endereza el colector para entrar recto a la cámara por el lado oeste, a −0,84.'},
- {id:'CS',k:'cs',sys:'S',x:1.95,y:0.85,n:'Caja sifonada PVC 100',t:'Recibe el lavatorio (40), el bidet (40) y la ducha (50), y sale en 50 al colector. Va colgada del entrepiso con la tapa a ras del piso terminado, ciega o con rejilla. Es el sifón de los tres artefactos.'},
- {id:'LAV',k:'boca',sys:'S',x:0.40,y:0.15,n:'Desagüe lavatorio PVC 40',t:'Baja por el piso dentro del vanitory. Lleva válvula y tubo de descarga, sin sifón propio porque descarga a la caja sifonada. Pendiente mínima 2 %.'},
- {id:'BID',k:'boca',sys:'S',x:1.13,y:0.20,n:'Desagüe bidet PVC 40',t:'Boca a piso según la ficha del bidet. Va a la caja sifonada con pendiente mínima 2 %.'},
- {id:'RJ',k:'rej',sys:'S',x:2.43,y:0.75,n:'Rejilla de piso de ducha · salida 50',t:'Sumidero de la ducha. Va al punto bajo de la pendiente del piso de la ducha y descarga en 50 a la caja sifonada.'},
+ {id:'CS',k:'cs',sys:'S',x:1.40,y:0.18,n:'Caja sifonada PVC 100',t:'Entre el bidet y el inodoro, casi contra el muro. Recibe el lavatorio (40), el bidet (40) y la ducha (50), y sale en 50 al colector. Va colgada del entrepiso con prolongador, para que la tapa quede a ras del piso terminado y las entradas bastante abajo como para que llegue la ducha (ver Cortes). Es el sifón de los tres artefactos.'},
+ {id:'LAV',k:'boca',sys:'S',x:0.40,y:0.15,n:'Desagüe lavatorio PVC 40',t:'Baja por el piso dentro del vanitory. Lleva válvula y tubo de descarga, sin sifón propio porque descarga a la caja sifonada. El ramal va paralelo al muro a 0,35, por delante de la boca del bidet, y entra a la caja. Pendiente mínima 2 %.'},
+ {id:'BID',k:'boca',sys:'S',x:1.13,y:0.20,n:'Desagüe bidet PVC 40',t:'Boca a piso según la ficha del bidet. Tramo corto, unos 20 cm, a la caja sifonada con pendiente mínima 2 %.'},
+ {id:'RJ',k:'rej',sys:'S',x:2.43,y:0.75,n:'Rejilla de piso de ducha · salida 50',t:'Sumidero de la ducha, al punto bajo de la pendiente del piso. Sale en 50 hacia el oeste, pasa por delante de la bajada del inodoro y entra a la caja sifonada. Es el ramal que manda la profundidad de la caja.'},
  {id:'PCK',k:'boca',sys:'S',x:2.55,y:3.20,n:'Pileta de cocina · sifón + PVC 50',t:'Sifón bajo la pileta como en S01. Baja por el piso y sale en 50 por debajo del muro este hasta el interceptor de grasa.'},
  {id:'IG',k:'ig',sys:'S',x:3.20,y:3.14,n:'Interceptor de grasa PVC · 20 l',t:'Va afuera, pegado al muro este, frente a la pileta (S01). Tiene que ser accesible para limpiarlo.'},
  {id:'PPT',k:'ppt',sys:'S',x:3.20,y:2.78,n:'Pileta de patio tapada 20 × 20',t:'Recibe la salida del interceptor. De acá sale PVC 110 a la cámara de inspección 1 con pendiente del 2 %.'},
@@ -605,10 +629,10 @@ const STEPS_D=[
  {t:'Confirmar datos',ids:['INO','BID','LAV','CS','RJ','PCK'],li:[
   'Ficha del inodoro: distancia del eje del desagüe a la pared terminada (acá 0,30).',
   'Ficha del bidet: posición de la boca a piso.',
-  'Caja sifonada con 3 entradas (40, 40, 50) y salida 50. Rejilla de ducha con salida 50.',
+  'Caja sifonada con 3 entradas (40, 40, 50), salida 50 y prolongador. Medí altura del cuerpo y ejes de entradas y salida, y la salida de la rejilla de ducha, y cargalos en Plano · Cortes.',
   'Ubicación real de la pileta de cocina, que también fija la del interceptor de grasa.']},
  {t:'Replanteo de bocas en el piso',ids:['LAV','BID','INO','RJ','CS','PCK'],li:[
-  'Marcá en el entrepiso las bocas: lavatorio (0,40 ; 0,15), bidet (1,13 ; 0,20), inodoro (1,68 ; 0,30), rejilla (2,43 ; 0,75) y caja sifonada (1,95 ; 0,85).',
+  'Marcá en el entrepiso las bocas: lavatorio (0,40 ; 0,15), bidet (1,13 ; 0,20), inodoro (1,68 ; 0,30), rejilla (2,43 ; 0,75) y caja sifonada (1,40 ; 0,18), entre bidet e inodoro.',
   'Pileta de cocina en (2,55 ; 3,20). X desde el muro del lavatorio, Y desde el muro húmedo.',
   'Antes de cortar, revisá que ninguna boca caiga sobre una viga del entrepiso. Si cae, corré la boca o pedí el refuerzo al ingeniero.']},
  {t:'Cámara de inspección 1 y sifón desconector',ids:['CI','SD'],li:[
@@ -631,10 +655,11 @@ const STEPS_D=[
   'Tubo 110 desde el piso hasta el ramal, con codo de 45°.',
   'Dejá la boca a ras del piso terminado y tapada hasta colocar el inodoro.']},
  {t:'Caja sifonada y ramales del baño',ids:['CS','LAV','BID','RJ','RY'],li:[
-  'Colgá la caja sifonada del entrepiso con la tapa a nivel del piso terminado.',
-  'Lavatorio y bidet en 40 y ducha en 50, todos con pendiente mínima del 2 % hacia la caja y colgados con abrazaderas cada 1 m.',
-  'Los ramales del lavatorio y del bidet pasan por arriba del colector, que va enterrado. No hay cruce real.',
-  'Salida de la caja en 50, con codo de 45° al ramal Y.']},
+  'Colgá la caja sifonada del entrepiso entre bidet e inodoro, con el prolongador que indica Plano · Cortes y la tapa a nivel del piso terminado.',
+  'Bajadas de lavatorio y bidet: dos codos de 45° de 40 al pie de cada una para pasar a horizontal.',
+  'Primero la ducha, que es la que tiene menos margen: en 50 desde la rejilla, por delante de la bajada del inodoro, con un codo de 45° en el quiebre.',
+  'Lavatorio paralelo al muro a 0,35 (pasa por delante de la boca del bidet) y bidet directo. Todos al 2 % y colgados con abrazaderas cada 1 m.',
+  'Salida de la caja en 50: baja vertical y entra con codo de 45° al ramal Y, que queda casi debajo.']},
  {t:'Desagüe de la cocina',ids:['PCK','IG','PPT','VFK','RA','CI'],li:[
   'Sifón bajo la pileta, después PVC 50 por el piso y por debajo del muro este hasta el interceptor de grasa.',
   'Del interceptor a la pileta de patio tapada, y de ahí PVC 110 al 2 % a la cámara 1, entrando por el norte.',
@@ -840,9 +865,9 @@ function renderD(){
  if(SDs.dims){
   const lbl=(x,y,t,a='start')=>`<text class="dim" x="${PX(x)}" y="${PY(y)}" text-anchor="${a}">${t}</text>`;
   o+=lbl(2.22,0.14,'110 · 2 %');
-  o+=lbl(0.45,1.00,'40');
-  o+=lbl(1.18,0.86,'40');
-  o+=lbl(2.18,0.92,'50');
+  o+=lbl(0.70,0.40,'40');
+  o+=lbl(1.05,0.05,'40');
+  o+=lbl(2.00,0.70,'50');
   o+=lbl(3.80,2.15,'110 · 2 %');
   o+=lbl(3.50,0.47,'CT −0,55 · CZe −0,84');
   o+=lbl(3.50,0.34,'CZs −0,90');
@@ -883,6 +908,135 @@ document.querySelector('#cotasD tbody').innerHTML=COTAS.map(([t,id,xy])=>{const 
 document.querySelectorAll('#cotasD tr[data-id]').forEach(r=>r.addEventListener('click',()=>{selectD(r.dataset.id);document.getElementById('svgD').scrollIntoView({behavior:'smooth',block:'center'})}));
 
 /* ---------- despieces ---------- */
+/* ---------- cortes de la caja sifonada ---------- */
+const CSXY=[1.40,0.18];
+function CSX(){
+ const g=(id,d)=>{const e=document.getElementById(id);const v=e?parseFloat(e.value):NaN;return isNaN(v)?d:Math.max(0,v)};
+ const H=g('pCsH',0.10),ein=g('pCsIn',0.045),eout=g('pCsOut',0.075),prol=g('pCsProl',0.05),rj=g('pRj',0.07),piso=g('pPiso',0.04);
+ const S=0.02, Ll=dsegL('lav'), Lb=dsegL('bid'), Ld=dsegL('duch');
+ const zIn=-(prol+ein), zOut=-(prol+eout), zBot=-(prol+H), zBody=-prol;
+ const under=-(piso+0.02);              // eje más alto posible para un 40 bajo la placa
+ const zL=zIn+S*Ll, zB=zIn+S*Lb, zD=zIn+S*Ld;
+ const okL=zL<=under+1e-9, okB=zB<=under+1e-9, okD=zD<=-rj+1e-9;
+ const pmL=piso+0.02+S*Ll-ein, pmB=piso+0.02+S*Lb-ein, pmD=rj+S*Ld-ein;
+ const pmin=Math.max(0,pmL,pmB,pmD), pminR=Math.ceil(pmin*100-1e-6)/100;
+ const lead=pmin===pmD?'la ducha':pmin===pmL?'el lavatorio':'el bidet';
+ const dCam=distToCam(CSXY[0],0.30), zCol=CZE+dCam*SLOPE;
+ return {H,ein,eout,prol,rj,piso,S,Ll,Lb,Ld,zIn,zOut,zBot,zBody,under,zL,zB,zD,okL,okB,okD,pmin,pminR,lead,zCol,
+  drop:zOut-(zCol+0.11+0.06),prolTxt:Math.round(pminR*100)+' cm'};
+}
+function renderCortes(){
+ const c=CSX(), f=v=>fmt(v).replace('-','−'), cm=v=>fmt(v*100,1)+' cm';
+ const allOk=c.okL&&c.okB&&c.okD;
+ const v=document.getElementById('csVerd');
+ v.className='csverd'+(allOk?'':' bad');
+ v.innerHTML=allOk
+  ? `<b>Llegan los tres ramales.</b> Con prolongador de ${cm(c.prol)}, las entradas quedan a ${f(c.zIn)}. El mínimo es ${c.prolTxt}, y lo manda ${c.lead}.`
+  : `<b>No llega ${!c.okD?'la ducha':!c.okL?'el lavatorio':'el bidet'}.</b> Con prolongador de ${cm(c.prol)}, las entradas quedan a ${f(c.zIn)}. Hace falta como mínimo ${c.prolTxt} de prolongador, y lo manda ${c.lead}.`;
+
+ /* --- Corte A–A: a lo largo del muro (X), escala real --- */
+ {const K=180, X0=-0.12, ZT=0.14, ox=24, oy=8;
+  const x=a=>ox+(a-X0)*K, z=b=>oy+(ZT-b)*K;
+  let o='';
+  // terreno
+  o+=`<line x1="${x(X0)}" y1="${z(-0.60)}" x2="${x(2.30)}" y2="${z(-0.60)}" stroke="var(--fix)" stroke-width=".7"/>`;
+  for(let a=X0+0.03;a<2.30;a+=0.07)o+=`<line class="hatch" x1="${x(a)}" y1="${z(-0.60)}" x2="${x(a-0.04)}" y2="${z(-0.64)}"/>`;
+  o+=`<text class="dim" x="${x(2.28)}" y="${z(-0.60)-2}" text-anchor="end">Terreno −0,60</text>`;
+  // piso
+  o+=`<rect class="wall" x="${x(X0)}" y="${z(0)}" width="${(2.30-X0)*K}" height="${c.piso*K}"/>`;
+  o+=`<line x1="${x(X0)}" y1="${z(0)}" x2="${x(2.30)}" y2="${z(0)}" stroke="var(--ink)" stroke-width=".8"/>`;
+  o+=`<text class="dim" x="${x(2.28)}" y="${z(0)-2}" text-anchor="end">Piso terminado 0,00</text>`;
+  // artefactos (siluetas)
+  o+=`<rect class="fx" x="${x(0.02)}" y="${z(0.13)}" width="${0.76*K}" height="${0.13*K}"/><text class="fxl" x="${x(0.40)}" y="${z(0.06)}" text-anchor="middle">Lavatorio</text>`;
+  o+=`<rect class="fx" x="${x(0.95)}" y="${z(0.13)}" width="${0.36*K}" height="${0.13*K}" rx="4"/><text class="fxl" x="${x(1.13)}" y="${z(0.06)}" text-anchor="middle">Bidet</text>`;
+  o+=`<rect class="fx" x="${x(1.49)}" y="${z(0.13)}" width="${0.38*K}" height="${0.13*K}" rx="4"/><text class="fxl" x="${x(1.68)}" y="${z(0.06)}" text-anchor="middle">Inodoro</text>`;
+  // colector (proyectado, enterrado)
+  const zc=xx=>CZE+distToCam(xx,0.30)*SLOPE;
+  o+=`<path class="p pP" stroke-width="${0.11*K}" stroke-opacity=".9" d="M${x(0.25)} ${z(zc(0.25)+0.055)} L${x(2.30)} ${z(zc(2.30)+0.055)}"/>`;
+  o+=`<text class="dim" x="${x(0.30)}" y="${z(zc(0.30)-0.03)}" style="fill:var(--ink)">Colector 110 · 2 % → cámara</text>`;
+  // bajada inodoro
+  o+=`<path class="p pP" stroke-width="${0.11*K}" d="M${x(1.68)} ${z(0)} L${x(1.68)} ${z(-0.62)} L${x(1.80)} ${z(zc(1.80)+0.09)}"/>`;
+  // caja + prolongador
+  const cw=0.15;
+  o+=`<rect x="${x(CSXY[0]-cw/2)}" y="${z(0)}" width="${cw*K}" height="${c.prol*K}" fill="var(--panel)" stroke="var(--sec)" stroke-width=".8" stroke-dasharray="2 1.2"/>`;
+  o+=`<rect x="${x(CSXY[0]-cw/2)}" y="${z(c.zBody)}" width="${cw*K}" height="${c.H*K}" fill="var(--panel)" stroke="var(--sec)" stroke-width="1.3"/>`;
+  o+=`<line x1="${x(CSXY[0]-cw/2-0.01)}" y1="${z(0)}" x2="${x(CSXY[0]+cw/2+0.01)}" y2="${z(0)}" stroke="var(--sec)" stroke-width="1.6"/>`;
+  // bajadas 40 y ramales (proyectados)
+  const sw40=0.04*K, sw50=0.05*K;
+  o+=`<path class="p pS" stroke-width="${sw40}" d="M${x(0.40)} ${z(0.10)} L${x(0.40)} ${z(c.zL)} L${x(CSXY[0]-cw/2)} ${z(c.zIn)}"/>`;
+  o+=`<path class="p pS" stroke-width="${sw40}" d="M${x(1.13)} ${z(0.03)} L${x(1.13)} ${z(c.zB)} L${x(CSXY[0]-cw/2)} ${z(c.zIn)}"/>`;
+  o+=`<path class="p pS" stroke-width="${sw50}" stroke-dasharray="3 1.6" d="M${x(2.30)} ${z(c.zIn+c.S*(c.Ld*(2.30-CSXY[0])/(2.43-CSXY[0])))} L${x(CSXY[0]+cw/2)} ${z(c.zIn)}"/>`;
+  // salida a colector
+  o+=`<path class="p pS" stroke-width="${sw50}" d="M${x(CSXY[0])} ${z(c.zBot)} L${x(CSXY[0])} ${z(c.zCol+0.20)} L${x(CSXY[0]+0.06)} ${z(c.zCol+0.12)}"/>`;
+  o+=`<path d="M${x(CSXY[0]+0.06)-3} ${z(c.zCol+0.12)+3} l3 -6 l3 6 Z" fill="var(--panel)" stroke="var(--pri)" stroke-width="1"/>`;
+  // rótulos
+  const L=(a,b,t,anc='start',cls='dim')=>`<text class="${cls}" x="${x(a)}" y="${z(b)}" text-anchor="${anc}">${t}</text>`;
+  o+=L(0.46,-0.15,`Lavatorio 40 · arranca ${f(c.zL)}`);
+  o+=L(1.08,-0.22,`Bidet 40 · arranca ${f(c.zB)}`,'end');
+  o+=L(1.36,-0.30,`Entradas ${f(c.zIn)}`,'end');
+  o+=L(1.36,-0.36,`Salida 50 ${f(c.zOut)}`,'end');
+  o+=L(2.28,-0.15,'Ducha 50 (pasa por delante)','end');
+  o+=L(1.36,c.zCol+0.14,`Ramal Y 110×50 · ${f(c.zCol)}`,'end');
+  o+=L(1.77,-0.45,'Bajada inodoro 110');
+  o+=`<text class="fxl" x="${x(CSXY[0])}" y="${z(0.03)}" text-anchor="middle" style="fill:var(--sec)">Caja</text>`;
+  o+=`<text class="zl" x="${x(X0)+2}" y="${z(-0.97)}">A–A · mirando al muro · escala real</text>`;
+  document.getElementById('svgCA').innerHTML=o;}
+
+ /* --- Corte B–B: ramales desarrollados, vertical ×4 --- */
+ {const KH=165, KV=660, ox=240, ZT=0.04, oy=14;
+  const x=d=>ox+d*KH, z=b=>oy+(ZT-b)*KV;     // d<0 a la izquierda (lav/bid), d>0 a la derecha (ducha)
+  let o='';
+  o+=`<rect class="wall" x="${x(-1.40)}" y="${z(0)}" width="${2.80*KH}" height="${c.piso*KV}"/>`;
+  o+=`<line x1="${x(-1.40)}" y1="${z(0)}" x2="${x(1.40)}" y2="${z(0)}" stroke="var(--ink)" stroke-width=".8"/>`;
+  o+=`<line class="guide" x1="${x(-1.40)}" y1="${z(c.under)}" x2="${x(1.40)}" y2="${z(c.under)}"/>`;
+  o+=`<text class="dim" x="${x(-1.38)}" y="${z(c.under)+7}">eje más alto bajo la placa ${f(c.under)}</text>`;
+  o+=`<text class="dim" x="${x(-1.38)}" y="${z(0)-2}">0,00</text>`;
+  // caja
+  const cw=0.15;
+  o+=`<rect x="${x(-cw/2)}" y="${z(0)}" width="${cw*KH}" height="${c.prol*KV}" fill="var(--panel)" stroke="var(--sec)" stroke-width=".8" stroke-dasharray="2 1.2"/>`;
+  o+=`<rect x="${x(-cw/2)}" y="${z(c.zBody)}" width="${cw*KH}" height="${c.H*KV}" fill="var(--panel)" stroke="var(--sec)" stroke-width="1.4"/>`;
+  o+=`<line x1="${x(-cw/2-0.01)}" y1="${z(0)}" x2="${x(cw/2+0.01)}" y2="${z(0)}" stroke="var(--sec)" stroke-width="1.8"/>`;
+  o+=`<path class="p pS" stroke-width="${0.05*KH}" d="M${x(0)} ${z(c.zBot)} L${x(0)} ${z(c.zBot-0.05)}"/>`;
+  o+=`<text class="dim" x="${x(0.02)}" y="${z(c.zBot-0.035)}">Salida 50 ${f(c.zOut)} ↓ al colector</text>`;
+  if(c.prol>0.012)o+=`<text class="fxl" x="${x(0)}" y="${z(-c.prol/2)+2}" text-anchor="middle" style="fill:var(--sec)">Prol. ${cm(c.prol)}</text>`;
+  o+=`<line class="dimln" x1="${x(-cw/2)}" y1="${z(c.zIn)}" x2="${x(cw/2)}" y2="${z(c.zIn)}" stroke-dasharray="1.5 1"/>`;
+  // ramales
+  const ram=(side,L,zs,ok,lbl,d,wd,anc,dx=0)=>{const xs=side*Math.min(L,1.30), xe=side*cw/2;
+   let s=`<path class="p pS" stroke-width="${d*KH}" d="M${x(xs)} ${z(zs)} L${x(xe)} ${z(c.zIn)}"/>`;
+   s+=`<circle cx="${x(xs)}" cy="${z(zs)}" r="2.4" class="${ok?'ok':'bad'}"/>`;
+   const tx=x(xs)+dx, ty=z(zs)-wd;
+   s+=`<text class="dim" x="${tx}" y="${ty}" text-anchor="${anc}" style="fill:var(--ink)">${lbl} · ${fmt(L)} m</text>`;
+   s+=`<text class="dim" x="${tx}" y="${ty+6.5}" text-anchor="${anc}">arranca ${f(zs)} · <tspan class="${ok?'ok':'bad'}">${ok?'✓ entra':'✗ no entra'}</tspan></text>`;
+   return s};
+  o+=ram(-1,c.Ll,c.zL,c.okL,'Lavatorio 40',0.04,22,'start');
+  o+=ram(-1,c.Lb,c.zB,c.okB,'Bidet 40',0.04,-12,'end',-4);
+  // rejilla
+  const xr=x(Math.min(c.Ld,1.30));
+  o+=`<rect x="${xr-0.075*KH}" y="${z(0)}" width="${0.15*KH}" height="${(c.rj+0.03)*KV}" fill="var(--panel)" stroke="var(--sec)" stroke-width=".9"/>`;
+  o+=`<line class="dimln" x1="${xr-0.10*KH}" y1="${z(-c.rj)}" x2="${xr+0.10*KH}" y2="${z(-c.rj)}"/>`;
+  o+=`<text class="dim" x="${xr+0.09*KH}" y="${z(-c.rj-0.03)+8}" text-anchor="end">salida rejilla ${f(-c.rj)}</text>`;
+  o+=ram(1,c.Ld,c.zD,c.okD,'Ducha 50',0.05,22,'end',-16);
+  o+=`<text class="dim" x="${x(0.09)}" y="${z(c.zIn)+10}" style="fill:var(--ink)">entradas ${f(c.zIn)}</text>`;
+  o+=`<text class="zl" x="${x(-1.38)}" y="${z(ZT)+7}">B–B · ramales desarrollados · 2 % · vertical ×4</text>`;
+  document.getElementById('svgCB').innerHTML=o;}
+
+ /* --- tabla --- */
+ const row=(t,L,zz,ctl)=>`<tr><td>${t}</td><td class="num">${L==null?'—':fmt(L)+' m'}</td><td class="num">${f(zz)}</td><td>${ctl}</td></tr>`;
+ const st=(ok,m)=>ok?`<span style="color:var(--ven)">✓</span> ${m}`:`<span style="color:var(--hot)">✗</span> ${m}`;
+ document.querySelector('#csTbl tbody').innerHTML=
+  row('Tapa de la caja',null,0,'A ras del piso terminado')+
+  row('Borde del cuerpo (bajo el prolongador)',null,c.zBody,`Prolongador ${cm(c.prol)} · mínimo ${c.prolTxt}`)+
+  row('Eje de entradas',null,c.zIn,'Llegan los tres ramales')+
+  row('Eje de salida 50',null,c.zOut,'Baja vertical al ramal Y')+
+  row('Fondo de la caja',null,c.zBot,'Tiene que quedar libre de vigas')+
+  row('Lavatorio · arranque horizontal',c.Ll,c.zL,st(c.okL,`bajo la placa, margen ${cm(c.under-c.zL)}`))+
+  row('Bidet · arranque horizontal',c.Lb,c.zB,st(c.okB,`bajo la placa, margen ${cm(c.under-c.zB)}`))+
+  row('Ducha · cota necesaria en la rejilla',c.Ld,c.zD,st(c.okD,`la rejilla sale a ${f(-c.rj)}, margen ${cm(-c.rj-c.zD)}`))+
+  row('Ramal Y 110×50 en el colector',null,c.zCol,`Bajada de 50 de unos ${fmt(Math.max(0,c.drop))} m`);
+}
+['pCsH','pCsIn','pCsOut','pCsProl','pRj','pPiso'].forEach(id=>document.getElementById(id).addEventListener('input',()=>{renderCortes();if(typeof renderBom==='function')renderBom('D')}));
+renderCortes();
+
 const num=(id,def)=>{const v=parseFloat(document.getElementById(id).value);return isNaN(v)?def:Math.max(0,v)};
 function bomA(){
  const lleg=num('pLleg',10), w=num('pDesp',15)/100, bar=Math.max(1,num('pBar',4));
@@ -933,14 +1087,14 @@ function bomA(){
 function bomD(){
  const cv=num('pCV',5), vf=num('pVF',2.5), w=num('pDespD',10)/100, bar=Math.max(1,num('pBarD',4));
  const l110=dsegL('main')+0.80+cv+dsegL('pptci')+3*0.60;
- const l50=dsegL('csout')+dsegL('duch')+dsegL('kit')+1.0+0.40+vf+0.60;
+ const l50=dsegL('csout')+0.60+dsegL('duch')+dsegL('kit')+1.0+0.40+vf+0.60;
  const l40=dsegL('lav')+dsegL('bid')+2*0.25;
  const b=(L)=>Math.ceil(L*(1+w)/bar);
  const ab=Math.ceil(cv)+Math.ceil((l50+l40-vf-0.60)/1.0);
  return [
  {g:'Caño PVC sanitario',r:[
   {id:'p110',q:b(l110),u:'barras',n:'Caño PVC 110',s:`${fmt(l110)} m: colector ${fmt(dsegL('main'))}, inodoro 0,80, CV ${fmt(cv,1)}, cocina a cámara ${fmt(dsegL('pptci'))}, tramos a fosas y pozo 1,80`},
-  {id:'p50',q:b(l50),u:'barras',n:'Caño PVC 50',s:`${fmt(l50)} m: caja sifonada, ducha, pileta de cocina a interceptor y pileta de patio, VF ${fmt(vf,1)}, RA 0,60`},
+  {id:'p50',q:b(l50),u:'barras',n:'Caño PVC 50',s:`${fmt(l50)} m: bajada de la caja sifonada, ducha, pileta de cocina a interceptor y pileta de patio, VF ${fmt(vf,1)}, RA 0,60`},
   {id:'p40',q:b(l40),u:'barras',n:'Caño PVC 40',s:`${fmt(l40)} m: lavatorio y bidet`}]},
  {g:'Accesorios PVC 110',r:[
   {id:'k90',q:2,u:'u',n:'Codo 90° 110',s:'Pie del CV y giro bajo el lavatorio'},
@@ -953,11 +1107,12 @@ function bomD(){
   {id:'som',q:1,u:'u',n:'Sombrerete 110',s:'Remate del CV'}]},
  {g:'Accesorios PVC 40 / 50',r:[
   {id:'k5090',q:8,u:'u',n:'Codo 90° 50',s:'Ducha, salida de la caja sifonada, cocina ×3, terminales de VF y RA'},
-  {id:'k5045',q:2,u:'u',n:'Codo 45° 50',s:'Entrada al ramal Y y ajuste'},
+  {id:'k5045',q:2,u:'u',n:'Codo 45° 50',s:'Bajada de la caja al ramal Y y quiebre de la ducha'},
   {id:'ry5',q:1,u:'u',n:'Ramal Y 50 a 45°',s:'Arranque de la VF en la línea de la cocina'},
-  {id:'k4090',q:4,u:'u',n:'Codo 90° 40',s:'Lavatorio ×2 y bidet ×2'}]},
+  {id:'k4045',q:6,u:'u',n:'Codo 45° 40',s:'Pie de bajada del lavatorio ×2 y del bidet ×2, quiebres del lavatorio ×2'}]},
  {g:'Artefactos de desagüe',r:[
   {id:'cs',q:1,u:'u',n:'Caja sifonada PVC 100 (3 entradas, salida 50)',s:'Con tapa ciega o rejilla a nivel de piso'},
+  {id:'prol',q:1,u:'u',n:'Prolongador para caja sifonada 100',s:`Mínimo ${CSX().prolTxt}; ver Plano · Cortes`},
   {id:'rj',q:1,u:'u',n:'Rejilla de piso / sumidero de ducha, salida 50',s:''},
   {id:'vl',q:1,u:'u',n:'Válvula y tubo de descarga para lavatorio',s:'Sin sifón: descarga a la caja sifonada'},
   {id:'vb',q:1,u:'u',n:'Válvula y conexión de descarga para bidet',s:''},
@@ -1071,7 +1226,7 @@ const mainD=(()=>{const d=new Array(MAIN.length).fill(0);for(let i=MAIN.length-2
 const inv=d=>-0.84+d*0.02;
 const hMain=i=>inv(mainD[i])+R110;
 const dAtX=x=>{for(let i=1;i<MAIN.length;i++){const a=MAIN[i-1],b=MAIN[i];if(a[1]===b[1]&&x>=Math.min(a[0],b[0])&&x<=Math.max(a[0],b[0]))return mainD[i]+Math.abs(b[0]-x)}return 0};
-const hInoY=inv(dAtX(1.84))+R110, hCsY=inv(dAtX(2.10))+R110;
+const hInoY=inv(dAtX(1.84))+R110, hCsY=inv(dAtX(1.40))+R110;
 
 /* ---------- pasos ---------- */
 const STEPS=[
@@ -1274,9 +1429,9 @@ function build(){
  pipe(colP,R110,'--pri','col');
  // ramales Y (bocas hacia arriba)
  pipe([[1.84,0.30,hInoY],[1.76,0.30,hInoY+0.08]],R110,'--pri','col',{nofit:true});
- pipe([[2.10,0.30,hCsY],[2.04,0.36,hCsY+0.09]],R50,'--pri','col',{nofit:true});
+ pipe([[1.40,0.30,hCsY],[1.37,0.25,hCsY+0.06]],R50,'--pri','col',{nofit:true});
  const mFit=mat('--ink','col');
- [[1.84,0.30,hInoY],[2.10,0.30,hCsY]].forEach(p=>{const s=new T.Mesh(new T.SphereGeometry(R110*1.4,16,12),mFit);s.position.copy(V(...p));add(s,'col','pop')});
+ [[1.84,0.30,hInoY],[1.40,0.30,hCsY]].forEach(p=>{const s=new T.Mesh(new T.SphereGeometry(R110*1.4,16,12),mFit);s.position.copy(V(...p));add(s,'col','pop')});
 
  /* 8 CV */
  const cvTop=4.22;
@@ -1289,11 +1444,11 @@ function build(){
  ring(1.68,0.30,0.0,R110+0.02,0.02,mat('--ink','ino'),'ino');
 
  /* 10 caja sifonada + cocina */
- cyl(1.95,0.85,-0.30,0,0.10,mat('--sec','cs'),'cs');
- pipe([[1.95,0.75,-0.30],[1.95,0.45,-0.33],[2.04,0.36,hCsY+0.09]],R50,'--sec','cs');
- pipe([[0.40,0.15,-0.05],[0.40,0.92,-0.12],[1.85,0.92,-0.15]],0.02,'--sec','cs',{op:.5,nofit:true});
- pipe([[1.13,0.20,-0.05],[1.13,0.80,-0.12],[1.85,0.80,-0.15]],0.02,'--sec','cs',{op:.5,nofit:true});
- pipe([[2.43,0.75,-0.05],[2.05,0.82,-0.12]],R50,'--sec','cs',{op:.5,nofit:true});
+ cyl(1.40,0.18,-0.15,0,0.075,mat('--sec','cs'),'cs');
+ pipe([[1.40,0.18,-0.15],[1.40,0.18,hCsY+0.12],[1.37,0.25,hCsY+0.06]],R50,'--sec','cs');
+ pipe([[0.40,0.15,0.00],[0.40,0.15,-0.073],[0.55,0.35,-0.075],[1.25,0.35,-0.093],[1.34,0.24,-0.095]],0.02,'--sec','cs',{op:.5,nofit:true});
+ pipe([[1.13,0.20,0.00],[1.13,0.20,-0.091],[1.33,0.18,-0.095]],0.02,'--sec','cs',{op:.5,nofit:true});
+ pipe([[2.43,0.75,-0.07],[1.60,0.55,-0.088],[1.46,0.24,-0.095]],R50,'--sec','cs',{op:.5,nofit:true});
  cyl(3.20,3.14,-0.95,-0.55,0.20,mat('--sec','coc'),'coc');
  box(3.10,2.68,-0.90,3.30,2.88,-0.55,mat('--sec','coc'),'coc');
  pipe([[2.55,3.20,0.55],[2.55,3.20,-0.35],[3.00,3.16,-0.45],[3.00,3.16,-0.65]],R50,'--sec','coc');
@@ -1321,10 +1476,10 @@ function build(){
   {s:[5],p:[4.19,1.18,-1.00],t:'Sifón desconector',k:1},{s:[5],p:[4.65,1.20,-0.60],t:'T 110'},{s:[5],p:[7.64,2.87,0.72],t:'Ventilación pozo (S01)'},
   {s:[6],p:[1.40,0.30,-0.60],t:'Zanja ≈ 40 cm · 2 %',k:1},{s:[6],p:[3.45,2.15,-0.60],t:'Zanja cocina'},
   {s:[7],p:[3.57,1.18,hMain(4)],t:fmt(inv(0))},{s:[7],p:[2.60,0.30,hMain(2)],t:'Codo 45° · '+fmt(inv(mainD[2])),k:1},{s:[7],p:[3.48,1.18,hMain(3)],t:'Codo 45°'},
-  {s:[7],p:[1.84,0.30,hInoY+0.06],t:'Ramal Y inodoro · '+fmt(inv(dAtX(1.84))),k:1},{s:[7],p:[2.16,0.30,hCsY+0.42],t:'Ramal Y 110×50'},{s:[7],p:[0.25,-0.30,hMain(0)],t:'Codo 90° · '+fmt(inv(mainD[0])),k:1},{s:[7],p:[0.25,0.30,hMain(1)],t:'Codo 90°'},
+  {s:[7],p:[1.84,0.30,hInoY+0.06],t:'Ramal Y inodoro · '+fmt(inv(dAtX(1.84))),k:1},{s:[7],p:[1.30,0.30,hCsY+0.42],t:'Ramal Y 110×50'},{s:[7],p:[0.25,-0.30,hMain(0)],t:'Codo 90° · '+fmt(inv(mainD[0])),k:1},{s:[7],p:[0.25,0.30,hMain(1)],t:'Codo 90°'},
   {s:[8],p:[0.25,-0.30,cvTop+0.15],t:'Sombrerete · +4,22',k:1},{s:[8],p:[0.60,-0.40,3.92],t:'Alero +3,92'},{s:[8],p:[0.25,-0.30,1.5],t:'Abrazadera cada 1 m'},
   {s:[9],p:[1.68,0.30,0.02],t:'Boca a ras del piso · eje a 0,30',k:1},{s:[9],p:[1.70,0.30,-0.62],t:'Codo 45°'},
-  {s:[10],p:[1.95,0.85,0.02],t:'Caja sifonada',k:1},{s:[10],p:[3.20,3.14,-0.52],t:'Interceptor 20 l'},{s:[10],p:[3.20,2.78,-0.52],t:'PPT 20×20'},{s:[10],p:[3.55,2.15,-0.80],t:'110 · 2 % a la cámara',k:1},
+  {s:[10],p:[1.40,0.18,0.02],t:'Caja sifonada · entre bidet e inodoro',k:1},{s:[10],p:[3.20,3.14,-0.52],t:'Interceptor 20 l'},{s:[10],p:[3.20,2.78,-0.52],t:'PPT 20×20'},{s:[10],p:[3.55,2.15,-0.80],t:'110 · 2 % a la cámara',k:1},
   {s:[11],p:[2.0,0.30,-0.35],t:'Agua hasta el piso · 1 h',k:1},{s:[11],p:[4.17,1.18,-0.60],t:'Salida tapada'},
   {s:[12],p:[1.40,0.30,-0.55],t:'Arena + tierra en capas',k:1},{s:[12],p:[3.87,1.18,-0.48],t:'Tapa cámara'},
  ];
