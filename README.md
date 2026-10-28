@@ -5,7 +5,8 @@ Todo junto en un solo repo, ordenado por obra. Portada: https://smartbuildinguru
 ## Vivienda Sayago
 
 - [Sanitaria baño y cocina](sanitaria-sayago/) — agua, desagües, cocina y ventilación, con PDFs.
-- [Eléctrica en 3D](electrica-sayago/) — puntos que se mueven en 3D o planta, circuitos, tablero y despiece.
+- [Eléctrica en 3D](electrica-sayago/) — planta baja y alta sobre el modelo estructural real; puntos que se mueven en 3D o planta, circuitos, tablero, despiece y choques con montantes.
+- [Modelo estructural](modelo/) — `casa-juaco.glb` (liviano, en coordenadas de obra) y `estructura.json` con montantes, viguetas, vigas y dados. Lo usan la sanitaria y la eléctrica.
 
 ## Casa Eden Rock
 

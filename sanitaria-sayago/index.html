@@ -345,7 +345,7 @@ h2.sub{font-size:.95rem;margin-top:14px}
   <div id="infoD" class="info"><span class="lbl">Pieza</span><p>Tocá cualquier pieza del plano para ver qué es, dónde va y en qué paso se coloca.</p></div>
 
   <h2>Cotas de zampeado</h2>
-  <p class="note">El piso terminado está a 0,00 y el terreno bajo la casa a −0,58 / −0,60. El colector parte de la entrada a la cámara (−0,84) con pendiente del 2 % hacia la casa, así que bajo la casa queda enterrado unos 20 cm, igual que en el corte AA.</p>
+  <p class="note">El piso terminado está a 0,00. El terreno bajo la casa tiene pendiente: está a −0,39 en la esquina del fondo del lado del baño y a −0,64 en la esquina del balcón del lado de la cocina (entre 20 y 45 cm bajo las vigas). El colector parte de la entrada a la cámara (−0,84) con pendiente del 2 % hacia la casa, así que bajo el baño queda enterrado unos 20 cm.</p>
   <div class="tbl"><table id="cotasD"><thead><tr><th>Punto</th><th class="num">Distancia a la cámara</th><th class="num">Cota</th><th>Origen</th></tr></thead><tbody></tbody></table></div>
 
   <h2>Cortes en la caja sifonada</h2>
@@ -366,6 +366,10 @@ h2.sub{font-size:.95rem;margin-top:14px}
   <h2 class="sub">Corte B–B · ramales desarrollados hasta la caja (vertical ×4)</h2>
   <div class="drawing"><svg id="svgCB" viewBox="0 0 480 245" role="img" aria-label="Ramales de lavatorio, bidet y ducha desarrollados con sus niveles de llegada a la caja"></svg></div>
   <div class="tbl" style="margin-top:10px"><table id="csTbl"><thead><tr><th>Punto</th><th class="num">Largo</th><th class="num">Cota eje</th><th>Control</th></tr></thead><tbody></tbody></table></div>
+
+  <h2>Choques con la estructura real</h2>
+  <p class="note">Contra el modelo estructural de la Casa Juaco: viguetas de 8 cm cada 40 cm a lo ancho de la casa, vigas de 16 cm en el perímetro y al centro, y montantes de los paneles. Una boca de piso no puede pasar por una vigueta, y una toma no puede caer sobre un montante.</p>
+  <div class="tbl" id="choquesD" style="margin-bottom:12px"></div>
 
   <h2>Supuestos</h2>
   <div class="assume">
@@ -418,7 +422,7 @@ h2.sub{font-size:.95rem;margin-top:14px}
     <label for="kSif">Salida del sifón (m sobre 0,00)<input id="kSif" type="number" step="0.05" value="0.45"></label>
     <label for="kIGin">Entrada interceptor (m)<input id="kIGin" type="number" step="0.01" value="-0.65"></label>
     <label for="kIGdrop">Salida IG más baja que la entrada (m)<input id="kIGdrop" type="number" min="0" step="0.01" value="0.05"></label>
-    <label for="kTer">Terreno exterior (m)<input id="kTer" type="number" step="0.01" value="-0.55"></label>
+    <label for="kTer">Terreno exterior (m)<input id="kTer" type="number" step="0.01" value="-0.60"></label>
     <label for="vVF">Remate VF (m)<input id="vVF" type="number" step="0.1" value="2.20"></label>
     <label for="vRA">Remate RA sobre terreno (m)<input id="vRA" type="number" min="0" step="0.05" value="0.30"></label>
     <label for="vPZ">Remate CV pozo sobre terreno (m)<input id="vPZ" type="number" min="0" step="0.1" value="2.00"></label>
@@ -500,6 +504,7 @@ h2.sub{font-size:.95rem;margin-top:14px}
 <textarea id="cpfb" style="position:absolute;left:-9999px;top:0" aria-hidden="true" tabindex="-1"></textarea>
 </div>
 
+<script type="application/json" id="estructura">{"nota":"Coordenadas de obra (m): x = desde el tabique del lavatorio hacia el muro del balc\u00f3n; y = desde la cara interior del muro del ba\u00f1o hacia el muro opuesto; h = desde el piso terminado de planta baja.","niveles":{"pb_piso":0.0,"pb_techo":2.37,"pa_piso":2.57,"cumbrera":5.42},"muros":[{"nivel":"pb","id":"Wall1","lo":[-0.012,-0.118,-0.015],"hi":[2.802,0.004,2.367]},{"nivel":"pb","id":"Wall2","lo":[-2.903,-0.098,-0.015],"hi":[-0.187,0.004,2.36]},{"nivel":"pb","id":"Wall3","lo":[-5.851,-0.098,-0.015],"hi":[-3.084,0.004,2.36]},{"nivel":"pa","id":"Wall4","lo":[-5.848,-0.098,2.552],"hi":[-3.084,0.004,3.734]},{"nivel":"pa","id":"Wall5","lo":[-2.903,-0.098,2.552],"hi":[-0.187,0.004,3.734]},{"nivel":"pa","id":"Wall6","lo":[-0.006,-0.098,2.552],"hi":[2.801,0.004,3.734]},{"nivel":"pa","id":"Wall7","lo":[2.812,0.06,2.539],"hi":[2.934,2.34,3.571]},{"nivel":"pa","id":"Wall8","lo":[2.812,2.521,2.552],"hi":[2.941,4.786,3.571]},{"nivel":"pa","id":"Wall9","lo":[0.001,4.838,2.552],"hi":[2.799,4.97,3.752]},{"nivel":"pa","id":"Wall10","lo":[-2.895,4.838,2.552],"hi":[-0.187,4.94,3.751]},{"nivel":"pa","id":"Wall11","lo":[-5.849,4.838,2.552],"hi":[-3.076,4.95,3.751]},{"nivel":"pb","id":"Wall12","lo":[2.83,0.067,-0.018],"hi":[2.932,1.528,2.364]},{"nivel":"pb","id":"Wall13","lo":[2.83,1.728,-0.018],"hi":[2.932,4.825,2.364]},{"nivel":"pb","id":"Wall14","lo":[0.002,4.838,-0.018],"hi":[2.802,4.97,2.367]},{"nivel":"pb","id":"Wall15","lo":[-2.895,4.838,-0.015],"hi":[-1.992,4.94,2.367]},{"nivel":"pb","id":"Wall16","lo":[-3.857,4.838,-0.015],"hi":[-3.076,4.94,2.367]},{"nivel":"pb","id":"Wall17","lo":[-6.006,2.551,-0.015],"hi":[-5.898,3.039,2.367]},{"nivel":"pb","id":"Wall18","lo":[-5.999,0.049,-0.015],"hi":[-5.866,2.341,2.367]},{"nivel":"pa","id":"Wall19","lo":[2.812,0.139,3.75],"hi":[2.914,2.34,5.118]},{"nivel":"pa","id":"Wall20","lo":[2.914,2.519,3.748],"hi":[3.02,4.741,5.131]},{"nivel":"pa","id":"Wall21","lo":[-5.966,2.523,2.552],"hi":[-5.859,4.785,5.133]},{"nivel":"pa","id":"Wall22","lo":[-5.966,0.061,2.553],"hi":[-5.864,2.381,5.179]}],"montantes":[{"nivel":"pb","muro":"Wall1","lo":[-0.027,-0.097,-0.026],"hi":[0.019,0.003,2.372]},{"nivel":"pb","muro":"Wall1","lo":[0.379,-0.1,-0.025],"hi":[0.425,0.0,2.373]},{"nivel":"pb","muro":"Wall1","lo":[0.785,-0.103,-0.024],"hi":[0.831,-0.003,2.374]},{"nivel":"pb","muro":"Wall1","lo":[1.191,-0.106,-0.023],"hi":[1.237,-0.006,2.375]},{"nivel":"pb","muro":"Wall1","lo":[1.597,-0.109,-0.022],"hi":[1.643,-0.008,2.376]},{"nivel":"pb","muro":"Wall1","lo":[2.003,-0.112,-0.021],"hi":[2.049,-0.011,2.377]},{"nivel":"pb","muro":"Wall1","lo":[2.409,-0.115,-0.02],"hi":[2.455,-0.014,2.378]},{"nivel":"pb","muro":"Wall1","lo":[2.77,-0.117,-0.019],"hi":[2.817,-0.017,2.379]},{"nivel":"pb","muro":"Wall2","lo":[-2.918,-0.097,-0.027],"hi":[-2.878,0.003,2.371]},{"nivel":"pb","muro":"Wall2","lo":[-2.512,-0.097,-0.027],"hi":[-2.472,0.003,2.371]},{"nivel":"pb","muro":"Wall2","lo":[-2.106,-0.097,-0.027],"hi":[-2.066,0.003,2.371]},{"nivel":"pb","muro":"Wall2","lo":[-1.7,-0.097,-0.027],"hi":[-1.66,0.003,2.371]},{"nivel":"pb","muro":"Wall2","lo":[-1.294,-0.097,-0.027],"hi":[-1.254,0.003,2.371]},{"nivel":"pb","muro":"Wall2","lo":[-0.888,-0.097,-0.027],"hi":[-0.848,0.003,2.371]},{"nivel":"pb","muro":"Wall2","lo":[-0.482,-0.097,-0.027],"hi":[-0.442,0.003,2.371]},{"nivel":"pb","muro":"Wall2","lo":[-0.212,-0.097,-0.027],"hi":[-0.172,0.003,2.371]},{"nivel":"pb","muro":"Wall3","lo":[-5.866,-0.097,-0.026],"hi":[-5.826,0.003,2.372]},{"nivel":"pb","muro":"Wall3","lo":[-5.46,-0.097,-0.026],"hi":[-5.42,0.003,2.372]},{"nivel":"pb","muro":"Wall3","lo":[-5.054,-0.097,-0.026],"hi":[-5.014,0.003,2.372]},{"nivel":"pb","muro":"Wall3","lo":[-4.648,-0.097,-0.026],"hi":[-4.608,0.003,2.372]},{"nivel":"pb","muro":"Wall3","lo":[-4.242,-0.097,-0.026],"hi":[-4.202,0.003,2.372]},{"nivel":"pb","muro":"Wall3","lo":[-3.836,-0.097,-0.026],"hi":[-3.796,0.003,2.372]},{"nivel":"pb","muro":"Wall3","lo":[-3.43,-0.097,-0.026],"hi":[-3.39,0.003,2.372]},{"nivel":"pb","muro":"Wall3","lo":[-3.109,-0.097,-0.026],"hi":[-3.069,0.003,2.372]},{"nivel":"pa","muro":"Wall4","lo":[-5.863,-0.097,2.541],"hi":[-5.823,0.003,3.746]},{"nivel":"pa","muro":"Wall4","lo":[-5.457,-0.097,2.541],"hi":[-5.417,0.003,3.746]},{"nivel":"pa","muro":"Wall4","lo":[-5.051,-0.097,2.541],"hi":[-5.011,0.003,3.746]},{"nivel":"pa","muro":"Wall4","lo":[-4.645,-0.097,2.541],"hi":[-4.605,0.003,3.746]},{"nivel":"pa","muro":"Wall4","lo":[-4.239,-0.097,2.541],"hi":[-4.199,0.003,3.746]},{"nivel":"pa","muro":"Wall4","lo":[-3.833,-0.097,2.541],"hi":[-3.793,0.003,3.746]},{"nivel":"pa","muro":"Wall4","lo":[-3.427,-0.097,2.541],"hi":[-3.387,0.003,3.746]},{"nivel":"pa","muro":"Wall4","lo":[-3.109,-0.097,2.541],"hi":[-3.069,0.003,3.746]},{"nivel":"pa","muro":"Wall5","lo":[-2.918,-0.097,2.541],"hi":[-2.878,0.003,3.746]},{"nivel":"pa","muro":"Wall5","lo":[-2.512,-0.097,2.541],"hi":[-2.472,0.003,3.746]},{"nivel":"pa","muro":"Wall5","lo":[-2.106,-0.097,2.541],"hi":[-2.066,0.003,3.746]},{"nivel":"pa","muro":"Wall5","lo":[-1.7,-0.097,2.541],"hi":[-1.66,0.003,3.746]},{"nivel":"pa","muro":"Wall5","lo":[-1.294,-0.097,2.541],"hi":[-1.254,0.003,3.746]},{"nivel":"pa","muro":"Wall5","lo":[-0.888,-0.097,2.541],"hi":[-0.848,0.003,3.746]},{"nivel":"pa","muro":"Wall5","lo":[-0.482,-0.097,2.541],"hi":[-0.442,0.003,3.746]},{"nivel":"pa","muro":"Wall5","lo":[-0.212,-0.097,2.541],"hi":[-0.172,0.003,3.746]},{"nivel":"pa","muro":"Wall6","lo":[-0.021,-0.097,2.541],"hi":[0.019,0.003,3.746]},{"nivel":"pa","muro":"Wall6","lo":[0.385,-0.097,2.541],"hi":[0.425,0.003,3.746]},{"nivel":"pa","muro":"Wall6","lo":[0.791,-0.097,2.541],"hi":[0.831,0.003,3.746]},{"nivel":"pa","muro":"Wall6","lo":[1.197,-0.097,2.541],"hi":[1.237,0.003,3.746]},{"nivel":"pa","muro":"Wall6","lo":[1.603,-0.097,2.541],"hi":[1.643,0.003,3.746]},{"nivel":"pa","muro":"Wall6","lo":[2.009,-0.097,2.541],"hi":[2.049,0.003,3.746]},{"nivel":"pa","muro":"Wall6","lo":[2.415,-0.097,2.541],"hi":[2.455,0.003,3.746]},{"nivel":"pa","muro":"Wall6","lo":[2.776,-0.097,2.541],"hi":[2.816,0.003,3.746]},{"nivel":"pa","muro":"Wall7","lo":[2.832,0.045,2.528],"hi":[2.933,0.092,3.57]},{"nivel":"pa","muro":"Wall7","lo":[2.829,0.451,2.53],"hi":[2.929,0.498,3.572]},{"nivel":"pa","muro":"Wall7","lo":[2.825,0.857,2.532],"hi":[2.926,0.904,3.575]},{"nivel":"pa","muro":"Wall7","lo":[2.822,1.263,2.535],"hi":[2.922,1.31,3.577]},{"nivel":"pa","muro":"Wall7","lo":[2.818,1.669,2.537],"hi":[2.919,1.716,3.579]},{"nivel":"pa","muro":"Wall7","lo":[2.815,2.075,2.539],"hi":[2.915,2.122,3.582]},{"nivel":"pa","muro":"Wall7","lo":[2.813,2.309,2.541],"hi":[2.913,2.355,3.583]},{"nivel":"pa","muro":"Wall8","lo":[2.813,2.506,2.541],"hi":[2.913,2.547,3.583]},{"nivel":"pa","muro":"Wall8","lo":[2.818,2.912,2.541],"hi":[2.918,2.953,3.583]},{"nivel":"pa","muro":"Wall8","lo":[2.822,3.318,2.541],"hi":[2.923,3.359,3.583]},{"nivel":"pa","muro":"Wall8","lo":[2.827,3.724,2.541],"hi":[2.928,3.765,3.583]},{"nivel":"pa","muro":"Wall8","lo":[2.832,4.13,2.541],"hi":[2.932,4.171,3.583]},{"nivel":"pa","muro":"Wall8","lo":[2.837,4.536,2.541],"hi":[2.937,4.577,3.583]},{"nivel":"pa","muro":"Wall8","lo":[2.839,4.76,2.541],"hi":[2.94,4.801,3.583]},{"nivel":"pa","muro":"Wall9","lo":[2.773,4.869,2.542],"hi":[2.814,4.969,3.764]},{"nivel":"pa","muro":"Wall9","lo":[2.367,4.865,2.542],"hi":[2.408,4.965,3.764]},{"nivel":"pa","muro":"Wall9","lo":[1.961,4.86,2.542],"hi":[2.002,4.961,3.764]},{"nivel":"pa","muro":"Wall9","lo":[1.555,4.856,2.541],"hi":[1.597,4.956,3.764]},{"nivel":"pa","muro":"Wall9","lo":[1.149,4.852,2.541],"hi":[1.191,4.952,3.763]},{"nivel":"pa","muro":"Wall9","lo":[0.743,4.847,2.541],"hi":[0.785,4.948,3.763]},{"nivel":"pa","muro":"Wall9","lo":[0.337,4.843,2.541],"hi":[0.379,4.943,3.763]},{"nivel":"pa","muro":"Wall9","lo":[-0.014,4.839,2.541],"hi":[0.028,4.94,3.763]},{"nivel":"pa","muro":"Wall10","lo":[-0.212,4.839,2.541],"hi":[-0.172,4.939,3.763]},{"nivel":"pa","muro":"Wall10","lo":[-0.618,4.839,2.541],"hi":[-0.578,4.939,3.763]},{"nivel":"pa","muro":"Wall10","lo":[-1.024,4.839,2.541],"hi":[-0.984,4.939,3.763]},{"nivel":"pa","muro":"Wall10","lo":[-1.43,4.839,2.541],"hi":[-1.39,4.939,3.763]},{"nivel":"pa","muro":"Wall10","lo":[-1.836,4.839,2.541],"hi":[-1.796,4.939,3.763]},{"nivel":"pa","muro":"Wall10","lo":[-2.242,4.839,2.541],"hi":[-2.202,4.939,3.763]},{"nivel":"pa","muro":"Wall10","lo":[-2.648,4.839,2.541],"hi":[-2.608,4.939,3.763]},{"nivel":"pa","muro":"Wall10","lo":[-2.91,4.839,2.541],"hi":[-2.87,4.939,3.763]},{"nivel":"pa","muro":"Wall11","lo":[-3.101,4.839,2.541],"hi":[-3.061,4.939,3.763]},{"nivel":"pa","muro":"Wall11","lo":[-3.507,4.841,2.541],"hi":[-3.467,4.941,3.763]},{"nivel":"pa","muro":"Wall11","lo":[-3.913,4.842,2.541],"hi":[-3.873,4.942,3.763]},{"nivel":"pa","muro":"Wall11","lo":[-4.319,4.844,2.541],"hi":[-4.279,4.944,3.763]},{"nivel":"pa","muro":"Wall11","lo":[-4.725,4.845,2.541],"hi":[-4.685,4.945,3.763]},{"nivel":"pa","muro":"Wall11","lo":[-5.131,4.847,2.541],"hi":[-5.091,4.947,3.763]},{"nivel":"pa","muro":"Wall11","lo":[-5.537,4.848,2.541],"hi":[-5.497,4.948,3.763]},{"nivel":"pa","muro":"Wall11","lo":[-5.864,4.849,2.541],"hi":[-5.823,4.949,3.763]},{"nivel":"pb","muro":"Wall12","lo":[2.831,0.052,-0.029],"hi":[2.931,0.092,2.376]},{"nivel":"pb","muro":"Wall12","lo":[2.831,0.458,-0.029],"hi":[2.931,0.498,2.376]},{"nivel":"pb","muro":"Wall12","lo":[2.831,0.864,-0.029],"hi":[2.931,0.904,2.376]},{"nivel":"pb","muro":"Wall12","lo":[2.831,1.27,-0.029],"hi":[2.931,1.31,2.376]},{"nivel":"pb","muro":"Wall12","lo":[2.831,1.503,-0.029],"hi":[2.931,1.543,2.376]},{"nivel":"pb","muro":"Wall13","lo":[2.831,1.713,-0.029],"hi":[2.931,1.753,2.376]},{"nivel":"pb","muro":"Wall13","lo":[2.831,2.119,-0.029],"hi":[2.931,2.159,2.376]},{"nivel":"pb","muro":"Wall13","lo":[2.831,2.525,-0.029],"hi":[2.931,2.565,2.376]},{"nivel":"pb","muro":"Wall13","lo":[2.831,2.931,-0.029],"hi":[2.931,2.971,2.376]},{"nivel":"pb","muro":"Wall13","lo":[2.831,3.337,-0.029],"hi":[2.931,3.377,2.376]},{"nivel":"pb","muro":"Wall13","lo":[2.831,3.743,-0.029],"hi":[2.931,3.783,2.376]},{"nivel":"pb","muro":"Wall13","lo":[2.831,4.149,-0.029],"hi":[2.931,4.189,2.376]},{"nivel":"pb","muro":"Wall13","lo":[2.831,4.555,-0.029],"hi":[2.931,4.595,2.376]},{"nivel":"pb","muro":"Wall13","lo":[2.831,4.8,-0.029],"hi":[2.931,4.84,2.376]},{"nivel":"pb","muro":"Wall14","lo":[2.773,4.869,-0.029],"hi":[2.817,4.969,2.376]},{"nivel":"pb","muro":"Wall14","lo":[2.367,4.865,-0.029],"hi":[2.411,4.965,2.376]},{"nivel":"pb","muro":"Wall14","lo":[1.961,4.86,-0.028],"hi":[2.005,4.961,2.377]},{"nivel":"pb","muro":"Wall14","lo":[1.555,4.856,-0.028],"hi":[1.599,4.956,2.377]},{"nivel":"pb","muro":"Wall14","lo":[1.149,4.852,-0.028],"hi":[1.193,4.952,2.378]},{"nivel":"pb","muro":"Wall14","lo":[0.744,4.847,-0.027],"hi":[0.787,4.948,2.378]},{"nivel":"pb","muro":"Wall14","lo":[0.338,4.843,-0.027],"hi":[0.381,4.943,2.379]},{"nivel":"pb","muro":"Wall14","lo":[-0.013,4.839,-0.026],"hi":[0.031,4.94,2.379]},{"nivel":"pb","muro":"Wall15","lo":[-2.017,4.839,-0.026],"hi":[-1.977,4.939,2.379]},{"nivel":"pb","muro":"Wall15","lo":[-2.423,4.839,-0.026],"hi":[-2.383,4.939,2.379]},{"nivel":"pb","muro":"Wall15","lo":[-2.829,4.839,-0.026],"hi":[-2.789,4.939,2.379]},{"nivel":"pb","muro":"Wall15","lo":[-2.91,4.839,-0.026],"hi":[-2.87,4.939,2.379]},{"nivel":"pb","muro":"Wall16","lo":[-3.101,4.839,-0.026],"hi":[-3.061,4.939,2.379]},{"nivel":"pb","muro":"Wall16","lo":[-3.507,4.839,-0.026],"hi":[-3.467,4.939,2.379]},{"nivel":"pb","muro":"Wall16","lo":[-3.872,4.839,-0.026],"hi":[-3.832,4.939,2.379]},{"nivel":"pb","muro":"Wall17","lo":[-6.005,3.013,-0.026],"hi":[-5.905,3.054,2.379]},{"nivel":"pb","muro":"Wall17","lo":[-6.0,2.607,-0.026],"hi":[-5.899,2.648,2.379]},{"nivel":"pb","muro":"Wall17","lo":[-5.999,2.536,-0.026],"hi":[-5.899,2.577,2.379]},{"nivel":"pb","muro":"Wall18","lo":[-5.999,2.315,-0.026],"hi":[-5.898,2.356,2.379]},{"nivel":"pb","muro":"Wall18","lo":[-5.993,1.909,-0.026],"hi":[-5.892,1.95,2.379]},{"nivel":"pb","muro":"Wall18","lo":[-5.987,1.503,-0.026],"hi":[-5.887,1.544,2.379]},{"nivel":"pb","muro":"Wall18","lo":[-5.982,1.097,-0.026],"hi":[-5.881,1.139,2.379]},{"nivel":"pb","muro":"Wall18","lo":[-5.976,0.691,-0.026],"hi":[-5.876,0.733,2.379]},{"nivel":"pb","muro":"Wall18","lo":[-5.971,0.285,-0.026],"hi":[-5.87,0.327,2.379]},{"nivel":"pb","muro":"Wall18","lo":[-5.967,0.034,-0.026],"hi":[-5.867,0.075,2.379]},{"nivel":"pa","muro":"Wall19","lo":[2.813,1.707,3.738],"hi":[2.913,1.747,4.743]},{"nivel":"pa","muro":"Wall19","lo":[2.813,2.113,3.738],"hi":[2.913,2.153,4.995]},{"nivel":"pa","muro":"Wall19","lo":[2.813,2.315,3.738],"hi":[2.913,2.355,5.12]},{"nivel":"pa","muro":"Wall20","lo":[2.916,3.132,3.738],"hi":[3.016,3.173,4.743]},{"nivel":"pa","muro":"Wall20","lo":[2.915,2.726,3.738],"hi":[3.015,2.768,4.995]},{"nivel":"pa","muro":"Wall20","lo":[2.915,2.504,3.738],"hi":[3.015,2.546,5.133]},{"nivel":"pa","muro":"Wall21","lo":[-5.965,2.508,2.541],"hi":[-5.865,2.548,5.135]},{"nivel":"pa","muro":"Wall21","lo":[-5.965,2.73,2.541],"hi":[-5.865,2.77,4.998]},{"nivel":"pa","muro":"Wall21","lo":[-5.964,3.136,2.541],"hi":[-5.864,3.176,4.746]},{"nivel":"pa","muro":"Wall21","lo":[-5.963,3.542,2.541],"hi":[-5.863,3.582,4.494]},{"nivel":"pa","muro":"Wall21","lo":[-5.962,3.948,2.541],"hi":[-5.862,3.988,4.242]},{"nivel":"pa","muro":"Wall21","lo":[-5.961,4.354,2.541],"hi":[-5.861,4.394,3.991]},{"nivel":"pa","muro":"Wall21","lo":[-5.96,4.76,2.541],"hi":[-5.86,4.8,3.739]},{"nivel":"pa","muro":"Wall22","lo":[-5.965,0.046,2.574],"hi":[-5.865,0.104,3.773]},{"nivel":"pa","muro":"Wall22","lo":[-5.965,0.452,2.568],"hi":[-5.865,0.513,4.018]},{"nivel":"pa","muro":"Wall22","lo":[-5.965,0.858,2.562],"hi":[-5.865,0.923,4.264]},{"nivel":"pa","muro":"Wall22","lo":[-5.965,1.264,2.556],"hi":[-5.865,1.333,4.51]},{"nivel":"pa","muro":"Wall22","lo":[-5.965,1.67,2.55],"hi":[-5.865,1.742,4.756]},{"nivel":"pa","muro":"Wall22","lo":[-5.965,2.076,2.544],"hi":[-5.865,2.152,5.001]},{"nivel":"pa","muro":"Wall22","lo":[-5.965,2.318,2.541],"hi":[-5.865,2.396,5.148]}],"viguetas":[{"lo":[-5.647,-0.024,-0.108],"hi":[-5.524,4.894,-0.027]},{"lo":[-5.241,-0.024,-0.108],"hi":[-5.118,4.894,-0.027]},{"lo":[-4.835,-0.024,-0.108],"hi":[-4.712,4.894,-0.027]},{"lo":[-4.429,-0.023,-0.108],"hi":[-4.306,4.895,-0.027]},{"lo":[-4.023,-0.023,-0.108],"hi":[-3.9,4.895,-0.027]},{"lo":[-3.617,-0.023,-0.108],"hi":[-3.494,4.895,-0.027]},{"lo":[-3.211,-0.022,-0.108],"hi":[-3.088,4.896,-0.027]},{"lo":[-2.805,-0.022,-0.108],"hi":[-2.682,4.896,-0.027]},{"lo":[-2.399,-0.021,-0.108],"hi":[-2.276,4.896,-0.027]},{"lo":[-1.993,-0.021,-0.108],"hi":[-1.87,4.897,-0.027]},{"lo":[-1.587,-0.021,-0.108],"hi":[-1.464,4.897,-0.027]},{"lo":[-1.181,-0.02,-0.107],"hi":[-1.058,4.897,-0.026]},{"lo":[-0.775,-0.02,-0.107],"hi":[-0.652,4.898,-0.026]},{"lo":[-0.369,-0.02,-0.107],"hi":[-0.246,4.898,-0.026]},{"lo":[0.037,-0.019,-0.107],"hi":[0.16,4.898,-0.026]},{"lo":[0.443,-0.019,-0.107],"hi":[0.566,4.899,-0.026]},{"lo":[0.849,-0.019,-0.107],"hi":[0.972,4.899,-0.026]},{"lo":[1.255,-0.018,-0.107],"hi":[1.378,4.9,-0.026]},{"lo":[1.661,-0.018,-0.107],"hi":[1.784,4.9,-0.026]},{"lo":[2.067,-0.018,-0.107],"hi":[2.19,4.9,-0.026]},{"lo":[2.473,-0.017,-0.107],"hi":[2.596,4.901,-0.026]}],"vigas":[{"lo":[-5.859,4.84,-0.194],"hi":[2.892,4.94,-0.027]},{"lo":[-5.924,2.376,-0.194],"hi":[2.827,2.476,-0.027]},{"lo":[2.769,-0.119,-0.197],"hi":[2.934,4.93,-0.03]},{"lo":[-5.988,-0.098,-0.194],"hi":[2.816,0.002,-0.027]},{"lo":[-6.03,-0.099,-0.194],"hi":[-5.866,4.95,-0.027]},{"lo":[-6.03,-0.099,-0.194],"hi":[-5.866,4.95,-0.027]}],"dados":[{"lo":[-0.394,4.549,-0.994],"hi":[0.206,5.149,-0.194]},{"lo":[2.517,2.085,-0.997],"hi":[3.117,2.685,-0.197]},{"lo":[-3.307,4.549,-0.994],"hi":[-2.707,5.149,-0.194]},{"lo":[-6.225,-0.38,-1.0],"hi":[-5.625,0.22,-0.2]},{"lo":[2.515,-0.38,-1.0],"hi":[3.115,0.22,-0.2]},{"lo":[-0.396,2.085,-0.997],"hi":[0.204,2.685,-0.197]},{"lo":[-3.312,-0.38,-1.0],"hi":[-2.712,0.22,-0.2]},{"lo":[-3.31,2.085,-0.997],"hi":[-2.71,2.685,-0.197]},{"lo":[-6.221,4.549,-0.994],"hi":[-5.621,5.149,-0.194]},{"lo":[-0.398,-0.38,-1.0],"hi":[0.202,0.22,-0.2]},{"lo":[2.52,4.549,-0.994],"hi":[3.12,5.149,-0.194]},{"lo":[-6.223,2.085,-0.997],"hi":[-5.623,2.685,-0.197]},{"lo":[2.52,4.549,-0.994],"hi":[3.12,5.149,-0.194]}]}</script>
 <script>
 (function(){
 const fmt=(n,d=2)=>Number(n).toLocaleString('es-UY',{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -1299,11 +1304,42 @@ window.sanitPrintAll=()=>withAllVisible(()=>{});
 document.getElementById('printAll').addEventListener('click',()=>withAllVisible(()=>window.print()));
 document.querySelectorAll('[data-print]').forEach(b=>b.addEventListener('click',()=>{const [sy,sb]=b.dataset.print.split('-');show(sy,sb);window.print()}));
 window.sanitShow=show;
-window.SANIT={fmt,CSX,dsegL,distToCam,CZE,SLOPE,SEGS,NA,DSEG,ND,SM,LW};
+
+/* ---------- estructura real (modelo Casa Juaco) y choques ---------- */
+let EST=null;try{EST=JSON.parse(document.getElementById('estructura').textContent)}catch(e){}
+// terreno bajo la casa: −0,39 en la esquina fondo / muro del baño, −0,64 en la esquina balcón / cocina
+const TER=(x,y)=>-0.4756-0.01404*x-0.02475*y;
+function choques(){
+ const out=[];if(!EST)return out;
+ const vig=EST.viguetas,vigas=EST.vigas;
+ const pen=[['INO',0.056,'Bajada del inodoro 110'],['CS',0.075,'Caja sifonada'],['LAV',0.021,'Bajada del lavatorio 40'],['BID',0.021,'Bajada del bidet 40'],['RJ',0.05,'Rejilla de ducha'],['PCK',0.026,'Bajada de la pileta de cocina 50']];
+ pen.forEach(([id,rad,n])=>{const q=byD[id];if(!q)return;
+  vig.forEach(v=>{const ov=Math.min(q.x+rad,v.hi[0])-Math.max(q.x-rad,v.lo[0]);if(ov>0&&q.y>=v.lo[1]&&q.y<=v.hi[1])
+   out.push({id,n,x:q.x,y:q.y,con:'vigueta',det:`pisa ${fmt(ov*100,1)} cm la vigueta de x ${fmt((v.lo[0]+v.hi[0])/2)}`,
+    fix:(()=>{const xs=vig.map(w=>[w.lo[0],w.hi[0]]).sort((a,b)=>a[0]-b[0]);let best=null;for(let i=1;i<xs.length;i++){const a=xs[i-1][1]+rad+0.005,b=xs[i][0]-rad-0.005;if(b>a){const c=Math.min(Math.max(q.x,a),b),d=Math.abs(c-q.x);if(!best||d<best.d)best={c,d}}}return best?`moverla a x ${fmt(best.c)} (${best.c>q.x?'+':'−'}${fmt(best.d*100,0)} cm) o pedir un brochal`:'pedir un brochal'})()})});
+  vigas.forEach(v=>{if(q.x+rad>v.lo[0]&&q.x-rad<v.hi[0]&&q.y+rad>v.lo[1]&&q.y-rad<v.hi[1])out.push({id,n,x:q.x,y:q.y,con:'viga',det:'cae sobre una viga de 16 cm',fix:'mover la boca'})});
+ });
+ // tomas de agua contra montantes
+ const st={S:[],E:[]};
+ EST.montantes.filter(m=>m.nivel==='pb').forEach(m=>{const sx=m.hi[0]-m.lo[0],sy=m.hi[1]-m.lo[1];
+  if(m.muro==='Wall1')st.S.push([(m.lo[0]+m.hi[0])/2,sx/2]);
+  if(m.muro==='Wall12'||m.muro==='Wall13')st.E.push([(m.lo[1]+m.hi[1])/2,sy/2])});
+ st.E.push([1.625,0.085]);   // columna metálica entre los paneles del muro este
+ NA.filter(n=>(n.k==='toma'||n.k==='grif')&&n.side==='int'&&st[n.w]).forEach(n=>{
+  const half=n.k==='grif'?0.08:0.03;
+  st[n.w].forEach(([c,h])=>{const d=Math.abs(n.p-c)-h-half;if(d<0)out.push({id:n.id,n:n.n,x:n.w==='S'?n.p:2.83,y:n.w==='S'?0:n.p,h:n.h,con:'montante',det:`queda a ${fmt(Math.abs(n.p-c)*100,1)} cm del eje de un montante del muro ${n.w==='S'?'del baño':'este'}`,fix:(()=>{const t=n.p>c?c+h+half+0.005:c-h-half-0.005;return `correrla a ${n.w==='S'?'X':'s'} ${fmt(t)} (${t>n.p?'+':'−'}${fmt(Math.abs(t-n.p)*100,0)} cm) o fijarla a un travesaño corrido`})()})})});
+ return out;
+}
+function renderChoques(){const L=choques(),el=document.getElementById('choquesD');if(!el)return;
+ el.innerHTML=L.length?`<table><thead><tr><th>Pieza</th><th>Choca con</th><th>Detalle</th><th>Cómo resolver</th></tr></thead><tbody>${L.map(c=>`<tr data-id="${c.id}"><td>${c.n}</td><td>${c.con}</td><td>${c.det}</td><td>${c.fix}</td></tr>`).join('')}</tbody></table>`:'<p class="note" style="padding:8px 10px;margin:0">Ninguna boca ni toma cae sobre la estructura.</p>';
+ el.querySelectorAll('tr[data-id]').forEach(r=>r.addEventListener('click',()=>{if(byD[r.dataset.id]){selectD(r.dataset.id);document.getElementById('svgD').scrollIntoView({behavior:'smooth',block:'center'})}}));}
+window.SANIT={fmt,CSX,dsegL,distToCam,CZE,SLOPE,SEGS,NA,DSEG,ND,SM,LW,EST,TER,choques};
+renderChoques();
 renderA();renderD();renderBom('A');renderBom('D');renderSteps('A');renderSteps('D');show(cur.sys,cur.sub);
 })();
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
 <script>
 /* ================= COCINA Y VENTILACIÓN ================= */
 (function(){
@@ -1316,7 +1352,7 @@ function K(){
  const sif=nv('kSif',0.45), igIn=nv('kIGin',-0.65), igDrop=Math.max(0,nv('kIGdrop',0.05)), ter=nv('kTer',-0.55);
  const zUnder=-(c.piso+(c.bajo?c.viga:0)+0.025);      // eje de un 50 bajo las vigas
  const Lk=dsegL('kit');                               // pileta → muro este
- const zWall=zUnder-Lk*SLOPE;                         // llega al muro
+ const BEAM=-0.194, zWall=Math.min(zUnder-Lk*SLOPE,BEAM-0.03);   // pasa por debajo de la viga perimetral del muro este
  const igOut=igIn-igDrop, Lig=dsegL('igppt')+0.20;    // IG → PPT
  const pptIn=igOut-Lig*SLOPE;
  const Lpc=dsegL('pptci'), pptOut=CZE+Lpc*SLOPE;      // 110 de la PPT a la cámara, al 2 %
@@ -1421,7 +1457,7 @@ function draw(){
   R('Salida del sifón',0,k.sif,'Según el sifón; bajo la pileta')+
   R('Ramal Y 50 de la VF',0,0.35,'En la bajada, con la boca hacia arriba')+
   R('Horizontal bajo las vigas',0,k.zUnder,c.bajo?`Piso ${fmt(c.piso*100,0)} cm + vigas ${fmt(c.viga*100,0)} cm`:'Entre vigas')+
-  R('Paso bajo el muro este',dW,k.zWall,'Codo 45° y baja afuera')+
+  R('Paso bajo el muro este',dW,k.zWall,'Baja antes de la viga perimetral (fondo a −0,19) y pasa por debajo')+
   R('Entrada interceptor',dIG,k.igIn,k.okIG?'✓ el 50 llega por encima':'✗ el 50 llega más bajo')+
   R('Salida interceptor',dIG+0.40,k.igOut,`${fmt(k.Lig)} m de 50 hasta la PPT`)+
   R('Entrada pileta de patio',dPPT,k.pptIn,k.okPPT?'✓ por encima de la salida 110':'✗ muy baja')+
@@ -1432,7 +1468,7 @@ function draw(){
 const G=[
  ['Interceptor y pileta de patio','Excavá junto al muro este, frente a la pileta. Asentá el interceptor con la entrada a −0,65 y la pileta de patio tapada al lado, con la salida 110 apuntando a la cámara.'],
  ['110 de la pileta de patio a la cámara','PVC 110 al 2 %, sobre cama de arena, entrando a la cámara 1 por el norte con codo de 45°. Probá la pendiente con nivel antes de pegar.'],
- ['Desagüe de la pileta','Sifón bajo la pileta, ramal Y 50 a +0,35 para la VF, bajada en 50 por el piso y horizontal colgada por debajo de las vigas al 2 % hasta pasar bajo el muro este.'],
+ ['Desagüe de la pileta','Sifón bajo la pileta, ramal Y 50 a +0,35 para la VF, bajada en 50 por el piso entre viguetas y horizontal colgada por debajo de ellas al 2 %. Antes del muro este baja y pasa por debajo de la viga perimetral, que tiene el fondo a −0,19.'],
  ['Afuera hasta el interceptor','Codo de 45° al salir, bajada en 50 y entrada al interceptor. Sellá el pasamuro.'],
  ['VF cocina','Desde el ramal Y sube por el muro este, corre embutida con caída del 1 % hacia la pileta, sale en (3,05 ; 1,45) y remata en curva a la altura de la tabla.'],
  ['RA pileta de patio','PVC 50 desde la pileta de patio, terminal en curva sobre el terreno.'],
@@ -1460,7 +1496,7 @@ const f=v=>fmt(v).replace('-','−');
 const STEPS=[
  {t:'Replanteo y niveles',v:'gen',b:[
   'Marcá con estacas la cámara, las dos fosas, el pozo y el pie del CV, igual que en Desagües · Plano.',
-  'La referencia es el piso terminado (0,00). El terreno bajo la casa está a −0,60 y el colector entra a la cámara a −0,84.',
+  'La referencia es el piso terminado (0,00). El terreno bajo la casa va de −0,39 (fondo, lado del baño) a −0,64 (balcón, lado de la cocina) y el colector entra a la cámara a −0,84.',
   'Tendé un hilo por el recorrido del colector para marcar la zanja.'],p:['Estacas','Hilo','Nivel de manguera o láser']},
  {t:'Excavación',v:'trat',b:[
   'Pozos de unos 1,90 m de diámetro para las dos fosas y el pozo filtrante: hasta −2,35 las fosas y −2,45 el pozo.',
@@ -1520,7 +1556,7 @@ const VIEWS=[
 ];
 const VMORE={cam:{t:[3.95,1.15,-0.80],p:[6.4,-1.6,1.15]},zanja:{t:[2.1,0.8,-0.75],p:[6.2,-4.2,2.6]},col:{t:[1.9,0.6,-0.75],p:[5.4,-3.8,1.9]},
  cv:{t:[0.9,0.1,1.6],p:[5.6,-6.6,3.6]},ino:{t:[1.75,0.4,-0.35],p:[3.9,-2.2,0.7]},cs:{t:[1.9,0.9,-0.35],p:[5.6,-2.4,1.6]}};
-const LAYERS=[['fria','Agua fría','--cold',1],['cal','Agua caliente','--hot',1],['des','Desagües','--pri',1],['ven','Ventilación','--ven',1],['flujo','Agua circulando','--water',1],['art','Artefactos','--fix',1],['muros','Placas y tabiques','--fix',0],['rot','Rótulos','--sel',1],['terr','Terreno','--earth',1]];
+const LAYERS=[['choq','Choques con la estructura','--hot',1],['pa','Planta alta y techo','--steel',0],['fria','Agua fría','--cold',1],['cal','Agua caliente','--hot',1],['des','Desagües','--pri',1],['ven','Ventilación','--ven',1],['flujo','Agua circulando','--water',1],['art','Artefactos','--fix',1],['muros','Placas y tabiques','--fix',0],['rot','Rótulos','--sel',1],['terr','Terreno','--earth',1]];
 const st={mode:'exp',step:0,view:'gen',lay:{}};
 LAYERS.forEach(l=>st.lay[l[0]]=!!l[3]);
 try{const v=JSON.parse(localStorage.getItem('sanit-sayago-p3v2')||'null');if(v){if(v.mode)st.mode=v.mode;if(v.step>=0&&v.step<N)st.step=v.step;if(v.lay)Object.assign(st.lay,v.lay)}}catch(e){}
@@ -1575,7 +1611,7 @@ function build(){
  const tok=n=>new T.Color(cssv(n));
 
  /* datos de la guía */
- const {SEGS,NA,DSEG,ND,SM,LW,CSX,distToCam,CZE,dsegL}=SN;
+ const {SEGS,NA,DSEG,ND,SM,LW,CSX,distToCam,CZE,dsegL}=SN;  // SN.EST, SN.TER, SN.choques: estructura real
  const c=CSX(), S=0.02;
  const K=SN.cocina?SN.cocina():{sif:0.45,igIn:-0.65,igOut:-0.70,ter:-0.55,zUnder:-0.135,zWall:-0.145,pptIn:-0.70,pptOut:-0.81,vf:2.20,ra:-0.25,pz:1.45,vfH:1.74};
  const zc=(x,y)=>CZE+distToCam(x,y)*S;      // zampeado del colector bajo (x,y)
@@ -1614,7 +1650,8 @@ function build(){
  function lathe(pts,x,y,h,sx,sz,m,layer,info){const g=new T.LatheGeometry(pts.map(p=>new T.Vector2(p[0],p[1])),40);const o=new T.Mesh(g,m);o.position.copy(V(x,y,h));o.scale.set(sx,1,sz);reg(o,layer,null,info);return o}
  const edgeM=new T.LineBasicMaterial({color:tok('--ink'),transparent:true,opacity:.22});MATS.push({m:edgeM,token:'--ink',op:.22});
 
- /* ---------- casa: entrepiso, pilotes, steel frame ---------- */
+ /* ---------- casa: entrepiso, pilotes, steel frame (esquemático; se reemplaza por el modelo real al cargar) ---------- */
+ const OBJ0=OBJ.length;
  const mStud=mat('--steel'),mFloor=mat('--line','',.55),mBeam=mat('--steel','b',.9),mConc=mat('--conc'),mBoard=mat('--fixw','board',.16,true),mWallT=mat('--fix','tab',.12,true);
  const XE0=2.83,XE1=2.98,YS0=-0.15,YS1=0;              // muros este y sur
  const YS=-0.075,XE=2.905,YEXT=-0.19;                    // ejes de cavidad y cara exterior
@@ -1629,6 +1666,7 @@ function build(){
  studE.forEach(y=>box(2.855,y-0.02,0,2.955,y+0.02,2.40,mStud,'base',null,{t:'Montante PGC 100 · muro este',x:'cada 40 cm'}));
  box(-0.10,-0.125,0,2.98,-0.025,0.04,mStud,'base',null,null);box(-0.10,-0.125,2.36,2.98,-0.025,2.40,mStud,'base',null,null);
  box(2.855,-0.15,0,2.955,4.95,0.04,mStud,'base',null,null);box(2.855,-0.15,2.36,2.955,4.95,2.40,mStud,'base',null,null);
+ const SCHEM=OBJ.slice(OBJ0+1);   // todo menos el piso terminado
  // placas (capa muros)
  box(-0.10,-0.0125,0,2.83,0,2.40,mBoard,'muros',null,null);box(-0.10,-0.15,0,2.98,-0.1375,2.40,mBoard,'muros',null,null);
  box(2.83,0,0,2.8425,4.80,2.40,mBoard,'muros',null,null);box(2.9675,-0.15,0,2.98,4.95,2.40,mBoard,'muros',null,null);
@@ -1832,7 +1870,27 @@ function build(){
 
  /* ---------- terreno y obra (armado) ---------- */
  const mGround=mat('--earth','ground',.30,true);
- const ground=new T.Mesh(new T.PlaneGeometry(13,10),mGround);ground.rotation.x=-Math.PI/2;ground.position.copy(V(3.6,1.4,-0.60));reg(ground,'terr',null,{t:'Terreno',x:'−0,60 bajo la casa · −0,55 afuera'},'static');
+ const gGeo=new T.PlaneGeometry(16,10,32,20);gGeo.rotateX(-Math.PI/2);
+ {const pa=gGeo.attributes.position;for(let i=0;i<pa.count;i++){const xs=pa.getX(i)+1.8,ys=-pa.getZ(i)+1.4;pa.setY(i,SN.TER?SN.TER(xs,ys):-0.60);pa.setX(i,xs);pa.setZ(i,-ys)}gGeo.computeVertexNormals()}
+ const ground=new T.Mesh(gGeo,mGround);reg(ground,'terr',null,{t:'Terreno',x:'Pendiente: −0,39 fondo · −0,64 balcón/cocina'},'static');
+ /* modelo estructural real */
+ const modelRecs=[];
+ if(T.GLTFLoader){new T.GLTFLoader().load('../modelo/casa-juaco.glb',g=>{
+   const TOK={dados:'--conc',piso:'--steel',columnas:'--steel','muros-pb':'--steel',entrepiso:'--steel','muros-pa':'--steel',techo:'--steel',otros:'--fix'};
+   const INFO={dados:['Dado de hormigón','0,60 × 0,60 × 0,80'],piso:['Entrepiso','Viguetas 8 cm cada 40 cm · vigas 16 cm'],columnas:['Columna metálica',''],'muros-pb':['Panel steel frame · planta baja','Montantes cada 40 cm'],entrepiso:['Entrepiso de planta alta',''],'muros-pa':['Panel steel frame · planta alta',''],techo:['Techo','Cabriadas y cumbrera'],otros:['Estructura','']};
+   g.scene.children.slice().forEach(grp=>{const c=(grp.name||'').replace(/^cat[_:]?/,'');if(!TOK[c])return;
+    const m=mat(TOK[c],'est-'+c,c==='dados'?1:(c.startsWith('muros')?0.95:1));
+    grp.traverse(o=>{if(o.isMesh){o.material=m;o.userData.r=null}});
+    const lay=(c==='entrepiso'||c==='muros-pa'||c==='techo')?'pa':'base';
+    const rr=reg(grp,lay,null,{t:INFO[c][0],x:INFO[c][1]},'static');grp.traverse(o=>{if(o.isMesh)o.userData.r=rr});modelRecs.push(rr)});
+   SCHEM.forEach(rr=>{rr.o.visible=false;scene.remove(rr.o);const i=OBJ.indexOf(rr);if(i>=0)OBJ.splice(i,1)});
+   apply(false,true);
+  },undefined,e=>console.warn('modelo estructural no disponible',e))}
+ /* choques marcados */
+ const mHit=mat('--hot','choque');
+ (SN.choques?SN.choques():[]).forEach(cq=>{const h=cq.h!=null?cq.h:0.012;const o=new T.Mesh(new T.TorusGeometry(0.10,0.012,8,32),mHit);
+  if(cq.h!=null){o.position.copy(V(cq.x,cq.y,h));if(cq.y===0)o.rotation.x=0;else o.rotation.y=Math.PI/2}else{o.rotation.x=Math.PI/2;o.position.copy(V(cq.x,cq.y,0.015))}
+  reg(o,'choq',null,{t:'Choque: '+cq.n,x:cq.det},'static')});
  const mStake=mat('--sel','rep');
  [[3.87,1.18],[5.28,1.20],[6.94,1.20],[6.94,2.87],[0.25,-0.30],[2.60,0.30],[3.20,2.78]].forEach(p=>box(p[0]-0.02,p[1]-0.02,-0.60,p[0]+0.02,p[1]+0.02,-0.15,mStake,'obra','rep',null));
  {const lm=new T.LineBasicMaterial({color:tok('--sel')});MATS.push({m:lm,token:'--sel',op:1});
@@ -1937,7 +1995,7 @@ function build(){
  }
 
  /* ---------- visibilidad ---------- */
- const LAYMAP={fria:'fria',cal:'cal',des:'des',ven:'ven',flujo:'flujo',flujod:'flujo',art:'art',muros:'muros',terr:'terr',agua:'des',trat:'des'};
+ const LAYMAP={choq:'choq',pa:'pa',fria:'fria',cal:'cal',des:'des',ven:'ven',flujo:'flujo',flujod:'flujo',art:'art',muros:'muros',terr:'terr',agua:'des',trat:'des'};
  let anim=null;
  function apply(animate,keepCam){
   const arm=st.mode==='arm',s=st.step+1;
@@ -1952,6 +2010,8 @@ function build(){
     if(r.layer==='base')vis=true;
     else if(r.layer==='art')vis=true;
     else if(r.layer==='muros')vis=false;
+    else if(r.layer==='choq')vis=true;
+    else if(r.layer==='pa')vis=false;
     else if(r.layer==='terr')vis=true;
     else if(r.layer==='fria'||r.layer==='cal'||r.layer==='flujo'||r.layer==='flujod')vis=false;
     else if(r.g&&META[r.g]){const [a,b]=META[r.g];vis=s>=a&&s<=b}
