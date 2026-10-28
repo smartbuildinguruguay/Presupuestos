@@ -82,6 +82,10 @@ td.num{font-family:var(--f-m);font-variant-numeric:tabular-nums;text-align:right
 .notes{margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;font-size:.9rem}
 textarea{width:100%;min-height:130px;font:12px var(--f-m);background:var(--paper);color:var(--ink);border:1px solid var(--line);border-radius:6px;padding:8px}
 .row{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+.tabwrap{border:1px solid var(--line);border-radius:10px;background:var(--paper);overflow-x:auto}
+#tabSvg{display:block;width:100%;min-width:440px;height:auto}
+#tabSvg [data-c]{cursor:pointer}
+.steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:7px;font-size:.9rem;max-width:80ch}.steps b{display:block}
 .legend{display:flex;flex-wrap:wrap;gap:10px;font-size:.78rem;color:var(--muted)}
 .legend i{display:inline-block;width:14px;height:4px;border-radius:2px;vertical-align:middle;margin-right:5px}
 </style>
@@ -110,7 +114,7 @@ textarea{width:100%;min-height:130px;font:12px var(--f-m);background:var(--paper
    <div class="ov">
     <button type="button" id="bRoutes" aria-pressed="true">Tendidos</button>
     <button type="button" id="bCodes" aria-pressed="false">Códigos</button>
-    <button type="button" id="bRoof" aria-pressed="false">Techo</button>
+    <button type="button" id="bRoof" aria-pressed="true">Techo</button>
     <button type="button" id="bTop" aria-pressed="false">Vista superior</button>
     <button type="button" id="bReset">Recentrar</button>
    </div>
@@ -126,9 +130,17 @@ textarea{width:100%;min-height:130px;font:12px var(--f-m);background:var(--paper
 
 <div class="grid2">
  <section class="panel"><h2>Circuitos</h2><div class="tbl"><table id="circTbl"></table></div><div id="warns" style="display:flex;flex-direction:column;gap:6px"></div></section>
- <section class="panel"><h2>Tablero</h2><div class="tbl"><table id="tabTbl"></table></div>
+ <section class="panel"><h2>Tablero · materiales</h2><div class="tbl"><table id="tabTbl"></table></div>
   <p class="small">Diferencial 1: luces y tomas generales. Diferencial 2: circuitos dedicados. Si saltan los tomas, la heladera sigue andando.</p></section>
 </div>
+
+<section class="panel" id="tabPanel">
+ <h2>Armado del tablero</h2>
+ <p class="small">Vista de frente con la tapa abierta. Tocá una térmica para ver solo ese circuito en el 3D y en la planta; tocala de nuevo para ver todo.</p>
+ <div class="tabwrap"><svg id="tabSvg" viewBox="0 0 480 400" role="img" aria-label="Armado del tablero: interruptor general, diferenciales, térmicas y conexiones"></svg></div>
+ <div class="row" id="circBar"></div>
+ <ol class="steps" id="tabSteps"></ol>
+</section>
 
 <section class="panel">
  <h2>Despiece de materiales</h2>
@@ -215,7 +227,7 @@ const BASE=[
  ['luz','pa',2.50,2.42,null,4],['luz','pa',6.20,2.42,null,3],
  ['llave','pa',8.67,1.20],['llave','pa',0.03,1.50]];
 const KEY='sbu-elec-sayago-juaco';
-let st,nid=1,sel=null,tool='select',view='3d',lvFocus='pb';
+let st,nid=1,sel=null,tool='select',view='3d',lvFocus='pb',circFocus=null;
 const $=id=>document.getElementById(id);
 const css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim()||'#888';
 const fmt=(n,d=2)=>Number(n).toLocaleString('es-UY',{minimumFractionDigits:d,maximumFractionDigits:d});
@@ -321,13 +333,14 @@ function tables(res){
   h+=`<tr><td><span class="cid"><i style="background:var(${c.col})"></i>${cid}</span></td><td>${c.name}</td><td class="num">${r.pts.length}${npa?' ('+npa+' PA)':''}${nll?' + '+nll+' ll':''}</td><td class="num">${fmt(c.sec,1)} mm²</td><td class="num">${c.brk} A</td><td class="num">${r.W?fmt(r.W,0)+' W':'—'}</td><td class="num">${fmt(r.cond*1.1,0)} m</td></tr>`}
  $('circTbl').innerHTML=h;
  $('warns').innerHTML=res.warns.length?res.warns.map(x=>`<div class="warn">${x}</div>`).join(''):'<p class="okmsg">Sin observaciones.</p>';
- const used=Object.keys(CIRC).filter(c=>res.circ[c].pts.length);const mods=2+4+used.length*2;const box=[12,18,24,36].find(n=>n>=mods)||36;
+ const used=Object.keys(CIRC).filter(c=>res.circ[c].pts.length);const mods=2+4+used.length*2;const box=mods<=10?12:24;
  $('tabTbl').innerHTML=`<tr><th>Elemento</th><th>Cant.</th></tr>
  <tr><td>Interruptor general termomagnético bipolar (según potencia contratada, ej. 32 A)</td><td class="num">1</td></tr>
  <tr><td>Diferencial bipolar 40 A · 30 mA</td><td class="num">2</td></tr>
  <tr><td>Termomagnética bipolar 10 A (C1)</td><td class="num">${used.includes('C1')?1:0}</td></tr>
  <tr><td>Termomagnética bipolar 16 A (${used.filter(c=>c!=='C1').join(', ')||'—'})</td><td class="num">${used.filter(c=>c!=='C1').length}</td></tr>
- <tr><td>Gabinete de embutir ${box} módulos con barra de neutro y de tierra</td><td class="num">1</td></tr>`;
+ <tr><td>Gabinete de embutir ${box} módulos (${box===24?'2 filas de 12':'1 fila'}) con barra de tierra · ocupa ${mods}</td><td class="num">1</td></tr>
+ <tr><td>Peine bipolar (o puentes de 4 mm²)</td><td class="num">${used.length?2:0}</td></tr>`;
  const order=[['1.5','marrón'],['1.5','celeste'],['1.5','verde-amarillo'],['1.5','gris'],['2.5','marrón'],['2.5','celeste'],['2.5','verde-amarillo']];
  const swc={'marrón':'#7B4A2A','celeste':'#7EC8E8','verde-amarillo':'linear-gradient(90deg,#2E9E3E 50%,#E8D21E 50%)','gris':'#9AA3A9'};
  let b='<tr><th>Material</th><th>Detalle</th><th>Cantidad</th><th>Pedido</th></tr>';
@@ -354,6 +367,75 @@ function tables(res){
   cable_m:Object.fromEntries(Object.entries(res.cond).map(([k,v])=>[k,Math.round(v)])),cano_20mm_m:Math.round(res.cano),observaciones:res.warns};
  if(document.activeElement!==$('exportTxt'))$('exportTxt').value=JSON.stringify(ex,null,1)}
 
+
+/* ================= armado del tablero ================= */
+function drawTablero(res){const sv=$('tabSvg');if(!sv)return;
+ const used=Object.keys(CIRC).filter(c=>res.circ[c].pts.length);
+ const g1=used.filter(c=>CIRC[c].diff===1),g2=used.filter(c=>CIRC[c].diff===2);
+ const MW=26,X0=78,R1=120,R2=250,DH=66;
+ const brown='#7B4A2A',blue='#5BB4DE',gy='#2E9E3E',ink=css('--ink'),mut=css('--muted'),pan=css('--panel'),line=css('--line');
+ let o=`<defs><pattern id="gyp" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="#2E9E3E"/><rect width="4" height="8" fill="#E8D21E"/></pattern></defs>`;
+ o+=`<rect x="34" y="40" width="412" height="318" rx="10" fill="${pan}" stroke="${ink}" stroke-width="1.6"/>`;
+ o+=`<text x="40" y="30" font-size="11" font-weight="700" fill="${ink}" font-family="Barlow Condensed,sans-serif" letter-spacing=".06em">GABINETE DE EMBUTIR · 2 FILAS DE 12 MÓDULOS · EJE A 1,60</text>`;
+ [R1,R2].forEach(y=>{o+=`<rect x="${X0-14}" y="${y-6}" width="${12*MW+28}" height="12" fill="${line}"/>`;});
+ const dev=(x,y,mods,top,txt,sub,c,lever=true)=>{const w=mods*MW-2,cl=c?css(CIRC[c].col):mut,sel=circFocus===c&&c;
+  let d=`<g ${c?`data-c="${c}"`:''}><rect x="${x+1}" y="${y-DH/2}" width="${w}" height="${DH}" rx="3" fill="${pan}" stroke="${sel?css('--acc'):ink}" stroke-width="${sel?2.4:1.2}"/>`;
+  d+=`<rect x="${x+1}" y="${y-DH/2}" width="${w}" height="7" rx="2" fill="${cl}"/>`;
+  if(lever)d+=`<rect x="${x+w/2-6}" y="${y-8}" width="12" height="16" rx="2" fill="${ink}"/>`;
+  d+=`<text x="${x+1+w/2}" y="${y-14}" text-anchor="middle" font-size="9" font-weight="700" fill="${ink}" font-family="IBM Plex Mono,monospace">${top}</text>`;
+  d+=`<text x="${x+1+w/2}" y="${y+21}" text-anchor="middle" font-size="7.5" fill="${mut}" font-family="IBM Plex Mono,monospace">${txt}</text>`;
+  if(sub)d+=`<text x="${x+1+w/2}" y="${y+29}" text-anchor="middle" font-size="7" fill="${mut}" font-family="IBM Plex Mono,monospace">${sub}</text>`;
+  return d+'</g>'};
+ const term=(x,y)=>[[x+MW*0.55,y-DH/2],[x+MW*1.45,y-DH/2],[x+MW*0.55,y+DH/2],[x+MW*1.45,y+DH/2]];
+ const wire=(pts,c,w=2.2)=>`<path d="M${pts.map(p=>p.join(' ')).join(' L')}" fill="none" stroke="${c}" stroke-width="${w}" stroke-linejoin="round" stroke-linecap="round"/>`;
+ // fila 1: IG, ID1 y sus térmicas · fila 2: ID2 y sus térmicas
+ const xIG=X0,xD1=X0+3*MW,xD2=X0+3*MW;
+ o+=dev(xIG,R1,2,'IG','32 A','general',null);
+ o+=dev(xD1,R1,2,'ID 1','40 A','30 mA',null);
+ if(g2.length)o+=dev(xD2,R2,2,'ID 2','40 A','30 mA',null);
+ const outs=[];
+ g1.forEach((c,k)=>{const x=xD1+(2+k*2)*MW;o+=dev(x,R1,2,c,CIRC[c].brk+' A',fmt(CIRC[c].sec,1)+' mm²',c);outs.push([c,x,R1])});
+ g2.forEach((c,k)=>{const x=xD2+(2+k*2)*MW;o+=dev(x,R2,2,c,CIRC[c].brk+' A',fmt(CIRC[c].sec,1)+' mm²',c);outs.push([c,x,R2])});
+ // entrada desde el medidor
+ const ti=term(xIG,R1);
+ o+=wire([[ti[0][0],44],[ti[0][0],ti[0][1]]],brown,3)+wire([[ti[1][0],44],[ti[1][0],ti[1][1]]],blue,3);
+ o+=`<text x="${ti[1][0]+8}" y="58" font-size="8" fill="${mut}" font-family="IBM Plex Mono,monospace">entrada del medidor · 6 mm²</text>`;
+ // general -> diferenciales: baja, va por el costado izquierdo y entra a cada diferencial por arriba
+ const feed=(yrow,k)=>{const d=term(xD1,yrow),yf=yrow-DH/2-22,yn=yf-5,xl=48,xl2=54;
+  return wire([ti[2],[ti[2][0],ti[2][1]+10],[xl,ti[2][1]+10],[xl,yf],[d[0][0],yf],d[0]],brown)
+   +wire([ti[3],[ti[3][0],ti[3][1]+16],[xl2,ti[3][1]+16],[xl2,yn],[d[1][0],yn],d[1]],blue)};
+ o+=feed(R1);if(g2.length)o+=feed(R2);
+ // peines de cada diferencial a sus térmicas
+ const peine=(xd,y,grp)=>{if(!grp.length)return '';const t=term(xd,y),xe=xd+(2+grp.length*2)*MW-MW*0.4,yb=y-DH/2-6;
+  let d=wire([t[2],[t[2][0],y+DH/2+6],[xd+2*MW-1,y+DH/2+6],[xd+2*MW-1,yb],[xe,yb]],brown,2.6);
+  d+=wire([t[3],[t[3][0],y+DH/2+10],[xd+2*MW+1,y+DH/2+10],[xd+2*MW+1,yb-5],[xe,yb-5]],blue,2.6);
+  grp.forEach((c,k)=>{const tt=term(xd+(2+k*2)*MW,y);d+=wire([[tt[0][0],yb],tt[0]],brown,1.6)+wire([[tt[1][0],yb-5],tt[1]],blue,1.6)});
+  d+=`<text x="${xe+4}" y="${yb-1}" font-size="7" fill="${mut}" font-family="IBM Plex Mono,monospace">peine</text>`;return d};
+ o+=peine(xD1,R1,g1);if(g2.length)o+=peine(xD2,R2,g2);
+ // salidas de cada circuito
+ outs.forEach(([c,x,y])=>{const t=term(x,y),cl=css(CIRC[c].col),y2=y+DH/2+24;
+  o+=`<g data-c="${c}">`+wire([t[2],[t[2][0],y2]],brown,1.8)+wire([t[3],[t[3][0],y2]],blue,1.8)+`<rect x="${x+3}" y="${y2}" width="${2*MW-6}" height="11" rx="2" fill="${cl}"/><text x="${x+MW}" y="${y2+8.5}" text-anchor="middle" font-size="7" font-weight="700" fill="#fff" font-family="IBM Plex Mono,monospace">${c}</text></g>`});
+ // barra de tierra
+ const yt=334;o+=`<rect x="70" y="${yt}" width="300" height="9" rx="2" fill="url(#gyp)"/><text x="70" y="${yt-4}" font-size="7.5" fill="${mut}" font-family="IBM Plex Mono,monospace">barra de tierra · llegan las tierras de todos los circuitos</text>`;
+ o+=wire([[372,yt+4.5],[420,yt+4.5],[420,388]],gy,3)+`<text x="300" y="396" font-size="7.5" fill="${mut}" font-family="IBM Plex Mono,monospace">jabalina 6 mm² · puente a la estructura</text>`;
+ // leyenda de colores
+ o+=`<g font-size="7.5" fill="${mut}" font-family="IBM Plex Mono,monospace"><rect x="360" y="52" width="14" height="4" fill="${brown}"/><text x="378" y="57">fase</text><rect x="360" y="62" width="14" height="4" fill="${blue}"/><text x="378" y="67">neutro</text><rect x="360" y="72" width="14" height="4" fill="url(#gyp)"/><text x="378" y="77">tierra</text></g>`;
+ sv.innerHTML=o;
+ sv.querySelectorAll('[data-c]').forEach(n=>n.addEventListener('click',()=>{circFocus=circFocus===n.dataset.c?null:n.dataset.c;refresh()}));
+ $('circBar').innerHTML=used.map(c=>`<button type="button" class="vt" data-cf="${c}" aria-pressed="${circFocus===c}"><span class="cid"><i style="background:var(${CIRC[c].col})"></i>${c}</span> ${CIRC[c].name}</button>`).join('')+(circFocus?'<button type="button" class="btn" data-cf="">Ver todos</button>':'');
+ $('circBar').querySelectorAll('[data-cf]').forEach(b=>b.onclick=()=>{circFocus=b.dataset.cf&&circFocus!==b.dataset.cf?b.dataset.cf:null;refresh()});
+ const n2=g2.length;
+ $('tabSteps').innerHTML=[
+  ['Gabinete','De embutir, 2 filas de 12 módulos, con el eje a 1,60 m. Va entre dos montantes del muro con un travesaño arriba y otro abajo; si el gabinete es más ancho que el vano entre montantes, el montante se corta y se arma un marco, con aprobación del ingeniero.'],
+  ['Rieles y aparatos',`Fila de arriba: interruptor general, diferencial 1 y las térmicas ${g1.join(', ')||'—'}. Fila de abajo: ${n2?'diferencial 2 y las térmicas '+g2.join(', '):'libre como reserva'}. Dejá módulos libres para ampliar.`],
+  ['Entrada','La línea que viene del medidor (6 mm² fase y neutro) entra por arriba al interruptor general. La conexión al medidor la hace el electricista autorizado ante UTE.'],
+  ['General a diferenciales','Del general salen puentes en 6 mm², fase marrón y neutro celeste, a la entrada de cada diferencial.'],
+  ['Diferenciales a térmicas','Cada diferencial alimenta sus térmicas con un peine bipolar, o con puentes en 4 mm² si no hay peine.'],
+  ['Salidas',`Por abajo de cada térmica sale su circuito: fase y neutro en la sección del circuito (1,5 mm² en C1, 2,5 mm² en el resto). Rotulá cada térmica con el nombre del circuito.`],
+  ['Tierras','Todas las tierras verde-amarillo van a la barra de tierra. A la barra llegan también la jabalina y el puente a la estructura metálica, en 6 mm².'],
+  ['Prueba','Antes de dar tensión: continuidad y aislación de cada circuito. Con tensión: botón de prueba de cada diferencial y control de que cada térmica corta lo que dice su rótulo.']
+ ].map(([t,d])=>`<li><b>${t}</b>${d}</li>`).join('')}
+
 /* ================= planta 2D ================= */
 const svg=$('plan'),PAD=0.8;
 function el(tag,a,p){const n=document.createElementNS('http://www.w3.org/2000/svg',tag);for(const k in a)n.setAttribute(k,a[k]);if(p)p.appendChild(n);return n}
@@ -376,7 +458,7 @@ function drawPlan(res){svg.innerHTML='';const lv=lvFocus,Q=y=>A-y;
  el('line',{x1:0,y1:A+0.5,x2:L,y2:A+0.5,stroke:css('--muted'),'stroke-width':0.015},gg);el('line',{x1:-0.5,y1:0,x2:-0.5,y2:A,stroke:css('--muted'),'stroke-width':0.015},gg);
  tx(L/2,A+0.58,fmt(L)+' m · '+LV[lv].n.toLowerCase(),{'font-size':0.2});tx(-0.58,A/2,fmt(A)+' m',{'font-size':0.2,transform:`rotate(-90 -0.58 ${Q(A/2)})`});
  tx(7.2,A+0.3,'Muro opuesto (norte)');tx(L/2,-0.4,'Muro del baño (sur) · calefón afuera');tx(L+0.5,A/2,'Balcón',{transform:`rotate(90 ${L+0.5} ${Q(A/2)})`});tx(-0.32,1.4,'Fondo',{transform:`rotate(-90 -0.32 ${Q(1.4)})`});
- if(st.showRoutes){res.segs.forEach(s=>{if(s.a.lv!==lv&&s.b.lv!==lv)return;el('path',{d:`M${s.a.x} ${s.a.y} H${s.b.x} V${s.b.y}`,fill:'none',stroke:css(CIRC[s.c].col),'stroke-width':0.035,'stroke-dasharray':'0.12 0.07',opacity:s.a.lv===s.b.lv?.85:.4},gg)});
+ if(st.showRoutes){res.segs.forEach(s=>{if(s.a.lv!==lv&&s.b.lv!==lv)return;if(circFocus&&s.c!==circFocus)return;el('path',{d:`M${s.a.x} ${s.a.y} H${s.b.x} V${s.b.y}`,fill:'none',stroke:css(CIRC[s.c].col),'stroke-width':0.035,'stroke-dasharray':'0.12 0.07',opacity:s.a.lv===s.b.lv?.85:.4},gg)});
   res.links.forEach(s=>{if(s.a.lv!==lv)return;el('path',{d:`M${s.a.x} ${s.a.y} L${s.b.x} ${s.b.y}`,fill:'none',stroke:css('--c1'),'stroke-width':0.02,'stroke-dasharray':'0.03 0.06'},gg)})}
  st.items.filter(i=>i.lv===lv).forEach(i=>{const ty=T[i.t],col=ty.c?css(CIRC[ty.c].col):css('--ink');const n=el('g',{'data-id':i.id,style:'cursor:pointer'},gt);const y=Q(i.y);
   if(i.id===sel)el('circle',{cx:i.x,cy:y,r:0.3,fill:'none',stroke:css('--acc'),'stroke-width':0.05},n);
@@ -437,16 +519,15 @@ function init3D(){
  if(TH.GLTFLoader){new TH.GLTFLoader().load('../modelo/casa-juaco.glb',g=>{
    const TOK={dados:'--muted',piso:'--wall',columnas:'--wall','muros-pb':'--wall',entrepiso:'--wall','muros-pa':'--wall',techo:'--wall',otros:'--muted'};
    g.scene.children.slice().forEach(grp=>{const c=(grp.name||'').replace(/^cat[_:]?/,'');if(!TOK[c])return;
-    const op=c.startsWith('muros')?0.55:(c==='dados'?0.9:0.75);
+    const op=c.startsWith('muros')?0.42:(c==='techo'?0.32:(c==='dados'?0.9:0.7));
     grp.traverse(o=>{if(o.isMesh)o.material=new TH.MeshLambertMaterial({color:col(TOK[c]),transparent:true,opacity:op,depthWrite:op>0.8})});
     groups.model.add(grp);modelCats[c]=grp});
    visLevels();need()},undefined,e=>{console.warn('sin modelo',e);$('ovh').textContent='No se pudo cargar el modelo estructural; se muestran solo los puntos.'})}
- function visLevels(){const pa=lvFocus==='pa'||lvFocus==='all';['entrepiso','muros-pa','techo'].forEach(c=>{if(modelCats[c])modelCats[c].visible=pa&&!($('bRoof').getAttribute('aria-pressed')!=='true'&&c==='techo')});
-  groups.house.children.forEach(o=>{if(o.userData.pa)o.visible=pa});need()}
+ function visLevels(){if(modelCats.techo)modelCats.techo.visible=$('bRoof').getAttribute('aria-pressed')==='true';need()}
  const geo={sph:new TH.SphereGeometry(0.11,20,14),box:new TH.BoxGeometry(0.16,0.2,0.06),tab:new TH.BoxGeometry(0.42,0.5,0.1),disk:new TH.CylinderGeometry(0.14,0.14,0.05,24),hit:new TH.SphereGeometry(0.24,10,8)};
  const hitMat=new TH.MeshBasicMaterial({visible:false});
  function buildPts(res){groups.pts.clear();ptMesh.clear();
-  st.items.forEach(i=>{const ty=T[i.t],c=ty.c?col(CIRC[ty.c].col):col('--ink');const z=zOf(i);const dim=lvFocus!=='all'&&i.lv!==lvFocus;
+  st.items.forEach(i=>{const ty=T[i.t],c=ty.c?col(CIRC[ty.c].col):col('--ink');const z=zOf(i);const dim=(lvFocus!=='all'&&i.lv!==lvFocus)||(circFocus&&T[i.t].c!==circFocus&&i.t!=='tablero');
    const g=new TH.Group();g.position.copy(V(i.x,i.y,z));
    const mat=new TH.MeshLambertMaterial({color:c,transparent:dim,opacity:dim?0.25:1,emissive:i.id===sel?col('--acc'):(res.hit[i.id]?col('--warn'):new TH.Color(0)),emissiveIntensity:i.id===sel?0.55:(res.hit[i.id]?0.45:0)});
    let m;if(i.t==='luz'){m=new TH.Mesh(geo.disk,mat);m.position.y=-0.03}else if(i.t==='tablero')m=new TH.Mesh(geo.tab,mat);else if(i.t==='toma'||i.t==='llave')m=new TH.Mesh(geo.box,mat);else m=new TH.Mesh(geo.sph,mat);
@@ -456,15 +537,15 @@ function init3D(){
    if(!dim){const h=new TH.Mesh(geo.hit,hitMat);h.userData.id=i.id;g.add(h);ptMesh.set(i.id,{g,h})}
    groups.pts.add(g)})}
  function buildRoutes(res){groups.routes.clear();if(!st.showRoutes)return;const ks=Object.keys(CIRC);
-  const show=s=>lvFocus==='all'||s.a.lv===lvFocus||s.b.lv===lvFocus;
+  const show=s=>(!circFocus||s.c===circFocus)&&(lvFocus==='all'||s.a.lv===lvFocus||s.b.lv===lvFocus);
   res.segs.forEach(s=>{if(!show(s))return;const k=ks.indexOf(s.c),a=s.a,b=s.b,ra=run(a)-0.03-k*0.02,rb=run(b)-0.03-k*0.02;
    const P=[V(a.x,a.y,zOf(a)),V(a.x,a.y,ra),V(b.x,a.y,ra),V(b.x,b.y,ra)];if(rb!==ra)P.push(V(b.x,b.y,rb));P.push(V(b.x,b.y,zOf(b)));
    groups.routes.add(new TH.Line(new TH.BufferGeometry().setFromPoints(P),new TH.LineBasicMaterial({color:col(CIRC[s.c].col)})))});
-  res.links.forEach(s=>{if(lvFocus!=='all'&&s.a.lv!==lvFocus)return;const zc=run(s.a)-0.03-ks.length*0.02;const P=[V(s.a.x,s.a.y,zOf(s.a)),V(s.a.x,s.a.y,zc),V(s.b.x,s.b.y,zc),V(s.b.x,s.b.y,zOf(s.b))];
+  res.links.forEach(s=>{if(lvFocus!=='all'&&s.a.lv!==lvFocus)return;if(circFocus&&circFocus!=='C1')return;const zc=run(s.a)-0.03-ks.length*0.02;const P=[V(s.a.x,s.a.y,zOf(s.a)),V(s.a.x,s.a.y,zc),V(s.b.x,s.b.y,zc),V(s.b.x,s.b.y,zOf(s.b))];
    const ln=new TH.Line(new TH.BufferGeometry().setFromPoints(P),new TH.LineDashedMaterial({color:col('--c1'),dashSize:0.06,gapSize:0.06}));ln.computeLineDistances();groups.routes.add(ln)})}
  // cámara orbital
  const orb={t:V(L/2,A/2,1),r:13,th:-0.75,ph:0.95};
- const home=()=>({t:V(L/2,A/2,lvFocus==='pa'?LV.pa.piso+0.8:0.9),r:13.5,th:-0.85,ph:0.98});
+ const home=()=>({t:V(L/2,A/2,2.2),r:17.5,th:-0.85,ph:1.02});
  const topV=()=>({t:V(L/2,A/2,lvFocus==='pa'?LV.pa.piso:0),r:12,th:0,ph:0.02});
  let tw=null;
  function setOrb(s){orb.t.copy(s.t);orb.r=s.r;orb.th=s.th;orb.ph=s.ph}
@@ -526,7 +607,7 @@ function init3D(){
 
 /* ================= ciclo ================= */
 function setFocus(lv){lvFocus=lv;document.querySelectorAll('[data-lv]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lv===lv));hint();if(G)G.focus()}
-function refresh(){const res=compute();if(G)G.update(res,false);if(view==='plan')drawPlan(res);selPanel(res);tables(res)}
+function refresh(){const res=compute();if(G)G.update(res,false);if(view==='plan')drawPlan(res);selPanel(res);tables(res);drawTablero(res)}
 function commit(){save();refresh()}
 document.querySelectorAll('.vt').forEach(b=>b.onclick=()=>{view=b.dataset.v;document.querySelectorAll('.vt').forEach(x=>x.setAttribute('aria-selected',x===b));
  $('v3d').hidden=view!=='3d';$('vplan').hidden=view!=='plan';if(view==='plan'&&lvFocus==='all')setFocus('pb');if(view==='3d'&&G){G.resize();G.need()}refresh()});
