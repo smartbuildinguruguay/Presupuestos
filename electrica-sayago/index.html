@@ -114,8 +114,10 @@ textarea{width:100%;min-height:130px;font:12px var(--f-m);background:var(--paper
  .obra-nav,.tabs,.noprint,.pr,.edit{display:none!important}
  .panel{border:0;padding:0}
  tr,.kpi,.mkt div,.steps li{break-inside:avoid}
- h2{break-after:avoid}
- .planbox{border:1px solid #bbb;overflow:visible}.planbox svg{min-width:0}
+ h2,h3{break-after:avoid}
+ #ptsTbl td:nth-child(3),#ptsTbl td:nth-child(7){max-width:30mm}
+ #ptsTbl td:last-child{min-width:48mm}
+ .planbox{border:1px solid #bbb;overflow:visible;break-inside:avoid}.planbox svg{min-width:0}
  @page{size:A4;margin:11mm}
 }
 </style>
