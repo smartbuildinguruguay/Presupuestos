@@ -2,11 +2,12 @@
 
 Todo junto en un solo repo, ordenado por obra. Portada: https://smartbuildinguruguay.github.io/Presupuestos/
 
-## Vivienda Sayago
+## Casa Sayago
 
-- [Sanitaria baño y cocina](sanitaria-sayago/) — agua, desagües, cocina y ventilación, con PDFs.
-- [Eléctrica en 3D](electrica-sayago/) — planta baja y alta sobre el modelo estructural real; puntos que se mueven en 3D o planta, circuitos, tablero, despiece y choques con montantes.
-- [Modelo estructural](modelo/) — `casa-juaco.glb` (liviano, en coordenadas de obra) y `estructura.json` con montantes, viguetas, vigas y dados. Lo usan la sanitaria y la eléctrica.
+- [Menú de la obra](sayago/) — entrada única a todo lo de Sayago.
+- [Estructura](modelo/) — modelo 3D liviano (`casa-juaco.glb`) y `estructura.json` con montantes, viguetas, vigas y dados.
+- [Sanitaria baño y cocina](sanitaria-sayago/) — agua, desagües, cocina y ventilación, 3D y PDFs.
+- [Eléctrica en 3D](electrica-sayago/) — planta baja y alta, circuitos, tablero y despiece.
 
 ## Casa Eden Rock
 

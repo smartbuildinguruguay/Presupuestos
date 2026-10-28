@@ -231,10 +231,13 @@ h2.sub{font-size:.95rem;margin-top:14px}
 .p3-list button[aria-current="step"]{background:var(--selbg);color:var(--ink)}
 .p3-list button[aria-current="step"] b{color:var(--ink)}
 </style>
+<style>.obra-nav{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 4px}.obra-nav a{padding:5px 12px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--muted);text-decoration:none;font:600 .8rem/1.2 var(--f-b,system-ui)}.obra-nav a[aria-current]{background:var(--ink);border-color:var(--ink);color:var(--panel)}.obra-nav a:first-child{font-weight:700;color:var(--ink)}.obra-nav a:first-child[aria-current]{color:var(--panel)}@media print{.obra-nav{display:none}}
+</style>
 </head>
 <body>
 
 <div class="wrap">
+<nav class="obra-nav" aria-label="Casa Sayago"><a href="../sayago/">Casa Sayago</a><a href="../sanitaria-sayago/" aria-current="page">Sanitaria</a><a href="../electrica-sayago/">Eléctrica</a><a href="../modelo/">Estructura</a></nav>
 <header>
   <div class="lbl">Vivienda Sayago · Padrón 17428 · Steel frame</div>
   <h1>Sanitaria baño y cocina</h1>
@@ -1271,10 +1274,13 @@ function renderSteps(sys){
 
 /* ---------- navegación ---------- */
 let cur={sys:'A',sub:'plano'};
+const HASHSUB=['plano','despiece','guia','cocina'];
+function fromHash(){const h=(location.hash||'').slice(1);if(h==='3d')return {sys:'P',sub:'plano'};if(h==='choques')return {sys:'D',sub:'plano',scroll:'choquesD'};const m=h.match(/^([AD])-(\w+)$/);if(m&&HASHSUB.includes(m[2])&&!(m[1]==='A'&&m[2]==='cocina'))return {sys:m[1],sub:m[2]};return null}
 try{const v=JSON.parse(localStorage.getItem(KEY+'-nav')||'null');if(v&&v.sys&&v.sub)cur=v}catch(e){}
 function show(sys,sub){
  if(sub==='cocina'&&sys!=='D')sub='plano';
  cur={sys,sub};try{localStorage.setItem(KEY+'-nav',JSON.stringify(cur))}catch(e){}
+ try{history.replaceState(null,'',sys==='P'?'#3d':'#'+sys+'-'+sub)}catch(e){}
  document.querySelectorAll('[data-sys]').forEach(b=>b.setAttribute('aria-selected',b.dataset.sys===sys));
  document.querySelectorAll('[data-sub]').forEach(b=>b.setAttribute('aria-selected',b.dataset.sub===sub));
  ['A','D'].forEach(s=>['plano','despiece','guia'].forEach(x=>document.getElementById(s+'-'+x).hidden=!(s===sys&&x===sub)));
@@ -1335,7 +1341,9 @@ function renderChoques(){const L=choques(),el=document.getElementById('choquesD'
  el.querySelectorAll('tr[data-id]').forEach(r=>r.addEventListener('click',()=>{if(byD[r.dataset.id]){selectD(r.dataset.id);document.getElementById('svgD').scrollIntoView({behavior:'smooth',block:'center'})}}));}
 window.SANIT={fmt,CSX,dsegL,distToCam,CZE,SLOPE,SEGS,NA,DSEG,ND,SM,LW,EST,TER,choques};
 renderChoques();
-renderA();renderD();renderBom('A');renderBom('D');renderSteps('A');renderSteps('D');show(cur.sys,cur.sub);
+renderA();renderD();renderBom('A');renderBom('D');renderSteps('A');renderSteps('D');
+{const hh=fromHash();if(hh){cur={sys:hh.sys,sub:hh.sub};show(cur.sys,cur.sub);if(hh.scroll)setTimeout(()=>{const e=document.getElementById(hh.scroll);if(e)e.scrollIntoView({block:'start'})},300)}else show(cur.sys,cur.sub)}
+window.addEventListener('hashchange',()=>{const hh=fromHash();if(hh)show(hh.sys,hh.sub)});
 })();
 </script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>

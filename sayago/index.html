@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Casa Sayago · Obra</title>
+<style>
+@font-face{font-family:'Barlow Condensed';font-weight:700;font-display:swap;src:url(../sanitaria-sayago/fonts/barlow-condensed-latin-700-normal.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Sans';font-weight:400;font-display:swap;src:url(../sanitaria-sayago/fonts/ibm-plex-sans-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Sans';font-weight:600;font-display:swap;src:url(../sanitaria-sayago/fonts/ibm-plex-sans-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Mono';font-weight:400;font-display:swap;src:url(../sanitaria-sayago/fonts/ibm-plex-mono-latin-400-normal.woff2) format('woff2')}
+:root{--paper:#edf1f0;--panel:#fbfcfc;--ink:#17252a;--muted:#5a6a6d;--line:#cbd5d4;--acc:#d9531e;--cold:#1d68ad;--hot:#c23b2a;--pri:#d9531e;--ven:#3f9a2c;--el:#c77700;--est:#2a3a48;--warn:#b3261e;--warns:#fbe4e2;
+ --f-d:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;--f-b:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;--f-m:'IBM Plex Mono',ui-monospace,Menlo,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#12191b;--panel:#1a2427;--ink:#e3eaea;--muted:#9aabab;--line:#2f3d40;--acc:#ef7a46;--cold:#5aa8ec;--hot:#ff7a66;--pri:#ef7a46;--ven:#6cc45a;--el:#f0a33a;--est:#b9c7d2;--warn:#ff8a80;--warns:#3a1e1c;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#12191b;--panel:#1a2427;--ink:#e3eaea;--muted:#9aabab;--line:#2f3d40;--acc:#ef7a46;--cold:#5aa8ec;--hot:#ff7a66;--pri:#ef7a46;--ven:#6cc45a;--el:#f0a33a;--est:#b9c7d2;--warn:#ff8a80;--warns:#3a1e1c;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 15px/1.45 var(--f-b)}
+.wrap{max-width:1080px;margin:0 auto;padding:18px 16px 48px}
+.crumb{font:500 .78rem var(--f-m);color:var(--muted);text-decoration:none}
+.obra-nav{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 4px}.obra-nav a{padding:5px 12px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--muted);text-decoration:none;font:600 .8rem/1.2 var(--f-b)}.obra-nav a[aria-current]{background:var(--ink);border-color:var(--ink);color:var(--panel)}.obra-nav a:first-child{font-weight:700;color:var(--ink)}.obra-nav a:first-child[aria-current]{color:var(--panel)}
+h1{font:700 clamp(1.9rem,6vw,2.6rem)/1 var(--f-d);letter-spacing:.03em;text-transform:uppercase;margin:12px 0 6px}
+.lead{color:var(--muted);margin:0 0 6px;max-width:70ch}
+.facts{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 22px}.facts span{font:400 .78rem var(--f-m);border:1px solid var(--line);border-radius:6px;padding:3px 8px;background:var(--panel);color:var(--muted)}
+section{margin:0 0 26px}
+.sh{display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;border-bottom:1.5px solid var(--ink);padding-bottom:4px;margin:0 0 12px}
+.sh h2{font:700 1.4rem/1.1 var(--f-d);letter-spacing:.04em;text-transform:uppercase;margin:0;display:flex;align-items:center;gap:8px}
+.sh h2 i{width:12px;height:12px;border-radius:3px;display:inline-block}
+.sh p{margin:0;color:var(--muted);font-size:.88rem}
+.sh a.go{margin-left:auto;font:600 .85rem var(--f-b);color:var(--acc);text-decoration:none}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(min(100%,230px),1fr))}
+a.card{display:flex;flex-direction:column;gap:4px;background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px;color:var(--ink);text-decoration:none;min-width:0}
+a.card:hover{border-color:var(--ink)}
+a.card b{font-weight:600}
+a.card span{color:var(--muted);font-size:.86rem}
+a.card em{font:normal 400 .72rem var(--f-m);color:var(--muted);margin-top:auto;padding-top:4px}
+.pdfs{display:flex;flex-wrap:wrap;gap:6px}.pdfs a{font-size:.85rem;color:var(--acc);text-decoration:none;border:1px solid var(--line);border-radius:6px;padding:4px 9px;background:var(--panel)}
+.todo{background:var(--panel);border:1px solid var(--line);border-radius:10px;overflow:hidden}
+.todo div{display:grid;grid-template-columns:110px 1fr;gap:4px 12px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:.9rem}
+.todo div:last-child{border-bottom:0}
+.todo b{font:600 .7rem var(--f-b);letter-spacing:.07em;text-transform:uppercase;color:var(--muted);padding-top:2px}
+.todo a{color:var(--acc)}
+@media (max-width:520px){.todo div{grid-template-columns:1fr}}
+footer{color:var(--muted);font-size:.8rem;border-top:1px solid var(--line);padding-top:12px}
+</style>
+</head>
+<body>
+<div class="wrap">
+<a class="crumb" href="../">← SBU · documentos de obra</a>
+<nav class="obra-nav" aria-label="Casa Sayago"><a href="./" aria-current="page">Casa Sayago</a><a href="../sanitaria-sayago/">Sanitaria</a><a href="../electrica-sayago/">Eléctrica</a><a href="../modelo/">Estructura</a></nav>
+<h1>Casa Sayago</h1>
+<p class="lead">Todo lo de la obra en un solo lugar: estructura, sanitaria y eléctrica. Las tres usan el mismo modelo de la casa y las mismas medidas.</p>
+<div class="facts"><span>Padrón 17428</span><span>El Tesoro</span><span>Steel frame sobre dados</span><span>8,70 × 4,84 m interior</span><span>Planta baja + alta</span></div>
+
+<section>
+ <div class="sh"><h2><i style="background:var(--est)"></i>Estructura</h2><p>Modelo de SketchUp en la web</p><a class="go" href="../modelo/">Abrir →</a></div>
+ <div class="grid">
+  <a class="card" href="../modelo/"><b>Modelo 3D</b><span>Dados, entrepisos, muros y techo, con capas para prender y apagar.</span><em>modelo/</em></a>
+  <a class="card" href="../modelo/estructura.json"><b>Datos de estructura</b><span>Montantes, viguetas, vigas y dados con sus coordenadas.</span><em>estructura.json</em></a>
+ </div>
+</section>
+
+<section>
+ <div class="sh"><h2><i style="background:var(--cold)"></i>Sanitaria</h2><p>Agua en termofusión y desagües hasta el pozo</p><a class="go" href="../sanitaria-sayago/">Abrir →</a></div>
+ <div class="grid">
+  <a class="card" href="../sanitaria-sayago/#A-plano"><b>Agua · Plano</b><span>Desarrollo de los muros con cada caño, toma y llave, y la tabla de alturas.</span><em>Agua</em></a>
+  <a class="card" href="../sanitaria-sayago/#A-despiece"><b>Agua · Despiece</b><span>Caños, accesorios, llaves y grifería para pedir.</span><em>Agua</em></a>
+  <a class="card" href="../sanitaria-sayago/#A-guia"><b>Agua · Guía</b><span>Paso a paso de la instalación en termofusión.</span><em>Agua</em></a>
+  <a class="card" href="../sanitaria-sayago/#D-plano"><b>Desagües · Plano</b><span>Planta, cotas de zampeado y cortes de la caja sifonada.</span><em>Desagües</em></a>
+  <a class="card" href="../sanitaria-sayago/#choques"><b>Choques con la estructura</b><span>Bocas de piso y tomas que caen sobre viguetas o montantes, y cómo resolverlos.</span><em>Desagües</em></a>
+  <a class="card" href="../sanitaria-sayago/#D-cocina"><b>Cocina y ventilación</b><span>Pileta, interceptor, pileta de patio y cámara; CV, VF, RA y CV del pozo.</span><em>Desagües</em></a>
+  <a class="card" href="../sanitaria-sayago/#D-despiece"><b>Desagües · Despiece</b><span>PVC, accesorios, caja sifonada, cámara, fosas y pozo.</span><em>Desagües</em></a>
+  <a class="card" href="../sanitaria-sayago/#D-guia"><b>Desagües · Guía</b><span>Paso a paso de cámara, colector, ramales y prueba.</span><em>Desagües</em></a>
+  <a class="card" href="../sanitaria-sayago/#3d"><b>3D de la instalación</b><span>Todo armado sobre la estructura real, en modo explorar o paso a paso.</span><em>3D</em></a>
+ </div>
+</section>
+
+<section>
+ <div class="sh"><h2><i style="background:var(--el)"></i>Eléctrica</h2><p>Planta baja y alta, seis circuitos</p><a class="go" href="../electrica-sayago/">Abrir →</a></div>
+ <div class="grid">
+  <a class="card" href="../electrica-sayago/"><b>Ubicar puntos en 3D</b><span>Mover tomas, luces, llaves y equipos sobre muros y techo; marca montantes y vanos.</span><em>3D</em></a>
+  <a class="card" href="../electrica-sayago/#planta"><b>Planta</b><span>Lo mismo en planta, por nivel, con montantes y vanos dibujados.</span><em>Planta</em></a>
+  <a class="card" href="../electrica-sayago/#circuitos"><b>Circuitos y observaciones</b><span>Puntos por circuito, sección, térmica, potencia y metros de cable.</span><em>Circuitos</em></a>
+  <a class="card" href="../electrica-sayago/#tablero"><b>Armado del tablero</b><span>Gabinete de 24 módulos: general, dos diferenciales y térmicas, con el paso a paso.</span><em>Tablero</em></a>
+  <a class="card" href="../electrica-sayago/#despiece"><b>Despiece</b><span>Cables por color, caño, cajas, módulos y puesta a tierra.</span><em>Despiece</em></a>
+ </div>
+</section>
+
+<section>
+ <div class="sh"><h2><i style="background:var(--muted)"></i>Para imprimir</h2><p>PDFs de la sanitaria, A4</p></div>
+ <div class="pdfs">
+  <a href="../sanitaria-sayago/pdf/sanitaria-sayago-completa.pdf">Sanitaria completa</a>
+  <a href="../sanitaria-sayago/pdf/agua-1-plano.pdf">Agua · plano</a><a href="../sanitaria-sayago/pdf/agua-2-despiece.pdf">Agua · despiece</a><a href="../sanitaria-sayago/pdf/agua-3-guia.pdf">Agua · guía</a>
+  <a href="../sanitaria-sayago/pdf/desagues-1-plano.pdf">Desagües · plano</a><a href="../sanitaria-sayago/pdf/desagues-2-despiece.pdf">Desagües · despiece</a><a href="../sanitaria-sayago/pdf/desagues-3-guia.pdf">Desagües · guía</a><a href="../sanitaria-sayago/pdf/desagues-4-cocina-ventilacion.pdf">Cocina y ventilación</a>
+ </div>
+</section>
+
+<section>
+ <div class="sh"><h2><i style="background:var(--warn)"></i>A resolver</h2><p>Lo que quedó abierto al pasar todo al modelo real</p></div>
+ <div class="todo">
+  <div><b>Ingeniero</b><span>La bajada del inodoro y la caja sifonada caen sobre viguetas: correrlas o hacer un brochal. <a href="../sanitaria-sayago/#choques">Ver choques</a></span></div>
+  <div><b>Ingeniero</b><span>El gabinete del tablero es más ancho que el vano entre montantes: hay que cortar un montante y armar un marco. <a href="../electrica-sayago/#tablero">Ver tablero</a></span></div>
+  <div><b>Obra</b><span>Correr unos centímetros la rejilla de ducha, la bajada de la pileta de cocina y la toma caliente del bidet.</span></div>
+  <div><b>Definir</b><span>Tabiques y escalera de la planta alta: hoy va como un solo ambiente en la eléctrica.</span></div>
+  <div><b>Definir</b><span>Altura de remate de VF, RA y CV del pozo: S01 no la da. <a href="../sanitaria-sayago/#D-cocina">Ver ventilaciones</a></span></div>
+ </div>
+</section>
+
+<footer>Coordenadas comunes: X desde el muro del fondo, Y desde el muro del baño, alturas desde el piso terminado de planta baja. La sanitaria mide X desde el tabique del lavatorio (X de la eléctrica − 5,87).</footer>
+</div>
+</body>
+</html>

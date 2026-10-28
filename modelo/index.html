@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>Estructura Casa Sayago</title>
+<style>
+@font-face{font-family:'Barlow Condensed';font-weight:700;font-display:swap;src:url(../sanitaria-sayago/fonts/barlow-condensed-latin-700-normal.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Sans';font-weight:400;font-display:swap;src:url(../sanitaria-sayago/fonts/ibm-plex-sans-latin-400-normal.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Sans';font-weight:600;font-display:swap;src:url(../sanitaria-sayago/fonts/ibm-plex-sans-latin-600-normal.woff2) format('woff2')}
+@font-face{font-family:'IBM Plex Mono';font-weight:400;font-display:swap;src:url(../sanitaria-sayago/fonts/ibm-plex-mono-latin-400-normal.woff2) format('woff2')}
+:root{--paper:#edf1f0;--panel:#fbfcfc;--ink:#17252a;--muted:#5a6a6d;--line:#cbd5d4;--wall:#2a3a48;--conc:#9aa5a6;--acc:#d9531e;--p3bg:#e6ecec;
+ --f-d:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;--f-b:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;--f-m:'IBM Plex Mono',ui-monospace,Menlo,monospace;color-scheme:light}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){--paper:#12191b;--panel:#1a2427;--ink:#e3eaea;--muted:#9aabab;--line:#2f3d40;--wall:#b9c7d2;--conc:#6d7779;--acc:#ef7a46;--p3bg:#172124;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#12191b;--panel:#1a2427;--ink:#e3eaea;--muted:#9aabab;--line:#2f3d40;--wall:#b9c7d2;--conc:#6d7779;--acc:#ef7a46;--p3bg:#172124;color-scheme:dark}
+*{box-sizing:border-box}[hidden]{display:none!important}
+body{margin:0;background:var(--paper);color:var(--ink);font:400 15px/1.45 var(--f-b)}
+.wrap{max-width:1180px;margin:0 auto;padding:18px 16px 48px;display:flex;flex-direction:column;gap:14px}
+h1{font:700 clamp(1.7rem,5vw,2.3rem)/1 var(--f-d);letter-spacing:.03em;text-transform:uppercase;margin:4px 0 6px}
+h2{font:700 1.15rem/1.1 var(--f-d);letter-spacing:.04em;text-transform:uppercase;margin:0 0 8px}
+.lead{color:var(--muted);margin:0;max-width:72ch}
+.obra-nav{display:flex;gap:6px;flex-wrap:wrap;margin:0 0 4px}.obra-nav a{padding:5px 12px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--muted);text-decoration:none;font:600 .8rem/1.2 var(--f-b)}.obra-nav a[aria-current]{background:var(--ink);border-color:var(--ink);color:var(--panel)}.obra-nav a:first-child{font-weight:700;color:var(--ink)}
+.stage{position:relative;width:100%;aspect-ratio:16/10;max-height:74vh;min-height:320px;background:var(--p3bg);border:1px solid var(--line);border-radius:10px;overflow:hidden;touch-action:none}
+@media (max-width:640px){.stage{aspect-ratio:4/5}}
+.stage canvas{display:block;width:100%;height:100%;cursor:grab}
+.layers{display:flex;gap:6px;flex-wrap:wrap}
+.layers button{border:1px solid var(--line);background:var(--panel);color:var(--muted);border-radius:99px;padding:5px 11px;font:500 .82rem var(--f-b);cursor:pointer}
+.layers button[aria-pressed="true"]{color:var(--ink);border-color:var(--ink)}
+.fb{position:absolute;inset:0;display:grid;place-items:center;padding:20px;text-align:center;color:var(--muted)}
+.grid{display:grid;gap:10px;grid-template-columns:repeat(auto-fill,minmax(min(100%,250px),1fr))}
+.card{background:var(--panel);border:1px solid var(--line);border-radius:10px;padding:12px 14px}
+.card b{display:block;font:700 .72rem var(--f-b);letter-spacing:.08em;text-transform:uppercase;color:var(--muted);margin-bottom:3px}
+.card p{margin:0;font-size:.9rem}
+.mono{font-family:var(--f-m)}
+a{color:var(--acc)}
+</style>
+</head>
+<body>
+<div class="wrap">
+<nav class="obra-nav" aria-label="Casa Sayago"><a href="../sayago/">Casa Sayago</a><a href="../sanitaria-sayago/">Sanitaria</a><a href="../electrica-sayago/">Eléctrica</a><a href="./" aria-current="page">Estructura</a></nav>
+<header>
+ <h1>Estructura · Casa Sayago</h1>
+ <p class="lead">El modelo estructural de SketchUp (Casa Juaco), aliviado para la web. Es el mismo que usan la sanitaria y la eléctrica. Prendé y apagá capas para ver cada parte.</p>
+</header>
+<div class="layers" id="layers" role="group" aria-label="Capas"></div>
+<div class="stage" id="stage"><canvas id="cv" aria-label="Modelo 3D de la estructura"></canvas><div class="fb" id="fb" hidden>No se pudo cargar el 3D en este navegador.</div></div>
+<section>
+ <h2>Datos del modelo</h2>
+ <div class="grid">
+  <div class="card"><b>Planta</b><p>8,70 × 4,84 m interior (5,05 × 8,90 exterior). Planta baja y planta alta bajo techo a dos aguas.</p></div>
+  <div class="card"><b>Niveles</b><p class="mono">Piso PB 0,00 · cielorraso PB 2,37 · piso PA 2,57 · muretes PA 1,18 · cumbrera ≈ 5,10</p></div>
+  <div class="card"><b>Entrepiso de PB</b><p>Viguetas de 8 cm cada 40 cm a lo ancho de la casa. Vigas de 16 cm en el perímetro y al centro, con el fondo a −0,19.</p></div>
+  <div class="card"><b>Apoyos</b><p>12 dados de hormigón de 0,60 × 0,60 × 0,80, en 3 filas de 4. Terreno entre 20 y 45 cm bajo las vigas (−0,39 a −0,64).</p></div>
+  <div class="card"><b>Muros</b><p>Paneles steel frame con montantes cada 40 cm. Vanos en el muro norte (dos, de ~2 m) y en el muro del fondo.</p></div>
+  <div class="card"><b>Archivos</b><p><a href="casa-juaco.glb">casa-juaco.glb</a> (1,7 MB) y <a href="estructura.json">estructura.json</a> con montantes, viguetas, vigas y dados en coordenadas de obra.</p></div>
+ </div>
+</section>
+</div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/loaders/GLTFLoader.js"></script>
+<script>
+(function(){
+const $=id=>document.getElementById(id),css=v=>getComputedStyle(document.documentElement).getPropertyValue(v).trim()||'#888';
+const LAY=[['dados','Dados','--conc'],['piso','Entrepiso PB','--wall'],['columnas','Columnas','--wall'],['muros-pb','Muros PB','--wall'],['entrepiso','Entrepiso PA','--wall'],['muros-pa','Muros PA','--wall'],['techo','Techo','--wall']];
+const on={};LAY.forEach(l=>on[l[0]]=true);
+$('layers').innerHTML=LAY.map(l=>`<button type="button" data-l="${l[0]}" aria-pressed="true">${l[1]}</button>`).join('');
+try{
+ const T=window.THREE;if(!T||!T.GLTFLoader)throw 0;
+ const cv=$('cv'),stage=$('stage'),ren=new T.WebGLRenderer({canvas:cv,antialias:true,alpha:true});ren.setPixelRatio(Math.min(2,devicePixelRatio||1));
+ const sc=new T.Scene(),cam=new T.PerspectiveCamera(40,1,0.05,200);
+ sc.add(new T.HemisphereLight(0xffffff,0x8a9a9a,0.95));const dl=new T.DirectionalLight(0xffffff,0.6);dl.position.set(6,10,4);sc.add(dl);
+ const grid=new T.GridHelper(20,20,new T.Color(css('--line')),new T.Color(css('--line')));grid.position.set(-1.5,-0.6,-2.4);sc.add(grid);
+ const cats={};
+ new T.GLTFLoader().load('casa-juaco.glb',g=>{g.scene.children.slice().forEach(grp=>{const c=(grp.name||'').replace(/^cat[_:]?/,'');const l=LAY.find(x=>x[0]===c);if(!l)return;
+   grp.traverse(o=>{if(o.isMesh)o.material=new T.MeshLambertMaterial({color:new T.Color(css(l[2]))})});sc.add(grp);cats[c]=grp});need()},undefined,()=>{$('fb').hidden=false});
+ document.querySelectorAll('[data-l]').forEach(b=>b.onclick=()=>{const k=b.dataset.l;on[k]=!on[k];b.setAttribute('aria-pressed',on[k]);if(cats[k])cats[k].visible=on[k];need()});
+ const orb={t:new T.Vector3(-1.5,2.0,-2.4),r:17,th:-0.85,ph:1.0};let needs=true;const need=()=>needs=true;
+ function place(){const sp=Math.sin(orb.ph);cam.position.set(orb.t.x+orb.r*sp*Math.sin(orb.th),orb.t.y+orb.r*Math.cos(orb.ph),orb.t.z+orb.r*sp*Math.cos(orb.th));cam.lookAt(orb.t)}
+ function resize(){const w=stage.clientWidth,h=stage.clientHeight;if(!w||!h)return;ren.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix();if(!resize.done){orb.r=w/h<1?24:17;resize.done=1}need()}
+ new ResizeObserver(resize).observe(stage);
+ (function loop(){requestAnimationFrame(loop);if(!needs)return;needs=false;place();ren.render(sc,cam)})();
+ const pts=new Map();let p0=0,r0=0;
+ cv.addEventListener('pointerdown',e=>{cv.setPointerCapture(e.pointerId);pts.set(e.pointerId,{x:e.clientX,y:e.clientY});if(pts.size===2){const [a,b]=[...pts.values()];p0=Math.hypot(a.x-b.x,a.y-b.y);r0=orb.r}});
+ cv.addEventListener('pointermove',e=>{const p=pts.get(e.pointerId);if(!p)return;if(pts.size===1){orb.th-=(e.clientX-p.x)*0.008;orb.ph=Math.max(0.05,Math.min(1.55,orb.ph-(e.clientY-p.y)*0.008))}p.x=e.clientX;p.y=e.clientY;
+  if(pts.size===2){const [a,b]=[...pts.values()],d=Math.hypot(a.x-b.x,a.y-b.y);if(p0>0)orb.r=Math.max(3,Math.min(40,r0*p0/d))}need()});
+ const up=e=>{pts.delete(e.pointerId);p0=0};cv.addEventListener('pointerup',up);cv.addEventListener('pointercancel',up);
+ cv.addEventListener('wheel',e=>{e.preventDefault();orb.r=Math.max(3,Math.min(40,orb.r*(1+Math.sign(e.deltaY)*0.08)));need()},{passive:false});
+}catch(e){$('fb').hidden=false}
+})();
+</script>
+</body>
+</html>

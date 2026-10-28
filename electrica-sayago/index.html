@@ -88,17 +88,18 @@ textarea{width:100%;min-height:130px;font:12px var(--f-m);background:var(--paper
 .steps{margin:0;padding-left:20px;display:flex;flex-direction:column;gap:7px;font-size:.9rem;max-width:80ch}.steps b{display:block}
 .legend{display:flex;flex-wrap:wrap;gap:10px;font-size:.78rem;color:var(--muted)}
 .legend i{display:inline-block;width:14px;height:4px;border-radius:2px;vertical-align:middle;margin-right:5px}
+.obra-nav{display:flex;gap:6px;flex-wrap:wrap;margin:12px 0 4px}.obra-nav a{padding:5px 12px;border-radius:99px;border:1px solid var(--line);background:var(--panel);color:var(--muted);text-decoration:none;font:600 .8rem/1.2 var(--f-b,system-ui)}.obra-nav a[aria-current]{background:var(--ink);border-color:var(--ink);color:var(--panel)}.obra-nav a:first-child{font-weight:700;color:var(--ink)}.obra-nav a:first-child[aria-current]{color:var(--panel)}@media print{.obra-nav{display:none}}
 </style>
 </head>
 <body>
 <div class="wrap">
 <header>
- <a class="crumb" href="../">← SBU · documentos de obra</a>
+ <nav class="obra-nav" aria-label="Casa Sayago"><a href="../sayago/">Casa Sayago</a><a href="../sanitaria-sayago/">Sanitaria</a><a href="../electrica-sayago/" aria-current="page">Eléctrica</a><a href="../modelo/">Estructura</a></nav>
  <h1>Eléctrica Casa Sayago</h1>
  <p class="lead">Sobre el modelo estructural real de la casa (planta baja y alta). Mové tomas, luces, llaves y equipos en el 3D o en la planta: los tomas y llaves se deslizan por los muros y las luces por el cielorraso o el techo. Circuitos, tendidos y despiece se recalculan solos, y te marca lo que cae sobre un montante o en un vano.</p>
 </header>
 
-<section class="panel">
+<section class="panel" id="puntos">
  <div class="tools" id="tools" role="toolbar" aria-label="Elemento a colocar"></div>
  <p class="hint" id="hint"></p>
  <div class="views" role="tablist" aria-label="Vista">
@@ -128,7 +129,7 @@ textarea{width:100%;min-height:130px;font:12px var(--f-m);background:var(--paper
  <div class="sel" id="selPanel" hidden></div>
 </section>
 
-<div class="grid2">
+<div class="grid2" id="circuitos">
  <section class="panel"><h2>Circuitos</h2><div class="tbl"><table id="circTbl"></table></div><div id="warns" style="display:flex;flex-direction:column;gap:6px"></div></section>
  <section class="panel"><h2>Tablero · materiales</h2><div class="tbl"><table id="tabTbl"></table></div>
   <p class="small">Diferencial 1: luces y tomas generales. Diferencial 2: circuitos dedicados. Si saltan los tomas, la heladera sigue andando.</p></section>
@@ -142,7 +143,7 @@ textarea{width:100%;min-height:130px;font:12px var(--f-m);background:var(--paper
  <ol class="steps" id="tabSteps"></ol>
 </section>
 
-<section class="panel">
+<section class="panel" id="despiece">
  <h2>Despiece de materiales</h2>
  <p class="small">Metros por recorrido ortogonal por cielorraso, con 0,40 m por conexión y 10 % de desperdicio. Es para pedir material, no reemplaza el replanteo en obra.</p>
  <div class="tbl"><table id="bomTbl"></table></div>
@@ -628,6 +629,7 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',re
 new MutationObserver(rethemeAll).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 window.__elec={get st(){return st},project:(x,y,z)=>G&&G.project(x,y,z),focus:setFocus};
 buildTools();hint();legend();setFocus('pb');if(G)G.update(compute(),true);refresh();
+{const h=(location.hash||'').slice(1);if(h==='planta')document.querySelector('.vt[data-v="plan"]').click();const map={tablero:'tabPanel',circuitos:'circuitos',despiece:'despiece'};if(map[h])setTimeout(()=>{const e=$(map[h]);if(e)e.scrollIntoView({block:'start'})},300)}
 })();
 </script>
 </body>
