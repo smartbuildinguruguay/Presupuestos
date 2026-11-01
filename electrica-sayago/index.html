@@ -49,6 +49,32 @@ h3{font:700 1rem/1.1 var(--f-d);letter-spacing:.04em;text-transform:uppercase;ma
 .tool[aria-pressed="true"]{border-color:var(--acc);background:var(--accs)}
 .hint{font-size:.84rem;color:var(--muted);margin:0}
 .editbox{border:1.5px dashed var(--acc);border-radius:8px;padding:8px;display:flex;flex-direction:column;gap:6px}
+.edit{font-size:.9rem;padding:8px 16px}
+.locs{border:1.5px solid var(--acc);border-radius:10px;padding:12px;display:flex;flex-direction:column;gap:8px;background:var(--panel)}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:7px;overflow:hidden}
+.seg button{border:0;background:var(--paper);color:var(--muted);padding:7px 14px;font:600 .86rem var(--f-b);cursor:pointer}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--panel)}
+#locTbl td{vertical-align:middle}
+#locTbl input,#locTbl select{padding:5px 6px;border:1px solid var(--line);border-radius:5px;background:var(--panel);color:var(--ink);font:500 .86rem var(--f-m)}
+#locTbl input{width:74px}
+#locPanel{scroll-margin-top:60px}
+#locTbl select{max-width:190px}
+#locTbl tr.on td{background:var(--accs)}
+#locTbl tr.bad td:first-child{box-shadow:inset 3px 0 0 var(--warn)}
+#locTbl .x{border:1px solid var(--line);background:var(--panel);color:var(--warn);border-radius:5px;padding:4px 8px;cursor:pointer}
+@media (max-width:700px){
+ #locTbl thead{display:none}
+ #locTbl,#locTbl tbody{display:block}
+ #locTbl tr{display:grid;grid-template-columns:1fr auto;gap:6px 10px;padding:10px 4px;border-bottom:1px solid var(--line)}
+ #locTbl td{border:0;padding:0;display:block}
+ #locTbl td:nth-child(1){grid-column:1;grid-row:1}
+ #locTbl td:nth-child(2){grid-column:1;grid-row:2}
+ #locTbl td:nth-child(7){grid-column:2;grid-row:1/3;align-self:start}
+ #locTbl td[data-l]{grid-column:1/3;display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+ #locTbl td[data-l]::before{content:attr(data-l);font:500 .68rem var(--f-m);letter-spacing:.05em;text-transform:uppercase;color:var(--muted);min-width:70px}
+ #locTbl select{max-width:100%}
+}
+.addb{border:1px dashed var(--acc);background:var(--panel);color:var(--acc);border-radius:99px;padding:5px 11px;font:600 .8rem var(--f-b);cursor:pointer}
 .stage{position:relative;width:100%;aspect-ratio:16/10;max-height:74vh;min-height:320px;background:var(--p3bg);border:1px solid var(--line);border-radius:10px;overflow:hidden;touch-action:none}
 @media (max-width:640px){.stage{aspect-ratio:4/5}.ovh{display:none}}
 .stage canvas{display:block;width:100%;height:100%;cursor:grab}
@@ -149,13 +175,13 @@ textarea{width:100%;min-height:130px;font:12px var(--f-m);background:var(--paper
   <button type="button" class="vt" data-lv="pb" aria-pressed="true">Planta baja</button>
   <button type="button" class="vt" data-lv="pa" aria-pressed="false">Planta alta</button>
   <button type="button" class="vt" data-lv="all" aria-pressed="false">Toda</button>
-  <button type="button" class="edit noprint" id="bEdit" aria-pressed="false">Editar</button>
+  <button type="button" class="edit noprint" id="bEdit" aria-pressed="false">✎ Modificar ubicaciones</button>
  </div>
  <div class="editbox" id="editBox" hidden>
   <div class="tools" id="tools" role="toolbar" aria-label="Elemento a colocar"></div>
   <p class="hint" id="hint"></p>
  </div>
- <p class="hint" id="hintView">Vista fija de la instalación. Tocá un punto para ver qué es, a qué altura va y qué cables llegan. Para mover o agregar algo, tocá Editar.</p>
+ <p class="hint" id="hintView">Vista fija de la instalación. Tocá un punto para ver qué es, a qué altura va y qué cables llegan. Para cambiar dónde va algo, tocá <b>Modificar ubicaciones</b>.</p>
  <div id="v3d">
   <div class="stage" id="stage">
    <canvas id="cv" aria-label="Modelo 3D de la casa con los puntos eléctricos"></canvas>
@@ -174,6 +200,15 @@ textarea{width:100%;min-height:130px;font:12px var(--f-m);background:var(--paper
  <div id="vplan" hidden><div class="planbox"><svg id="plan" xmlns="http://www.w3.org/2000/svg" aria-label="Planta con puntos eléctricos"></svg></div></div>
  <div class="legend" id="legend"></div>
  <div class="sel" id="selPanel" hidden></div>
+ <div class="locs noprint" id="locPanel" hidden>
+  <div class="row"><h2>Ubicaciones</h2>
+   <span class="seg" role="group" aria-label="Planta a modificar"><button type="button" data-loc="pb" aria-pressed="true">Planta baja</button><button type="button" data-loc="pa" aria-pressed="false">Planta alta</button></span>
+   <button type="button" class="btn" id="locDone" style="margin-left:auto">Listo</button></div>
+  <p class="small">Elegí el muro, la distancia (desde el muro del fondo o desde el muro del baño, según el muro) y la altura al eje de la caja. Las luces se ubican con X e Y. También podés arrastrar los puntos en el 3D o en la Planta. Todo lo demás (desglose, guía, tablero, compras) se rehace solo.</p>
+  <div class="row" id="locAdd"></div>
+  <div class="tbl"><table id="locTbl"></table></div>
+  <div class="row"><button type="button" class="btn" id="locUndo" disabled>Deshacer</button><span class="small" id="locMsg" aria-live="polite"></span></div>
+ </div>
  <div id="warns" style="display:flex;flex-direction:column;gap:6px"></div>
 </section>
 
@@ -428,7 +463,7 @@ function hint(){const n=LV[lvFocus==='all'?'pb':lvFocus].n.toLowerCase();$('hint
  :(tool==='luz'?`Tocá el ${lvFocus==='pa'?'techo':'cielorraso'} de la ${n} donde va la luz.`:`Tocá el muro de la ${n} donde va: ${T[tool].label.toLowerCase()}. Queda a la altura tipo y después la ajustás.`)}
 function legend(){$('legend').innerHTML=Object.keys(CIRC).map(c=>`<span><i style="background:var(${CIRC[c].col})"></i>${c} ${CIRC[c].name}</span>`).join('');
  $('wireLegend').innerHTML=Object.keys(WC).map(c=>`<span class="wire"><i style="background:${WC[c]}"></i><b>${c}</b>&nbsp;${WROLE[c]}</span>`).join('')}
-function setEdit(on){editing=on;$('bEdit').setAttribute('aria-pressed',on);$('bEdit').textContent=on?'Listo':'Editar';$('editBox').hidden=!on;$('hintView').hidden=on;
+function setEdit(on){editing=on;$('bEdit').setAttribute('aria-pressed',on);$('bEdit').textContent=on?'✓ Listo':'✎ Modificar ubicaciones';$('editBox').hidden=!on;$('hintView').hidden=on;$('locPanel').hidden=!on;if(on){locLv=lvFocus==='pa'?'pa':'pb';setFocus(locLv);if(tab!=='inst')showTab('inst')}else $('locMsg').textContent='';try{history.replaceState(null,'',on?'#editar':'#inst')}catch(e){}
  $('ovh').textContent=on?'Arrastrá un punto para moverlo · arrastrá el fondo para girar · pellizco o rueda para acercar':'Arrastrá el fondo para girar · pellizco o rueda para acercar';if(!on)tool='select';buildTools();hint();refresh()}
 
 /* ================= panel del punto ================= */
@@ -634,13 +669,13 @@ const svg=$('plan');
 function svgPt(e){const p=svg.createSVGPoint();p.x=e.clientX;p.y=e.clientY;const m=svg.getScreenCTM();return m?p.matrixTransform(m.inverse()):{x:0,y:0}}
 let pdrag=null;
 svg.addEventListener('pointerdown',e=>{const p=svgPt(e),g=e.target.closest('[data-id]');
- if(g){sel=+g.dataset.id;if(editing){pdrag=sel;svg.setPointerCapture(e.pointerId)}refresh();return}
+ if(g){sel=+g.dataset.id;if(editing){pushUndo();pdrag=sel;svg.setPointerCapture(e.pointerId)}refresh();return}
  if(editing&&tool!=='select'){addAt(snap(clamp(p.x,0,L)),snap(clamp(A-p.y,0,A)),lvFocus==='all'?'pb':lvFocus,null);return}
  sel=null;refresh()});
 svg.addEventListener('pointermove',e=>{if(pdrag==null)return;const p=svgPt(e),it=st.items.find(i=>i.id===pdrag);if(!it)return;
  it.x=snap(clamp(p.x,-0.3,L+0.3));it.y=snap(clamp(A-p.y,-0.3,A+0.3));drawPlanTo(svg,lvFocus==='all'?'pb':lvFocus,compute(),true,false)});
 const pend=()=>{if(pdrag!=null){pdrag=null;commit()}};svg.addEventListener('pointerup',pend);svg.addEventListener('pointercancel',pend);
-function addAt(x,y,lv,z){
+function addAt(x,y,lv,z){pushUndo();
  if(tool==='tablero'){const tb=st.items.find(i=>i.t==='tablero');if(tb){tb.x=x;tb.y=y;tb.lv=lv;tb.z=LV[lv].piso+T.tablero.z;sel=tb.id;commit();return}}
  st.items.push({id:nid,t:tool,lv,x,y,z:tool==='luz'?null:(z??LV[lv].piso+T[tool].z)});sel=nid++;commit()}
 
@@ -734,7 +769,7 @@ function init3D(){
   if(touches.size===2){drag=null;const [a,b]=[...touches.values()];pinch0=Math.hypot(a.x-b.x,a.y-b.y);r0=orb.r;return}
   down={x:e.clientX,y:e.clientY,moved:false};
   const hit=cast(e,[...ptMesh.values()].map(v=>v.h))[0];
-  if(hit){sel=hit.object.userData.id;if(editing){drag={id:sel};cv.classList.add('dragging')}else down.picked=true;refresh()}});
+  if(hit){sel=hit.object.userData.id;if(editing){pushUndo();drag={id:sel};cv.classList.add('dragging')}else down.picked=true;refresh()}});
  cv.addEventListener('pointermove',e=>{const p=touches.get(e.pointerId);if(!p)return;
   if(down&&Math.hypot(e.clientX-down.x,e.clientY-down.y)>4)down.moved=true;
   if(touches.size===2){p.x=e.clientX;p.y=e.clientY;const [a,b]=[...touches.values()];const d=Math.hypot(a.x-b.x,a.y-b.y);if(pinch0>0)orb.r=clamp(r0*pinch0/d,2,40);need();return}
@@ -758,6 +793,61 @@ function init3D(){
  function project(X,Y,h){placeCam();cam.updateMatrixWorld();const v=V(X,Y,h).project(cam),r=cv.getBoundingClientRect();return {x:r.left+(v.x+1)/2*r.width,y:r.top+(1-v.y)/2*r.height}}
  return {update(res,full){lastRes=res;if(full)buildHouse();buildPts(res);buildRoutes(res);need()},need,resize,project}}
 
+
+/* ================= panel de ubicaciones ================= */
+let locLv='pb',undo=[];
+const WTYPES=['tablero','toma','heladera','lavavajillas','lavarropas','llave'];
+function wallsLv(lv){return WALLS.filter(w=>w[0]===lv)}
+function wallLen(w){return w[5]-w[4]}
+// mitad del tramo de panel más largo del muro (evita los vanos)
+function freeSpot(lv,w){const vs=(VANOS[lv+w[1]]||[]).slice().sort((a,b)=>a[0]-b[0]);let best=[w[4],w[5]],s0=w[4],segs=[];vs.forEach(([a,b])=>{if(a>s0)segs.push([s0,a]);s0=Math.max(s0,b)});if(s0<w[5])segs.push([s0,w[5]]);if(segs.length)best=segs.sort((a,b)=>(b[1]-b[0])-(a[1]-a[0]))[0];return (best[0]+best[1])/2-w[4]}
+function sideOf(it,w){const [,id,ax,v,,,th]=w;if(!th)return 0;return ax==='x'?(it.x>=v?1:-1):(it.y>=v?1:-1)}
+function placeOnWall(it,wid,along,side){const w=wallsLv(it.lv).find(x=>x[1]===wid);if(!w)return;const [,id,ax,v,a,b,th]=w;
+ along=clamp(along,0.05,b-a-0.05)+a;const off=0.03;
+ let f;if(th){f=v+(side||1)*(th/2+off)}else f=v===0?v+off:v-off;
+ if(ax==='x'){it.x=r2(f);it.y=r2(along)}else{it.y=r2(f);it.x=r2(along)}}
+function pushUndo(){undo.push(JSON.stringify(st.items));if(undo.length>40)undo.shift();$('locUndo').disabled=false}
+function locTable(res){if(!editing)return;
+ document.querySelectorAll('[data-loc]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.loc===locLv));
+ const ws=wallsLv(locLv);
+ const items=st.items.filter(i=>i.lv===locLv).sort((a,b)=>(a.t==='tablero'?-1:b.t==='tablero'?1:0)||String(res.pc[a.id]).localeCompare(String(res.pc[b.id]),'es',{numeric:true})||String(res.label[a.id]).localeCompare(String(res.label[b.id]),'es',{numeric:true}));
+ const llaves=st.items.filter(i=>i.t==='llave');
+ let h='<thead><tr><th>Código</th><th>Qué</th><th>Muro</th><th>Distancia (m)</th><th>Altura (m)</th><th>Circuito / llave</th><th></th></tr></thead><tbody>';
+ items.forEach(i=>{const c=res.pc[i.id];const wa=wallOf(i);let muro='',dist='',alt='';
+  if(i.t==='luz'){muro=`<span class="small">${i.lv==='pa'?'Techo':'Cielorraso'}</span>`;dist=`<span style="white-space:nowrap">X <input type="number" step="0.05" data-f="x" value="${i.x}"></span> <span style="white-space:nowrap">Y <input type="number" step="0.05" data-f="y" value="${i.y}"></span>`;alt='<span class="small">techo</span>'}
+  else if(i.t==='calefon'){muro='<span class="small">Exterior, casilla</span>';dist=`<input type="number" step="0.05" data-f="x" value="${i.x}"> <span class="small">desde el muro del fondo</span>`;alt=`<input type="number" step="0.05" min="0.1" max="2.3" data-f="z" value="${r2(zRel(i))}">`}
+  else{const w=wa?ws.find(x=>x[1]===wa.id):null;
+   muro=`<select data-f="w">${ws.map(x=>`<option value="${x[1]}" ${w&&w[1]===x[1]?'selected':''}>${WNAME[x[1]]}</option>`).join('')}</select>`;
+   if(w&&w[6])muro+=` <select data-f="side">${(w[2]==='x'?[[-1,'lado estar'],[1,'lado baño']]:[[-1,'lado baño'],[1,'lado cocina']]).map(([v,t])=>`<option value="${v}" ${sideOf(i,w)===v?'selected':''}>${t}</option>`).join('')}</select>`;
+   dist=`<input type="number" step="0.05" min="0" data-f="along" value="${w?r2((w[2]==='x'?i.y:i.x)-w[4]):''}"> <span class="small">${w?(w[2]==='x'?'desde el muro del baño':'desde el muro del fondo')+' · largo '+fmt(wallLen(w)):''}</span>`;
+   alt=`<input type="number" step="0.05" min="0.1" max="2.3" data-f="z" value="${r2(zRel(i))}">`}
+  let cc='';
+  if(i.t==='luz')cc=`<select data-f="ll"><option value="">Llave más cercana${res.asig[i.id]?' ('+res.label[res.asig[i.id]]+')':''}</option>${llaves.map(k=>`<option value="${k.id}" ${i.ll===k.id?'selected':''}>${res.label[k.id]} · ${LV[k.lv].n}</option>`).join('')}</select>`;
+  else if(i.t!=='tablero'&&i.t!=='llave')cc=`<select data-f="c"><option value="">Auto (${autoC(i)})</option>${Object.keys(CIRC).map(k=>`<option value="${k}" ${i.c===k?'selected':''}>${k} ${CIRC[k].name}</option>`).join('')}</select>`;
+  else cc=`<span class="small">${c||'—'}</span>`;
+  h+=`<tr data-id="${i.id}" class="${i.id===sel?'on':''} ${res.hit[i.id]?'bad':''}" title="${res.hit[i.id]?res.hit[i.id].join(' · '):''}"><td class="code">${c?cidTag(c)+' ':''}${res.label[i.id]||''}</td><td>${T[i.t].label}<div class="small">${zona(i)}</div></td><td data-l="Muro">${muro}</td><td data-l="Distancia">${dist}</td><td data-l="Altura">${alt}</td><td data-l="Circuito">${cc}</td><td>${i.t==='tablero'?'':'<button type="button" class="x" data-del aria-label="Eliminar">✕</button>'}</td></tr>`});
+ $('locTbl').innerHTML=h+'</tbody>';
+ $('locAdd').innerHTML='<span class="small">Agregar en '+LV[locLv].n.toLowerCase()+':</span>'+['toma','luz','llave','heladera','lavavajillas','lavarropas','calefon'].filter(t=>locLv==='pb'||['toma','luz','llave'].includes(t)).map(t=>`<button type="button" class="addb" data-add="${t}">+ ${T[t].label}</button>`).join('');
+ $('locAdd').querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{pushUndo();const t=b.dataset.add,lv=locLv;let x,y;
+  if(t==='luz'){x=L/2;y=A/2}else if(t==='calefon'){x=7.3;y=-0.13}else{x=lv==='pb'?2.25:3.15;y=0.03}
+  st.items.push({id:nid,t,lv,x,y,z:t==='luz'?null:LV[lv].piso+T[t].z});sel=nid++;commit();$('locMsg').textContent=`Se agregó: ${T[t].label.toLowerCase()}. Ajustá el muro, la distancia y la altura en su fila (está resaltada).`});
+ $('locTbl').querySelectorAll('tr[data-id]').forEach(tr=>{const it=st.items.find(i=>i.id===+tr.dataset.id);
+  tr.addEventListener('click',e=>{if(e.target.closest('input,select,button'))return;sel=it.id;refresh()});
+  tr.querySelectorAll('[data-f]').forEach(inp=>inp.addEventListener('change',()=>{pushUndo();const f=inp.dataset.f,v=inp.value;sel=it.id;
+   if(f==='x'){it.x=clamp(+v||0,it.t==='calefon'?0:0.1,L-0.1)}
+   else if(f==='y'){it.y=clamp(+v||0,0.1,A-0.1)}
+   else if(f==='z'){it.z=LV[it.lv].piso+clamp(+v||T[it.t].z,0.1,2.3)}
+   else if(f==='w'){const ww=wallsLv(it.lv).find(x=>x[1]===v);placeOnWall(it,v,freeSpot(it.lv,ww),-1)}
+   else if(f==='side'){const w=wallOf(it),ww=wallsLv(it.lv).find(x=>x[1]===w.id);placeOnWall(it,w.id,(ww[2]==='x'?it.y:it.x)-ww[4],+v)}
+   else if(f==='along'){const w=wallOf(it),ww=wallsLv(it.lv).find(x=>x[1]===w.id);placeOnWall(it,w.id,+v||0,sideOf(it,ww))}
+   else if(f==='c'){it.c=v||null}
+   else if(f==='ll'){it.ll=v?+v:null}
+   commit()}));
+  const d=tr.querySelector('[data-del]');if(d)d.onclick=()=>{pushUndo();st.items=st.items.filter(i=>i.id!==it.id);st.items.forEach(l=>{if(l.ll===it.id)l.ll=null});if(sel===it.id)sel=null;commit();$('locMsg').textContent=`Se eliminó: ${T[it.t].label.toLowerCase()}. Podés deshacer.`}})}
+document.querySelectorAll('[data-loc]').forEach(b=>b.onclick=()=>{locLv=b.dataset.loc;setFocus(locLv);refresh()});
+$('locDone').onclick=()=>setEdit(false);
+$('locUndo').onclick=()=>{if(!undo.length)return;const items=JSON.parse(undo.pop());st.items=items;nid=Math.max(0,...items.map(i=>i.id))+1;sel=null;$('locUndo').disabled=!undo.length;commit();$('locMsg').textContent='Deshecho.'};
+
 /* ================= ciclo ================= */
 function setFocus(lv){lvFocus=lv;document.querySelectorAll('[data-lv]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lv===lv));hint()}
 function exportTxt(res){const ex={obra:'Casa Sayago',referencia:'X desde el muro del fondo, Y desde el muro del baño, z sobre el piso de cada nivel',
@@ -765,7 +855,7 @@ function exportTxt(res){const ex={obra:'Casa Sayago',referencia:'X desde el muro
   observaciones:res.warns};
  if(document.activeElement!==$('exportTxt'))$('exportTxt').value=JSON.stringify(ex,null,1)}
 function refresh(){const res=compute();if(G)G.update(res,false);
- if(tab==='inst'){if(view==='plan')drawPlanTo(svg,lvFocus==='all'?'pb':lvFocus,res,true,false);selPanel(res);kpis(res)}
+ if(tab==='inst'){if(view==='plan')drawPlanTo(svg,lvFocus==='all'?'pb':lvFocus,res,true,false);selPanel(res);kpis(res);locTable(res)}
  else if(tab==='desglose')desglose(res);else if(tab==='guia')guia(res);else if(tab==='tablero')drawTablero(res);else if(tab==='compras')compras(res);else if(tab==='reglas')ruleChk(res);else if(tab==='datos')exportTxt(res)}
 function commit(){save();refresh()}
 function showTab(t){tab=t;document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));
@@ -775,7 +865,7 @@ document.querySelectorAll('[data-tab]').forEach(b=>b.onclick=()=>showTab(b.datas
 document.querySelectorAll('[data-print]').forEach(b=>b.onclick=()=>window.print());
 document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{view=b.dataset.v;document.querySelectorAll('[data-v]').forEach(x=>x.setAttribute('aria-selected',x===b));
  $('v3d').hidden=view!=='3d';$('vplan').hidden=view!=='plan';if(view==='plan'&&lvFocus==='all')setFocus('pb');if(view==='3d'&&G){G.resize();G.need()}refresh()});
-document.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>{if(view==='plan'&&b.dataset.lv==='all')return;setFocus(b.dataset.lv);refresh()});
+document.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>{if(view==='plan'&&b.dataset.lv==='all')return;setFocus(b.dataset.lv);if(b.dataset.lv!=='all')locLv=b.dataset.lv;refresh()});
 $('bEdit').onclick=()=>setEdit(!editing);
 const tg=(id,k)=>{const b=$(id);b.setAttribute('aria-pressed',!!st[k]);b.onclick=()=>{st[k]=!st[k];b.setAttribute('aria-pressed',st[k]);commit()}};
 tg('bRoutes','showRoutes');tg('bCodes','codes');
@@ -794,8 +884,8 @@ window.matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',re
 new MutationObserver(rethemeAll).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 window.__elec={get st(){return st},project:(x,y,z)=>G&&G.project(x,y,z),compute,showTab,setEdit};
 buildTools();hint();legend();setFocus('pb');if(G)G.update(compute(),true);
-{const h=(location.hash||'').slice(1);const map={planta:'inst',circuitos:'desglose',despiece:'compras'};const t=map[h]||(['inst','desglose','guia','tablero','compras','reglas','datos'].includes(h)?h:'inst');
- showTab(t);if(h==='planta')document.querySelector('[data-v="plan"]').click()}
+{const h=(location.hash||'').slice(1);const map={planta:'inst',editar:'inst',circuitos:'desglose',despiece:'compras'};const t=map[h]||(['inst','desglose','guia','tablero','compras','reglas','datos'].includes(h)?h:'inst');
+ showTab(t);if(h==='planta')document.querySelector('[data-v="plan"]').click();if(h==='editar')setEdit(true)}
 })();
 </script>
 </body>
