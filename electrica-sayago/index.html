@@ -188,6 +188,7 @@ textarea{width:100%;min-height:130px;font:12px var(--f-m);background:var(--paper
    <div class="labels" id="labels" aria-hidden="true"></div>
    <div class="ov">
     <button type="button" id="bRoutes" aria-pressed="true">Tendidos</button>
+    <button type="button" id="bWires" aria-pressed="true">Cables</button>
     <button type="button" id="bCodes" aria-pressed="true">Códigos</button>
     <button type="button" id="bRoof" aria-pressed="true">Techo</button>
     <button type="button" id="bTop" aria-pressed="false">Vista superior</button>
@@ -346,7 +347,7 @@ const T={
 const WC={'marrón':'#7B4A2A','celeste':'#5BB4DE','verde-amarillo':'linear-gradient(90deg,#2E9E3E 50%,#E8D21E 50%)','negro':'#222'};
 const WROLE={'marrón':'fase','celeste':'neutro','verde-amarillo':'tierra','negro':'retorno de llave'};
 // luces exteriores: apliques en la cara de afuera de los 4 muros, una llave junto a LL1 (misma caja de 3 módulos)
-const EXT=[['luzext','pb',2.20,4.97,2.10,5],['luzext','pb',8.83,3.60,2.10,5],['luzext','pb',3.20,-0.13,2.10,5],['luzext','pb',-0.13,2.10,2.10,5],['llave','pb',3.35,4.81]];
+const EXT=[['luzext','pb',2.20,4.97,2.10,5],['luzext','pb',8.83,3.60,2.10,5],['luzext','pb',3.20,-0.13,2.10,5],['luzext','pb',-0.13,2.10,2.10,5],['llave','pb',3.57,4.81]];
 const isL=t=>t==='luz'||t==='luzext';
 // instalación base: [tipo, nivel, X, Y, altura sobre el piso del nivel, índice de llave para luces]
 const BASE=[
@@ -356,7 +357,7 @@ const BASE=[
  ['toma','pb',5.90,1.00,1.20],
  ['heladera','pb',8.05,4.81,0.40],['lavavajillas','pb',8.67,2.34,0.40],['lavarropas','pb',5.74,0.80,1.10],['calefon','pb',7.30,-0.13,1.45],
  ['luz','pb',1.60,2.40,null,0],['luz','pb',4.20,2.40,null,0],['luz','pb',7.40,3.20,null,1],['luz','pb',7.30,0.75,null,2],
- ['llave','pb',3.67,4.81],['llave','pb',6.10,4.81],['llave','pb',6.80,1.61],
+ ['llave','pb',3.67,4.81],['llave','pb',3.77,4.81],['llave','pb',6.80,1.61],
  ['toma','pa',1.85,0.03],['toma','pa',6.48,0.03],['toma','pa',1.77,4.81],['toma','pa',6.43,4.81],
  ['luz','pa',2.50,2.42,null,4],['luz','pa',6.20,2.42,null,3],
  ['llave','pa',8.67,1.20],['llave','pa',0.03,1.50],
@@ -372,9 +373,13 @@ const zOf=i=>i.t==='luz'?zLuz(i):(i.z??LV[i.lv].piso+T[i.t].z);
 const zRel=i=>zOf(i)-LV[i.lv].piso;
 function fromBase(){nid=1;const items=BASE.map(([t,lv,x,y,zr])=>({id:nid++,t,lv,x,y,z:t==='luz'?null:LV[lv].piso+(zr??T[t].z)}));
  const ll=items.filter(i=>i.t==='llave');BASE.forEach((b,k)=>{if(isL(b[0])&&b[5]!=null&&ll[b[5]])items[k].ll=ll[b[5]].id});
- return {showRoutes:true,codes:true,ext:1,items}}
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&Array.isArray(s.items)){nid=Math.max(0,...s.items.map(i=>i.id))+1;if(!s.ext){addExt(s.items);s.ext=1}return s}}catch(e){}return fromBase()}
+ ll.forEach((k,n)=>{if([0,1,5].includes(n))k.feed='caja'});
+ return {showRoutes:true,codes:true,wires:true,ext:2,items}}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&Array.isArray(s.items)){nid=Math.max(0,...s.items.map(i=>i.id))+1;if(!s.ext){addExt(s.items);s.ext=1}if(s.ext<2)toCaja(s);return s}}catch(e){}return fromBase()}
 function addExt(items){const add=EXT.map(([t,lv,x,y,zr])=>({id:nid++,t,lv,x,y,z:LV[lv].piso+(zr??T[t].z)}));const k=add.find(i=>i.t==='llave');add.forEach(i=>{if(i.t==='luzext')i.ll=k.id});items.push(...add)}
+function toCaja(s){const at=(x,y)=>s.items.find(i=>i.t==='llave'&&i.lv==='pb'&&Math.abs(i.x-x)<0.01&&Math.abs(i.y-y)<0.01);
+ const l2=at(6.10,4.81);if(l2)l2.x=3.77;const l6=at(3.35,4.81);if(l6)l6.x=3.57;
+ [3.57,3.67,3.77].forEach(x=>{const k=at(x,4.81);if(k)k.feed='caja'});s.wires=true;s.ext=2}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
 st=load();
 
@@ -419,25 +424,39 @@ function compute(){
  st.items.forEach(i=>res.pc[i.id]=circOf(i));
  if(!tab){res.warns.push('Falta ubicar el tablero.');return res}
  res.label[tab.id]='TG';
- for(const cid in CIRC){const c=CIRC[cid],r=res.circ[cid];
-  r.pts=st.items.filter(i=>res.pc[i.id]===cid&&i.t!=='llave'&&i.t!=='tablero');if(!r.pts.length)continue;
-  let cur=tab,left=r.pts.slice(),n=1;
-  while(left.length){left.sort((a,b)=>route(cur,a)-route(cur,b));const nx=left.shift(),Lr=route(cur,nx);
-   res.tramos.push({c:cid,a:cur,b:nx,cano:Lr,cond:C3(c.sec),kind:cur===tab?'desde el tablero':'en salto'});res.label[nx.id]=cid+'.'+(n++);cur=nx}
-  r.W=r.pts.reduce((s,i)=>s+(T[i.t].W||0),0);
-  if(r.pts.length>c.max)res.warns.push(`${cid} (${c.name}) tiene ${r.pts.length} ${c.kind==='luz'?'luces':'puntos'}; UTE admite hasta ${c.max} por protección.`)}
  const luces=st.items.filter(i=>isL(i.t)),llaves=st.items.filter(i=>i.t==='llave');
  llaves.forEach((k,n)=>res.label[k.id]='LL'+(n+1));
  const asig={};
  luces.forEach(l=>{if(!llaves.length)return;let k=l.ll!=null?llaves.find(x=>x.id===l.ll):null;
   if(!k){const cand=llaves.filter(x=>x.lv===l.lv);k=(cand.length?cand:llaves).slice().sort((a,b)=>hd(a,l)-hd(b,l))[0]}
   res.asig[l.id]=k.id;(asig[k.id]=asig[k.id]||[]).push(l)});
+ const viaCaja=l=>{const k=llaves.find(x=>x.id===res.asig[l.id]);return !!(k&&k.feed==='caja')};
+ const N={};
+ for(const cid in CIRC){const c=CIRC[cid],r=res.circ[cid];
+  r.pts=st.items.filter(i=>res.pc[i.id]===cid&&i.t!=='llave'&&i.t!=='tablero');if(!r.pts.length)continue;
+  let cur=tab,left=r.pts.filter(p=>!(isL(p.t)&&viaCaja(p))),n=1;
+  while(left.length){left.sort((a,b)=>route(cur,a)-route(cur,b));const nx=left.shift(),Lr=route(cur,nx);
+   res.tramos.push({c:cid,a:cur,b:nx,cano:Lr,cond:C3(c.sec),kind:cur===tab?'desde el tablero':'en salto'});res.label[nx.id]=cid+'.'+(n++);cur=nx}
+  N[cid]=n;
+  r.W=r.pts.reduce((s,i)=>s+(T[i.t].W||0),0);
+  if(r.pts.length>c.max)res.warns.push(`${cid} (${c.name}) tiene ${r.pts.length} ${c.kind==='luz'?'luces':'puntos'}; UTE admite hasta ${c.max} por protección.`)}
  const adj=(a,b)=>res.tramos.some(t=>(t.a===a&&t.b===b)||(t.a===b&&t.b===a));
- llaves.forEach(k=>{const ls=asig[k.id];
+ llaves.filter(k=>k.feed!=='caja').forEach(k=>{const ls=asig[k.id];
   if(!ls){res.warns.push(res.label[k.id]+': llave sin luz asignada. Tocala en Editar y asignale una luz.');return}
   ls.sort((a,b)=>hd(a,k)-hd(b,k));const near=ls[0];res.pc[k.id]=res.pc[near.id];res.circ[res.pc[near.id]].llaves.push(k);
   res.tramos.push({c:res.pc[near.id],a:near,b:k,cano:route(near,k),cond:[[1,'marrón'],[1,'negro']],kind:'bajada a la llave'});
   ls.slice(1).forEach(l=>res.tramos.push({c:res.pc[l.id],a:near,b:l,cano:adj(near,l)?0:hd(near,l),cond:[[1,'negro']],kind:adj(near,l)?'retorno por el caño del circuito':'retorno a otra luz'}))});
+ const cajas=[];llaves.filter(k=>k.feed==='caja').forEach(k=>{const g=cajas.find(g=>g[0].lv===k.lv&&hd(g[0],k)<0.35);g?g.push(k):cajas.push([k])});
+ cajas.forEach(g=>{const byC={};
+  g.forEach(k=>{const ls=asig[k.id];if(!ls){res.warns.push(res.label[k.id]+': llave sin luz asignada. Tocala en Editar y asignale una luz.');return}
+   const cid=res.pc[ls[0].id];res.pc[k.id]=cid;res.circ[cid].llaves.push(k);(byC[cid]=byC[cid]||[]).push(k)});
+  for(const cid in byC){const ks=byC[cid],sec=CIRC[cid].sec;ks.sort((a,b)=>route(tab,a)-route(tab,b));const k0=ks[0];
+   res.tramos.push({c:cid,a:tab,b:k0,cano:route(tab,k0),cond:C3(sec),kind:'del tablero a la caja de llaves'});
+   ks.slice(1).forEach(k=>res.tramos.push({c:cid,a:k0,b:k,cano:0,cond:[[sec,'marrón']],kind:'puente de fase en la caja'}));
+   ks.forEach(k=>{let cur=k,left=asig[k.id].slice();
+    while(left.length){left.sort((a,b)=>route(cur,a)-route(cur,b));const nx=left.shift();
+     res.tramos.push({c:cid,a:cur,b:nx,cano:route(cur,nx),cond:[[sec,'negro'],[sec,'celeste'],[sec,'verde-amarillo']],kind:cur===k?'retorno de la llave a la luz':'puente entre luces'});
+     res.label[nx.id]=cid+'.'+(N[cid]++);cur=nx}})}});
  if(luces.length&&!llaves.length)res.warns.push('Hay luces sin ninguna llave.');
  ['C7','C8','C9','C10'].forEach(c=>{if(!res.circ[c].pts.length)res.notes.push(`${c} (${CIRC[c].name}) sin ubicar.`)});
  res.tramos.forEach(t=>{t.m=t.cano+0.4;res.cano+=t.cano;res.circ[t.c].cano+=t.cano;t.cond.forEach(([s,col])=>{const k=s+'|'+col;res.cond[k]=(res.cond[k]||0)+t.m;res.circ[t.c].cond+=t.m})});
@@ -490,6 +509,7 @@ function selPanel(res){const p=$('selPanel'),it=st.items.find(i=>i.id===sel);
  if(it.t==='luzext')extra=`<div class="field"><label for="selZ">Altura (m)</label><input id="selZ" type="number" step="0.05" min="0.1" max="3" value="${r2(zRel(it))}"></div>`;
  if(isL(it.t))extra+=`<div class="field"><label for="selLL">Llave</label><select id="selLL"><option value="">Más cercana${res.asig[it.id]?' ('+res.label[res.asig[it.id]]+')':''}</option>${llaves.map(k=>`<option value="${k.id}" ${it.ll===k.id?'selected':''}>${res.label[k.id]} · ${LV[k.lv].n}</option>`).join('')}</select></div>`;
  else if(it.t!=='luzext')extra=`<div class="field"><label for="selZ">Altura (m)</label><input id="selZ" type="number" step="0.05" min="0.1" max="3" value="${r2(zRel(it))}"></div><button class="btn" id="zBtn" type="button">Altura tipo ${fmt(T[it.t].z)}</button>`;
+ if(it.t==='llave')extra+=`<div class="field"><label for="selFeed">Fase</label><select id="selFeed"><option value="">Desde la luz</option><option value="caja" ${it.feed==='caja'?'selected':''}>Desde el tablero (caja de llaves)</option></select></div>`;
  if(it.t!=='tablero'&&it.t!=='llave')extra+=`<div class="field"><label for="selC">Circuito</label><select id="selC"><option value="">Automático (${autoC(it)})</option>${Object.keys(CIRC).map(k=>`<option value="${k}" ${it.c===k?'selected':''}>${k} ${CIRC[k].name}</option>`).join('')}</select></div>`;
  p.innerHTML=info+`<div class="field"><label for="selLv">Nivel</label><select id="selLv"><option value="pb" ${it.lv==='pb'?'selected':''}>Planta baja</option><option value="pa" ${it.lv==='pa'?'selected':''}>Planta alta</option></select></div>
   <div class="field"><label for="selX">X (m)</label><input id="selX" type="number" step="0.05" value="${it.x}"></div>
@@ -499,6 +519,7 @@ function selPanel(res){const p=$('selPanel'),it=st.items.find(i=>i.id===sel);
  $('selY').onchange=e=>{it.y=clamp(+e.target.value||0,-0.6,A+0.6);commit()};
  $('selLv').onchange=e=>{const rel=zRel(it);it.lv=e.target.value;if(it.t!=='luz')it.z=LV[it.lv].piso+rel;setFocus(it.lv);commit()};
  if($('selZ')){$('selZ').onchange=e=>{it.z=LV[it.lv].piso+clamp(+e.target.value||T[it.t].z,0.1,3);commit()};if($('zBtn'))$('zBtn').onclick=()=>{it.z=LV[it.lv].piso+T[it.t].z;commit()}}
+ if($('selFeed'))$('selFeed').onchange=e=>{it.feed=e.target.value||null;commit()};
  if($('selLL'))$('selLL').onchange=e=>{it.ll=e.target.value?+e.target.value:null;commit()};
  if($('selC'))$('selC').onchange=e=>{it.c=e.target.value||null;commit()};
  $('delBtn').onclick=()=>{st.items=st.items.filter(i=>i.id!==it.id);st.items.forEach(l=>{if(l.ll===it.id)l.ll=null});sel=null;commit()}}
@@ -533,7 +554,9 @@ function guia(res){
   ['Cajas','Atornillá cada caja a un montante o a un travesaño de PGU a la altura de la tabla, con el frente al ras de la placa terminada. Si usás cajas con grampas para placa de yeso, igual dejá el travesaño para que no se hunda. Las cajas metálicas van a tierra.'],
   ['Caños',`Un caño corrugado de 3/4" por circuito desde el tablero (${nC} caños), subiendo por la cavidad del muro hasta el cielorraso. Arriba corren por el entrepiso y bajan verticales a cada caja: nunca en diagonal por el muro. Usá los punzonados de los montantes y pasacables de PVC en cada perforación de solera o montante. Dejá un alambre guía en cada caño.`],
   ['Pasar cables','Seguí el desglose por circuito: cada tramo dice qué cables van en el caño y de qué color. Dejá 20 cm de punta en cada caja y 50 cm en el tablero. Rotulá cada circuito con cinta en la punta del tablero.'],
-  ['Luces y llaves','A cada caja de luz llegan fase marrón, neutro celeste y tierra de 1 mm². De ahí baja a la llave la fase marrón y vuelve el retorno negro. En la luz se conectan el neutro y el retorno; la tierra va al borne de tierra de la luminaria.'],
+  ['Caja de llaves','Del tablero a la caja de llaves va un caño por circuito con fase marrón, neutro celeste y tierra verde-amarillo. En la caja la fase entra a la primera llave y se puentea con un marrón corto a las otras llaves del mismo circuito; nunca entre circuitos distintos. Neutros y tierras no tocan las llaves: se empalman con bornera, uno por circuito, y siguen a las luces.'],
+  ['Retornos y puentes entre luces','De cada llave sale un caño a su grupo de luces con retorno negro, neutro celeste y tierra. De una luz a la siguiente sigue un caño con los mismos 3 cables, empalmando igual con igual. En cada luz: negro al borne L, celeste al N, tierra a su borne.'],
+  ['Llaves con fase desde la luz','Donde la llave no está en la caja (baño, planta alta), a la caja de luz llegan fase, neutro y tierra; de ahí baja a la llave la fase marrón y vuelve el retorno negro.'],
   ['Tomas y equipos','Fase marrón y neutro celeste a los bornes del toma y la tierra verde-amarillo al borne del medio. En baño y cocina va el interruptor bipolar al lado del toma, cortando fase y neutro. El calefón va con conexión fija en caja estanca a 20 cm sobre las conexiones de agua, con su interruptor bipolar.'],
   ['Tierra','Jabalina de 1,5 m clavada afuera con su tomacable, y cable de 6 mm² verde-amarillo hasta la barra de tierra del tablero. Desde la barra, un puente de 6 mm² a la estructura: terminal a ojal atornillado a una solera inferior.'],
   ['Tablero','Armalo con el esquema de la pestaña Tablero.'],
@@ -738,7 +761,15 @@ function init3D(){
    if(i.id===sel){const ring=new TH.Mesh(new TH.TorusGeometry(0.22,0.018,8,32),new TH.MeshBasicMaterial({color:col('--acc')}));if(i.t==='luz'){ring.rotation.x=Math.PI/2;ring.position.y=-0.03}else if(wa&&wa.ax==='x')ring.rotation.y=Math.PI/2;g.add(ring)}
    if(!dim){const h=new TH.Mesh(geo.hit,hitMat);h.userData.id=i.id;g.add(h);ptMesh.set(i.id,{g,h})}
    groups.pts.add(g)})}
+ const WHEX={'marrón':0x7B4A2A,'celeste':0x5BB4DE,'verde-amarillo':0x3FA34D,'negro':0x2b2b2b},wMat={},wGeo=new TH.CylinderGeometry(1,1,1,6),UP=new TH.Vector3(0,1,0);
+ function rod(p,q,hex){const d=new TH.Vector3().subVectors(q,p),len=d.length();if(len<1e-4)return;const m=new TH.Mesh(wGeo,wMat[hex]||(wMat[hex]=new TH.MeshBasicMaterial({color:hex,depthTest:false,transparent:true,opacity:0.95})));
+  m.scale.set(0.022,len,0.022);m.renderOrder=5;m.position.copy(p).addScaledVector(d,0.5);m.quaternion.setFromUnitVectors(UP,d.normalize());groups.routes.add(m)}
+ function wirePath(s,ra,rb){const a=s.a,b=s.b;if(!s.cano)return [[a.x,a.y,zOf(a)],[b.x,b.y,zOf(b)]];
+  const P=[[a.x,a.y,zOf(a)],[a.x,a.y,ra],[b.x,a.y,ra],[b.x,b.y,ra]];if(rb!==ra)P.push([b.x,b.y,rb]);P.push([b.x,b.y,zOf(b)]);return P}
  function buildRoutes(res){groups.routes.clear();if(!st.showRoutes)return;const ks=Object.keys(CIRC);
+  if(st.wires){res.tramos.forEach(s=>{if(circFocus&&s.c!==circFocus)return;if(lvFocus!=='all'&&s.a.lv!==lvFocus&&s.b.lv!==lvFocus)return;
+   const k=ks.indexOf(s.c),ra=run(s.a)-0.05-k*0.012,rb=run(s.b)-0.05-k*0.012,P=wirePath(s,ra,rb),n=s.cond.length;
+   s.cond.forEach(([,cn],j)=>{const o=(j-(n-1)/2)*0.05,pts=P.map(([x,y,h])=>V(x+o,y+o,h));for(let q=1;q<pts.length;q++)rod(pts[q-1],pts[q],WHEX[cn])})});return}
   res.tramos.forEach(s=>{if(!s.cano)return;if(circFocus&&s.c!==circFocus)return;if(lvFocus!=='all'&&s.a.lv!==lvFocus&&s.b.lv!==lvFocus)return;
    const k=ks.indexOf(s.c),a=s.a,b=s.b,ra=run(a)-0.03-k*0.015,rb=run(b)-0.03-k*0.015,cl=col(CIRC[s.c].col);
    if(s.kind.startsWith('bajada')||s.kind.startsWith('retorno')){const P=[V(a.x,a.y,zOf(a)),V(a.x,a.y,ra),V(b.x,b.y,ra),V(b.x,b.y,zOf(b))];const ln=new TH.Line(new TH.BufferGeometry().setFromPoints(P),new TH.LineDashedMaterial({color:cl,dashSize:0.06,gapSize:0.06}));ln.computeLineDistances();groups.routes.add(ln);return}
@@ -836,6 +867,7 @@ function locTable(res){if(!editing)return;
   let cc='';
   if(isL(i.t))cc=`<select data-f="ll"><option value="">Llave más cercana${res.asig[i.id]?' ('+res.label[res.asig[i.id]]+')':''}</option>${llaves.map(k=>`<option value="${k.id}" ${i.ll===k.id?'selected':''}>${res.label[k.id]} · ${LV[k.lv].n}</option>`).join('')}</select>`;
   else if(i.t!=='tablero'&&i.t!=='llave')cc=`<select data-f="c"><option value="">Auto (${autoC(i)})</option>${Object.keys(CIRC).map(k=>`<option value="${k}" ${i.c===k?'selected':''}>${k} ${CIRC[k].name}</option>`).join('')}</select>`;
+  else if(i.t==='llave')cc=`<select data-f="feed"><option value="">Fase desde la luz</option><option value="caja" ${i.feed==='caja'?'selected':''}>Fase desde el tablero (caja de llaves)</option></select> <span class="small">${c||'—'}</span>`;
   else cc=`<span class="small">${c||'—'}</span>`;
   h+=`<tr data-id="${i.id}" class="${i.id===sel?'on':''} ${res.hit[i.id]?'bad':''}" title="${res.hit[i.id]?res.hit[i.id].join(' · '):''}"><td class="code">${c?cidTag(c)+' ':''}${res.label[i.id]||''}</td><td>${T[i.t].label}<div class="small">${zona(i)}</div></td><td data-l="Muro">${muro}</td><td data-l="Distancia">${dist}</td><td data-l="Altura">${alt}</td><td data-l="Circuito">${cc}</td><td>${i.t==='tablero'?'':'<button type="button" class="x" data-del aria-label="Eliminar">✕</button>'}</td></tr>`});
  $('locTbl').innerHTML=h+'</tbody>';
@@ -854,6 +886,7 @@ function locTable(res){if(!editing)return;
    else if(f==='along'){const w=wallOf(it),ww=wallsLv(it.lv).find(x=>x[1]===w.id);placeOnWall(it,w.id,+v||0,sideOf(it,ww))}
    else if(f==='c'){it.c=v||null}
    else if(f==='ll'){it.ll=v?+v:null}
+   else if(f==='feed'){it.feed=v||null}
    commit()}));
   const d=tr.querySelector('[data-del]');if(d)d.onclick=()=>{pushUndo();st.items=st.items.filter(i=>i.id!==it.id);st.items.forEach(l=>{if(l.ll===it.id)l.ll=null});if(sel===it.id)sel=null;commit();$('locMsg').textContent=`Se eliminó: ${T[it.t].label.toLowerCase()}. Podés deshacer.`}})}
 document.querySelectorAll('[data-loc]').forEach(b=>b.onclick=()=>{locLv=b.dataset.loc;setFocus(locLv);refresh()});
@@ -863,7 +896,7 @@ $('locUndo').onclick=()=>{if(!undo.length)return;const items=JSON.parse(undo.pop
 /* ================= ciclo ================= */
 function setFocus(lv){lvFocus=lv;document.querySelectorAll('[data-lv]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lv===lv));hint()}
 function exportTxt(res){const ex={obra:'Casa Sayago',referencia:'X desde el muro del fondo, Y desde el muro del baño, z sobre el piso de cada nivel',
-  puntos:st.items.map(i=>({id:res.label[i.id]||'?',tipo:i.t,nivel:i.lv,x:i.x,y:i.y,z:r2(zRel(i)),circuito:res.pc[i.id],...(i.c?{circuito_fijo:true}:{}),...(isL(i.t)&&res.asig[i.id]?{llave:res.label[res.asig[i.id]]}:{})})),
+  puntos:st.items.map(i=>({id:res.label[i.id]||'?',tipo:i.t,nivel:i.lv,x:i.x,y:i.y,z:r2(zRel(i)),circuito:res.pc[i.id],...(i.c?{circuito_fijo:true}:{}),...(i.t==='llave'&&i.feed==='caja'?{fase_desde_tablero:true}:{}),...(isL(i.t)&&res.asig[i.id]?{llave:res.label[res.asig[i.id]]}:{})})),
   observaciones:res.warns};
  if(document.activeElement!==$('exportTxt'))$('exportTxt').value=JSON.stringify(ex,null,1)}
 function refresh(){const res=compute();if(G)G.update(res,false);
@@ -880,14 +913,14 @@ document.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>{view=b.dataset.v
 document.querySelectorAll('[data-lv]').forEach(b=>b.onclick=()=>{if(view==='plan'&&b.dataset.lv==='all')return;setFocus(b.dataset.lv);if(b.dataset.lv!=='all')locLv=b.dataset.lv;refresh()});
 $('bEdit').onclick=()=>setEdit(!editing);
 const tg=(id,k)=>{const b=$(id);b.setAttribute('aria-pressed',!!st[k]);b.onclick=()=>{st[k]=!st[k];b.setAttribute('aria-pressed',st[k]);commit()}};
-tg('bRoutes','showRoutes');tg('bCodes','codes');
+tg('bRoutes','showRoutes');tg('bCodes','codes');tg('bWires','wires');
 $('pMed').addEventListener('input',()=>refresh());
 $('copyBtn').onclick=()=>{const t=$('exportTxt');navigator.clipboard.writeText(t.value).then(()=>$('copyMsg').textContent='Copiado.',()=>{t.focus();t.select();$('copyMsg').textContent='Seleccioné el texto, copialo a mano.'})};
 $('loadBtn').onclick=()=>{try{const d=JSON.parse($('exportTxt').value);if(!d.puntos)throw 0;nid=1;
- const items=d.puntos.map(p=>{const lv=p.nivel==='pa'?'pa':'pb';return {id:nid++,t:p.tipo,lv,x:+p.x,y:+p.y,z:p.tipo==='luz'?null:LV[lv].piso+(+p.z),c:p.circuito_fijo?p.circuito:null,_ll:p.llave||null}});
+ const items=d.puntos.map(p=>{const lv=p.nivel==='pa'?'pa':'pb';return {id:nid++,t:p.tipo,lv,x:+p.x,y:+p.y,z:p.tipo==='luz'?null:LV[lv].piso+(+p.z),c:p.circuito_fijo?p.circuito:null,feed:p.fase_desde_tablero?'caja':null,_ll:p.llave||null}});
  const lab={};items.filter(i=>i.t==='llave').forEach((k,n)=>lab['LL'+(n+1)]=k.id);
  items.forEach(i=>{if(i._ll)i.ll=lab[i._ll]??null;delete i._ll});
- st={showRoutes:true,codes:st.codes,ext:1,items};sel=null;save();if(G)G.update(compute(),true);refresh();$('copyMsg').textContent='Distribución cargada.'}
+ st={showRoutes:true,codes:st.codes,wires:st.wires,ext:2,items};sel=null;save();if(G)G.update(compute(),true);refresh();$('copyMsg').textContent='Distribución cargada.'}
  catch(e){$('copyMsg').textContent='No pude leer ese texto. Pegá la distribución completa.'}};
 $('resetBtn').onclick=()=>$('resetConfirm').hidden=false;$('resetNo').onclick=()=>$('resetConfirm').hidden=true;
 $('resetYes').onclick=()=>{st=fromBase();sel=null;save();$('resetConfirm').hidden=true;if(G)G.update(compute(),true);refresh();$('copyMsg').textContent='Volvió la instalación base.'};
