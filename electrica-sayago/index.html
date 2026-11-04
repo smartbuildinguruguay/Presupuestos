@@ -146,6 +146,7 @@ textarea{width:100%;min-height:130px;font:12px var(--f-m);background:var(--paper
  .planbox{border:1px solid #bbb;overflow:visible;break-inside:avoid}.planbox svg{min-width:0}
  @page{size:A4;margin:11mm}
 }
+.sync{display:flex;gap:8px;align-items:center;flex-wrap:wrap;font-size:.82rem;color:var(--muted);margin:2px 0 8px}.sync.pend{color:var(--warn)}.sync .tok{display:flex;gap:6px;align-items:center;flex-wrap:wrap;color:var(--ink)}.sync input{font:13px var(--f-m);padding:5px 8px;border:1px solid var(--line);border-radius:6px;background:var(--paper);color:var(--ink);min-width:220px}
 </style>
 </head>
 <body>
@@ -177,6 +178,7 @@ textarea{width:100%;min-height:130px;font:12px var(--f-m);background:var(--paper
   <button type="button" class="vt" data-lv="all" aria-pressed="false">Toda</button>
   <button type="button" class="edit noprint" id="bEdit" aria-pressed="false">✎ Modificar ubicaciones</button>
  </div>
+ <div class="sync noprint" id="syncBar" aria-live="polite"></div>
  <div class="editbox" id="editBox" hidden>
   <div class="tools" id="tools" role="toolbar" aria-label="Elemento a colocar"></div>
   <p class="hint" id="hint"></p>
@@ -375,7 +377,7 @@ function fromBase(){nid=1;const items=BASE.map(([t,lv,x,y,zr])=>({id:nid++,t,lv,
  const ll=items.filter(i=>i.t==='llave');BASE.forEach((b,k)=>{if(isL(b[0])&&b[5]!=null&&ll[b[5]])items[k].ll=ll[b[5]].id});
  ll.forEach((k,n)=>{if([0,1,5].includes(n))k.feed='caja'});
  return {showRoutes:true,codes:true,wires:true,ext:2,items}}
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&Array.isArray(s.items)){nid=Math.max(0,...s.items.map(i=>i.id))+1;if(!s.ext){addExt(s.items);s.ext=1}if(s.ext<2)toCaja(s);return s}}catch(e){}return fromBase()}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&Array.isArray(s.items)){nid=Math.max(0,...s.items.map(i=>i.id))+1;if(!s.ext){addExt(s.items);s.ext=1}if(s.ext<2)toCaja(s);return s}}catch(e){}const b=fromBase();b.fresh=true;return b}
 function addExt(items){const add=EXT.map(([t,lv,x,y,zr])=>({id:nid++,t,lv,x,y,z:LV[lv].piso+(zr??T[t].z)}));const k=add.find(i=>i.t==='llave');add.forEach(i=>{if(i.t==='luzext')i.ll=k.id});items.push(...add)}
 function toCaja(s){const at=(x,y)=>s.items.find(i=>i.t==='llave'&&i.lv==='pb'&&Math.abs(i.x-x)<0.01&&Math.abs(i.y-y)<0.01);
  const l2=at(6.10,4.81);if(l2)l2.x=3.77;const l6=at(3.35,4.81);if(l6)l6.x=3.57;
@@ -491,7 +493,7 @@ function hint(){const n=LV[lvFocus==='all'?'pb':lvFocus].n.toLowerCase();$('hint
 function legend(){$('legend').innerHTML=Object.keys(CIRC).map(c=>`<span><i style="background:var(${CIRC[c].col})"></i>${c} ${CIRC[c].name}</span>`).join('');
  $('wireLegend').innerHTML=Object.keys(WC).map(c=>`<span class="wire"><i style="background:${WC[c]}"></i><b>${c}</b>&nbsp;${WROLE[c]}</span>`).join('')}
 function setEdit(on){editing=on;$('bEdit').setAttribute('aria-pressed',on);$('bEdit').textContent=on?'✓ Listo':'✎ Modificar ubicaciones';$('editBox').hidden=!on;$('hintView').hidden=on;$('locPanel').hidden=!on;if(on){locLv=lvFocus==='pa'?'pa':'pb';setFocus(locLv);if(tab!=='inst')showTab('inst')}else $('locMsg').textContent='';try{history.replaceState(null,'',on?'#editar':'#inst')}catch(e){}
- $('ovh').textContent=on?'Arrastrá un punto para moverlo · arrastrá el fondo para girar · pellizco o rueda para acercar':'Arrastrá el fondo para girar · pellizco o rueda para acercar';if(!on)tool='select';buildTools();hint();refresh()}
+ $('ovh').textContent=on?'Arrastrá un punto para moverlo · arrastrá el fondo para girar · pellizco o rueda para acercar':'Arrastrá el fondo para girar · pellizco o rueda para acercar';if(!on){tool='select';if(sinSubir())subir(false)}buildTools();hint();refresh()}
 
 /* ================= panel del punto ================= */
 function selPanel(res){const p=$('selPanel'),it=st.items.find(i=>i.id===sel);
@@ -893,16 +895,52 @@ document.querySelectorAll('[data-loc]').forEach(b=>b.onclick=()=>{locLv=b.datase
 $('locDone').onclick=()=>setEdit(false);
 $('locUndo').onclick=()=>{if(!undo.length)return;const items=JSON.parse(undo.pop());st.items=items;nid=Math.max(0,...items.map(i=>i.id))+1;sel=null;$('locUndo').disabled=!undo.length;commit();$('locMsg').textContent='Deshecho.'};
 
+/* ================= guardado en GitHub ================= */
+const GH={repo:'smartbuildinguruguay/Presupuestos',path:'electrica-sayago/instalacion.json',branch:'main'};
+const TKEY='sbu-gh-token';let syncMsg='',askTok=false,conflict=false,remoteCache=null,busy=false;
+const tok=()=>{try{return localStorage.getItem(TKEY)||''}catch(e){return ''}};
+const itemsStr=()=>JSON.stringify(st.items);
+function sinSubir(){return st.synced!==itemsStr()}
+function b64(str){const u=new TextEncoder().encode(str);let o='';for(let i=0;i<u.length;i+=8192)o+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(o)}
+const fdate=iso=>{try{return new Date(iso).toLocaleString('es-UY',{day:'2-digit',month:'2-digit',year:'numeric',hour:'2-digit',minute:'2-digit'})}catch(e){return iso}};
+function syncUI(){const b=$('syncBar');if(!b||(document.activeElement&&document.activeElement.id==='ghTok'))return;const p=sinSubir()&&!st.fresh;b.className='sync noprint'+(p?' pend':'');
+ let h=p?`<span>● Cambios sin subir a GitHub: por ahora solo están en este navegador.</span><button type="button" class="btn" id="ghUp"${busy?' disabled':''}>Subir a GitHub</button>${remoteCache?'<button type="button" class="btn" id="ghDrop">Descartar y usar los de GitHub</button>':''}`
+  :`<span>✓ ${st.rev?'Guardado en GitHub · '+fdate(st.rev):'Instalación base'}</span>`;
+ if(conflict)h+=`<span>Alguien subió cambios a GitHub después de que abriste la página.</span><button type="button" class="btn danger" id="ghForce">Subir igual y reemplazar</button>`;
+ if(askTok)h+=`<span class="tok">Pegá tu clave de GitHub para subir (queda guardada solo en este navegador): <input type="password" id="ghTok" placeholder="github_pat_…" autocomplete="off" aria-label="Clave de GitHub"><button type="button" class="btn" id="ghTokOk">Guardar y subir</button></span>`;
+ if(syncMsg)h+=`<span>${syncMsg}</span>`;
+ b.innerHTML=h;const on=(id,f)=>{const e=$(id);if(e)e.onclick=f};
+ on('ghUp',()=>subir(false));on('ghForce',()=>subir(true));on('ghDrop',()=>{if(remoteCache)adopt(remoteCache)});
+ on('ghTokOk',()=>{const v=$('ghTok').value.trim();if(!v)return;try{localStorage.setItem(TKEY,v)}catch(e){}askTok=false;subir(false)})}
+function adopt(d){st.items=d.items;st.rev=d.actualizado;st.synced=itemsStr();delete st.fresh;nid=Math.max(0,...st.items.map(i=>i.id))+1;sel=null;conflict=false;syncMsg='';save();if(G)G.update(compute(),true);refresh()}
+async function remote(){try{const q=await fetch('instalacion.json?t='+Date.now(),{cache:'no-store'});if(!q.ok)return null;const d=await q.json();return d&&Array.isArray(d.items)&&d.actualizado?d:null}catch(e){return null}}
+async function arranque(){const d=await remote();remoteCache=d;if(!d){syncUI();return}
+ if(st.fresh||(!sinSubir()&&!(st.rev&&st.rev>d.actualizado)))adopt(d);else syncUI()}
+function fail(code){try{localStorage.removeItem(TKEY)}catch(e){}askTok=true;busy=false;syncMsg=code===404?'Esa clave no tiene acceso al repo Presupuestos.':'La clave de GitHub no sirve o venció. Pegá una nueva.';syncUI()}
+async function subir(force){if(busy)return;const t=tok();if(!t){askTok=true;syncMsg='';syncUI();return}
+ busy=true;syncMsg='Subiendo…';syncUI();
+ const api=`https://api.github.com/repos/${GH.repo}/contents/${GH.path}`,hh={Authorization:'Bearer '+t,Accept:'application/vnd.github+json'};
+ try{let sha=null,cur=null;const g=await fetch(api+'?ref='+GH.branch+'&t='+Date.now(),{headers:hh,cache:'no-store'});
+  if(g.status===401||g.status===403){fail(g.status);return}
+  if(g.ok){const j=await g.json();sha=j.sha;try{cur=JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(j.content.replace(/\n/g,'')),c=>c.charCodeAt(0))))}catch(e){}}
+  if(!force&&cur&&cur.actualizado&&st.rev&&cur.actualizado>st.rev){conflict=true;busy=false;syncMsg='';remoteCache=cur;syncUI();return}
+  const now=new Date().toISOString(),body={obra:'Casa Sayago',actualizado:now,items:st.items};
+  const q=await fetch(api,{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},hh),body:JSON.stringify({message:'Eléctrica Sayago: ubicaciones actualizadas desde la página',content:b64(JSON.stringify(body,null,1)),branch:GH.branch,...(sha?{sha}:{})})});
+  if(q.status===401||q.status===403||q.status===404){fail(q.status);return}
+  busy=false;if(!q.ok){syncMsg='No se pudo subir ('+q.status+'). Probá de nuevo.';syncUI();return}
+  st.rev=now;st.synced=itemsStr();delete st.fresh;conflict=false;remoteCache=body;save();syncMsg='Subido. La página pública se actualiza en 1 o 2 minutos.';syncUI()}
+ catch(e){busy=false;syncMsg='No hay conexión con GitHub. Tus cambios siguen guardados en este navegador.';syncUI()}}
+
 /* ================= ciclo ================= */
 function setFocus(lv){lvFocus=lv;document.querySelectorAll('[data-lv]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lv===lv));hint()}
 function exportTxt(res){const ex={obra:'Casa Sayago',referencia:'X desde el muro del fondo, Y desde el muro del baño, z sobre el piso de cada nivel',
   puntos:st.items.map(i=>({id:res.label[i.id]||'?',tipo:i.t,nivel:i.lv,x:i.x,y:i.y,z:r2(zRel(i)),circuito:res.pc[i.id],...(i.c?{circuito_fijo:true}:{}),...(i.t==='llave'&&i.feed==='caja'?{fase_desde_tablero:true}:{}),...(isL(i.t)&&res.asig[i.id]?{llave:res.label[res.asig[i.id]]}:{})})),
   observaciones:res.warns};
  if(document.activeElement!==$('exportTxt'))$('exportTxt').value=JSON.stringify(ex,null,1)}
-function refresh(){const res=compute();if(G)G.update(res,false);
+function refresh(){const res=compute();if(G)G.update(res,false);syncUI();
  if(tab==='inst'){if(view==='plan')drawPlanTo(svg,lvFocus==='all'?'pb':lvFocus,res,true,false);selPanel(res);kpis(res);locTable(res)}
  else if(tab==='desglose')desglose(res);else if(tab==='guia')guia(res);else if(tab==='tablero')drawTablero(res);else if(tab==='compras')compras(res);else if(tab==='reglas')ruleChk(res);else if(tab==='datos')exportTxt(res)}
-function commit(){save();refresh()}
+function commit(){delete st.fresh;save();refresh()}
 function showTab(t){tab=t;document.querySelectorAll('[data-tab]').forEach(b=>b.setAttribute('aria-selected',b.dataset.tab===t));
  document.querySelectorAll('section[id^="t-"]').forEach(s=>s.hidden=s.id!=='t-'+t);try{history.replaceState(null,'','#'+t)}catch(e){}
  if(t==='inst'&&G){G.resize();G.need()}refresh()}
@@ -920,15 +958,15 @@ $('loadBtn').onclick=()=>{try{const d=JSON.parse($('exportTxt').value);if(!d.pun
  const items=d.puntos.map(p=>{const lv=p.nivel==='pa'?'pa':'pb';return {id:nid++,t:p.tipo,lv,x:+p.x,y:+p.y,z:p.tipo==='luz'?null:LV[lv].piso+(+p.z),c:p.circuito_fijo?p.circuito:null,feed:p.fase_desde_tablero?'caja':null,_ll:p.llave||null}});
  const lab={};items.filter(i=>i.t==='llave').forEach((k,n)=>lab['LL'+(n+1)]=k.id);
  items.forEach(i=>{if(i._ll)i.ll=lab[i._ll]??null;delete i._ll});
- st={showRoutes:true,codes:st.codes,wires:st.wires,ext:2,items};sel=null;save();if(G)G.update(compute(),true);refresh();$('copyMsg').textContent='Distribución cargada.'}
+ st={showRoutes:true,codes:st.codes,wires:st.wires,ext:2,rev:st.rev,synced:st.synced,items};sel=null;save();if(G)G.update(compute(),true);refresh();$('copyMsg').textContent='Distribución cargada.'}
  catch(e){$('copyMsg').textContent='No pude leer ese texto. Pegá la distribución completa.'}};
 $('resetBtn').onclick=()=>$('resetConfirm').hidden=false;$('resetNo').onclick=()=>$('resetConfirm').hidden=true;
-$('resetYes').onclick=()=>{st=fromBase();sel=null;save();$('resetConfirm').hidden=true;if(G)G.update(compute(),true);refresh();$('copyMsg').textContent='Volvió la instalación base.'};
+$('resetYes').onclick=()=>{const rv=st.rev,sy=st.synced;st=fromBase();st.rev=rv;st.synced=sy;sel=null;save();$('resetConfirm').hidden=true;if(G)G.update(compute(),true);refresh();$('copyMsg').textContent='Volvió la instalación base.'};
 const rethemeAll=()=>{if(G)G.update(compute(),true);refresh()};
 window.matchMedia('(prefers-color-scheme: dark)').addEventListener?.('change',rethemeAll);
 new MutationObserver(rethemeAll).observe(document.documentElement,{attributes:true,attributeFilter:['data-theme']});
 window.__elec={get st(){return st},project:(x,y,z)=>G&&G.project(x,y,z),compute,showTab,setEdit};
-buildTools();hint();legend();setFocus('pb');if(G)G.update(compute(),true);
+buildTools();hint();legend();setFocus('pb');if(G)G.update(compute(),true);syncUI();arranque();
 {const h=(location.hash||'').slice(1);const map={planta:'inst',editar:'inst',circuitos:'desglose',despiece:'compras'};const t=map[h]||(['inst','desglose','guia','tablero','compras','reglas','datos'].includes(h)?h:'inst');
  showTab(t);if(h==='planta')document.querySelector('[data-v="plan"]').click();if(h==='editar')setEdit(true)}
 })();
