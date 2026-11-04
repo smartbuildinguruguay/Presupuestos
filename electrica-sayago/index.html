@@ -13,17 +13,17 @@
 :root{
  --paper:#edf1f0;--panel:#fbfcfc;--ink:#17252a;--muted:#5a6a6d;--line:#cbd5d4;--grid:#e3e9e8;--wall:#2a3a48;
  --acc:#d9531e;--accs:#fbe6dc;--warn:#b3261e;--warns:#fbe4e2;--ok:#2f8a3c;--oks:#e3f2e1;--p3bg:#e6ecec;
- --c1:#c77700;--c2:#8a6d00;--c3:#1f6fb2;--c4:#4a9bd6;--c5:#0e8a7e;--c6:#2a9d5c;--c7:#7a4fb5;--c8:#b5476a;--c9:#8c564b;--c10:#5c7f1e;
+ --c1:#c77700;--c2:#8a6d00;--c3:#1f6fb2;--c4:#4a9bd6;--c5:#0e8a7e;--c6:#2a9d5c;--c7:#7a4fb5;--c8:#b5476a;--c9:#8c564b;--c10:#5c7f1e;--c11:#c2410c;
  --f-d:'Barlow Condensed','Arial Narrow',system-ui,sans-serif;--f-b:'IBM Plex Sans',system-ui,-apple-system,'Segoe UI',sans-serif;--f-m:'IBM Plex Mono',ui-monospace,Menlo,monospace;
  color-scheme:light}
 @media (prefers-color-scheme:dark){:root:not([data-theme="light"]){
  --paper:#12191b;--panel:#1a2427;--ink:#e3eaea;--muted:#9aabab;--line:#2f3d40;--grid:#223034;--wall:#b9c7d2;
  --acc:#ef7a46;--accs:#3a2116;--warn:#ff8a80;--warns:#3a1e1c;--ok:#6cc45a;--oks:#1c3320;--p3bg:#172124;
- --c1:#f0a33a;--c2:#d6b84a;--c3:#5aa8ec;--c4:#8fc6f0;--c5:#3cc4b4;--c6:#5fd08f;--c7:#b08ae8;--c8:#ec7fa2;--c9:#c79a8f;--c10:#9dc45a;color-scheme:dark}}
+ --c1:#f0a33a;--c2:#d6b84a;--c3:#5aa8ec;--c4:#8fc6f0;--c5:#3cc4b4;--c6:#5fd08f;--c7:#b08ae8;--c8:#ec7fa2;--c9:#c79a8f;--c10:#9dc45a;--c11:#ff8a57;color-scheme:dark}}
 :root[data-theme="dark"]{
  --paper:#12191b;--panel:#1a2427;--ink:#e3eaea;--muted:#9aabab;--line:#2f3d40;--grid:#223034;--wall:#b9c7d2;
  --acc:#ef7a46;--accs:#3a2116;--warn:#ff8a80;--warns:#3a1e1c;--ok:#6cc45a;--oks:#1c3320;--p3bg:#172124;
- --c1:#f0a33a;--c2:#d6b84a;--c3:#5aa8ec;--c4:#8fc6f0;--c5:#3cc4b4;--c6:#5fd08f;--c7:#b08ae8;--c8:#ec7fa2;--c9:#c79a8f;--c10:#9dc45a;color-scheme:dark}
+ --c1:#f0a33a;--c2:#d6b84a;--c3:#5aa8ec;--c4:#8fc6f0;--c5:#3cc4b4;--c6:#5fd08f;--c7:#b08ae8;--c8:#ec7fa2;--c9:#c79a8f;--c10:#9dc45a;--c11:#ff8a57;color-scheme:dark}
 *{box-sizing:border-box}[hidden]{display:none!important}
 body{margin:0;background:var(--paper);color:var(--ink);font:400 15px/1.45 var(--f-b)}
 .wrap{max-width:1180px;margin:0 auto;padding:14px 16px 48px;display:flex;flex-direction:column;gap:14px}
@@ -331,7 +331,8 @@ const CIRC={
  C7:{name:'Heladera',sec:2,brk:16,diff:2,max:1,col:'--c7',kind:'eq'},
  C8:{name:'Lavavajillas',sec:2,brk:16,diff:2,max:1,col:'--c8',kind:'eq'},
  C9:{name:'Lavarropas',sec:2,brk:16,diff:2,max:1,col:'--c9',kind:'eq'},
- C10:{name:'Calefón',sec:2,brk:16,diff:2,max:1,col:'--c10',kind:'eq'}};
+ C10:{name:'Calefón',sec:2,brk:16,diff:2,max:1,col:'--c10',kind:'eq'},
+ C11:{name:'Luces exteriores',sec:1,brk:10,diff:1,max:5,col:'--c11',kind:'luz'}};
 const T={
  tablero:{label:'Tablero',s:'TG',z:1.60},
  toma:{label:'Toma',s:'T',z:0.30,W:200},
@@ -340,9 +341,13 @@ const T={
  lavarropas:{label:'Lavarropas',s:'LR',z:1.10,W:2200},
  calefon:{label:'Calefón',s:'CA',z:1.45,W:1500},
  luz:{label:'Luz',s:'L',z:null,W:60},
+ luzext:{label:'Luz exterior',s:'LE',z:2.10,W:40},
  llave:{label:'Llave de luz',s:'LL',z:1.10}};
 const WC={'marrón':'#7B4A2A','celeste':'#5BB4DE','verde-amarillo':'linear-gradient(90deg,#2E9E3E 50%,#E8D21E 50%)','negro':'#222'};
 const WROLE={'marrón':'fase','celeste':'neutro','verde-amarillo':'tierra','negro':'retorno de llave'};
+// luces exteriores: apliques en la cara de afuera de los 4 muros, una llave junto a LL1 (misma caja de 3 módulos)
+const EXT=[['luzext','pb',2.20,4.97,2.10,5],['luzext','pb',8.83,3.60,2.10,5],['luzext','pb',3.20,-0.13,2.10,5],['luzext','pb',-0.13,2.10,2.10,5],['llave','pb',3.35,4.81]];
+const isL=t=>t==='luz'||t==='luzext';
 // instalación base: [tipo, nivel, X, Y, altura sobre el piso del nivel, índice de llave para luces]
 const BASE=[
  ['tablero','pb',5.205,0.03,1.60],
@@ -354,7 +359,8 @@ const BASE=[
  ['llave','pb',3.67,4.81],['llave','pb',6.10,4.81],['llave','pb',6.80,1.61],
  ['toma','pa',1.85,0.03],['toma','pa',6.48,0.03],['toma','pa',1.77,4.81],['toma','pa',6.43,4.81],
  ['luz','pa',2.50,2.42,null,4],['luz','pa',6.20,2.42,null,3],
- ['llave','pa',8.67,1.20],['llave','pa',0.03,1.50]];
+ ['llave','pa',8.67,1.20],['llave','pa',0.03,1.50],
+ ...EXT];
 const KEY='sbu-elec-sayago-v3';
 let st,nid=1,sel=null,tool='select',view='3d',lvFocus='pb',circFocus=null,editing=false,tab='inst';
 const $=id=>document.getElementById(id);
@@ -365,23 +371,25 @@ const zLuz=i=>i.lv==='pa'?ROOF(i.y)-0.04:LV.pb.techo;
 const zOf=i=>i.t==='luz'?zLuz(i):(i.z??LV[i.lv].piso+T[i.t].z);
 const zRel=i=>zOf(i)-LV[i.lv].piso;
 function fromBase(){nid=1;const items=BASE.map(([t,lv,x,y,zr])=>({id:nid++,t,lv,x,y,z:t==='luz'?null:LV[lv].piso+(zr??T[t].z)}));
- const ll=items.filter(i=>i.t==='llave');BASE.forEach((b,k)=>{if(b[0]==='luz'&&b[5]!=null&&ll[b[5]])items[k].ll=ll[b[5]].id});
- return {showRoutes:true,codes:true,items}}
-function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&Array.isArray(s.items)){nid=Math.max(0,...s.items.map(i=>i.id))+1;return s}}catch(e){}return fromBase()}
+ const ll=items.filter(i=>i.t==='llave');BASE.forEach((b,k)=>{if(isL(b[0])&&b[5]!=null&&ll[b[5]])items[k].ll=ll[b[5]].id});
+ return {showRoutes:true,codes:true,ext:1,items}}
+function load(){try{const s=JSON.parse(localStorage.getItem(KEY)||'null');if(s&&Array.isArray(s.items)){nid=Math.max(0,...s.items.map(i=>i.id))+1;if(!s.ext){addExt(s.items);s.ext=1}return s}}catch(e){}return fromBase()}
+function addExt(items){const add=EXT.map(([t,lv,x,y,zr])=>({id:nid++,t,lv,x,y,z:LV[lv].piso+(zr??T[t].z)}));const k=add.find(i=>i.t==='llave');add.forEach(i=>{if(i.t==='luzext')i.ll=k.id});items.push(...add)}
 function save(){try{localStorage.setItem(KEY,JSON.stringify(st))}catch(e){}}
 st=load();
 
 /* ================= ubicación, circuito y controles ================= */
-function zona(i){if(i.lv==='pa')return 'Planta alta';if(i.y<-0.02)return 'Exterior (casilla)';if(i.x>5.82&&i.y<1.55)return 'Baño';if(i.x>5.82)return 'Cocina';return 'Estar'}
+function zona(i){if(i.t==='luzext')return 'Exterior';if(i.lv==='pa')return 'Planta alta';if(i.y<-0.02)return 'Exterior (casilla)';if(i.x>5.82&&i.y<1.55)return 'Baño';if(i.x>5.82)return 'Cocina';return 'Estar'}
 function autoC(i){switch(i.t){
  case 'luz':case 'llave':return i.lv==='pa'?'C2':'C1';
  case 'toma':{const z=zona(i);return z==='Planta alta'?'C4':z==='Cocina'?'C5':z==='Baño'?'C6':'C3'}
- case 'heladera':return 'C7';case 'lavavajillas':return 'C8';case 'lavarropas':return 'C9';case 'calefon':return 'C10'}return null}
+ case 'heladera':return 'C7';case 'lavavajillas':return 'C8';case 'lavarropas':return 'C9';case 'calefon':return 'C10';case 'luzext':return 'C11'}return null}
 const circOf=i=>i.c&&CIRC[i.c]?i.c:autoC(i);
 const wet=i=>['toma','heladera','lavavajillas'].includes(i.t)&&['Baño','Cocina'].includes(zona(i));
 function wallOf(i){let best=null;WALLS.forEach(w=>{if(w[0]!==i.lv)return;const [,id,ax,v,a,b]=w;const along=ax==='x'?i.y:i.x,d=Math.abs((ax==='x'?i.x:i.y)-v)-(w[6]||0)/2;
   if(along<a-0.05||along>b+0.05)return;if(!best||d<best.d)best={d,id,ax,along}});return best}
 function where(i){if(i.t==='luz')return i.lv==='pa'?'Techo de planta alta':'Cielorraso';if(i.t==='calefon')return 'Exterior, dentro de la casilla del calefón';
+ if(i.t==='luzext'){const w=wallOf(i);return w?`${WNAME[w.id]}, cara exterior, a ${fmt(w.along)} m ${(w.id==='S'||w.id==='N')?'del muro del fondo':'del muro del baño'}`:'Exterior'}
  const w=wallOf(i);if(!w||w.d>0.25)return '—';const ref=(w.id==='S'||w.id==='N'||w.id==='T2')?'del muro del fondo':'del muro del baño';
  return `${WNAME[w.id]}, a ${fmt(w.along)} m ${ref}`}
 function checks(i){const out=[];if(i.t==='luz'||i.t==='calefon')return out;const w=wallOf(i);if(!w||w.d>0.2)return out;
@@ -418,7 +426,7 @@ function compute(){
    res.tramos.push({c:cid,a:cur,b:nx,cano:Lr,cond:C3(c.sec),kind:cur===tab?'desde el tablero':'en salto'});res.label[nx.id]=cid+'.'+(n++);cur=nx}
   r.W=r.pts.reduce((s,i)=>s+(T[i.t].W||0),0);
   if(r.pts.length>c.max)res.warns.push(`${cid} (${c.name}) tiene ${r.pts.length} ${c.kind==='luz'?'luces':'puntos'}; UTE admite hasta ${c.max} por protección.`)}
- const luces=st.items.filter(i=>i.t==='luz'),llaves=st.items.filter(i=>i.t==='llave');
+ const luces=st.items.filter(i=>isL(i.t)),llaves=st.items.filter(i=>i.t==='llave');
  llaves.forEach((k,n)=>res.label[k.id]='LL'+(n+1));
  const asig={};
  luces.forEach(l=>{if(!llaves.length)return;let k=l.ll!=null?llaves.find(x=>x.id===l.ll):null;
@@ -435,7 +443,7 @@ function compute(){
  res.tramos.forEach(t=>{t.m=t.cano+0.4;res.cano+=t.cano;res.circ[t.c].cano+=t.cano;t.cond.forEach(([s,col])=>{const k=s+'|'+col;res.cond[k]=(res.cond[k]||0)+t.m;res.circ[t.c].cond+=t.m})});
  st.items.forEach(i=>{const lab=res.label[i.id]||T[i.t].s;const ck=checks(i),br=bathRules(i),wr=waterRule(i);const all=[...ck,...br.warn];if(wr)all.push(wr);
   if(i.t==='tablero'&&['Baño','Cocina'].includes(zona(i)))all.push('UTE no admite el tablero en baño ni cocina');
-  if(i.t!=='calefon'&&(i.x<-0.01||i.y<-0.01||i.x>L+0.01||i.y>A+0.01))all.push('quedó fuera de la planta');
+  if(i.t!=='calefon'&&i.t!=='luzext'&&(i.x<-0.01||i.y<-0.01||i.x>L+0.01||i.y>A+0.01))all.push('quedó fuera de la planta');
   if(all.length){res.hit[i.id]=all;all.forEach(m=>res.warns.push(`${T[i.t].label} ${lab}: ${m}.`))}
   br.note.forEach(m=>res.notes.push(`${T[i.t].label} ${lab}: ${m}.`))});
  return res}
@@ -445,8 +453,8 @@ const cidTag=c=>`<span class="cid"><i style="background:var(${CIRC[c].col})"></i
 const wire=(s,col)=>`<span class="wire"><i style="background:${WC[col]}"></i>${fmt(s,0)} mm² ${col}</span>`;
 const condTxt=cond=>{const g={};cond.forEach(([s,c])=>{(g[s]=g[s]||[]).push(c)});return Object.entries(g).map(([s,cs])=>`${cs.length} × ${s} mm² (${cs.join(', ')})`).join(' + ')};
 const nameOf=(res,i)=>i.t==='tablero'?'Tablero':`${T[i.t].label} ${res.label[i.id]||''}`.trim();
-function boxOf(i){switch(i.t){case 'tablero':return 'Gabinete de embutir 24 módulos (2 filas de 12)';case 'luz':return 'Caja octogonal de techo';case 'calefon':return 'Caja estanca exterior con tapa atornillada';default:return 'Caja de embutir 3 módulos para placa de yeso'}}
-function modsOf(i){switch(i.t){case 'tablero':return 'Ver pestaña Tablero';case 'luz':return i.lv==='pb'&&zona(i)==='Baño'?'Luminaria de doble aislación':'Portalámpara o luminaria';case 'llave':return 'Interruptor unipolar 10 A + 2 ciegos';case 'calefon':return 'Interruptor bipolar 16 A + bornera para conexión fija';
+function boxOf(i){switch(i.t){case 'tablero':return 'Gabinete de embutir 24 módulos (2 filas de 12)';case 'luz':return 'Caja octogonal de techo';case 'calefon':return 'Caja estanca exterior con tapa atornillada';case 'luzext':return 'Caja estanca exterior para aplique';default:return 'Caja de embutir 3 módulos para placa de yeso'}}
+function modsOf(i){switch(i.t){case 'luzext':return 'Aplique exterior IP44 o superior';case 'tablero':return 'Ver pestaña Tablero';case 'luz':return i.lv==='pb'&&zona(i)==='Baño'?'Luminaria de doble aislación':'Portalámpara o luminaria';case 'llave':return 'Interruptor unipolar 10 A + 2 ciegos';case 'calefon':return 'Interruptor bipolar 16 A + bornera para conexión fija';
  default:return wet(i)?'Toma schuko 16 A + interruptor bipolar 16 A + 1 ciego':'Toma schuko 16 A + 2 ciegos'}}
 function cablesAt(res,i){const lst=[];res.tramos.forEach(t=>{if(t.b===i)lst.push(`llega de ${nameOf(res,t.a)}: ${condTxt(t.cond)}`);if(t.a===i&&t.a.t!=='tablero')lst.push(`sale a ${nameOf(res,t.b)}: ${condTxt(t.cond)}`)});return lst}
 
@@ -456,7 +464,7 @@ function buildTools(){const box=$('tools');box.innerHTML='';
   b.setAttribute('aria-pressed',tool===id);b.innerHTML=(s?`<span class="dot" style="background:${col}">${s}</span>`:'')+label;
   b.onclick=()=>{tool=id;buildTools();hint()};box.appendChild(b)};
  mk('select','Mover','','');
- const cols={tablero:'var(--ink)',toma:'var(--c3)',heladera:'var(--c7)',lavavajillas:'var(--c8)',lavarropas:'var(--c9)',calefon:'var(--c10)',luz:'var(--c1)',llave:'var(--c1)'};
+ const cols={tablero:'var(--ink)',toma:'var(--c3)',heladera:'var(--c7)',lavavajillas:'var(--c8)',lavarropas:'var(--c9)',calefon:'var(--c10)',luz:'var(--c1)',luzext:'var(--c11)',llave:'var(--c1)'};
  for(const k in T)mk(k,T[k].label,T[k].s,cols[k])}
 function hint(){const n=LV[lvFocus==='all'?'pb':lvFocus].n.toLowerCase();$('hint').textContent=tool==='select'
  ?'Arrastrá un punto para moverlo. Tocalo para cambiarle la altura, el circuito o la llave. Para agregar, elegí un elemento arriba.'
@@ -479,8 +487,9 @@ function selPanel(res){const p=$('selPanel'),it=st.items.find(i=>i.id===sel);
  if(!editing){p.innerHTML=info;return}
  const llaves=st.items.filter(i=>i.t==='llave');
  let extra='';
- if(it.t==='luz')extra=`<div class="field"><label for="selLL">Llave</label><select id="selLL"><option value="">Más cercana${res.asig[it.id]?' ('+res.label[res.asig[it.id]]+')':''}</option>${llaves.map(k=>`<option value="${k.id}" ${it.ll===k.id?'selected':''}>${res.label[k.id]} · ${LV[k.lv].n}</option>`).join('')}</select></div>`;
- else extra=`<div class="field"><label for="selZ">Altura (m)</label><input id="selZ" type="number" step="0.05" min="0.1" max="3" value="${r2(zRel(it))}"></div><button class="btn" id="zBtn" type="button">Altura tipo ${fmt(T[it.t].z)}</button>`;
+ if(it.t==='luzext')extra=`<div class="field"><label for="selZ">Altura (m)</label><input id="selZ" type="number" step="0.05" min="0.1" max="3" value="${r2(zRel(it))}"></div>`;
+ if(isL(it.t))extra+=`<div class="field"><label for="selLL">Llave</label><select id="selLL"><option value="">Más cercana${res.asig[it.id]?' ('+res.label[res.asig[it.id]]+')':''}</option>${llaves.map(k=>`<option value="${k.id}" ${it.ll===k.id?'selected':''}>${res.label[k.id]} · ${LV[k.lv].n}</option>`).join('')}</select></div>`;
+ else if(it.t!=='luzext')extra=`<div class="field"><label for="selZ">Altura (m)</label><input id="selZ" type="number" step="0.05" min="0.1" max="3" value="${r2(zRel(it))}"></div><button class="btn" id="zBtn" type="button">Altura tipo ${fmt(T[it.t].z)}</button>`;
  if(it.t!=='tablero'&&it.t!=='llave')extra+=`<div class="field"><label for="selC">Circuito</label><select id="selC"><option value="">Automático (${autoC(it)})</option>${Object.keys(CIRC).map(k=>`<option value="${k}" ${it.c===k?'selected':''}>${k} ${CIRC[k].name}</option>`).join('')}</select></div>`;
  p.innerHTML=info+`<div class="field"><label for="selLv">Nivel</label><select id="selLv"><option value="pb" ${it.lv==='pb'?'selected':''}>Planta baja</option><option value="pa" ${it.lv==='pa'?'selected':''}>Planta alta</option></select></div>
   <div class="field"><label for="selX">X (m)</label><input id="selX" type="number" step="0.05" value="${it.x}"></div>
@@ -489,14 +498,14 @@ function selPanel(res){const p=$('selPanel'),it=st.items.find(i=>i.id===sel);
  $('selX').onchange=e=>{it.x=clamp(+e.target.value||0,-0.6,L+0.6);commit()};
  $('selY').onchange=e=>{it.y=clamp(+e.target.value||0,-0.6,A+0.6);commit()};
  $('selLv').onchange=e=>{const rel=zRel(it);it.lv=e.target.value;if(it.t!=='luz')it.z=LV[it.lv].piso+rel;setFocus(it.lv);commit()};
- if($('selZ')){$('selZ').onchange=e=>{it.z=LV[it.lv].piso+clamp(+e.target.value||T[it.t].z,0.1,3);commit()};$('zBtn').onclick=()=>{it.z=LV[it.lv].piso+T[it.t].z;commit()}}
+ if($('selZ')){$('selZ').onchange=e=>{it.z=LV[it.lv].piso+clamp(+e.target.value||T[it.t].z,0.1,3);commit()};if($('zBtn'))$('zBtn').onclick=()=>{it.z=LV[it.lv].piso+T[it.t].z;commit()}}
  if($('selLL'))$('selLL').onchange=e=>{it.ll=e.target.value?+e.target.value:null;commit()};
  if($('selC'))$('selC').onchange=e=>{it.c=e.target.value||null;commit()};
  $('delBtn').onclick=()=>{st.items=st.items.filter(i=>i.id!==it.id);st.items.forEach(l=>{if(l.ll===it.id)l.ll=null});sel=null;commit()}}
 
 /* ================= KPIs y avisos ================= */
 function kpis(res){const cnt=t=>st.items.filter(i=>i.t===t).length;
- $('kpis').innerHTML=[[Object.keys(CIRC).filter(c=>res.circ[c].pts.length).length,'circuitos'],[cnt('toma')+cnt('heladera')+cnt('lavavajillas')+cnt('lavarropas'),'tomas'],[cnt('luz'),'luces'],[cnt('llave'),'llaves'],[fmt(res.cano*1.1,0)+' m','de caño 3/4"'],[fmt((Object.values(res.cond).reduce((a,b)=>a+b,0))*1.1,0)+' m','de cable en total']]
+ $('kpis').innerHTML=[[Object.keys(CIRC).filter(c=>res.circ[c].pts.length).length,'circuitos'],[cnt('toma')+cnt('heladera')+cnt('lavavajillas')+cnt('lavarropas'),'tomas'],[cnt('luz')+cnt('luzext'),'luces'],[cnt('llave'),'llaves'],[fmt(res.cano*1.1,0)+' m','de caño 3/4"'],[fmt((Object.values(res.cond).reduce((a,b)=>a+b,0))*1.1,0)+' m','de cable en total']]
   .map(([v,t])=>`<div class="kpi"><b>${v}</b><span>${t}</span></div>`).join('');
  $('warns').innerHTML=(res.warns.length?res.warns.map(x=>`<div class="warn">${x}</div>`).join(''):'<p class="okmsg">Sin problemas: ningún punto cae en montantes ni vanos, y se cumplen las reglas de UTE que controla la página.</p>')+res.notes.map(x=>`<div class="note">${x}</div>`).join('')}
 
@@ -595,7 +604,7 @@ function tableroItems(res){const used=Object.keys(CIRC).filter(c=>res.circ[c].pt
 function rollo(m){if(m<=10)return '1 rollo de 10 m';if(m<=30)return '1 rollo de 30 m';const n=Math.ceil(m/100);return n+' rollo'+(n>1?'s':'')+' de 100 m'}
 function compras(res){const W=1.10,med=Math.max(0,+$('pMed').value||0);
  const cnt=t=>st.items.filter(i=>i.t===t).length;
- const nBox=st.items.filter(i=>!['luz','tablero','calefon'].includes(i.t)).length;
+ const nBox=st.items.filter(i=>!['luz','luzext','tablero','calefon'].includes(i.t)).length;
  const nWet=st.items.filter(wet).length,nToma=cnt('toma')+cnt('heladera')+cnt('lavavajillas')+cnt('lavarropas'),nLl=cnt('llave');
  const ciegos=nBox*3-nToma-nWet-nLl;
  const rows=[];const sec=(t)=>rows.push({sec:t});const it=(a,b,c,d,p)=>rows.push({a,b,c,d,p});
@@ -612,6 +621,7 @@ function compras(res){const W=1.10,med=Math.max(0,+$('pMed').value||0);
  it('Caja de embutir 3 módulos para placa de yeso','Tomas, equipos y llaves',nBox+' u','','');
  it('Caja octogonal de techo','Bocas de luz',cnt('luz')+' u','','');
  it('Caja estanca exterior con tapa atornillada','Conexión fija del calefón',cnt('calefon')+' u','','');
+ if(cnt('luzext'))it('Caja estanca exterior + aplique IP44','Luces exteriores, en la cara de afuera del muro',cnt('luzext')+' u','','');
  it('Módulo toma schuko 16 A con tierra','Tomas y equipos',nToma+' u','','$275 módulo con tierra (Conatel Duomo)');
  it('Módulo interruptor bipolar 16 A','Al lado de cada toma de baño y cocina, y en el calefón',(nWet+cnt('calefon'))+' u','','$615 armado toma schuko + interruptor (Conatel Presta)');
  it('Módulo interruptor unipolar 10 A','Llaves de luz',nLl+' u','','');
@@ -660,9 +670,10 @@ function drawPlanTo(svg,lv,res,interactive,codes){svg.innerHTML='';const Q=y=>A-
   if(res.hit[i.id])el('circle',{cx:i.x,cy:y,r:0.26,fill:'none',stroke:css('--warn'),'stroke-width':0.035,'stroke-dasharray':'0.06 0.04'},n);
   if(i.t==='tablero')el('rect',{x:i.x-0.155,y:y-0.12,width:0.31,height:0.24,rx:0.03,fill:css('--ink')},n);
   else if(i.t==='luz'){el('circle',{cx:i.x,cy:y,r:0.2,fill:css('--panel'),stroke:col,'stroke-width':0.05},n);el('path',{d:`M${i.x-0.14} ${y-0.14} L${i.x+0.14} ${y+0.14} M${i.x+0.14} ${y-0.14} L${i.x-0.14} ${y+0.14}`,stroke:col,'stroke-width':0.035},n)}
+  else if(i.t==='luzext'){el('circle',{cx:i.x,cy:y,r:0.16,fill:css('--panel'),stroke:col,'stroke-width':0.05},n);el('path',{d:`M${i.x-0.11} ${y-0.11} L${i.x+0.11} ${y+0.11} M${i.x+0.11} ${y-0.11} L${i.x-0.11} ${y+0.11}`,stroke:col,'stroke-width':0.03},n)}
   else if(i.t==='llave')el('rect',{x:i.x-0.15,y:y-0.15,width:0.3,height:0.3,fill:css('--panel'),stroke:col,'stroke-width':0.045},n);
   else el('circle',{cx:i.x,cy:y,r:0.18,fill:col},n);
-  if(i.t!=='luz'){const t=el('text',{x:i.x,y:y+0.055,'text-anchor':'middle','font-size':i.t==='toma'?0.16:0.12,'font-weight':600,fill:i.t==='llave'?col:(i.t==='tablero'?css('--panel'):'#fff'),'font-family':'IBM Plex Mono,monospace','pointer-events':'none'},n);t.textContent=ty.s}
+  if(!isL(i.t)){const t=el('text',{x:i.x,y:y+0.055,'text-anchor':'middle','font-size':i.t==='toma'?0.16:0.12,'font-weight':600,fill:i.t==='llave'?col:(i.t==='tablero'?css('--panel'):'#fff'),'font-family':'IBM Plex Mono,monospace','pointer-events':'none'},n);t.textContent=ty.s}
   const lab=res.label[i.id];if(lab&&(codes||st.codes)){const below=i.y>A-0.6;const t=el('text',{x:i.x,y:y+(below?0.42:-0.3),'text-anchor':'middle','font-size':0.14,'font-weight':600,fill:css('--ink'),'font-family':'IBM Plex Mono,monospace','pointer-events':'none'},n);t.textContent=lab+(i.t!=='luz'&&codes?' · '+fmt(zRel(i)):'')}
   if(interactive)el('circle',{cx:i.x,cy:y,r:0.32,fill:'transparent'},n)})}
 const svg=$('plan');
@@ -759,9 +770,9 @@ function init3D(){
  const touches=new Map();let drag=null,pinch0=0,r0=0,down=null;
  function moveTo(it,e){
   if(it.t==='luz'){const hit=cast(e,it.lv==='pa'?planes.pa:[planes.pb])[0];if(hit){const q=toPlan(hit.point);it.x=snap(clamp(q.X,0.1,L-0.1));it.y=snap(clamp(q.Y,0.1,A-0.1))}return}
-  const hit=cast(e,lvWalls(it.lv))[0];if(!hit)return;const w=hit.object.userData.wall,[,id,ax,v,a,b,th]=w;const q=toPlan(hit.point);
+  const hit=cast(e,lvWalls(it.lv).filter(m=>it.t!=='luzext'||!m.userData.wall[6]))[0];if(!hit)return;const w=hit.object.userData.wall,[,id,ax,v,a,b,th]=w;const q=toPlan(hit.point);
   const cp=toPlan(cam.position);let X=q.X,Y=q.Y;const off=0.03;
-  const face=(c,vv)=>{if(th){const sd=c>vv?1:-1;return vv+sd*(th/2+off)}if(it.t!=='calefon')return vv===0?vv+off:vv-off;return vv===0?vv-WT-off:vv+WT+off};
+  const face=(c,vv)=>{if(th){const sd=c>vv?1:-1;return vv+sd*(th/2+off)}if(it.t!=='calefon'&&it.t!=='luzext')return vv===0?vv+off:vv-off;return vv===0?vv-WT-off:vv+WT+off};
   if(ax==='x'){X=face(cp.X,v);Y=clamp(Y,a+0.05,b-0.05)}else{Y=face(cp.Y,v);X=clamp(X,a+0.05,b-0.05)}
   const top=it.lv==='pb'?LV.pb.techo:(id==='S'||id==='N'?3.75:ROOF(Y));
   it.x=snap(X);it.y=snap(Y);it.z=snap(clamp(q.h,LV[it.lv].piso+0.15,top-0.15))}
@@ -804,7 +815,7 @@ function freeSpot(lv,w){const vs=(VANOS[lv+w[1]]||[]).slice().sort((a,b)=>a[0]-b
 function sideOf(it,w){const [,id,ax,v,,,th]=w;if(!th)return 0;return ax==='x'?(it.x>=v?1:-1):(it.y>=v?1:-1)}
 function placeOnWall(it,wid,along,side){const w=wallsLv(it.lv).find(x=>x[1]===wid);if(!w)return;const [,id,ax,v,a,b,th]=w;
  along=clamp(along,0.05,b-a-0.05)+a;const off=0.03;
- let f;if(th){f=v+(side||1)*(th/2+off)}else f=v===0?v+off:v-off;
+ let f;if(it.t==='luzext')f=v===0?v-0.10-off:v+0.10+off;else if(th){f=v+(side||1)*(th/2+off)}else f=v===0?v+off:v-off;
  if(ax==='x'){it.x=r2(f);it.y=r2(along)}else{it.y=r2(f);it.x=r2(along)}}
 function pushUndo(){undo.push(JSON.stringify(st.items));if(undo.length>40)undo.shift();$('locUndo').disabled=false}
 function locTable(res){if(!editing)return;
@@ -816,27 +827,28 @@ function locTable(res){if(!editing)return;
  items.forEach(i=>{const c=res.pc[i.id];const wa=wallOf(i);let muro='',dist='',alt='';
   if(i.t==='luz'){muro=`<span class="small">${i.lv==='pa'?'Techo':'Cielorraso'}</span>`;dist=`<span style="white-space:nowrap">X <input type="number" step="0.05" data-f="x" value="${i.x}"></span> <span style="white-space:nowrap">Y <input type="number" step="0.05" data-f="y" value="${i.y}"></span>`;alt='<span class="small">techo</span>'}
   else if(i.t==='calefon'){muro='<span class="small">Exterior, casilla</span>';dist=`<input type="number" step="0.05" data-f="x" value="${i.x}"> <span class="small">desde el muro del fondo</span>`;alt=`<input type="number" step="0.05" min="0.1" max="2.3" data-f="z" value="${r2(zRel(i))}">`}
-  else{const w=wa?ws.find(x=>x[1]===wa.id):null;
-   muro=`<select data-f="w">${ws.map(x=>`<option value="${x[1]}" ${w&&w[1]===x[1]?'selected':''}>${WNAME[x[1]]}</option>`).join('')}</select>`;
+  else{const wsi=i.t==='luzext'?ws.filter(x=>!x[6]):ws;const w=wa?wsi.find(x=>x[1]===wa.id):null;
+   muro=`<select data-f="w">${wsi.map(x=>`<option value="${x[1]}" ${w&&w[1]===x[1]?'selected':''}>${WNAME[x[1]]}</option>`).join('')}</select>`;
+ if(i.t==='luzext')muro+=' <span class="small">cara exterior</span>';
    if(w&&w[6])muro+=` <select data-f="side">${(w[2]==='x'?[[-1,'lado estar'],[1,'lado baño']]:[[-1,'lado baño'],[1,'lado cocina']]).map(([v,t])=>`<option value="${v}" ${sideOf(i,w)===v?'selected':''}>${t}</option>`).join('')}</select>`;
    dist=`<input type="number" step="0.05" min="0" data-f="along" value="${w?r2((w[2]==='x'?i.y:i.x)-w[4]):''}"> <span class="small">${w?(w[2]==='x'?'desde el muro del baño':'desde el muro del fondo')+' · largo '+fmt(wallLen(w)):''}</span>`;
-   alt=`<input type="number" step="0.05" min="0.1" max="2.3" data-f="z" value="${r2(zRel(i))}">`}
+   alt=`<input type="number" step="0.05" min="0.1" max="${i.t==='luzext'?3:2.3}" data-f="z" value="${r2(zRel(i))}">`}
   let cc='';
-  if(i.t==='luz')cc=`<select data-f="ll"><option value="">Llave más cercana${res.asig[i.id]?' ('+res.label[res.asig[i.id]]+')':''}</option>${llaves.map(k=>`<option value="${k.id}" ${i.ll===k.id?'selected':''}>${res.label[k.id]} · ${LV[k.lv].n}</option>`).join('')}</select>`;
+  if(isL(i.t))cc=`<select data-f="ll"><option value="">Llave más cercana${res.asig[i.id]?' ('+res.label[res.asig[i.id]]+')':''}</option>${llaves.map(k=>`<option value="${k.id}" ${i.ll===k.id?'selected':''}>${res.label[k.id]} · ${LV[k.lv].n}</option>`).join('')}</select>`;
   else if(i.t!=='tablero'&&i.t!=='llave')cc=`<select data-f="c"><option value="">Auto (${autoC(i)})</option>${Object.keys(CIRC).map(k=>`<option value="${k}" ${i.c===k?'selected':''}>${k} ${CIRC[k].name}</option>`).join('')}</select>`;
   else cc=`<span class="small">${c||'—'}</span>`;
   h+=`<tr data-id="${i.id}" class="${i.id===sel?'on':''} ${res.hit[i.id]?'bad':''}" title="${res.hit[i.id]?res.hit[i.id].join(' · '):''}"><td class="code">${c?cidTag(c)+' ':''}${res.label[i.id]||''}</td><td>${T[i.t].label}<div class="small">${zona(i)}</div></td><td data-l="Muro">${muro}</td><td data-l="Distancia">${dist}</td><td data-l="Altura">${alt}</td><td data-l="Circuito">${cc}</td><td>${i.t==='tablero'?'':'<button type="button" class="x" data-del aria-label="Eliminar">✕</button>'}</td></tr>`});
  $('locTbl').innerHTML=h+'</tbody>';
- $('locAdd').innerHTML='<span class="small">Agregar en '+LV[locLv].n.toLowerCase()+':</span>'+['toma','luz','llave','heladera','lavavajillas','lavarropas','calefon'].filter(t=>locLv==='pb'||['toma','luz','llave'].includes(t)).map(t=>`<button type="button" class="addb" data-add="${t}">+ ${T[t].label}</button>`).join('');
+ $('locAdd').innerHTML='<span class="small">Agregar en '+LV[locLv].n.toLowerCase()+':</span>'+['toma','luz','luzext','llave','heladera','lavavajillas','lavarropas','calefon'].filter(t=>locLv==='pb'||['toma','luz','llave'].includes(t)).map(t=>`<button type="button" class="addb" data-add="${t}">+ ${T[t].label}</button>`).join('');
  $('locAdd').querySelectorAll('[data-add]').forEach(b=>b.onclick=()=>{pushUndo();const t=b.dataset.add,lv=locLv;let x,y;
-  if(t==='luz'){x=L/2;y=A/2}else if(t==='calefon'){x=7.3;y=-0.13}else{x=lv==='pb'?2.25:3.15;y=0.03}
+  if(t==='luz'){x=L/2;y=A/2}else if(t==='calefon'){x=7.3;y=-0.13}else if(t==='luzext'){x=1.00;y=A+0.13}else{x=lv==='pb'?2.25:3.15;y=0.03}
   st.items.push({id:nid,t,lv,x,y,z:t==='luz'?null:LV[lv].piso+T[t].z});sel=nid++;commit();$('locMsg').textContent=`Se agregó: ${T[t].label.toLowerCase()}. Ajustá el muro, la distancia y la altura en su fila (está resaltada).`});
  $('locTbl').querySelectorAll('tr[data-id]').forEach(tr=>{const it=st.items.find(i=>i.id===+tr.dataset.id);
   tr.addEventListener('click',e=>{if(e.target.closest('input,select,button'))return;sel=it.id;refresh()});
   tr.querySelectorAll('[data-f]').forEach(inp=>inp.addEventListener('change',()=>{pushUndo();const f=inp.dataset.f,v=inp.value;sel=it.id;
    if(f==='x'){it.x=clamp(+v||0,it.t==='calefon'?0:0.1,L-0.1)}
    else if(f==='y'){it.y=clamp(+v||0,0.1,A-0.1)}
-   else if(f==='z'){it.z=LV[it.lv].piso+clamp(+v||T[it.t].z,0.1,2.3)}
+   else if(f==='z'){it.z=LV[it.lv].piso+clamp(+v||T[it.t].z,0.1,it.t==='luzext'?3:2.3)}
    else if(f==='w'){const ww=wallsLv(it.lv).find(x=>x[1]===v);placeOnWall(it,v,freeSpot(it.lv,ww),-1)}
    else if(f==='side'){const w=wallOf(it),ww=wallsLv(it.lv).find(x=>x[1]===w.id);placeOnWall(it,w.id,(ww[2]==='x'?it.y:it.x)-ww[4],+v)}
    else if(f==='along'){const w=wallOf(it),ww=wallsLv(it.lv).find(x=>x[1]===w.id);placeOnWall(it,w.id,+v||0,sideOf(it,ww))}
@@ -851,7 +863,7 @@ $('locUndo').onclick=()=>{if(!undo.length)return;const items=JSON.parse(undo.pop
 /* ================= ciclo ================= */
 function setFocus(lv){lvFocus=lv;document.querySelectorAll('[data-lv]').forEach(b=>b.setAttribute('aria-pressed',b.dataset.lv===lv));hint()}
 function exportTxt(res){const ex={obra:'Casa Sayago',referencia:'X desde el muro del fondo, Y desde el muro del baño, z sobre el piso de cada nivel',
-  puntos:st.items.map(i=>({id:res.label[i.id]||'?',tipo:i.t,nivel:i.lv,x:i.x,y:i.y,z:r2(zRel(i)),circuito:res.pc[i.id],...(i.c?{circuito_fijo:true}:{}),...(i.t==='luz'&&res.asig[i.id]?{llave:res.label[res.asig[i.id]]}:{})})),
+  puntos:st.items.map(i=>({id:res.label[i.id]||'?',tipo:i.t,nivel:i.lv,x:i.x,y:i.y,z:r2(zRel(i)),circuito:res.pc[i.id],...(i.c?{circuito_fijo:true}:{}),...(isL(i.t)&&res.asig[i.id]?{llave:res.label[res.asig[i.id]]}:{})})),
   observaciones:res.warns};
  if(document.activeElement!==$('exportTxt'))$('exportTxt').value=JSON.stringify(ex,null,1)}
 function refresh(){const res=compute();if(G)G.update(res,false);
@@ -875,7 +887,7 @@ $('loadBtn').onclick=()=>{try{const d=JSON.parse($('exportTxt').value);if(!d.pun
  const items=d.puntos.map(p=>{const lv=p.nivel==='pa'?'pa':'pb';return {id:nid++,t:p.tipo,lv,x:+p.x,y:+p.y,z:p.tipo==='luz'?null:LV[lv].piso+(+p.z),c:p.circuito_fijo?p.circuito:null,_ll:p.llave||null}});
  const lab={};items.filter(i=>i.t==='llave').forEach((k,n)=>lab['LL'+(n+1)]=k.id);
  items.forEach(i=>{if(i._ll)i.ll=lab[i._ll]??null;delete i._ll});
- st={showRoutes:true,codes:st.codes,items};sel=null;save();if(G)G.update(compute(),true);refresh();$('copyMsg').textContent='Distribución cargada.'}
+ st={showRoutes:true,codes:st.codes,ext:1,items};sel=null;save();if(G)G.update(compute(),true);refresh();$('copyMsg').textContent='Distribución cargada.'}
  catch(e){$('copyMsg').textContent='No pude leer ese texto. Pegá la distribución completa.'}};
 $('resetBtn').onclick=()=>$('resetConfirm').hidden=false;$('resetNo').onclick=()=>$('resetConfirm').hidden=true;
 $('resetYes').onclick=()=>{st=fromBase();sel=null;save();$('resetConfirm').hidden=true;if(G)G.update(compute(),true);refresh();$('copyMsg').textContent='Volvió la instalación base.'};
