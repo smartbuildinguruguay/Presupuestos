@@ -906,12 +906,13 @@ const fdate=iso=>{try{return new Date(iso).toLocaleString('es-UY',{day:'2-digit'
 function syncUI(){const b=$('syncBar');if(!b||(document.activeElement&&document.activeElement.id==='ghTok'))return;const p=sinSubir()&&!st.fresh;b.className='sync noprint'+(p?' pend':'');
  let h=p?`<span>● Cambios sin subir a GitHub: por ahora solo están en este navegador.</span><button type="button" class="btn" id="ghUp"${busy?' disabled':''}>Subir a GitHub</button>${remoteCache?'<button type="button" class="btn" id="ghDrop">Descartar y usar los de GitHub</button>':''}`
   :`<span>✓ ${st.rev?'Guardado en GitHub · '+fdate(st.rev):'Instalación base'}</span>`;
+ if(!askTok)h+=tok()?'<span>· GitHub conectado</span><button type="button" class="btn" id="ghOut">Cambiar clave</button>':'<button type="button" class="btn" id="ghIn">Poner clave de GitHub</button>';
  if(conflict)h+=`<span>Alguien subió cambios a GitHub después de que abriste la página.</span><button type="button" class="btn danger" id="ghForce">Subir igual y reemplazar</button>`;
- if(askTok)h+=`<span class="tok">Pegá tu clave de GitHub para subir (queda guardada solo en este navegador): <input type="password" id="ghTok" placeholder="github_pat_…" autocomplete="off" aria-label="Clave de GitHub"><button type="button" class="btn" id="ghTokOk">Guardar y subir</button></span>`;
+ if(askTok)h+=`<span class="tok">Pegá acá tu clave de GitHub (queda guardada solo en este navegador): <input type="password" id="ghTok" placeholder="github_pat_…" autocomplete="off" aria-label="Clave de GitHub"><button type="button" class="btn" id="ghTokOk">Guardar y subir</button></span>`;
  if(syncMsg)h+=`<span>${syncMsg}</span>`;
  b.innerHTML=h;const on=(id,f)=>{const e=$(id);if(e)e.onclick=f};
- on('ghUp',()=>subir(false));on('ghForce',()=>subir(true));on('ghDrop',()=>{if(remoteCache)adopt(remoteCache)});
- on('ghTokOk',()=>{const v=$('ghTok').value.trim();if(!v)return;try{localStorage.setItem(TKEY,v)}catch(e){}askTok=false;subir(false)})}
+ on('ghUp',()=>subir(false));on('ghIn',()=>{askTok=true;syncMsg='';syncUI();const e=$('ghTok');if(e)e.focus()});on('ghOut',()=>{try{localStorage.removeItem(TKEY)}catch(e){}askTok=true;syncMsg='';syncUI()});on('ghForce',()=>subir(true));on('ghDrop',()=>{if(remoteCache)adopt(remoteCache)});
+ on('ghTokOk',()=>{const v=$('ghTok').value.trim();if(!v)return;try{localStorage.setItem(TKEY,v)}catch(e){}askTok=false;if(sinSubir()&&!st.fresh)subir(false);else{syncMsg='Clave guardada. Desde ahora, cada vez que toques Listo se sube solo.';syncUI()}})}
 function adopt(d){st.items=d.items;st.rev=d.actualizado;st.synced=itemsStr();delete st.fresh;nid=Math.max(0,...st.items.map(i=>i.id))+1;sel=null;conflict=false;syncMsg='';save();if(G)G.update(compute(),true);refresh()}
 async function remote(){try{const q=await fetch('instalacion.json?t='+Date.now(),{cache:'no-store'});if(!q.ok)return null;const d=await q.json();return d&&Array.isArray(d.items)&&d.actualizado?d:null}catch(e){return null}}
 async function arranque(){const d=await remote();remoteCache=d;if(!d){syncUI();return}
