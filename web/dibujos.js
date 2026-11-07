@@ -59,6 +59,8 @@
     o += [...rects, ...(P.cubiertos || [])].map(r => `<rect x="${X(r[0]) + 14}" y="${Y(r[1]) + 16}" width="${r[2] * S}" height="${r[3] * S}" fill="#b9a98c" opacity=".3" filter="url(#pls)"/>`).join('');
     // galerías y parrillero cubiertos: deck
     (P.cubiertos || []).forEach(r => { o += rr(r, `fill="url(#pl-deck)" stroke="${INK2}" stroke-width="1" stroke-dasharray="6 4"`) });
+    // módulos opcionales (punteados)
+    (P.opcionales || []).forEach(r => { o += rr(r, `fill="#f6f1e6" fill-opacity=".7" stroke="${INK2}" stroke-width="1.6" stroke-dasharray="10 6"`) + `<text x="${X(r[0] + r[2] / 2)}" y="${Y(r[1]) + 22}" text-anchor="middle" font-family="${MONO}" font-size="11" letter-spacing="1.5" fill="${INK2}">OPCIONAL</text>` });
     // piso interior
     rects.forEach(r => { o += rr(r, 'fill="url(#pl-piso)"') });
     // muros exteriores
