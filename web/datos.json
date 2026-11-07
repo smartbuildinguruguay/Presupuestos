@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-07T12:49:02.962Z",
+ "actualizado": "2026-11-07T12:49:30.467Z",
  "contacto": {
   "whatsapp": "598XXXXXXXX",
   "instagram": "smartbuildinguruguay"
@@ -155,11 +155,12 @@
    "thumb": "https://media.sketchfab.com/models/65cc5fcecf2548a1a1cfc5bc58159a7f/thumbnails/129f1ecedcc741599bde2278f4470642/f5f038a1b18948c9a5982e60b54f32b9.jpeg",
    "imagen": "",
    "m2": 194,
-   "deck": 0,
-   "dorm": 3,
-   "banos": 2,
+   "deck": 68,
+   "dorm": 4,
+   "banos": 5,
    "usos": [
-    "vivir"
+    "vivir",
+    "finde"
    ],
    "factor": 1,
    "fachadaM2": null,
