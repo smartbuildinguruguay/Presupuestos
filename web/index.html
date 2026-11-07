@@ -261,7 +261,7 @@ footer .w{display:flex;flex-wrap:wrap;gap:18px 40px;justify-content:space-betwee
 
 <main id="inicio">
 <section class="hero">
-  <img id="heroImg" alt="" fetchpriority="high">
+  <img id="heroImg" src="img/portada-1800.jpg?v=1" srcset="img/portada-900.jpg?v=1 900w, img/portada-1800.jpg?v=1 1800w" sizes="100vw" alt="" fetchpriority="high" style="object-position:60% 28%">
   <div class="w">
     <div class="eyebrow">Steel frame · Maldonado y Rocha</div>
     <h1>Elegí tu casa. <em>Mirala en 3D.</em> Sabé cuánto sale hoy.</h1>
@@ -275,8 +275,8 @@ footer .w{display:flex;flex-wrap:wrap;gap:18px 40px;justify-content:space-betwee
 </section>
 
 <figure class="obra">
-  <img src="img/obra-cercha-1800.jpg?v=2" srcset="img/obra-cercha-900.jpg?v=2 900w, img/obra-cercha-1800.jpg?v=2 1800w" sizes="100vw" alt="cerchas de madera dura" loading="lazy" style="object-position:50% 40%">
-  <figcaption><div class="w"><div class="eyebrow">Obra real · cerchas de madera dura</div><b>Lo que ves en 3D, lo construimos así.</b><span>Cada modelo del catálogo ya está resuelto en obra: estructura, detalles y terminaciones.</span></div></figcaption>
+  <img src="img/obra-cercha-1800.jpg?v=4" srcset="img/obra-cercha-900.jpg?v=4 900w, img/obra-cercha-1800.jpg?v=4 1800w" sizes="100vw" alt="cerchas de madera dura" loading="lazy" style="object-position:50% 40%">
+  <figcaption><div class="w"><div class="eyebrow">Cerchas de madera dura a la vista</div><b>Lo que ves en 3D, lo construimos así.</b><span>Cada modelo del catálogo ya está resuelto en obra: estructura, detalles y terminaciones.</span></div></figcaption>
 </figure>
 
 <section class="s" id="buscar"><div class="w">
@@ -377,8 +377,8 @@ footer .w{display:flex;flex-wrap:wrap;gap:18px 40px;justify-content:space-betwee
   </ol>
 </div></section>
 <figure class="obra">
-  <img src="img/obra-cielorraso-1800.jpg?v=3" srcset="img/obra-cielorraso-900.jpg?v=3 900w, img/obra-cielorraso-1800.jpg?v=3 1800w" sizes="100vw" alt="cielorraso de madera dura" loading="lazy" style="object-position:40% 50%">
-  <figcaption><div class="w"><div class="eyebrow">Obra real · cielorraso de madera dura</div><b>Terminaciones que se sienten.</b><span>Madera noble donde se ve, aislación donde no. Pensado para durar.</span></div></figcaption>
+  <img src="img/obra-cielorraso-1800.jpg?v=4" srcset="img/obra-cielorraso-900.jpg?v=4 900w, img/obra-cielorraso-1800.jpg?v=4 1800w" sizes="100vw" alt="cielorraso de madera dura" loading="lazy" style="object-position:40% 50%">
+  <figcaption><div class="w"><div class="eyebrow">Cielorraso de madera dura</div><b>Terminaciones que se sienten.</b><span>Madera noble donde se ve, aislación donde no. Pensado para durar.</span></div></figcaption>
 </figure>
 </main>
 
@@ -530,7 +530,7 @@ function card(m,big){
    <div class="from">Desde <b>${usdK(desde(m))}</b></div></div></button>`;
 }
 $('grid').innerHTML=M.map(m=>card(m)).join('');
-{const hm=byId[D.precio.heroModelo]||M[0];$('heroImg').src=pic(hm);const ms=M.map(m=>m.m2);document.querySelector('.hero .facts span b').textContent=`${Math.min(...ms)} a ${Math.max(...ms)} m²`;document.querySelector('.hero p').firstChild.nodeValue=`${['Cero','Un','Dos','Tres','Cuatro','Cinco','Seis','Siete','Ocho','Nueve','Diez'][M.length]||M.length} modelos diseñados y probados en obra. `;document.querySelector('[href="#catalogo"].btn').textContent=`Ver los ${M.length} modelos`;document.querySelector('#catalogo h2').textContent=`Los ${M.length} modelos`}
+{const hm=byId[D.precio.heroModelo]||M[0];const ms=M.map(m=>m.m2);document.querySelector('.hero .facts span b').textContent=`${Math.min(...ms)} a ${Math.max(...ms)} m²`;document.querySelector('.hero p').firstChild.nodeValue=`${['Cero','Un','Dos','Tres','Cuatro','Cinco','Seis','Siete','Ocho','Nueve','Diez'][M.length]||M.length} modelos diseñados y probados en obra. `;document.querySelector('[href="#catalogo"].btn').textContent=`Ver los ${M.length} modelos`;document.querySelector('#catalogo h2').textContent=`Los ${M.length} modelos`}
 
 /* ---------- buscador ---------- */
 const ans=ls.get('ans')||{uso:null,pers:null};
