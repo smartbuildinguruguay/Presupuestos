@@ -145,6 +145,7 @@ input[type=range]{width:100%;accent-color:var(--cu);height:28px}
 .ficha{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));border:1px solid var(--line);border-radius:6px;margin-top:12px;background:var(--paper)}
 .ficha div{padding:10px 12px;border-right:1px solid var(--line);min-width:0}
 .ficha div:last-child{border-right:0}
+@media (max-width:480px){.ficha{grid-template-columns:repeat(2,minmax(0,1fr))}.ficha div:nth-child(2){border-right:0}.ficha div:nth-child(-n+2){border-bottom:1px solid var(--line)}}
 .ficha small{display:block;font:500 .66rem var(--f-m);letter-spacing:.1em;text-transform:uppercase;color:var(--mute)}
 .ficha b{font:800 1.6rem/1.1 var(--f-d);font-stretch:75%}
 .pend{color:var(--cu);font:500 .7rem var(--f-m)}
@@ -227,11 +228,11 @@ footer .w{display:flex;flex-wrap:wrap;gap:18px 40px;justify-content:space-betwee
 
 <main id="inicio">
 <section class="hero">
-  <img src="https://media.sketchfab.com/models/e934a307daf5473390842989337887c9/thumbnails/04063cbb7f084237ad39dbb001cd3eb0/7707b671eec44ad48d48a4a02bacc26b.jpeg" alt="" fetchpriority="high">
+  <img id="heroImg" alt="" fetchpriority="high">
   <div class="w">
     <div class="eyebrow">Steel frame · Maldonado y Rocha</div>
     <h1>Elegí tu casa. <em>Mirala en 3D.</em> Sabé cuánto sale hoy.</h1>
-    <p>Seis modelos diseñados y probados en obra. Configurás la terminación y el presupuesto se arma solo, en el momento.</p>
+    <p>Seis modelos diseñados y probados en obra. <span>Configurás la terminación y el presupuesto se arma solo, en el momento.</span></p>
     <div class="acts">
       <a class="btn cu" href="#buscar">Encontrar mi casa</a>
       <a class="btn ghost" href="#catalogo">Ver los 6 modelos</a>
@@ -341,10 +342,15 @@ footer .w{display:flex;flex-wrap:wrap;gap:18px 40px;justify-content:space-betwee
 <div class="bar" id="bar"><div class="bt"><small id="bar-m"></small><b class="mono" id="bar-t"></b></div><a class="btn" data-wa="modelo" href="#">La quiero</a></div>
 
 <script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js" defer></script>
-<script src="modelos.js"></script>
+<script src="precio.js"></script>
 <script>
-(function(){
-const D=window.SBU, M=D.modelos, byId=Object.fromEntries(M.map(m=>[m.id,m]));
+(async function(){
+let D=null;
+try{const q=await fetch('datos.json?t='+Date.now(),{cache:'no-store'});if(q.ok)D=await q.json()}catch(e){}
+if(!D){document.body.insertAdjacentHTML('beforeend','<p style="padding:20px">No se pudieron cargar los modelos. Recargá la página.</p>');return}
+const M=D.modelos.filter(m=>m.visible!==false), byId=Object.fromEntries(M.map(m=>[m.id,m]));
+D.whatsapp=D.contacto.whatsapp;D.instagram=D.contacto.instagram;
+const pic=m=>m.imagen||m.thumb||'';
 const $=id=>document.getElementById(id);
 const usd=n=>'USD '+Math.round(n).toLocaleString('es-UY');
 const usdK=n=>'USD '+(Math.round(n/1000)).toLocaleString('es-UY')+' mil';
@@ -353,17 +359,9 @@ const ls={get(k){try{return JSON.parse(localStorage.getItem('sbu-'+k))}catch(e){
 const USOS={vivir:'Para vivir',finde:'Campo · fin de semana',renta:'Para alquilar',empezar:'Para empezar'};
 
 /* ---------- precio ---------- */
-const fachada=m=>m.fachadaM2||Math.round(4*Math.sqrt(m.m2)*2.6*0.8);
-function precio(m,cfg){
-  const P=D.precio, ext=D.exterior.find(e=>e.id===cfg.ext)||D.exterior[0];
-  const casa=m.m2*P.m2Base, deck=(m.deck||0)*P.m2Deck, fx=fachada(m)*ext.delta;
-  const items=[[`Casa ${m.m2} m² × ${usd(P.m2Base)}`,casa]];
-  if(deck)items.push([`Decks ${m.deck} m²`,deck]);
-  items.push([`Fachada: ${ext.nombre}`,fx]);
-  const tot=casa+deck+fx;
-  return {tot,items,m2:tot/m.m2};
-}
-const desde=m=>precio(m,{ext:'pino'}).tot;
+const fachada=m=>window.SBUprecio(D,m,'original').fachM2;
+function precio(m,cfg){const p=window.SBUprecio(D,m,cfg.ext);return {tot:p.venta,items:p.lineas.map(l=>[l.t,l.venta]),m2:p.ventaM2,plazo:p.plazo}}
+const desde=m=>precio(m,{ext:D.exterior.some(e=>e.id==='pino')?'pino':D.exterior[0].id}).tot;
 
 /* ---------- WhatsApp ---------- */
 let cur=null, cfg={ext:'original'};
@@ -380,12 +378,13 @@ $('f-wa').textContent='+'+D.whatsapp;$('f-ig').textContent='@'+D.instagram;$('f-
 const pendTxt=m=>m.pendiente&&m.pendiente.length?' title="A confirmar: '+m.pendiente.join(', ')+'"':'';
 function card(m,big){
   return `<button type="button" class="card${big?' big':''}" data-open="${m.id}"${pendTxt(m)}>
-   <div class="ph">${m.thumb?`<img src="${m.thumb}" alt="${m.nombre}" loading="lazy">`:'<div class="noimg">Imagen a cargar</div>'}<span class="tag">${m.m2} m²${m.deck?` + ${m.deck} deck`:''}</span></div>
+   <div class="ph">${pic(m)?`<img src="${pic(m)}" alt="${m.nombre}" loading="lazy">`:'<div class="noimg">Imagen a cargar</div>'}<span class="tag">${m.m2} m²${m.deck?` + ${m.deck} deck`:''}</span></div>
    <div class="bd"><h3>${m.nombre}</h3>
    <div class="meta"><span>${m.dorm} dorm.</span><span>${m.banos} baño${m.banos>1?'s':''}</span>${m.lugar?`<span>${m.lugar}</span>`:''}</div>
    <div class="from">Desde <b>${usdK(desde(m))}</b></div></div></button>`;
 }
 $('grid').innerHTML=M.map(m=>card(m)).join('');
+{const hm=byId[D.precio.heroModelo]||M[0];$('heroImg').src=pic(hm);const ms=M.map(m=>m.m2);document.querySelector('.hero .facts span b').textContent=`${Math.min(...ms)} a ${Math.max(...ms)} m²`;document.querySelector('.hero p').firstChild.nodeValue=`${['Cero','Un','Dos','Tres','Cuatro','Cinco','Seis','Siete','Ocho','Nueve','Diez'][M.length]||M.length} modelos diseñados y probados en obra. `;document.querySelector('[href="#catalogo"].btn').textContent=`Ver los ${M.length} modelos`;document.querySelector('#catalogo h2').textContent=`Los ${M.length} modelos`}
 
 /* ---------- buscador ---------- */
 const ans=ls.get('ans')||{uso:null,pers:null};
@@ -537,9 +536,9 @@ function planta(m){
 
 /* ---------- detalle ---------- */
 function swatches(){
-  $('sw-ext').innerHTML=D.exterior.map(e=>`<button type="button" data-ext="${e.id}" aria-pressed="${cfg.ext===e.id}">${e.tex?`<canvas width="38" height="38" data-tx="${e.tex}"></canvas>`:`<span class="chip" style="background:linear-gradient(135deg,#8a857b,#d9d4c9)"></span>`}<b>${e.nombre}</b><small>${e.delta?'+'+usd(e.delta)+'/m²':'incluido'}</small></button>`).join('');
+  $('sw-ext').innerHTML=D.exterior.filter(e=>e.activo!==false).map(e=>`<button type="button" data-ext="${e.id}" aria-pressed="${cfg.ext===e.id}">${e.tex?`<canvas width="38" height="38" data-tx="${e.tex}"></canvas>`:`<span class="chip" style="background:linear-gradient(135deg,#8a857b,#d9d4c9)"></span>`}<b>${e.nombre}</b><small>${+e.usdM2?'+'+usd(e.usdM2*window.SBUprecio(D,cur,e.id).k)+'/m²':'incluido'}</small></button>`).join('');
   $('sw-ext').querySelectorAll('canvas').forEach(c=>c.getContext('2d').drawImage(TEX[c.dataset.tx],0,0,38,38));
-  const dis=(o,arr)=>arr.opciones.map(x=>`<button type="button" disabled><span class="chip" style="background:var(--line)"></span><b>${x.nombre}</b><small>${x.delta?(x.delta>0?'+':'−')+usd(Math.abs(x.delta))+'/m²':'incluido'}</small></button>`).join('');
+  const dis=(o,arr)=>arr.opciones.map(x=>`<button type="button" disabled><span class="chip" style="background:var(--line)"></span><b>${x.nombre}</b><small>${+x.usdM2?(x.usdM2>0?'+':'−')+usd(Math.abs(x.usdM2))+'/m²':'incluido'}</small></button>`).join('');
   $('sw-int').innerHTML=dis('int',D.interior);$('sw-pis').innerHTML=dis('pis',D.pisos);
 }
 document.getElementById('sw-ext').addEventListener('click',e=>{const b=e.target.closest('[data-ext]');if(!b)return;cfg.ext=b.dataset.ext;
@@ -548,7 +547,7 @@ document.getElementById('sw-ext').addEventListener('click',e=>{const b=e.target.
 function renderPrice(){
   const p=precio(cur,cfg);
   $('price').innerHTML=`<div class="eyebrow" style="color:inherit;opacity:.7">Presupuesto de referencia</div>
-   <div class="tot mono">${usd(p.tot)}</div><div class="pm">${usd(p.m2)} por m² · obra de ${D.precio.plazoMeses(cur.m2)} meses aprox.</div>
+   <div class="tot mono">${usd(p.tot)}</div><div class="pm">${usd(p.m2)} por m² · obra de ${p.plazo} meses aprox.</div>
    <table>${p.items.map(i=>`<tr><td>${i[0]}</td><td class="n">${i[1]?usd(i[1]):'incluido'}</td></tr>`).join('')}</table>
    <a class="btn" data-wa="modelo" href="#">Quiero esta casa</a>
    <div class="disc">Precio llave en mano sin terreno. Se ajusta después de visitar el terreno. ${cur.pendiente&&cur.pendiente.length?'<br>A confirmar en este modelo: '+cur.pendiente.join(', ')+'.':''}</div>`;
@@ -562,7 +561,7 @@ function openModel(id,scroll=true){
   const pen=k=>m.pendiente&&m.pendiente.some(p=>p.startsWith(k))?'<span class="pend"> a confirmar</span>':'';
   $('ficha').innerHTML=`<div><small>Cubiertos</small><b class="mono">${m.m2}</b> m²${pen('m²')}</div><div><small>Decks</small><b class="mono">${m.deck||'—'}</b>${m.deck?' m²':''}</div><div><small>Dormitorios</small><b class="mono">${m.dorm}</b>${pen('dorm')}</div><div><small>Baños</small><b class="mono">${m.banos}</b>${pen('baños')}</div>`;
   $('fach-m2').textContent=`≈ ${fachada(m)} m² de fachada`;
-  $('viewer').innerHTML=`${m.thumb?`<img class="poster" src="${m.thumb}" alt="">`:''}<button type="button" class="play" id="play"><span><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L18.7 8 12 11.7 5.3 8 12 4.3ZM5 9.7l6 3.3v6.7l-6-3.3V9.7Zm8 10V13l6-3.3v6.7l-6 3.3Z"/></svg>Recorrer en 3D</span></button><div class="vs"></div>`;
+  $('viewer').innerHTML=`${pic(m)?`<img class="poster" src="${pic(m)}" alt="">`:''}<button type="button" class="play" id="play"><span><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L18.7 8 12 11.7 5.3 8 12 4.3ZM5 9.7l6 3.3v6.7l-6-3.3V9.7Zm8 10V13l6-3.3v6.7l-6 3.3Z"/></svg>Recorrer en 3D</span></button><div class="vs"></div>`;
   $('play').addEventListener('click',open3D);
   swatches();renderPrice();planta(m);
   if(location.hash!=='#'+id)history.replaceState(null,'','#'+id);

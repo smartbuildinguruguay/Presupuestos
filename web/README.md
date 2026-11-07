@@ -1,8 +1,9 @@
-# Web Smart Building Uruguay · prototipo v0
+# Web Smart Building Uruguay · prototipo
 
-Lobby comercial: buscador (por uso o por m²), un modelo a la vez con visor 3D de Sketchfab bajo demanda, configurador de revestimiento exterior con presupuesto dinámico, planta técnica y cierre por WhatsApp.
+- `index.html` — la web pública: buscador, un modelo a la vez con 3D de Sketchfab bajo demanda, configurador de revestimiento, presupuesto y cierre por WhatsApp.
+- `admin.html` — **tu panel**: cargar modelos, ver cómo se arma cada precio (rubros → costo/m² → imprevistos → margen), revestimientos, contacto y renders de portada. Guarda en GitHub con la misma clave que Eléctrica Sayago.
+- `datos.json` — todos los datos. Lo escribe el panel; no hace falta tocarlo a mano.
+- `precio.js` — la fórmula de precio, compartida por la web y el panel.
+- `img/` — renders de portada que sube el panel.
 
-- `index.html` — la página.
-- `modelos.js` — **único archivo de datos**: precios, opciones de revestimiento, los 6 modelos y las plantas.
-- Link directo a un modelo: agregar `#id` al final (ej. `#smartrancho` para el reel de Pueblo Garzón).
-- Modo diagnóstico de materiales: agregar `?diag` a la URL, abrir el 3D y tocar cada material para pintarlo de rojo; el nombre del que se pinta en la fachada va en `fachadaMat` de ese modelo.
+Link directo a un modelo: `…/web/#smartrancho`. Diagnóstico de materiales del 3D: `…/web/?diag#modelo`.

@@ -1,0 +1,439 @@
+{
+ "actualizado": null,
+ "contacto": {
+  "whatsapp": "598XXXXXXXX",
+  "instagram": "smartbuildinguruguay"
+ },
+ "precio": {
+  "imprevistos": 10,
+  "margen": 25,
+  "deckM2": 160,
+  "redondeo": 100,
+  "alturaMuro": 2.6,
+  "huecos": 20,
+  "heroModelo": "smartrancho"
+ },
+ "rubros": [
+  {
+   "nombre": "Proyecto, permisos y dirección de obra",
+   "usdM2": 60
+  },
+  {
+   "nombre": "Implantación y obrador",
+   "usdM2": 25
+  },
+  {
+   "nombre": "Fundaciones (platea o pilotes)",
+   "usdM2": 110
+  },
+  {
+   "nombre": "Estructura steel frame",
+   "usdM2": 190
+  },
+  {
+   "nombre": "Cubierta",
+   "usdM2": 120
+  },
+  {
+   "nombre": "Cerramiento exterior con siding de pino",
+   "usdM2": 95
+  },
+  {
+   "nombre": "Aislaciones",
+   "usdM2": 45
+  },
+  {
+   "nombre": "Aberturas de aluminio DVH",
+   "usdM2": 110
+  },
+  {
+   "nombre": "Instalación sanitaria",
+   "usdM2": 70
+  },
+  {
+   "nombre": "Instalación eléctrica",
+   "usdM2": 55
+  },
+  {
+   "nombre": "Terminaciones interiores",
+   "usdM2": 90
+  },
+  {
+   "nombre": "Pisos y revestimientos",
+   "usdM2": 65
+  },
+  {
+   "nombre": "Cocina y baños",
+   "usdM2": 55
+  }
+ ],
+ "exterior": [
+  {
+   "id": "original",
+   "nombre": "Como en el render",
+   "usdM2": 0,
+   "tex": null,
+   "nota": "La terminación del proyecto",
+   "activo": true
+  },
+  {
+   "id": "pino",
+   "nombre": "Siding pino tratado",
+   "usdM2": 0,
+   "tex": "pino",
+   "nota": "Machimbre horizontal, impregnado CCA",
+   "activo": true
+  },
+  {
+   "id": "lapacho",
+   "nombre": "Lapacho",
+   "usdM2": 33,
+   "tex": "lapacho",
+   "nota": "Madera dura, sin mantenimiento pesado",
+   "activo": true
+  },
+  {
+   "id": "chapa",
+   "nombre": "Chapa acanalada negra",
+   "usdM2": 9,
+   "tex": "chapa",
+   "nota": "Moderna, cero mantenimiento",
+   "activo": true
+  },
+  {
+   "id": "eifs",
+   "nombre": "Revoque EIFS blanco",
+   "usdM2": 20,
+   "tex": "eifs",
+   "nota": "Aislación exterior + revoque fino",
+   "activo": true
+  }
+ ],
+ "interior": {
+  "activo": false,
+  "opciones": [
+   {
+    "id": "yeso",
+    "nombre": "Placa de yeso pintada",
+    "usdM2": 0
+   },
+   {
+    "id": "machimbre",
+    "nombre": "Machimbre de pino",
+    "usdM2": 18
+   }
+  ]
+ },
+ "pisos": {
+  "activo": false,
+  "opciones": [
+   {
+    "id": "porcelanato",
+    "nombre": "Porcelanato 60×60",
+    "usdM2": 0
+   },
+   {
+    "id": "vinilico",
+    "nombre": "Vinílico símil madera",
+    "usdM2": -8
+   },
+   {
+    "id": "madera",
+    "nombre": "Deck interior de madera",
+    "usdM2": 35
+   }
+  ]
+ },
+ "modelos": [
+  {
+   "id": "smartrancho",
+   "visible": true,
+   "nombre": "SmartRancho",
+   "lugar": "Pueblo Garzón",
+   "frase": "130 m² en una planta, a dos aguas. La casa de campo pensada para quedarse.",
+   "uid": "e934a307daf5473390842989337887c9",
+   "thumb": "https://media.sketchfab.com/models/e934a307daf5473390842989337887c9/thumbnails/04063cbb7f084237ad39dbb001cd3eb0/7707b671eec44ad48d48a4a02bacc26b.jpeg",
+   "imagen": "",
+   "m2": 130,
+   "deck": 0,
+   "dorm": 3,
+   "banos": 2,
+   "usos": [
+    "vivir",
+    "finde"
+   ],
+   "factor": 1,
+   "fachadaM2": null,
+   "fachadaMat": [],
+   "planta": null,
+   "pendiente": [
+    "dormitorios",
+    "baños",
+    "material de fachada en el 3D"
+   ]
+  },
+  {
+   "id": "polo-club",
+   "visible": true,
+   "nombre": "Polo Club",
+   "lugar": "",
+   "frase": "125 m² cubiertos y 100 m² de decks. La vida pasa afuera.",
+   "uid": "768fe248c0ab48c4a5e751069cfac16e",
+   "thumb": "https://media.sketchfab.com/models/768fe248c0ab48c4a5e751069cfac16e/thumbnails/f79f206c5a0640249f900f7dc36d6c0a/bf70661917974127a5989672fe347210.jpeg",
+   "imagen": "",
+   "m2": 125,
+   "deck": 100,
+   "dorm": 3,
+   "banos": 2,
+   "usos": [
+    "vivir",
+    "finde",
+    "renta"
+   ],
+   "factor": 1,
+   "fachadaM2": null,
+   "fachadaMat": [],
+   "planta": null,
+   "pendiente": [
+    "dormitorios",
+    "baños",
+    "material de fachada en el 3D"
+   ]
+  },
+  {
+   "id": "el-tesoro",
+   "visible": true,
+   "nombre": "El Tesoro",
+   "lugar": "La Barra · obra en curso",
+   "frase": "Steel frame en obra hoy en La Barra. Lo que ves es lo que se está construyendo.",
+   "uid": "b689b59e6bec4f85b9e1716dbd01b4e0",
+   "thumb": "https://media.sketchfab.com/models/b689b59e6bec4f85b9e1716dbd01b4e0/thumbnails/8ce6b3f265e04424b2f87cd2619d4c10/80e4e848ef704f42aebd25f625a3fb10.jpeg",
+   "imagen": "",
+   "m2": 90,
+   "deck": 0,
+   "dorm": 2,
+   "banos": 1,
+   "usos": [
+    "vivir"
+   ],
+   "factor": 1,
+   "fachadaM2": null,
+   "fachadaMat": [],
+   "planta": null,
+   "pendiente": [
+    "m²",
+    "dormitorios",
+    "material de fachada en el 3D"
+   ]
+  },
+  {
+   "id": "eden-rock",
+   "visible": true,
+   "nombre": "Eden Rock",
+   "lugar": "Maldonado",
+   "frase": "Nave principal a dos aguas con cerchas de madera a la vista.",
+   "uid": "65cc5fcecf2548a1a1cfc5bc58159a7f",
+   "thumb": "https://media.sketchfab.com/models/65cc5fcecf2548a1a1cfc5bc58159a7f/thumbnails/129f1ecedcc741599bde2278f4470642/f5f038a1b18948c9a5982e60b54f32b9.jpeg",
+   "imagen": "",
+   "m2": 194,
+   "deck": 0,
+   "dorm": 3,
+   "banos": 2,
+   "usos": [
+    "vivir"
+   ],
+   "factor": 1,
+   "fachadaM2": null,
+   "fachadaMat": [
+    "*7"
+   ],
+   "planta": null,
+   "pendiente": [
+    "dormitorios",
+    "baños"
+   ]
+  },
+  {
+   "id": "smarthouse",
+   "visible": true,
+   "nombre": "SmartHouse 1.1",
+   "lugar": "",
+   "frase": "Compacta y completa. Para empezar y crecer después.",
+   "uid": "b7f33d6cf36b4e5894edaa0f61249d58",
+   "thumb": "https://media.sketchfab.com/models/b7f33d6cf36b4e5894edaa0f61249d58/thumbnails/93e3680dbc444052b5fb1a8f26353f77/b2867ad157d2498dba19f1ee69c7f8e9.jpeg",
+   "imagen": "",
+   "m2": 45,
+   "deck": 0,
+   "dorm": 1,
+   "banos": 1,
+   "usos": [
+    "empezar",
+    "finde",
+    "renta"
+   ],
+   "factor": 1,
+   "fachadaM2": null,
+   "fachadaMat": [],
+   "planta": null,
+   "pendiente": [
+    "m²",
+    "dormitorios",
+    "material de fachada en el 3D"
+   ]
+  },
+  {
+   "id": "smartbnb",
+   "visible": true,
+   "nombre": "SmartBnB",
+   "lugar": "",
+   "frase": "18 m² equipados para alquilar desde el primer mes.",
+   "uid": "4539fe80c8224ae09a8e3849e97741e6",
+   "thumb": "https://media.sketchfab.com/models/4539fe80c8224ae09a8e3849e97741e6/thumbnails/3bcb1cad05dc4cdea5a44d92cfe3613b/d294131b14704844b0b0864e9ed5d124.jpeg",
+   "imagen": "",
+   "m2": 18,
+   "deck": 0,
+   "dorm": 1,
+   "banos": 1,
+   "usos": [
+    "renta",
+    "empezar"
+   ],
+   "factor": 1,
+   "fachadaM2": null,
+   "fachadaMat": [],
+   "planta": "smartbnb",
+   "pendiente": [
+    "material de fachada en el 3D",
+    "planta real"
+   ]
+  }
+ ],
+ "plantas": {
+  "smartbnb": {
+   "ejemplo": true,
+   "ancho": 6,
+   "prof": 3,
+   "eExt": 0.15,
+   "eInt": 0.1,
+   "muros": [
+    [
+     1.55,
+     0,
+     1.55,
+     1.85
+    ],
+    [
+     0,
+     1.85,
+     1.55,
+     1.85
+    ]
+   ],
+   "puertas": [
+    {
+     "m": "S",
+     "en": 2.3,
+     "a": 0.9,
+     "giro": 1
+    },
+    {
+     "m": [
+      0,
+      1.85,
+      1.55,
+      1.85
+     ],
+     "en": 0.55,
+     "a": 0.7,
+     "giro": -1
+    }
+   ],
+   "ventanas": [
+    {
+     "m": "N",
+     "en": 4.3,
+     "a": 1.2
+    },
+    {
+     "m": "E",
+     "en": 0.9,
+     "a": 1.2
+    },
+    {
+     "m": "S",
+     "en": 4.4,
+     "a": 1.4
+    },
+    {
+     "m": "O",
+     "en": 2.2,
+     "a": 0.6
+    }
+   ],
+   "equip": [
+    {
+     "t": "mesada",
+     "x": 1.65,
+     "y": 0,
+     "w": 1.9,
+     "h": 0.6
+    },
+    {
+     "t": "cama",
+     "x": 4.05,
+     "y": 0.45,
+     "w": 1.6,
+     "h": 2
+    },
+    {
+     "t": "inodoro",
+     "x": 0.25,
+     "y": 0.05
+    },
+    {
+     "t": "ducha",
+     "x": 0.7,
+     "y": 0.05,
+     "w": 0.8,
+     "h": 0.8
+    },
+    {
+     "t": "lav",
+     "x": 0.1,
+     "y": 1.25
+    }
+   ],
+   "locales": [
+    {
+     "n": "Baño",
+     "x": 1.05,
+     "y": 1.45,
+     "a": 2.6
+    },
+    {
+     "n": "Estar · cocina",
+     "x": 2.75,
+     "y": 1.75,
+     "a": 7.9
+    },
+    {
+     "n": "Dormitorio",
+     "x": 4.85,
+     "y": 2.7,
+     "a": 5.4
+    }
+   ],
+   "cotasX": [
+    0,
+    1.55,
+    4,
+    6
+   ],
+   "cotasY": [
+    0,
+    1.85,
+    3
+   ]
+  }
+ }
+}

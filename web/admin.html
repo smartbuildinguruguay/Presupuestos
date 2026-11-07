@@ -1,0 +1,439 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex,nofollow">
+<title>Panel SBU</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..100,500..800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* Panel de trabajo: misma tinta y cobre que la web, más denso, sin grilla de fondo */
+:root{--paper:#f3f1ec;--sheet:#fbfaf7;--ink:#161513;--ink2:#4b4842;--mute:#8a857b;--line:#d9d4c9;--cu:#a8612f;--ok:#2f6b45;--warn:#b23b2b;--hi:#f6e7d8;
+ --f-d:'Archivo','Arial Narrow',system-ui,sans-serif;--f-b:'Instrument Sans',system-ui,-apple-system,'Segoe UI',sans-serif;--f-m:'IBM Plex Mono',ui-monospace,Menlo,monospace;color-scheme:light}
+@media (prefers-color-scheme: dark){:root:not([data-theme="light"]){--paper:#121110;--sheet:#1a1917;--ink:#efece6;--ink2:#c2bdb3;--mute:#8b867c;--line:#34312c;--cu:#d08950;--ok:#6fbf8b;--warn:#ef7b69;--hi:#3a2a1c;color-scheme:dark}}
+:root[data-theme="dark"]{--paper:#121110;--sheet:#1a1917;--ink:#efece6;--ink2:#c2bdb3;--mute:#8b867c;--line:#34312c;--cu:#d08950;--ok:#6fbf8b;--warn:#ef7b69;--hi:#3a2a1c;color-scheme:dark}
+*{box-sizing:border-box}
+body{margin:0;background:var(--paper);color:var(--ink);font:15px/1.5 var(--f-b);padding-top:env(safe-area-inset-top,0px)}
+[hidden]{display:none!important}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+button:focus-visible,input:focus-visible,select:focus-visible,textarea:focus-visible,a:focus-visible{outline:2px solid var(--cu);outline-offset:2px}
+.w{max-width:1240px;margin:0 auto;padding-left:max(16px,env(safe-area-inset-left,0px));padding-right:max(16px,env(safe-area-inset-right,0px))}
+h1,h2,h3{font-family:var(--f-d);font-stretch:75%;margin:0;line-height:1.05}
+.mono,td.n,input[type=number]{font-family:var(--f-m);font-variant-numeric:tabular-nums}
+.top{position:sticky;top:0;z-index:20;background:var(--ink);color:var(--paper)}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);background:var(--ink);z-index:21}
+.top .w{display:flex;flex-wrap:wrap;gap:8px 16px;align-items:center;justify-content:space-between;padding-block:10px}
+.top h1{font-size:1.4rem;font-weight:800;letter-spacing:.03em}
+.top a{color:var(--paper);font-size:.85rem}
+.sync{display:flex;flex-wrap:wrap;gap:8px;align-items:center;font-size:.82rem}
+.sync .dot{display:inline-block;width:8px;height:8px;border-radius:50%;background:#6fbf8b;margin-right:6px}
+.sync.pend .dot{background:#e3a678}
+.btn{border:1.5px solid var(--ink);background:var(--ink);color:var(--paper);border-radius:4px;padding:8px 13px;font-weight:600;font-size:.88rem}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn.cu{background:var(--cu);border-color:var(--cu);color:#fff}
+.btn:disabled{opacity:.45;cursor:default}
+.top .btn{border-color:var(--paper)}
+.top .btn.ghost{color:var(--paper)}
+.tok input{width:220px;max-width:60vw;padding:6px 8px;border-radius:4px;border:0;color:#161513}
+.tabs{display:flex;gap:4px;border-bottom:1px solid var(--line);margin:18px 0;overflow-x:auto}
+.tabs button{background:none;border:0;border-bottom:2px solid transparent;padding:10px 12px;font-weight:600;color:var(--mute);white-space:nowrap;margin-bottom:-1px}
+.tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--cu)}
+.cols{display:grid;grid-template-columns:240px minmax(0,1fr) minmax(0,380px);gap:18px;align-items:start}
+@media (max-width:1100px){.cols{grid-template-columns:200px minmax(0,1fr)}.cols > .side{grid-column:1 / -1}}
+@media (max-width:700px){.cols{grid-template-columns:minmax(0,1fr)}}
+.list{display:grid;gap:6px}
+.list button{display:grid;grid-template-columns:52px 1fr;gap:10px;align-items:center;text-align:left;background:var(--sheet);border:1.5px solid var(--line);border-radius:6px;padding:6px}
+.list button[aria-current="true"]{border-color:var(--cu)}
+.list img,.list .ni{width:52px;height:36px;object-fit:cover;border-radius:3px;background:var(--line)}
+.list b{display:block;font-size:.9rem}
+.list small{font:500 .72rem var(--f-m);color:var(--mute)}
+.list .off{opacity:.5}
+.card{background:var(--sheet);border:1px solid var(--line);border-radius:8px;padding:16px;display:grid;gap:14px;min-width:0}
+.card h2{font-size:1.6rem;font-weight:800}
+.card h3{font-size:1.15rem;font-weight:700}
+.f{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px 12px;align-items:start}
+.f label{display:grid;gap:3px;font-size:.74rem;font-weight:600;color:var(--ink2);letter-spacing:.02em;min-width:0}
+.f label.wide{grid-column:1 / -1}
+.f input,.f textarea,.f select{width:100%;padding:8px 9px;border:1px solid var(--line);border-radius:4px;background:var(--paper);font-size:.92rem;min-width:0}
+.f textarea{min-height:64px;resize:vertical;font-family:var(--f-b)}
+.f small{font-weight:400;color:var(--mute);font-size:.72rem}
+.chk{display:flex;flex-wrap:wrap;gap:6px}
+.chk label{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:99px;padding:4px 10px;font-weight:500;font-size:.82rem;color:var(--ink)}
+.chk input{width:auto;accent-color:var(--cu)}
+table{width:100%;border-collapse:collapse;font-size:.86rem}
+th,td{padding:6px 6px;border-bottom:1px solid var(--line);text-align:left;vertical-align:middle}
+th{font:600 .68rem var(--f-m);letter-spacing:.08em;text-transform:uppercase;color:var(--mute)}
+td.n,th.n{text-align:right;white-space:nowrap}
+td input{width:100%;padding:5px 6px;border:1px solid var(--line);border-radius:3px;background:var(--paper);min-width:0}
+td input[type=number]{max-width:110px;text-align:right}
+tr.tot td{font-weight:700;border-bottom:2px solid var(--ink)}
+tr.hl td{background:var(--hi)}
+.tbl{overflow-x:auto}
+.big{font:800 2.6rem/1 var(--f-d);font-stretch:70%}
+.note{font-size:.8rem;color:var(--mute);margin:0}
+.warn{color:var(--warn)}
+.side .card{position:sticky;top:76px}
+.flow{display:grid;gap:4px;font:500 .8rem var(--f-m);color:var(--ink2)}
+.flow b{color:var(--ink)}
+/* renders */
+.rgrid{display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:18px;align-items:start}
+@media (max-width:900px){.rgrid{grid-template-columns:minmax(0,1fr)}}
+.stage{position:relative;aspect-ratio:16/10;background:#1d1b18;border-radius:8px;overflow:hidden}
+.stage iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.stage .msg{position:absolute;inset:0;display:grid;place-items:center;color:#c9c2b4;font:500 .85rem var(--f-m);text-align:center;padding:20px}
+.shot{border:1px solid var(--line);border-radius:8px;overflow:hidden;background:var(--line)}
+.shot img{display:block;width:100%}
+.presets{display:flex;flex-wrap:wrap;gap:6px}
+.presets button{border:1.5px solid var(--line);background:var(--paper);border-radius:99px;padding:5px 12px;font-size:.84rem}
+.presets button[aria-pressed="true"]{border-color:var(--cu)}
+.thumbs{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.thumbs figure{margin:0;background:var(--sheet);border:1px solid var(--line);border-radius:6px;overflow:hidden}
+.thumbs img{display:block;width:100%;aspect-ratio:16/10;object-fit:cover;background:var(--line)}
+.thumbs figcaption{padding:5px 8px;font-size:.78rem}
+</style>
+</head>
+<body>
+<header class="top"><div class="w">
+  <div style="display:flex;gap:14px;align-items:baseline"><h1>PANEL SBU</h1><a href="./" target="_blank" rel="noopener">Ver la web →</a></div>
+  <div class="sync" id="sync"></div>
+</div></header>
+
+<main class="w">
+  <div class="tabs" role="tablist">
+    <button type="button" role="tab" data-tab="modelos" aria-selected="true">Modelos</button>
+    <button type="button" role="tab" data-tab="precios" aria-selected="false">Cómo se calcula el precio</button>
+    <button type="button" role="tab" data-tab="rev" aria-selected="false">Revestimientos</button>
+    <button type="button" role="tab" data-tab="renders" aria-selected="false">Renders</button>
+    <button type="button" role="tab" data-tab="general" aria-selected="false">Contacto y portada</button>
+  </div>
+
+  <section id="t-modelos"><div class="cols">
+    <div><div class="list" id="mlist"></div>
+      <div style="display:flex;gap:6px;margin-top:10px;flex-wrap:wrap"><button type="button" class="btn ghost" id="mAdd">+ Modelo nuevo</button></div></div>
+    <div class="card" id="mform"></div>
+    <div class="side"><div class="card" id="mprice"></div></div>
+  </div></section>
+
+  <section id="t-precios" hidden><div class="cols" style="grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)">
+    <div class="card">
+      <h2>Costo directo por m²</h2>
+      <p class="note">Lo que cuesta construir 1 m² de casa estándar, separado por rubro. Es la base de todos los modelos. Cada modelo puede tener un factor (por ejemplo 1,15 si es más complejo o muy chico).</p>
+      <div class="tbl"><table id="rub"></table></div>
+      <button type="button" class="btn ghost" id="rubAdd" style="justify-self:start">+ Rubro</button>
+    </div>
+    <div style="display:grid;gap:18px">
+      <div class="card">
+        <h2>De costo a precio</h2>
+        <div class="f" id="pform"></div>
+        <div class="flow" id="pflow"></div>
+      </div>
+      <div class="card"><h3>Precio de cada modelo</h3><div class="tbl"><table id="ptab"></table></div><p class="note">Con siding de pino. Tocá un modelo para ver su detalle.</p></div>
+    </div>
+  </div></section>
+
+  <section id="t-rev" hidden><div class="card">
+    <h2>Revestimiento exterior</h2>
+    <p class="note">El extra se cobra por m² de fachada, sobre lo que ya incluye el rubro de cerramiento (siding de pino). Al extra se le suman imprevistos y margen. "Textura" es la que se pinta en el 3D: pino, lapacho, chapa o eifs.</p>
+    <div class="tbl"><table id="rtab"></table></div>
+    <button type="button" class="btn ghost" id="rAdd" style="justify-self:start">+ Revestimiento</button>
+  </div></section>
+
+  <section id="t-renders" hidden>
+    <div class="rgrid">
+      <div class="card">
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between"><h2>Render de portada</h2>
+          <label class="f" style="display:block"><select id="rModel" aria-label="Modelo"></select></label></div>
+        <div class="stage" id="stage"><div class="msg">Elegí un modelo y tocá "Abrir modelo"</div></div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center">
+          <button type="button" class="btn" id="rOpen">Abrir modelo</button>
+          <span class="note">Girá y acercá hasta el encuadre que quieras, elegí la luz y sacá el render.</span>
+        </div>
+        <div><div class="note" style="margin-bottom:6px">Luz y fondo</div><div class="presets" id="presets"></div></div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px"><button type="button" class="btn cu" id="rShot" disabled>Sacar render 1920 × 1200</button></div>
+      </div>
+      <div class="card">
+        <h3>Resultado</h3>
+        <div class="shot" id="shot"><p class="note" style="padding:20px">Todavía no sacaste ninguno.</p></div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px"><button type="button" class="btn cu" id="rSave" disabled>Usar como portada y subir</button></div>
+        <p class="note" id="rMsg" aria-live="polite"></p>
+        <h3>Portadas actuales</h3>
+        <div class="thumbs" id="thumbs"></div>
+      </div>
+    </div>
+  </section>
+
+  <section id="t-general" hidden><div class="card" style="max-width:720px">
+    <h2>Contacto y portada</h2>
+    <div class="f" id="gform"></div>
+  </div></section>
+  <p style="height:60px"></p>
+</main>
+
+<script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js" defer></script>
+<script src="precio.js"></script>
+<script>
+(async function(){
+const $=id=>document.getElementById(id);
+const GH={repo:'smartbuildinguruguay/Presupuestos',dir:'web',branch:'main'};
+const TKEY='sbu-gh-token', DKEY='sbu-admin-draft';
+const usd=n=>'USD '+Math.round(n).toLocaleString('es-UY');
+const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const USOS={vivir:'Vivir',finde:'Campo / finde',renta:'Alquilar',empezar:'Empezar chico'};
+const tok=()=>{try{return localStorage.getItem(TKEY)||''}catch(e){return ''}};
+
+/* ---------- datos ---------- */
+let remote=null;try{const q=await fetch('datos.json?t='+Date.now(),{cache:'no-store'});if(q.ok)remote=await q.json()}catch(e){}
+let D=null,draftBase=null;
+try{const d=JSON.parse(localStorage.getItem(DKEY)||'null');if(d&&d.data){D=d.data;draftBase=d.base}}catch(e){}
+if(!D)D=JSON.parse(JSON.stringify(remote));
+if(!D){document.body.innerHTML='<p style="padding:20px">No se pudo leer datos.json.</p>';return}
+const pending=()=>JSON.stringify(D)!==JSON.stringify(remote);
+function saveDraft(){try{localStorage.setItem(DKEY,JSON.stringify({data:D,base:remote&&remote.actualizado}))}catch(e){}syncUI()}
+function changed(){saveDraft();renderAll(true)}
+
+/* ---------- GitHub ---------- */
+let askTok=false,busy=false,syncMsg='';
+function b64s(str){const u=new TextEncoder().encode(str);let o='';for(let i=0;i<u.length;i+=8192)o+=String.fromCharCode.apply(null,u.subarray(i,i+8192));return btoa(o)}
+async function ghPut(path,contentB64,message){
+  const t=tok();if(!t)throw {code:401};
+  const api=`https://api.github.com/repos/${GH.repo}/contents/${GH.dir}/${path}`,hh={Authorization:'Bearer '+t,Accept:'application/vnd.github+json'};
+  let sha=null;const g=await fetch(api+'?ref='+GH.branch+'&t='+Date.now(),{headers:hh,cache:'no-store'});
+  if(g.status===401||g.status===403)throw {code:g.status};
+  let cur=null;if(g.ok){const j=await g.json();sha=j.sha;cur=j}
+  const q=await fetch(api,{method:'PUT',headers:Object.assign({'Content-Type':'application/json'},hh),body:JSON.stringify({message,content:contentB64,branch:GH.branch,...(sha?{sha}:{})})});
+  if(!q.ok)throw {code:q.status};
+  return cur;
+}
+async function subir(){
+  if(busy)return;if(!tok()){askTok=true;syncUI();return}
+  busy=true;syncMsg='Subiendo…';syncUI();
+  try{
+    D.actualizado=new Date().toISOString();
+    await ghPut('datos.json',b64s(JSON.stringify(D,null,1)),'Web SBU: datos actualizados desde el panel');
+    remote=JSON.parse(JSON.stringify(D));saveDraft();syncMsg='Subido. La web se actualiza en 1 o 2 minutos.';
+  }catch(e){handleErr(e)}
+  busy=false;syncUI();
+}
+function handleErr(e){
+  if(e&&(e.code===401||e.code===403||e.code===404)){try{localStorage.removeItem(TKEY)}catch(x){}askTok=true;syncMsg=e.code===404?'Esa clave no tiene acceso al repo Presupuestos.':'La clave no sirve o venció. Pegá una nueva.'}
+  else syncMsg='No se pudo subir'+(e&&e.code?' ('+e.code+')':'')+'. Tus cambios siguen guardados en este navegador.';
+}
+function syncUI(){
+  const b=$('sync');if(document.activeElement&&document.activeElement.id==='ghTok')return;
+  const p=pending();b.className='sync'+(p?' pend':'');
+  let h=`<span><span class="dot"></span>${p?'Cambios sin subir':'Todo subido'+(remote&&remote.actualizado?' · '+new Date(remote.actualizado).toLocaleString('es-UY',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'}):'')}</span>`;
+  if(p)h+=`<button type="button" class="btn cu" id="ghUp"${busy?' disabled':''}>Subir a la web</button><button type="button" class="btn ghost" id="ghDrop">Descartar</button>`;
+  if(askTok)h+=`<span class="tok"><input type="password" id="ghTok" placeholder="Clave de GitHub (github_pat_…)" autocomplete="off" aria-label="Clave de GitHub"> <button type="button" class="btn" id="ghTokOk">Guardar</button></span>`;
+  else if(!tok())h+=`<button type="button" class="btn ghost" id="ghIn">Poner clave de GitHub</button>`;
+  if(syncMsg)h+=`<span>${esc(syncMsg)}</span>`;
+  b.innerHTML=h;const on=(id,f)=>{const e=$(id);if(e)e.onclick=f};
+  on('ghUp',subir);on('ghIn',()=>{askTok=true;syncMsg='';syncUI();$('ghTok').focus()});
+  on('ghDrop',()=>{D=JSON.parse(JSON.stringify(remote));try{localStorage.removeItem(DKEY)}catch(e){}syncMsg='';renderAll(true);syncUI()});
+  on('ghTokOk',()=>{const v=$('ghTok').value.trim();if(!v)return;try{localStorage.setItem(TKEY,v)}catch(e){}askTok=false;syncMsg='Clave guardada.';syncUI()});
+}
+
+/* ---------- pestañas ---------- */
+let tab='modelos';
+document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;
+  document.querySelectorAll('[data-tab]').forEach(x=>x.setAttribute('aria-selected',x===b));
+  ['modelos','precios','rev','renders','general'].forEach(t=>$('t-'+t).hidden=t!==tab);renderAll(true)}));
+
+/* ---------- campos genéricos ---------- */
+// bind: data-k="ruta.al.valor" sobre el objeto que se pasa
+function bindForm(root,obj,after){
+  root.querySelectorAll('[data-k]').forEach(el=>{
+    const k=el.dataset.k,typ=el.dataset.t||'';
+    const get=()=>k.split('.').reduce((o,p)=>o==null?o:o[p],obj);
+    const set=v=>{const ps=k.split('.');const last=ps.pop();const o=ps.reduce((a,p)=>a[p],obj);o[last]=v};
+    const v=get();
+    if(el.type==='checkbox')el.checked=!!v;
+    else if(typ==='list')el.value=(v||[]).join(typ==='list'?'\n':', ');
+    else if(typ==='csv')el.value=(v||[]).join(', ');
+    else el.value=v==null?'':v;
+    el.addEventListener(el.type==='checkbox'||el.tagName==='SELECT'?'change':'input',()=>{
+      let nv;
+      if(el.type==='checkbox')nv=el.checked;
+      else if(typ==='num')nv=el.value===''?null:+el.value;
+      else if(typ==='list')nv=el.value.split('\n').map(s=>s.trim()).filter(Boolean);
+      else if(typ==='csv')nv=el.value.split(',').map(s=>s.trim()).filter(Boolean);
+      else nv=el.value;
+      set(nv);saveDraft();after&&after(k);
+    });
+  });
+}
+
+/* ---------- MODELOS ---------- */
+let selId=(D.modelos[0]||{}).id;
+const pic=m=>m.imagen?m.imagen+'?v='+(D.actualizado||''):(m.thumb||'');
+const baseExt=()=>D.exterior.some(e=>e.id==='pino')?'pino':D.exterior[0].id;
+function mList(){
+  $('mlist').innerHTML=D.modelos.map(m=>`<button type="button" data-m="${m.id}" aria-current="${m.id===selId}" class="${m.visible===false?'off':''}">${pic(m)?`<img src="${esc(pic(m))}" alt="">`:'<span class="ni"></span>'}<span><b>${esc(m.nombre)}</b><small>${m.m2} m² · ${usd(window.SBUprecio(D,m,baseExt()).venta)}</small></span></button>`).join('');
+  $('mlist').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{selId=b.dataset.m;mList();mForm();mPrice()});
+}
+function mForm(){
+  const m=D.modelos.find(x=>x.id===selId);if(!m){$('mform').innerHTML='';return}
+  const auto=Math.round(4*Math.sqrt(m.m2)*D.precio.alturaMuro*(1-D.precio.huecos/100));
+  $('mform').innerHTML=`<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center"><h2>${esc(m.nombre)}</h2>
+   <div style="display:flex;gap:6px"><button type="button" class="btn ghost" id="mUp">↑</button><button type="button" class="btn ghost" id="mDn">↓</button><button type="button" class="btn ghost" id="mDel">Borrar</button></div></div>
+   <div class="f">
+    <label>Nombre<input data-k="nombre"></label>
+    <label>Lugar / obra<input data-k="lugar"></label>
+    <label class="wide">Frase de venta<input data-k="frase"></label>
+    <label>Cubiertos (m²)<input type="number" min="1" data-k="m2" data-t="num"></label>
+    <label>Decks (m²)<input type="number" min="0" data-k="deck" data-t="num"></label>
+    <label>Dormitorios<input type="number" min="0" data-k="dorm" data-t="num"></label>
+    <label>Baños<input type="number" min="0" data-k="banos" data-t="num"></label>
+    <label>Factor de costo<input type="number" step="0.01" min="0.5" data-k="factor" data-t="num"><small>1 = estándar</small></label>
+    <label>Fachada (m²)<input type="number" min="0" data-k="fachadaM2" data-t="num" placeholder="auto: ${auto}"><small>Vacío = cálculo automático (${auto} m²)</small></label>
+    <label class="wide">Para qué sirve (lo usa el buscador)<div class="chk">${Object.entries(USOS).map(([k,v])=>`<label><input type="checkbox" data-uso="${k}"${m.usos.includes(k)?' checked':''}>${v}</label>`).join('')}</div></label>
+    <label class="wide">Sketchfab · código del modelo<input data-k="uid"><small>Los 32 caracteres al final del link</small></label>
+    <label class="wide">Material de fachada en el 3D<input data-k="fachadaMat" data-t="csv"><small>Para encontrarlo: abrí la web con ?diag y tocá los materiales. Separados por coma.</small></label>
+    <label class="wide">Imagen de portada<input data-k="imagen" placeholder="se completa sola al subir un render"><small>Si está vacío usa la miniatura de Sketchfab.</small></label>
+    <label class="wide">A confirmar (uno por línea; se muestra al cliente)<textarea data-k="pendiente" data-t="list"></textarea></label>
+    <label><span><input type="checkbox" data-k="visible" style="width:auto"> Visible en la web</span></label>
+   </div>`;
+  bindForm($('mform'),m,k=>{if(k==='nombre'||k==='m2'||k==='visible'||k==='imagen')mList();mPrice();if(k==='m2')mForm()});
+  $('mform').querySelectorAll('[data-uso]').forEach(c=>c.onchange=()=>{m.usos=[...$('mform').querySelectorAll('[data-uso]:checked')].map(x=>x.dataset.uso);saveDraft()});
+  const mv=d=>{const i=D.modelos.indexOf(m),j=i+d;if(j<0||j>=D.modelos.length)return;D.modelos.splice(i,1);D.modelos.splice(j,0,m);changed()};
+  $('mUp').onclick=()=>mv(-1);$('mDn').onclick=()=>mv(1);
+  $('mDel').onclick=()=>{if($('mDel').dataset.c){D.modelos=D.modelos.filter(x=>x!==m);selId=(D.modelos[0]||{}).id;changed()}else{$('mDel').dataset.c=1;$('mDel').textContent='¿Seguro? Tocá de nuevo';$('mDel').classList.add('cu')}};
+}
+function mPrice(){
+  const m=D.modelos.find(x=>x.id===selId);if(!m){$('mprice').innerHTML='';return}
+  const p=window.SBUprecio(D,m,baseExt()),P=D.precio;
+  $('mprice').innerHTML=`<h3>Precio de ${esc(m.nombre)}</h3>
+   <div><div class="big mono">${usd(p.venta)}</div><div class="note">${usd(p.ventaM2)} por m² · obra ${p.plazo} meses · con ${esc(p.ext.nombre)}</div></div>
+   <div class="tbl"><table>
+    <tr><th>Concepto</th><th class="n">Costo</th><th class="n">Precio</th></tr>
+    ${p.lineas.map(l=>`<tr><td>${esc(l.t)}<br><small class="note">${esc(l.det)}</small></td><td class="n">${usd(l.costo)}</td><td class="n">${usd(l.venta)}</td></tr>`).join('')}
+    <tr><td>Imprevistos ${P.imprevistos} %</td><td class="n">${usd(p.imprevistos)}</td><td></td></tr>
+    <tr><td>Margen ${P.margen} %</td><td class="n">${usd(p.margen)}</td><td></td></tr>
+    <tr class="tot"><td>Total</td><td class="n">${usd(p.costo+p.imprevistos+p.margen)}</td><td class="n">${usd(p.venta)}</td></tr>
+   </table></div>
+   <div class="flow"><span>Costo/m² = rubros <b>${usd(p.rubrosM2)}</b> × factor <b>${(+m.factor||1).toLocaleString('es-UY')}</b> = <b>${usd(p.costoM2)}</b></span><span>Precio = costo × ${p.k.toFixed(3).replace('.',',')} (imprevistos y margen), redondeado a ${P.redondeo}</span></div>
+   <h3>Con cada revestimiento</h3>
+   <div class="tbl"><table>${D.exterior.filter(e=>e.activo!==false).map(e=>{const q=window.SBUprecio(D,m,e.id);return `<tr${e.id===p.ext.id?' class="hl"':''}><td>${esc(e.nombre)}</td><td class="n">${usd(q.venta)}</td><td class="n">${usd(q.ventaM2)}/m²</td></tr>`}).join('')}</table></div>
+   ${(m.pendiente||[]).length?`<p class="note warn">A confirmar: ${m.pendiente.map(esc).join(', ')}</p>`:''}`;
+}
+$('mAdd').onclick=()=>{let n=1;while(D.modelos.some(m=>m.id==='modelo-'+n))n++;
+  const m={id:'modelo-'+n,visible:false,nombre:'Modelo nuevo',lugar:'',frase:'',uid:'',thumb:'',imagen:'',m2:60,deck:0,dorm:2,banos:1,usos:['vivir'],factor:1,fachadaM2:null,fachadaMat:[],planta:null,pendiente:['todo']};
+  D.modelos.push(m);selId=m.id;changed()};
+
+/* ---------- PRECIOS ---------- */
+function precios(){
+  const tot=D.rubros.reduce((a,r)=>a+(+r.usdM2||0),0);
+  $('rub').innerHTML=`<tr><th>Rubro</th><th class="n">USD/m²</th><th class="n">%</th><th></th></tr>`+
+   D.rubros.map((r,i)=>`<tr><td><input data-ri="${i}" data-f="nombre" value="${esc(r.nombre)}" aria-label="Rubro"></td><td class="n"><input type="number" min="0" data-ri="${i}" data-f="usdM2" value="${r.usdM2}" aria-label="USD por m²"></td><td class="n">${tot?Math.round(r.usdM2/tot*100):0}</td><td><button type="button" class="btn ghost" data-rdel="${i}" aria-label="Borrar rubro">×</button></td></tr>`).join('')+
+   `<tr class="tot"><td>Costo directo por m²</td><td class="n">${usd(tot)}</td><td class="n">100</td><td></td></tr>`;
+  $('rub').querySelectorAll('[data-ri]').forEach(el=>el.oninput=()=>{const r=D.rubros[+el.dataset.ri];r[el.dataset.f]=el.dataset.f==='usdM2'?+el.value||0:el.value;saveDraft();if(el.dataset.f==='usdM2'){precFlow();const t=D.rubros.reduce((a,r)=>a+(+r.usdM2||0),0);$('rub').querySelector('tr.tot td.n').textContent=usd(t)}});
+  $('rub').querySelectorAll('[data-rdel]').forEach(b=>b.onclick=()=>{D.rubros.splice(+b.dataset.rdel,1);changed()});
+  $('pform').innerHTML=`<label>Imprevistos (%)<input type="number" data-k="imprevistos" data-t="num"></label>
+   <label>Margen (%)<input type="number" data-k="margen" data-t="num"></label>
+   <label>Deck · costo USD/m²<input type="number" data-k="deckM2" data-t="num"></label>
+   <label>Redondear a (USD)<input type="number" data-k="redondeo" data-t="num"></label>
+   <label>Altura de muro (m)<input type="number" step="0.1" data-k="alturaMuro" data-t="num"><small>para la fachada automática</small></label>
+   <label>Huecos de aberturas (%)<input type="number" data-k="huecos" data-t="num"><small>se descuentan de la fachada</small></label>`;
+  bindForm($('pform'),D.precio,precFlow);
+  precFlow();
+}
+function precFlow(){
+  const P=D.precio,c=D.rubros.reduce((a,r)=>a+(+r.usdM2||0),0),k=(1+P.imprevistos/100)*(1+P.margen/100);
+  $('pflow').innerHTML=`<span>Costo directo <b>${usd(c)}/m²</b></span><span>+ imprevistos ${P.imprevistos} % = ${usd(c*(1+P.imprevistos/100))}/m²</span><span>+ margen ${P.margen} % = <b>${usd(c*k)}/m² de venta</b></span><span>Deck: ${usd(P.deckM2)} costo → ${usd(P.deckM2*k)}/m² de venta</span>`;
+  $('ptab').innerHTML=`<tr><th>Modelo</th><th class="n">m²</th><th class="n">Precio</th><th class="n">USD/m²</th></tr>`+D.modelos.map(m=>{const p=window.SBUprecio(D,m,baseExt());return `<tr data-go="${m.id}" style="cursor:pointer"><td>${esc(m.nombre)}${m.visible===false?' <small class="note">(oculto)</small>':''}</td><td class="n">${m.m2}${+m.deck?' + '+m.deck:''}</td><td class="n">${usd(p.venta)}</td><td class="n">${usd(p.ventaM2)}</td></tr>`}).join('');
+  $('ptab').querySelectorAll('[data-go]').forEach(t=>t.onclick=()=>{selId=t.dataset.go;document.querySelector('[data-tab="modelos"]').click()});
+}
+$('rubAdd').onclick=()=>{D.rubros.push({nombre:'Rubro nuevo',usdM2:0});changed()};
+
+/* ---------- REVESTIMIENTOS ---------- */
+function revs(){
+  const P=D.precio,k=(1+P.imprevistos/100)*(1+P.margen/100);
+  $('rtab').innerHTML=`<tr><th>Nombre</th><th class="n">Costo extra USD/m²</th><th class="n">Venta extra/m²</th><th>Textura 3D</th><th>Nota para el cliente</th><th>Activo</th><th></th></tr>`+
+   D.exterior.map((e,i)=>`<tr><td><input data-ei="${i}" data-f="nombre" value="${esc(e.nombre)}" aria-label="Nombre"></td><td class="n"><input type="number" data-ei="${i}" data-f="usdM2" value="${e.usdM2}" aria-label="Costo extra"></td><td class="n">${usd((+e.usdM2||0)*k)}</td>
+    <td><select data-ei="${i}" data-f="tex" aria-label="Textura">${['','pino','lapacho','chapa','eifs'].map(t=>`<option value="${t}"${(e.tex||'')===t?' selected':''}>${t||'original del modelo'}</option>`).join('')}</select></td>
+    <td><input data-ei="${i}" data-f="nota" value="${esc(e.nota||'')}" aria-label="Nota"></td><td><input type="checkbox" data-ei="${i}" data-f="activo"${e.activo!==false?' checked':''} aria-label="Activo" style="width:auto"></td>
+    <td>${e.id==='original'?'':`<button type="button" class="btn ghost" data-edel="${i}" aria-label="Borrar">×</button>`}</td></tr>`).join('');
+  $('rtab').querySelectorAll('[data-ei]').forEach(el=>{const ev=el.type==='checkbox'||el.tagName==='SELECT'?'change':'input';el.addEventListener(ev,()=>{const e=D.exterior[+el.dataset.ei],f=el.dataset.f;
+    e[f]=el.type==='checkbox'?el.checked:f==='usdM2'?+el.value||0:f==='tex'?(el.value||null):el.value;saveDraft();if(f==='usdM2'){el.closest('tr').children[2].textContent=usd((+el.value||0)*k)}})});
+  $('rtab').querySelectorAll('[data-edel]').forEach(b=>b.onclick=()=>{D.exterior.splice(+b.dataset.edel,1);changed()});
+}
+$('rAdd').onclick=()=>{let n=1;while(D.exterior.some(e=>e.id==='rev-'+n))n++;D.exterior.push({id:'rev-'+n,nombre:'Revestimiento nuevo',usdM2:0,tex:null,nota:'',activo:false});changed()};
+
+/* ---------- GENERAL ---------- */
+function general(){
+  $('gform').innerHTML=`<label>WhatsApp<input data-k="contacto.whatsapp" placeholder="59899123456"><small>Con 598, sin + ni espacios</small></label>
+   <label>Instagram<input data-k="contacto.instagram"><small>Sin @</small></label>
+   <label class="wide">Modelo de la portada<select data-k="precio.heroModelo">${D.modelos.map(m=>`<option value="${m.id}">${esc(m.nombre)}</option>`).join('')}</select></label>
+   <p class="note wide" style="grid-column:1/-1">Link directo a cada modelo para anuncios: <span class="mono">…/web/#${esc(D.modelos[0]?D.modelos[0].id:'')}</span>. Ids: ${D.modelos.map(m=>`<span class="mono">#${esc(m.id)}</span>`).join(' · ')}</p>`;
+  bindForm($('gform'),D);
+}
+
+/* ---------- RENDERS ---------- */
+let api=null,shotData=null,shotId=null,preset='natural';
+const PRESETS={
+  natural:{n:'Día natural',bg:[0.86,0.89,0.91],exp:1.0,rot:0.6,int:1.2},
+  atardecer:{n:'Atardecer',bg:[0.93,0.80,0.66],exp:1.1,rot:2.4,int:1.0},
+  estudio:{n:'Estudio blanco',bg:[0.97,0.97,0.96],exp:1.15,rot:1.2,int:1.4},
+  noche:{n:'Noche cálida',bg:[0.10,0.11,0.14],exp:0.75,rot:3.6,int:0.8},
+};
+function renders(){
+  $('rModel').innerHTML=D.modelos.map(m=>`<option value="${m.id}"${m.id===selId?' selected':''}>${esc(m.nombre)}</option>`).join('');
+  $('presets').innerHTML=Object.entries(PRESETS).map(([k,v])=>`<button type="button" data-p="${k}" aria-pressed="${k===preset}">${v.n}</button>`).join('');
+  $('presets').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{preset=b.dataset.p;$('presets').querySelectorAll('[data-p]').forEach(x=>x.setAttribute('aria-pressed',x===b));applyPreset()});
+  $('thumbs').innerHTML=D.modelos.map(m=>`<figure>${pic(m)?`<img src="${esc(pic(m))}" alt="">`:'<img alt="">'}<figcaption>${esc(m.nombre)} ${m.imagen?'· render propio':'· miniatura Sketchfab'}</figcaption></figure>`).join('');
+}
+$('rModel').onchange=()=>{selId=$('rModel').value;api=null;$('rShot').disabled=true;$('stage').innerHTML='<div class="msg">Tocá "Abrir modelo"</div>'};
+function applyPreset(){
+  if(!api)return;const p=PRESETS[preset];
+  try{api.setBackground({color:p.bg})}catch(e){}
+  try{api.setEnvironment({exposure:p.exp,rotation:p.rot,lightIntensity:p.int,shadowEnabled:true})}catch(e){}
+  try{api.getPostProcessingFilters((err,f)=>{if(err||!f)return;f.enable=true;
+    if(f.ssao){f.ssao.enable=true;f.ssao.intensity=0.6;f.ssao.radius=0.3}
+    if(f.toneMapping){f.toneMapping.enable=true;f.toneMapping.exposure=p.exp}
+    if(f.sharpness){f.sharpness.enable=true;f.sharpness.factor=0.25}
+    if(f.bloom)f.bloom.enable=preset==='noche';
+    if(f.vignette){f.vignette.enable=true;f.vignette.amount=0.25}
+    api.setPostProcessingFilters(f)})}catch(e){}
+}
+$('rOpen').onclick=()=>{
+  const m=D.modelos.find(x=>x.id===$('rModel').value);if(!m||!m.uid){$('stage').innerHTML='<div class="msg">Este modelo no tiene código de Sketchfab.</div>';return}
+  if(!window.Sketchfab){$('stage').innerHTML='<div class="msg">Cargando visor…</div>';setTimeout(()=>$('rOpen').click(),400);return}
+  $('stage').innerHTML='<iframe title="Modelo" allow="autoplay; fullscreen"></iframe><div class="msg" id="smsg">Cargando…</div>';
+  const c=new Sketchfab($('stage').querySelector('iframe'));
+  c.init(m.uid,{autostart:1,preload:1,ui_infos:0,ui_watermark:0,ui_watermark_link:0,ui_inspector:0,ui_settings:0,ui_help:0,ui_vr:0,ui_ar:0,ui_annotations:0,ui_controls:0,ui_stop:0,ui_hint:0,dnt:1,
+    success(a){api=a;a.start();a.addEventListener('viewerready',()=>{const s=$('smsg');if(s)s.remove();applyPreset();$('rShot').disabled=false})},
+    error(){$('stage').innerHTML='<div class="msg">No se pudo abrir el modelo.</div>'}});
+};
+$('rShot').onclick=()=>{
+  if(!api)return;$('rShot').disabled=true;$('rMsg').textContent='Sacando render…';
+  api.getScreenShot(1920,1200,'image/jpeg',(err,res)=>{$('rShot').disabled=false;
+    if(err||!res){$('rMsg').textContent='No se pudo sacar el render.';return}
+    shotData=res;shotId=$('rModel').value;$('shot').innerHTML=`<img src="${res}" alt="Render">`;$('rSave').disabled=false;$('rMsg').textContent='Si te gusta, subilo como portada.'});
+};
+$('rSave').onclick=async()=>{
+  if(!shotData||!shotId)return;if(!tok()){askTok=true;syncUI();$('rMsg').textContent='Primero poné la clave de GitHub arriba.';return}
+  $('rSave').disabled=true;$('rMsg').textContent='Subiendo imagen…';
+  try{
+    await ghPut(`img/${shotId}.jpg`,shotData.split(',')[1],`Web SBU: render de portada de ${shotId}`);
+    const m=D.modelos.find(x=>x.id===shotId);m.imagen=`img/${shotId}.jpg`;
+    D.actualizado=new Date().toISOString();
+    await ghPut('datos.json',b64s(JSON.stringify(D,null,1)),`Web SBU: portada de ${shotId}`);
+    remote=JSON.parse(JSON.stringify(D));saveDraft();
+    $('rMsg').textContent='Listo. La portada nueva aparece en la web en 1 o 2 minutos.';renders();mList();
+  }catch(e){handleErr(e);syncUI();$('rMsg').textContent=syncMsg}
+  $('rSave').disabled=false;
+};
+
+/* ---------- ciclo ---------- */
+function renderAll(full){
+  if(tab==='modelos'){mList();if(full!==false)mForm();mPrice()}
+  else if(tab==='precios')precios();else if(tab==='rev')revs();else if(tab==='renders')renders();else if(tab==='general')general();
+}
+if(draftBase&&remote&&remote.actualizado&&draftBase!==remote.actualizado)syncMsg='Ojo: alguien subió cambios después de tu borrador. Si subís, se reemplazan.';
+renderAll(true);syncUI();
+})();
+</script>
+</body>
+</html>
