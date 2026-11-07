@@ -1,6 +1,26 @@
 /* Dibujos de cada modelo: planta y corte con cercha.
    Los usan la web y el panel. Devuelven el SVG como texto. */
 (function () {
+  /* Paletas: cambian los colores de todos los dibujos de una vez.
+     map: color original → nuevo; sat / lum: ajuste general del resto (no toca tintas oscuras). */
+  const PALETAS = {
+    actual: {},
+    sobria: { sat: .5, lum: .03, map: { '#efcf9c': '#ebe0cb', '#e9b9a0': '#e6d6c4', '#a9c6cc': '#d0d8d6', '#e8d7b8': '#efe8d9', '#cfd3c4': '#dcdbd0', '#f1e2c3': '#eee5d4', '#c79664': '#c09c76', '#c18e5b': '#b8946e', '#9fc0d3': '#bfcbd0' } },
+    campo: { sat: .85, lum: 0, map: { '#efcf9c': '#eed6ae', '#e9b9a0': '#e3bb9c', '#a9c6cc': '#bccfc8', '#e8d7b8': '#ebdcc2', '#cfd3c4': '#d3d5c0', '#f1e2c3': '#efdfc0', '#9fc0d3': '#a6c3c9', '#95ab76': '#86a06a' } },
+    nordico: { sat: .45, lum: .07, map: { '#efcf9c': '#efe7d8', '#e9b9a0': '#ebdcd6', '#a9c6cc': '#d4e2e6', '#e8d7b8': '#f2ede3', '#cfd3c4': '#e0e2da', '#f1e2c3': '#f2ece0', '#c79664': '#d4b48a', '#c18e5b': '#cdac80', '#9fc0d3': '#c3d8e2', '#f4d9a6': '#f6e8cc', '#e8b673': '#eed4a4', '#d1924f': '#dcb47c' } },
+  };
+  const hx = h => [1, 3, 5].map(i => parseInt(h.substr(i, 2), 16) / 255);
+  const toHsl = ([r, g, b]) => { const M = Math.max(r, g, b), m = Math.min(r, g, b), l = (M + m) / 2; if (M === m) return [0, 0, l]; const d = M - m, s = l > .5 ? d / (2 - M - m) : d / (M + m); let h = M === r ? (g - b) / d + (g < b ? 6 : 0) : M === g ? (b - r) / d + 2 : (r - g) / d + 4; return [h / 6, s, l] };
+  const toHex = ([h, s, l]) => { const f = n => { const k = (n + h * 12) % 12, a = s * Math.min(l, 1 - l); return l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)) }; return '#' + [f(0), f(8), f(4)].map(v => Math.round(Math.max(0, Math.min(1, v)) * 255).toString(16).padStart(2, '0')).join('') };
+  const recolor = svg => {
+    const P = PALETAS[window.SBUpaleta || 'actual'] || {}; if (!P.map && !P.sat) return svg;
+    const cache = {};
+    return svg.replace(/#[0-9a-fA-F]{6}\b/g, c => { c = c.toLowerCase(); if (cache[c]) return cache[c];
+      let out = (P.map || {})[c];
+      if (!out) { const [h, s0, l] = toHsl(hx(c)); out = l < .32 ? c : toHex([h, s0 * (P.sat ?? 1), Math.min(.97, l + (P.lum || 0) * (1 - l) * 2)]) }
+      return cache[c] = out });
+  };
+  window.SBUpaletas = Object.keys(PALETAS);
   const INK = '#1d1b18', INK2 = '#4b4842', MUTE = '#8a857b', PAPER = '#f6f0e3', WASH = '#e9dfcc';
   const MONO = "IBM Plex Mono,monospace", ARCH = "Archivo,Arial Narrow,sans-serif", HAND = "Caveat,cursive", SERIF = "Fraunces,Georgia,serif";
   const f2 = v => (+v).toFixed(2).replace('.', ',');
@@ -601,4 +621,5 @@
 
     return `<svg viewBox="0 0 ${VW} ${VH}" role="img" aria-label="Fachada de ${m.nombre}">${papel('fa', VW, VH)}<defs>${defs}</defs>${fondo}${atras}${casa}${frente}${suelo}${gente}${nota}${cota}${tit}</svg>`;
   };
+  ['SBUplanta', 'SBUfachada', 'SBUcercha'].forEach(n => { const f = window[n]; window[n] = (...a) => recolor(f(...a)) });
 })();
