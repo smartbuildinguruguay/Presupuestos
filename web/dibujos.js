@@ -11,6 +11,7 @@
   const papel = (id, VW, VH) => `<defs>
     <filter id="${id}g" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="4"/><feColorMatrix values="0 0 0 0 .45  0 0 0 0 .38  0 0 0 0 .28  0 0 0 .06 0"/></filter>
     <filter id="${id}s" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="5"/></filter>
+    <filter id="${id}m" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".04" numOctaves="3" seed="7" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -.42 1.1" result="a"/><feComposite in="SourceGraphic" in2="a" operator="in" result="b"/><feMorphology in="SourceAlpha" operator="erode" radius="1.1" result="er"/><feComposite in="SourceAlpha" in2="er" operator="out" result="ed"/><feColorMatrix in="SourceGraphic" type="matrix" values=".78 0 0 0 0  0 .78 0 0 0  0 0 .78 0 0  0 0 0 .55 0" result="dk"/><feComposite in="dk" in2="ed" operator="in" result="rim"/><feMerge><feMergeNode in="b"/><feMergeNode in="rim"/></feMerge></filter>
     <filter id="${id}w" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="3.5"/></filter>
     <filter id="${id}a" x="-8%" y="-8%" width="116%" height="116%"><feTurbulence type="fractalNoise" baseFrequency=".02" numOctaves="3" seed="8" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="14" result="d"/><feGaussianBlur in="d" stdDeviation="1.6"/></filter>
   </defs><rect width="${VW}" height="${VH}" fill="${PAPER}"/><rect width="${VW}" height="${VH}" filter="url(#${id}g)"/>`;
@@ -24,7 +25,8 @@
   </g>`;
 
   // árbol a mano alzada (toque de croquis)
-  const arbol = (cx, cy, r, k) => `<g filter="url(#pla)" opacity=".85"><circle cx="${cx}" cy="${cy}" r="${r}" fill="#9fb48a" opacity=".7"/><circle cx="${cx + r * .45}" cy="${cy + r * .4}" r="${r * .62}" fill="#8aa476" opacity=".7"/><circle cx="${cx - r * .35}" cy="${cy - r * .3}" r="${r * .5}" fill="#b4c69e" opacity=".6"/></g>`;
+  const arbol = (cx, cy, r, k) => { let rays = ''; for (let i = 0; i < 9; i++) { const a = i / 9 * 6.283 + k; rays += `M${cx} ${cy}L${(cx + Math.cos(a) * r * .72).toFixed(1)} ${(cy + Math.sin(a) * r * .72).toFixed(1)}` }
+    return `<g><circle cx="${cx + r * .16}" cy="${cy + r * .2}" r="${r}" fill="#8f8270" opacity=".18"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="#a3b88c" filter="url(#plm)"/><circle cx="${cx - r * .22}" cy="${cy - r * .2}" r="${r * .55}" fill="#c3d2ad" opacity=".55"/><circle cx="${cx}" cy="${cy}" r="${r}" fill="none" stroke="#5f6f4f" stroke-width=".9"/><path d="${rays}" stroke="#5f6f4f" stroke-width=".6" opacity=".7"/><circle cx="${cx}" cy="${cy}" r="2" fill="#5f6f4f"/></g>` };
 
   /* ---------------- PLANTA ----------------
      P: ancho, prof (m), eExt, eInt,
@@ -60,10 +62,10 @@
     // piso interior: aguadas por ambiente (manchas recortadas al piso)
     const tono = n => { n = (n || '').toLowerCase(); return /baño|toilette/.test(n) ? '#a9c6cc' : /dorm|suite/.test(n) ? '#e9b9a0' : /lavadero|dep[oó]sito/.test(n) ? '#cfd3c4' : /hall|pasillo|paso|circul|t[uú]nel|vestidor|escalera|placard/.test(n) ? '#e8d7b8' : /galer|deck|alero|patio/.test(n) ? null : '#efcf9c' };
     o += `<clipPath id="pl-clip">${[...rects, ...(P.opcionales || [])].map(r => rr(r, '')).join('')}</clipPath>`;
-    o += `<g filter="url(#pla)">${rects.map(r => rr(r, 'fill="#f1e2c3" opacity=".6"')).join('')}</g>`;
-    o += `<g clip-path="url(#pl-clip)"><g filter="url(#pla)">${[...(P.locales || [])].sort((a, b) => (+b.a || 8) - (+a.a || 8)).map(l => { const c = tono(l.n); if (!c) return ''; const rad = Math.sqrt(+l.a || 8) * S * .62; return `<ellipse cx="${X(l.x)}" cy="${Y(l.y) - 6}" rx="${rad * 1.25}" ry="${rad}" fill="${c}" opacity=".75"/>` }).join('')}</g></g>`;
+    o += `<g filter="url(#plm)">${rects.map(r => rr(r, 'fill="#f1e2c3"')).join('')}</g>`;
+    o += `<g clip-path="url(#pl-clip)" opacity=".85"><g filter="url(#pla)">${[...(P.locales || [])].sort((a, b) => (+b.a || 8) - (+a.a || 8)).map(l => { const c = tono(l.n); if (!c) return ''; const rad = Math.sqrt(+l.a || 8) * S * .72; return `<ellipse cx="${X(l.x)}" cy="${Y(l.y) - 6}" rx="${rad * 1.25}" ry="${rad}" fill="${c}" opacity=".75"/>` }).join('')}</g></g>`;
     // muros: tinta sepia, trazo a mano
-    o += '<g filter="url(#plw)">';
+    o += '<g>';
     if (P.murosExt) {
       P.murosExt.forEach(([x1, y1, x2, y2]) => {
         const h = y1 === y2, a = Math.min(x1, x2), b = Math.min(y1, y2);
@@ -119,7 +121,7 @@
     const st = `fill="#fbf6ec" stroke="#6b5847" stroke-width="1"`;
     const R = (x, y, w, h, extra = st, rx = 0) => `<rect x="${X(x)}" y="${Y(y)}" width="${w * S}" height="${h * S}" rx="${rx * S}" ${extra}/>`;
     const C = (x, y, r, extra = st) => `<circle cx="${X(x)}" cy="${Y(y)}" r="${r * S}" ${extra}/>`;
-    o += '<g filter="url(#plw)">';
+    o += '<g>';
     (P.equip || []).forEach(q => {
       const { x, y } = q;
       if (q.t === 'mesada') { o += R(x, y, q.w, q.h) + R(x + .25, y + .1, .45, .38, st, .03) + [[1.35, .18], [1.6, .18], [1.35, .42], [1.6, .42]].map(([a, b]) => C(x + a, y + b, .09)).join('') }
@@ -193,10 +195,11 @@
     const yIn = x => yTop(x) - dv;
     let o = `<defs>
       <pattern id="ce-v" width="14" height="14" patternUnits="userSpaceOnUse" patternTransform="rotate(${(-ang * 180 / Math.PI).toFixed(1)})"><rect width="14" height="14" fill="${wood}"/><path d="M0 4 Q7 2 14 4 M0 10 Q7 12 14 10" stroke="${woodD}" stroke-width=".7" fill="none" opacity=".7"/></pattern>
+      <linearGradient id="ce-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bcd4e0" stop-opacity=".75"/><stop offset="1" stop-color="#e6eef0" stop-opacity="0"/></linearGradient>
       <pattern id="ce-t" width="16" height="10" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><line x1="0" y1="0" x2="0" y2="10" stroke="${INK2}" stroke-width=".8"/></pattern>
     </defs>`;
     // cielo: aguada suave
-    o += `<rect x="${X(-alero) - 30}" y="${Y(yc + Ht + .3) - 10}" width="${(L + 2 * alero) * S + 60}" height="${(Ht + .6) * S}" fill="#cfe0ea" opacity=".55" rx="40" filter="url(#cea)"/>`;
+    o += `<rect x="${X(-alero) - 30}" y="${Y(yc + Ht + .3) - 10}" width="${(L + 2 * alero) * S + 60}" height="${(Ht + .6) * S}" fill="url(#ce-sky)" filter="url(#cem)"/>`;
     // terreno
     o += `<rect x="${X(-alero) - 40}" y="${base}" width="${(L + 2 * alero) * S + 80}" height="16" fill="url(#ce-t)"/><line x1="${X(-alero) - 40}" y1="${base}" x2="${X(L + alero) + 40}" y2="${base}" stroke="${INK}" stroke-width="2"/>`;
     // columnas
@@ -209,12 +212,12 @@
     o += `<path d="M${X(rx0)} ${Y(yR(rx0))}L${X(L / 2)} ${Y(yTop(L / 2))}L${X(rx1)} ${Y(yR(rx1))}L${X(rx1)} ${Y(yR(rx1) + tk)}L${X(L / 2)} ${Y(yTop(L / 2) + tk / Math.cos(ang))}L${X(rx0)} ${Y(yR(rx0) + tk)}Z" fill="#3b3a37" stroke="${INK}" stroke-width="1.2"/>`;
     o += `<path d="M${X(rx0)} ${Y(yR(rx0) + .03)}L${X(L / 2)} ${Y(yTop(L / 2) + .03)}L${X(rx1)} ${Y(yR(rx1) + .03)}" fill="none" stroke="${wood}" stroke-width="2"/>`;
     // cercha: contorno lleno de madera
-    o += `<path d="M${X(0)} ${Y(yc)}L${X(L)} ${Y(yc)}L${X(L)} ${Y(yc + hh)}L${X(L / 2)} ${Y(yc + Ht)}L${X(0)} ${Y(yc + hh)}Z" fill="url(#ce-v)" stroke="#3b2f25" stroke-width="1.8" stroke-linejoin="round" filter="url(#cew)"/>`;
+    o += `<path d="M${X(0)} ${Y(yc)}L${X(L)} ${Y(yc)}L${X(L)} ${Y(yc + hh)}L${X(L / 2)} ${Y(yc + Ht)}L${X(0)} ${Y(yc + hh)}Z" fill="url(#ce-v)" stroke="#3b2f25" stroke-width="1.8" stroke-linejoin="round"/>`;
     // huecos interiores (dejan ver el pendolón al medio)
     const x0 = (b - hh + dv) * (L / 2) / (Ht - hh), xm = L / 2 - b / 2;
     const hole = (s) => {
       const fx = x => s > 0 ? x : L - x;
-      return `<path d="M${X(fx(x0))} ${Y(yc + b)}L${X(fx(xm))} ${Y(yc + b)}L${X(fx(xm))} ${Y(yIn(xm))}Z" fill="#f3e6cc" stroke="#3b2f25" stroke-width="1.4" stroke-linejoin="round" filter="url(#cew)"/>`;
+      return `<path d="M${X(fx(x0))} ${Y(yc + b)}L${X(fx(xm))} ${Y(yc + b)}L${X(fx(xm))} ${Y(yIn(xm))}Z" fill="#f3e6cc" stroke="#3b2f25" stroke-width="1.4" stroke-linejoin="round"/>`;
     };
     o += hole(1) + hole(-1);
     // diagonales (puntales) del pie del pendolón al cuarto de luz
@@ -222,7 +225,7 @@
       const fx = x => s > 0 ? x : L - x;
       const xa = L / 4 - b * .6, xb = xa + b * 1.6;
       const p = [[xm, yc + b], [xa, yIn(xa)], [xb, yIn(xb)], [xm, yc + b + b * 1.15]];
-      return `<path d="M${p.map(([x, y]) => X(fx(x)) + ' ' + Y(y)).join('L')}Z" fill="url(#ce-v)" stroke="#3b2f25" stroke-width="1.4" stroke-linejoin="round" filter="url(#cew)"/>`;
+      return `<path d="M${p.map(([x, y]) => X(fx(x)) + ' ' + Y(y)).join('L')}Z" fill="url(#ce-v)" stroke="#3b2f25" stroke-width="1.4" stroke-linejoin="round"/>`;
     };
     o += strut(1) + strut(-1);
     // empalme del tirante al medio (planchuela)
@@ -291,12 +294,23 @@
     defs += `<pattern id="fr-techo" width="7" height="40" patternUnits="userSpaceOnUse"><rect width="7" height="40" fill="#3a3c3f"/><line x1=".5" y1="0" x2=".5" y2="40" stroke="#57595c" stroke-width="1.2"/></pattern>
       <pattern id="fr-techoG" width="7" height="40" patternUnits="userSpaceOnUse"><rect width="7" height="40" fill="#b9bcbd"/><line x1=".5" y1="0" x2=".5" y2="40" stroke="#9a9d9f" stroke-width="1.2"/></pattern>
       <pattern id="fr-piedra" width="26" height="14" patternUnits="userSpaceOnUse"><rect width="26" height="14" fill="#b8a78c"/><path d="M0 7h26M13 0v7M5 7v7M20 7v7" stroke="#9c8a6e" stroke-width="1"/></pattern>
+      <linearGradient id="f-sky" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b6cfdc" stop-opacity=".85"/><stop offset=".75" stop-color="#e3ebeb" stop-opacity=".35"/><stop offset="1" stop-color="#f6f0e3" stop-opacity="0"/></linearGradient>
+      <linearGradient id="f-fadeg" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#fff" stop-opacity="0"/><stop offset=".1" stop-color="#fff"/><stop offset=".9" stop-color="#fff"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></linearGradient>
+      <mask id="f-fade" maskContentUnits="objectBoundingBox"><rect width="1" height="1" fill="url(#f-fadeg)"/></mask>
+      <linearGradient id="f-grass" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#9fb47f"/><stop offset="1" stop-color="#c9d4ad" stop-opacity="0"/></linearGradient>
+      <linearGradient id="f-warm" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7dca4"/><stop offset="1" stop-color="#dfa05a"/></linearGradient>
+      <linearGradient id="f-cool" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d8e6ea"/><stop offset=".6" stop-color="#a8c1ca"/><stop offset="1" stop-color="#8eaab5"/></linearGradient>
+      <linearGradient id="f-eave" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#3a2a1c" stop-opacity=".45"/><stop offset="1" stop-color="#3a2a1c" stop-opacity="0"/></linearGradient>
       <pattern id="fr-deck" width="8" height="30" patternUnits="userSpaceOnUse"><rect width="8" height="30" fill="#b98a58"/><line x1="0" y1="0" x2="0" y2="30" stroke="#946a3e" stroke-width="1"/></pattern>`;
     let w = '', l = '';   // w = aguadas, l = líneas a mano
     // cielo, árboles y suelo
-    w += `<rect x="${X(-.5)}" y="${top - 30}" width="${(F.ancho + 1) * S}" height="${alto * S + 20}" fill="#cfe0ea" opacity=".55" rx="60"/>`;
-    (F.arboles || []).forEach(a => { const cx = X(a.x), cy = Y(a.y || a.r * 1.4), r = a.r * S; w += `<circle cx="${cx}" cy="${cy}" r="${r}" fill="#8fa77a" opacity=".75"/><circle cx="${cx + r * .5}" cy="${cy + r * .35}" r="${r * .6}" fill="#7d9868" opacity=".7"/><circle cx="${cx - r * .4}" cy="${cy - r * .3}" r="${r * .55}" fill="#a9bd93" opacity=".6"/>` });
-    w += `<rect x="${X(-.6)}" y="${base - 6}" width="${(F.ancho + 1.2) * S}" height="46" fill="#b9c896" opacity=".8"/>`;
+    let fondo = `<rect x="${X(-.8)}" y="${top - 40}" width="${(F.ancho + 1.6) * S}" height="${base - top + 40}" fill="url(#f-sky)" mask="url(#f-fade)"/>`;
+    (F.arboles || []).forEach(a => {
+      const cx = X(a.x), r = a.r * S, cy = Y(a.y || a.r * 1.4);
+      w += `<rect x="${cx - r * .05}" y="${cy}" width="${r * .1}" height="${base - cy}" fill="#6b5847"/><path d="M${cx} ${cy + r * .3}L${cx - r * .35} ${cy - r * .15}M${cx} ${cy + r * .15}L${cx + r * .4} ${cy - r * .3}" stroke="#6b5847" stroke-width="${Math.max(1.5, r * .04)}"/>`;
+      [[0, 0, 1, '#86a06f'], [-.45, .25, .7, '#9cb584'], [.5, .2, .72, '#7a9463'], [.05, -.42, .66, '#adc396'], [-.2, .05, .5, '#c0d2a8']].forEach(([dx, dy, k, c]) => { w += `<ellipse cx="${cx + dx * r}" cy="${cy + dy * r}" rx="${r * k}" ry="${r * k * .86}" fill="${c}" opacity=".88"/>` });
+    });
+    fondo += `<rect x="${X(-.8)}" y="${base}" width="${(F.ancho + 1.6) * S}" height="40" fill="url(#f-grass)" mask="url(#f-fade)"/>`;
     // volúmenes
     F.volumenes.forEach(v => {
       const p0 = v.piso || 0, x0 = X(v.x), x1 = X(v.x + v.w), yF = Y(p0), yE = Y(p0 + v.muro), yR = Y(p0 + (v.cumbrera || v.muro)), al = (v.alero ?? .35) * S, xm = (x0 + x1) / 2;
@@ -313,7 +327,7 @@
         w += `<rect x="${x0}" y="${yE}" width="${x1 - x0}" height="${zt - yE}" fill="${fill}"/>`;
         const a0 = x0 - al, a1 = x1 + al, yEa = yE + 4, r0 = v.techo === 'lado' ? a0 : x0 + (x1 - x0) * (v.hip ?? .32), r1 = v.techo === 'lado' ? a1 : x1 - (x1 - x0) * (v.hip ?? .32);
         w += `<path d="M${a0} ${yEa}L${r0} ${yR}L${r1} ${yR}L${a1} ${yEa}Z" fill="${techo}"/><rect x="${a0}" y="${yEa}" width="${a1 - a0}" height="6" fill="#2e2c2a"/>`;
-        w += `<rect x="${x0}" y="${yE + 6}" width="${x1 - x0}" height="${.5 * S}" fill="#4a3826" opacity=".28"/>`;
+        w += `<rect x="${x0}" y="${yE + 6}" width="${x1 - x0}" height="${.5 * S}" fill="url(#f-eave)"/>`;
         l += `<path d="M${a0} ${yEa}L${r0} ${yR}L${r1} ${yR}L${a1} ${yEa}Z"/><rect x="${x0}" y="${yE}" width="${x1 - x0}" height="${zt - yE}"/>`;
       } else {
         w += `<rect x="${x0}" y="${yE}" width="${x1 - x0}" height="${zt - yE}" fill="${fill}"/><rect x="${x0 - 4}" y="${yE - .3 * S}" width="${x1 - x0 + 8}" height="${.3 * S}" fill="#26282b"/>`;
@@ -327,13 +341,13 @@
       const v = vol(a.x + a.w / 2), p0 = v.piso || 0;
       if (a.tipo === 'frontonVidrio') {
         const x0 = X(v.x + .25), x1 = X(v.x + v.w - .25), yE = Y(p0 + v.muro), yR = Y(p0 + v.cumbrera) + .35 * S, xm = (x0 + x1) / 2;
-        w += `<path d="M${x0} ${yE}L${xm} ${yR}L${x1} ${yE}Z" fill="#f0c27c"/><path d="M${x0 + 20} ${yE - 4}L${xm - 10} ${yR + 30}L${xm + 10} ${yR + 46}L${x0 + 40} ${yE - 4}Z" fill="#fff5d8" opacity=".5"/>`;
+        w += `<path d="M${x0} ${yE}L${xm} ${yR}L${x1} ${yE}Z" fill="url(#f-warm)"/><path d="M${x0 + 20} ${yE - 4}L${xm - 10} ${yR + 30}L${xm + 10} ${yR + 46}L${x0 + 40} ${yE - 4}Z" fill="#fff5d8" opacity=".5"/>`;
         l += `<path d="M${x0} ${yE}L${xm} ${yR}L${x1} ${yE}Z"/><line x1="${xm}" y1="${yR}" x2="${xm}" y2="${yE}"/>`;
         return;
       }
       const x0 = X(a.x), x1 = X(a.x + a.w), y1 = Y(p0 + (a.y || 0)), y0 = Y(p0 + (a.y || 0) + a.h);
       if (a.tipo === 'redonda') { const r = a.w / 2 * S; w += `<circle cx="${(x0 + x1) / 2}" cy="${(y0 + y1) / 2}" r="${r + 5}" fill="#efe9dc"/><circle cx="${(x0 + x1) / 2}" cy="${(y0 + y1) / 2}" r="${r}" fill="#9fb9c4"/>`; l += `<circle cx="${(x0 + x1) / 2}" cy="${(y0 + y1) / 2}" r="${r}"/>`; return; }
-      const glass = a.tipo === 'puerta' ? '#7a4f30' : a.tipo === 'fija' ? '#a9c3cc' : '#f0c27c';
+      const glass = a.tipo === 'puerta' ? '#7a4f30' : a.tipo === 'fija' ? 'url(#f-cool)' : 'url(#f-warm)';
       w += `<rect x="${x0}" y="${y0}" width="${x1 - x0}" height="${y1 - y0}" fill="${glass}"/>`;
       if (a.tipo !== 'puerta') w += `<path d="M${x0 + 6} ${y1 - 4}L${x0 + (x1 - x0) * .45} ${y0 + 6}L${x0 + (x1 - x0) * .6} ${y0 + 6}L${x0 + 22} ${y1 - 4}Z" fill="#fff5d8" opacity=".45"/>`;
       l += `<rect x="${x0}" y="${y0}" width="${x1 - x0}" height="${y1 - y0}" stroke-width="2"/>`;
@@ -372,13 +386,13 @@
       l += `<path d="M${xm - b / 2} ${yE - b / 2}L${qx - b * .6} ${qy}L${qx + b * .2} ${qy - b * .5}L${xm - b / 2} ${yE - b * 1.6}"/><path d="M${xm + b / 2} ${yE - b / 2}L${xm + (xm - qx) + b * .6} ${qy}L${xm + (xm - qx) - b * .2} ${qy - b * .5}L${xm + b / 2} ${yE - b * 1.6}"/>`;
     }
     // plantas
-    (F.plantas || []).forEach(p => { const c = p.c || '#8a6fb3'; w += `<ellipse cx="${X(p.x + p.w / 2)}" cy="${base - 8}" rx="${p.w / 2 * S}" ry="${.45 * S}" fill="${c}" opacity=".75"/><ellipse cx="${X(p.x + p.w * .3)}" cy="${base + 2}" rx="${p.w * .35 * S}" ry="${.3 * S}" fill="#6e9055" opacity=".8"/>` });
+    (F.plantas || []).forEach(p => { const c = p.c || '#8a6fb3', n = Math.max(3, Math.round(p.w / .35)); for (let i = 0; i < n; i++) { const x = X(p.x + (i + .5) * p.w / n), h = (.35 + .25 * Math.abs(Math.sin(i * 2.1 + p.x))) * S; w += `<ellipse cx="${x}" cy="${base - h * .55}" rx="${p.w / n * S * .62}" ry="${h * .6}" fill="${i % 2 ? '#7d9868' : '#93ab7a'}"/>`; if (c !== '#8fa77a' && i % 2 === 0) w += `<ellipse cx="${x}" cy="${base - h * 1.02}" rx="${p.w / n * S * .28}" ry="${h * .22}" fill="${c}"/>` } });
     // personas
     const gente = (F.personas || []).map(x => `<g transform="translate(${X(x)} ${base}) scale(${S / 100})" fill="${SEP}" opacity=".7"><circle cx="0" cy="-163" r="11"/><path d="M-13 -148 Q0 -153 13 -148 L17 -92 L10 -90 L8 -60 L9 0 L2 0 L0 -58 L-2 0 L-9 0 L-8 -60 L-10 -90 L-17 -92Z"/></g>`).join('');
     const nota = F.nota ? `<text x="${X(F.notaX ?? F.ancho * .62)}" y="${top - 6}" font-family="${HAND}" font-size="24" fill="${SEP}">${F.nota}</text>` : '';
     const cota = `<g font-family="${HAND}" font-size="20" fill="#6b5847"><line x1="${X(F.volumenes[0].x)}" y1="${base + 54}" x2="${X(Math.max(...F.volumenes.map(v => v.x + v.w)))}" y2="${base + 54}" stroke="#8a7560"/><text x="${(X(F.volumenes[0].x) + X(Math.max(...F.volumenes.map(v => v.x + v.w)))) / 2}" y="${base + 48}" text-anchor="middle">${f2(Math.max(...F.volumenes.map(v => v.x + v.w)) - F.volumenes[0].x)} m</text></g>`;
     const tit = `<g transform="translate(${padX} ${base + 96})"><text x="0" y="0" font-family="${SERIF}" font-style="italic" font-weight="500" font-size="36" fill="${SEP}">${m.nombre || ''} <tspan font-size="24" fill="#6b5847">· ${F.titulo || 'fachada'}</tspan></text><text x="${VW - padX * 2}" y="0" text-anchor="end" font-family="${HAND}" font-size="22" fill="#8a7560">Smart Building Uruguay</text></g>`;
-    return `<svg viewBox="0 0 ${VW} ${VH}" role="img" aria-label="Fachada de ${m.nombre} en acuarela">${papel('fa', VW, VH)}<defs>${defs}</defs>
-      <g filter="url(#fa)">${w}</g><g filter="url(#fw)" fill="none" stroke="${SEP}" stroke-width="1.3" stroke-linejoin="round">${l}</g>${gente}${nota}${cota}${tit}</svg>`;
+    return `<svg viewBox="0 0 ${VW} ${VH}" role="img" aria-label="Fachada de ${m.nombre} en acuarela">${papel('fa', VW, VH)}<defs>${defs}</defs>${fondo}
+      <g filter="url(#fam)">${w}</g><line x1="${X(-.8)}" y1="${base}" x2="${X(F.ancho + .8)}" y2="${base}" stroke="${SEP}" stroke-width="1.6"/><g fill="none" stroke="#2b241d" stroke-width="1" stroke-linejoin="miter">${l}</g>${gente}${nota}${cota}${tit}</svg>`;
   };
 })();
