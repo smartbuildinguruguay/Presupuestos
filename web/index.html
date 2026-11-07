@@ -173,10 +173,11 @@ input[type=range]{width:100%;accent-color:var(--cu);height:28px}
 .price .btn{background:var(--cu);border-color:var(--cu);color:#fff;width:100%}
 
 /* planta */
-.plan-wrap{margin-top:30px;display:grid;grid-template-columns:minmax(0,1.55fr) minmax(0,1fr);gap:22px;align-items:start}
+.plan-wrap{margin-top:30px;display:grid;grid-template-columns:minmax(0,1fr);gap:28px;align-items:start}
 @media (max-width:900px){.plan-wrap{grid-template-columns:minmax(0,1fr)}}
 .plan{background:#fbfaf7;border:1px solid var(--line);border-radius:6px;overflow-x:auto}
 .plan svg{display:block;width:100%;min-width:520px;height:auto}
+.plan svg+svg{border-top:1px solid var(--line)}
 #cer-blk{margin-top:24px}
 .plan .empty{padding:44px 20px;text-align:center;color:#8a857b;font:500 .85rem var(--f-m)}
 .incl{display:grid;gap:8px;font-size:.92rem;color:var(--ink2);margin:0;padding:0;list-style:none}
@@ -609,10 +610,11 @@ function diag(){
 const BORRADOR=/[?&]borrador/.test(location.search);
 function planta(m){
   // planta: las de ejemplo solo se ven con ?borrador
-  const P=m.planta&&D.plantas[m.planta],okP=P&&(!P.ejemplo||BORRADOR);
+  // (una casa de dos plantas guarda una lista)
+  const P=m.planta&&D.plantas[m.planta],L=P?[].concat(P):[],okP=L.length&&(!L[0].ejemplo||BORRADOR);
   $('plan-blk').hidden=!okP;
-  $('plan-esc').textContent=okP&&P.ejemplo?'EJEMPLO':'';
-  $('plan').innerHTML=okP?window.SBUplanta(P,m):'';
+  $('plan-esc').textContent=okP&&L[0].ejemplo?'EJEMPLO':'';
+  $('plan').innerHTML=okP?L.map(p=>window.SBUplanta(p,m)).join(''):'';
   // corte con la cercha (los barn)
   const C=m.cercha,okC=C&&+C.luz>0&&+C.altura>0;
   $('cer-blk').hidden=!okC;

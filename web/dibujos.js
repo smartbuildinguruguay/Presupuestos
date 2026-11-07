@@ -32,72 +32,112 @@
     return `<g opacity=".85"><circle cx="${cx + r * .18}" cy="${cy + r * .22}" r="${r}" fill="${WASH}" opacity=".7"/><path d="${d}Z" fill="#c9d1b8" fill-opacity=".55" stroke="${INK2}" stroke-width="1"/><path d="M${cx - r * .35} ${cy}L${cx + r * .35} ${cy}M${cx} ${cy - r * .35}L${cx} ${cy + r * .35}" stroke="${INK2}" stroke-width=".8"/></g>`;
   };
 
-  /* ---------------- PLANTA ---------------- */
+  /* ---------------- PLANTA ----------------
+     P: ancho, prof (m), eExt, eInt,
+        murosExt (opcional: tramos [x1,y1,x2,y2]; si falta, el contorno es el rectángulo),
+        muros (interiores), pisos / cubiertos (rectángulos [x,y,w,h]),
+        ventanas / puertas: m = 'N'|'S'|'E'|'O' o un tramo; en = distancia desde el inicio; a = ancho;
+          e = espesor del muro (tramos); giro = lado hacia donde abre; in = lado de la luz (ventanas en tramos)
+        equip: t = mesada|isla|cama|inodoro|ducha|lav|estufa|sofa|mesa|parrilla
+        locales: n, x, y, a (m²)  ·  cotasX / cotasY */
   window.SBUplanta = function (P, m) {
-    const S = 100, pad = 120, W = P.ancho * S, H = P.prof * S, e = P.eExt * S, ei = P.eInt * S;
+    const S = Math.min(100, 1100 / P.ancho), k = S / 100, pad = Math.max(120, 150 * k + 40);
+    const W = P.ancho * S, H = P.prof * S, e = P.eExt * S, ei = P.eInt * S;
     const X = x => pad + x * S, Y = y => pad + y * S;
+    const FS = 17, fm = 12;
     let o = '';
     o += `<defs>
       <pattern id="pl-hx" width="7" height="7" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="7" height="7" fill="${INK}"/><line x1="0" y1="0" x2="0" y2="7" stroke="#5b564d" stroke-width="1.6"/></pattern>
       <pattern id="pl-piso" width="${S * 1.2}" height="${S * .2}" patternUnits="userSpaceOnUse"><rect width="${S * 1.2}" height="${S * .2}" fill="#f4ecdc"/><line x1="0" y1="${S * .2}" x2="${S * 1.2}" y2="${S * .2}" stroke="#e3d5bb" stroke-width="1"/><line x1="${S * .7}" y1="0" x2="${S * .7}" y2="${S * .2}" stroke="#e3d5bb" stroke-width="1"/></pattern>
+      <pattern id="pl-deck" width="${S * .14}" height="${S * 2.4}" patternUnits="userSpaceOnUse"><rect width="${S * .14}" height="${S * 2.4}" fill="#e2cfae"/><line x1="0" y1="0" x2="0" y2="${S * 2.4}" stroke="#c4aa80" stroke-width="1"/><line x1="0" y1="${S * 1.1}" x2="${S * .14}" y2="${S * 1.1}" stroke="#c4aa80" stroke-width=".8"/></pattern>
     </defs>`;
+    const rects = P.pisos || [[0, 0, P.ancho, P.prof]];
+    const rr = (r, extra) => `<rect x="${X(r[0])}" y="${Y(r[1])}" width="${r[2] * S}" height="${r[3] * S}" ${extra}/>`;
     // vegetación alrededor
-    o += arbol(X(-0.75), Y(P.prof * .75), 40, 1) + arbol(X(P.ancho) + e + 125, Y(P.prof * .2), 52, 2) + arbol(X(P.ancho) + e + 105, Y(P.prof * .85), 34, 3);
-    // sombra de la casa (aguada)
-    o += `<rect x="${X(0) - e + 14}" y="${Y(0) - e + 16}" width="${W + 2 * e}" height="${H + 2 * e}" fill="#b9a98c" opacity=".35" filter="url(#pls)"/>`;
+    o += arbol(X(-0.9) - 10 * k, Y(P.prof * .78), 46 * k + 14, 1) + arbol(X(P.ancho) + e + 150, Y(P.prof * .2), 56 * k + 16, 2) + arbol(X(P.ancho) + e + 130, Y(P.prof * .85), 36 * k + 12, 3);
+    // sombra (aguada) de todo lo construido
+    o += [...rects, ...(P.cubiertos || [])].map(r => `<rect x="${X(r[0]) + 14}" y="${Y(r[1]) + 16}" width="${r[2] * S}" height="${r[3] * S}" fill="#b9a98c" opacity=".3" filter="url(#pls)"/>`).join('');
+    // galerías y parrillero cubiertos: deck
+    (P.cubiertos || []).forEach(r => { o += rr(r, `fill="url(#pl-deck)" stroke="${INK2}" stroke-width="1" stroke-dasharray="6 4"`) });
     // piso interior
-    o += `<rect x="${X(0)}" y="${Y(0)}" width="${W}" height="${H}" fill="url(#pl-piso)"/>`;
+    rects.forEach(r => { o += rr(r, 'fill="url(#pl-piso)"') });
     // muros exteriores
-    o += `<path fill-rule="evenodd" fill="url(#pl-hx)" d="M${X(0) - e} ${Y(0) - e}h${W + 2 * e}v${H + 2 * e}h${-W - 2 * e}Z M${X(0)} ${Y(0)}v${H}h${W}v${-H}Z"/>`;
+    if (P.murosExt) {
+      P.murosExt.forEach(([x1, y1, x2, y2]) => {
+        const h = y1 === y2, a = Math.min(x1, x2), b = Math.min(y1, y2);
+        o += h ? `<rect x="${X(a) - e / 2}" y="${Y(b) - e / 2}" width="${Math.abs(x2 - x1) * S + e}" height="${e}" fill="url(#pl-hx)"/>`
+          : `<rect x="${X(a) - e / 2}" y="${Y(b) - e / 2}" width="${e}" height="${Math.abs(y2 - y1) * S + e}" fill="url(#pl-hx)"/>`;
+      });
+    } else {
+      o += `<path fill-rule="evenodd" fill="url(#pl-hx)" d="M${X(0) - e} ${Y(0) - e}h${W + 2 * e}v${H + 2 * e}h${-W - 2 * e}Z M${X(0)} ${Y(0)}v${H}h${W}v${-H}Z"/>`;
+    }
     // muros interiores
     (P.muros || []).forEach(w => {
-      const [x1, y1, x2, y2] = w;
-      if (x1 === x2) o += `<rect x="${X(x1) - ei / 2}" y="${Y(y1)}" width="${ei}" height="${(y2 - y1) * S}" fill="${INK}"/>`;
-      else o += `<rect x="${X(x1)}" y="${Y(y1) - ei / 2}" width="${(x2 - x1) * S}" height="${ei}" fill="${INK}"/>`;
+      const [x1, y1, x2, y2] = w, t = (w[4] || P.eInt) * S;
+      if (x1 === x2) o += `<rect x="${X(x1) - t / 2}" y="${Y(Math.min(y1, y2))}" width="${t}" height="${Math.abs(y2 - y1) * S}" fill="${INK}"/>`;
+      else o += `<rect x="${X(Math.min(x1, x2))}" y="${Y(y1) - t / 2}" width="${Math.abs(x2 - x1) * S}" height="${t}" fill="${INK}"/>`;
     });
     const side = mm => {
-      if (Array.isArray(mm)) { const [a, b, c, d] = mm; return { x1: a, y1: b, x2: c, y2: d } }
+      if (Array.isArray(mm)) { const [a, b, c, d] = mm; return { x1: Math.min(a, c), y1: Math.min(b, d), x2: Math.max(a, c), y2: Math.max(b, d) } }
       return { N: { x1: 0, y1: 0, x2: P.ancho, y2: 0 }, S: { x1: 0, y1: P.prof, x2: P.ancho, y2: P.prof }, O: { x1: 0, y1: 0, x2: 0, y2: P.prof }, E: { x1: P.ancho, y1: 0, x2: P.ancho, y2: P.prof } }[mm];
     };
     const ext = k => typeof k === 'string';
     // ventanas (con haz de luz hacia adentro)
     (P.ventanas || []).forEach(v => {
-      const s = side(v.m), h = s.y1 === s.y2, off = ext(v.m) ? (v.m === 'N' || v.m === 'O' ? -e : 0) : 0, t = e;
-      const into = v.m === 'N' || v.m === 'O' ? 1 : -1, L = v.a * S;
+      const s = side(v.m), h = s.y1 === s.y2, L = v.a * S;
+      let t, off, into;
+      if (ext(v.m)) { t = e; off = v.m === 'N' || v.m === 'O' ? -e : 0; into = v.m === 'N' || v.m === 'O' ? 1 : -1 }
+      else { t = (v.e || P.eExt) * S; off = -t / 2; into = v.in || 1 }
+      const fill = v.fijo ? '#dfe8ea' : PAPER;
       if (h) {
         const x = X(s.x1 + v.en - v.a / 2), y = Y(s.y1) + off, yi = into > 0 ? y + t : y;
-        o += `<path d="M${x} ${yi}L${x + L} ${yi}L${x + L * .85} ${yi + into * L * .55}L${x + L * .15} ${yi + into * L * .55}Z" fill="#f3d58f" opacity=".28"/>`;
-        o += `<rect x="${x}" y="${y}" width="${L}" height="${t}" fill="${PAPER}" stroke="${INK}" stroke-width="1"/><line x1="${x}" y1="${y + t / 2}" x2="${x + L}" y2="${y + t / 2}" stroke="${INK}" stroke-width="1"/>`;
+        o += `<path d="M${x} ${yi}L${x + L} ${yi}L${x + L * .85} ${yi + into * Math.min(L * .55, 1.6 * S)}L${x + L * .15} ${yi + into * Math.min(L * .55, 1.6 * S)}Z" fill="#f3d58f" opacity=".28"/>`;
+        o += `<rect x="${x}" y="${y}" width="${L}" height="${t}" fill="${fill}" stroke="${INK}" stroke-width="1"/><line x1="${x}" y1="${y + t / 2}" x2="${x + L}" y2="${y + t / 2}" stroke="${INK}" stroke-width="1"/>`;
       } else {
         const y = Y(s.y1 + v.en - v.a / 2), x = X(s.x1) + off, xi = into > 0 ? x + t : x;
-        o += `<path d="M${xi} ${y}L${xi} ${y + L}L${xi + into * L * .55} ${y + L * .85}L${xi + into * L * .55} ${y + L * .15}Z" fill="#f3d58f" opacity=".28"/>`;
-        o += `<rect x="${x}" y="${y}" width="${t}" height="${L}" fill="${PAPER}" stroke="${INK}" stroke-width="1"/><line x1="${x + t / 2}" y1="${y}" x2="${x + t / 2}" y2="${y + L}" stroke="${INK}" stroke-width="1"/>`;
+        o += `<path d="M${xi} ${y}L${xi} ${y + L}L${xi + into * Math.min(L * .55, 1.6 * S)} ${y + L * .85}L${xi + into * Math.min(L * .55, 1.6 * S)} ${y + L * .15}Z" fill="#f3d58f" opacity=".28"/>`;
+        o += `<rect x="${x}" y="${y}" width="${t}" height="${L}" fill="${fill}" stroke="${INK}" stroke-width="1"/><line x1="${x + t / 2}" y1="${y}" x2="${x + t / 2}" y2="${y + L}" stroke="${INK}" stroke-width="1"/>`;
       }
     });
     // puertas
     (P.puertas || []).forEach(d => {
-      const s = side(d.m), h = s.y1 === s.y2, ex = ext(d.m); const t = (ex ? P.eExt : P.eInt) * S, off = ex ? (d.m === 'N' || d.m === 'O' ? -e : 0) : -t / 2; const r = d.a * S;
+      const s = side(d.m), h = s.y1 === s.y2, ex = ext(d.m); const t = (ex ? P.eExt : (d.e || P.eInt)) * S, off = ex ? (d.m === 'N' || d.m === 'O' ? -e : 0) : -t / 2; const r = d.a * S;
       if (h) {
         const x = X(s.x1 + d.en - d.a / 2), y = Y(s.y1) + off; o += `<rect x="${x}" y="${y - 1}" width="${r}" height="${t + 2}" fill="#f4ecdc"/>`;
         const yb = d.giro > 0 ? y : y + t, dir = d.giro > 0 ? -1 : 1;
         o += `<path d="M${x} ${yb}L${x} ${yb + dir * r}A${r} ${r} 0 0 ${dir > 0 ? 0 : 1} ${x + r} ${yb}Z" fill="${WASH}" opacity=".45"/><line x1="${x}" y1="${yb}" x2="${x}" y2="${yb + dir * r}" stroke="${INK}" stroke-width="1.8"/><path d="M${x} ${yb + dir * r}A${r} ${r} 0 0 ${dir > 0 ? 0 : 1} ${x + r} ${yb}" fill="none" stroke="${INK}" stroke-width=".8" stroke-dasharray="4 3"/>`;
       } else {
         const y = Y(s.y1 + d.en - d.a / 2), x = X(s.x1) + off; o += `<rect x="${x - 1}" y="${y}" width="${t + 2}" height="${r}" fill="#f4ecdc"/>`;
-        o += `<path d="M${x} ${y}L${x + r} ${y}A${r} ${r} 0 0 1 ${x} ${y + r}Z" fill="${WASH}" opacity=".45"/><line x1="${x}" y1="${y}" x2="${x + r}" y2="${y}" stroke="${INK}" stroke-width="1.8"/><path d="M${x + r} ${y}A${r} ${r} 0 0 1 ${x} ${y + r}" fill="none" stroke="${INK}" stroke-width=".8" stroke-dasharray="4 3"/>`;
+        const xb = d.giro < 0 ? x : x + t, dx = d.giro < 0 ? -1 : 1;
+        o += `<path d="M${xb} ${y}L${xb + dx * r} ${y}A${r} ${r} 0 0 ${dx > 0 ? 1 : 0} ${xb} ${y + r}Z" fill="${WASH}" opacity=".45"/><line x1="${xb}" y1="${y}" x2="${xb + dx * r}" y2="${y}" stroke="${INK}" stroke-width="1.8"/><path d="M${xb + dx * r} ${y}A${r} ${r} 0 0 ${dx > 0 ? 1 : 0} ${xb} ${y + r}" fill="none" stroke="${INK}" stroke-width=".8" stroke-dasharray="4 3"/>`;
       }
     });
-    // equipamiento
+    // equipamiento (todo en metros)
     const st = `fill="#fffdf8" stroke="${INK2}" stroke-width="1"`;
+    const R = (x, y, w, h, extra = st, rx = 0) => `<rect x="${X(x)}" y="${Y(y)}" width="${w * S}" height="${h * S}" rx="${rx * S}" ${extra}/>`;
+    const C = (x, y, r, extra = st) => `<circle cx="${X(x)}" cy="${Y(y)}" r="${r * S}" ${extra}/>`;
     (P.equip || []).forEach(q => {
-      if (q.t === 'mesada') { o += `<rect x="${X(q.x)}" y="${Y(q.y)}" width="${q.w * S}" height="${q.h * S}" ${st}/><rect x="${X(q.x + .25)}" y="${Y(q.y + .1)}" width="45" height="38" rx="3" ${st}/>` + [[1.35, .18], [1.6, .18], [1.35, .42], [1.6, .42]].map(([a, b]) => `<circle cx="${X(q.x + a)}" cy="${Y(q.y + b)}" r="9" ${st}/>`).join('') }
-      if (q.t === 'cama') { o += `<rect x="${X(q.x)}" y="${Y(q.y)}" width="${q.w * S}" height="${q.h * S}" rx="4" ${st}/><rect x="${X(q.x + .12)}" y="${Y(q.y + .08)}" width="${.6 * S}" height="${.4 * S}" rx="8" ${st}/><rect x="${X(q.x + .88)}" y="${Y(q.y + .08)}" width="${.6 * S}" height="${.4 * S}" rx="8" ${st}/><path d="M${X(q.x)} ${Y(q.y + .62)}Q${X(q.x + q.w / 2)} ${Y(q.y + .55)} ${X(q.x + q.w)} ${Y(q.y + .62)}" fill="none" stroke="${INK2}"/>` }
-      if (q.t === 'inodoro') { o += `<rect x="${X(q.x)}" y="${Y(q.y)}" width="40" height="18" rx="2" ${st}/><ellipse cx="${X(q.x) + 20}" cy="${Y(q.y) + 42}" rx="17" ry="24" ${st}/>` }
-      if (q.t === 'ducha') { o += `<rect x="${X(q.x)}" y="${Y(q.y)}" width="${q.w * S}" height="${q.h * S}" fill="#e4ebec" stroke="${INK2}"/><circle cx="${X(q.x + q.w / 2)}" cy="${Y(q.y + q.h / 2)}" r="5" fill="none" stroke="${INK2}"/>` }
-      if (q.t === 'lav') { o += `<rect x="${X(q.x)}" y="${Y(q.y)}" width="45" height="40" rx="4" ${st}/><ellipse cx="${X(q.x) + 24}" cy="${Y(q.y) + 20}" rx="14" ry="12" ${st}/>` }
+      const { x, y } = q;
+      if (q.t === 'mesada') { o += R(x, y, q.w, q.h) + R(x + .25, y + .1, .45, .38, st, .03) + [[1.35, .18], [1.6, .18], [1.35, .42], [1.6, .42]].map(([a, b]) => C(x + a, y + b, .09)).join('') }
+      if (q.t === 'isla') { o += R(x, y, q.w, q.h, `fill="#efe7d6" stroke="${INK2}" stroke-width="1.2"`) }
+      if (q.t === 'parrilla') { o += R(x, y, q.w, q.h, `fill="#d9d2c4" stroke="${INK2}" stroke-width="1.2"`) + `<path d="M${X(x + .1)} ${Y(y + .12)}h${(q.w - .2) * S}M${X(x + .1)} ${Y(y + .24)}h${(q.w - .2) * S}M${X(x + .1)} ${Y(y + .36)}h${(q.w - .2) * S}" stroke="${INK2}" stroke-width="1"/>` }
+      if (q.t === 'cama') { const w = q.w || 1.6, h = q.h || 2; o += R(x, y, w, h, st, .04) + R(x + .12, y + .08, .6, .4, st, .08) + R(x + w - .72, y + .08, .6, .4, st, .08) + `<path d="M${X(x)} ${Y(y + .62)}Q${X(x + w / 2)} ${Y(y + .55)} ${X(x + w)} ${Y(y + .62)}" fill="none" stroke="${INK2}"/>` }
+      if (q.t === 'inodoro') { const r = q.rot === 180; o += R(x, r ? y + .42 : y, .4, .18, st, .02) + `<ellipse cx="${X(x + .2)}" cy="${Y(y + (r ? .18 : .42))}" rx="${.17 * S}" ry="${.24 * S}" ${st}/>` }
+      if (q.t === 'ducha') { o += R(x, y, q.w, q.h, `fill="#e4ebec" stroke="${INK2}"`) + C(x + q.w / 2, y + q.h / 2, .05, `fill="none" stroke="${INK2}"`) }
+      if (q.t === 'lav') { o += R(x, y, .45, .4, st, .04) + `<ellipse cx="${X(x + .24)}" cy="${Y(y + .2)}" rx="${.14 * S}" ry="${.12 * S}" ${st}/>` }
+      if (q.t === 'escalera') { const w = q.w, h = q.h, n = Math.max(3, Math.round(w / .27)); o += R(x, y, w, h, `fill="#efe7d6" stroke="${INK2}" stroke-width="1.2"`); for (let i = 1; i < n; i++) o += `<line x1="${X(x + i * w / n)}" y1="${Y(y)}" x2="${X(x + i * w / n)}" y2="${Y(y + h)}" stroke="${INK2}" stroke-width=".8"/>`; o += `<path d="M${X(x + .15)} ${Y(y + h / 2)}H${X(x + w - .2)}m-8 -5l8 5l-8 5" fill="none" stroke="${INK}" stroke-width="1.2"/>` }
+      if (q.t === 'estufa') { o += R(x, y, q.w, q.h, `fill="#d9d2c4" stroke="${INK2}" stroke-width="1.2"`) + C(x + q.w / 2, y + q.h / 2, Math.min(q.w, q.h) * .28, `fill="#e9a36a" fill-opacity=".55" stroke="${INK2}"`) }
+      if (q.t === 'sofa') { const w = q.w, h = q.h; o += R(x, y, w, h, `fill="#e7dfcf" stroke="${INK2}"`, .08) + R(x + .12, y + .12, w - .24, h - .24, `fill="#f3ede1" stroke="${INK2}" stroke-width=".8"`, .05) }
+      if (q.t === 'mesa') {
+        const w = q.w, h = q.h, n = Math.max(2, Math.round(w / .6));
+        for (let i = 0; i < n; i++) { const cx = x + (i + .5) * w / n; o += C(cx, y - .22, .17, `fill="#fffdf8" stroke="${INK2}" stroke-width=".8"`) + C(cx, y + h + .22, .17, `fill="#fffdf8" stroke="${INK2}" stroke-width=".8"`) }
+        o += R(x, y, w, h, `fill="#d8bf95" stroke="${INK2}" stroke-width="1.2"`, .05);
+      }
     });
     // locales
     (P.locales || []).forEach(l => {
-      o += `<text x="${X(l.x)}" y="${Y(l.y)}" text-anchor="middle" font-family="${ARCH}" font-stretch="75%" font-weight="700" font-size="17" letter-spacing=".8" fill="${INK}" paint-order="stroke" stroke="#f4ecdc" stroke-width="4">${l.n.toUpperCase()}</text><text x="${X(l.x)}" y="${Y(l.y) + 17}" text-anchor="middle" font-family="${MONO}" font-size="12" fill="${INK2}" paint-order="stroke" stroke="#f4ecdc" stroke-width="3">${(+l.a).toFixed(1).replace('.', ',')} m²</text>`;
+      o += `<text x="${X(l.x)}" y="${Y(l.y)}" text-anchor="middle" font-family="${ARCH}" font-stretch="75%" font-weight="700" font-size="${FS}" letter-spacing=".8" fill="${INK}" paint-order="stroke" stroke="#f4ecdc" stroke-width="4">${l.n.toUpperCase()}</text>` +
+        (l.a ? `<text x="${X(l.x)}" y="${Y(l.y) + 17}" text-anchor="middle" font-family="${MONO}" font-size="${fm}" fill="${INK2}" paint-order="stroke" stroke="#f4ecdc" stroke-width="3">${(+l.a).toFixed(1).replace('.', ',')} m²</text>` : '');
     });
     // cotas
     const chain = (arr, isX) => {
@@ -109,20 +149,21 @@
           : `<line x1="${off - 9}" y1="${v}" x2="${off + 9}" y2="${v}" stroke="${INK2}"/><line x1="${off - 5}" y1="${v + 5}" x2="${off + 5}" y2="${v - 5}" stroke="${INK}" stroke-width="1.6"/>`;
         if (i) {
           const a = isX ? X(arr[i - 1]) : Y(arr[i - 1]), mid = (a + v) / 2, txt = f2(arr[i] - arr[i - 1]);
-          o += isX ? `<text x="${mid}" y="${off - 7}" text-anchor="middle" font-family="${MONO}" font-size="12" fill="${INK2}">${txt}</text>`
-            : `<text x="${off + 7}" y="${mid + 4}" font-family="${MONO}" font-size="12" fill="${INK2}">${txt}</text>`;
+          o += isX ? `<text x="${mid}" y="${off - 7}" text-anchor="middle" font-family="${MONO}" font-size="${fm}" fill="${INK2}">${txt}</text>`
+            : `<text x="${off + 7}" y="${mid + 4}" font-family="${MONO}" font-size="${fm}" fill="${INK2}">${txt}</text>`;
         }
       }
       o += isX ? `<line x1="${X(arr[0]) - 12}" y1="${off}" x2="${X(arr[arr.length - 1]) + 12}" y2="${off}" stroke="${INK2}"/>` : `<line x1="${off}" y1="${Y(arr[0]) - 12}" x2="${off}" y2="${Y(arr[arr.length - 1]) + 12}" stroke="${INK2}"/>`;
     };
     chain(P.cotasX, true); chain(P.cotasY, false);
-    // norte
-    o += `<g transform="translate(${pad - 62} ${pad - 58})"><circle r="20" fill="${PAPER}" stroke="${INK}"/><path d="M0 -17 L7 10 L0 5 Z" fill="${INK}"/><path d="M0 -17 L-7 10 L0 5 Z" fill="none" stroke="${INK}"/><text y="-26" text-anchor="middle" font-family="${MONO}" font-size="11" font-weight="500" fill="${INK}">N</text></g>`;
+    // norte (P.norte = grados, 0 = arriba)
+    o += `<g transform="translate(${pad - 70} ${pad - 62}) rotate(${+P.norte || 0})"><circle r="20" fill="${PAPER}" stroke="${INK}"/><path d="M0 -17 L7 10 L0 5 Z" fill="${INK}"/><path d="M0 -17 L-7 10 L0 5 Z" fill="none" stroke="${INK}"/><text y="-26" text-anchor="middle" font-family="${MONO}" font-size="11" font-weight="500" fill="${INK}">N</text></g>`;
     // escala gráfica + rótulo
-    const VW = Math.max(W + pad * 2 + 120, 760), sy = Y(P.prof) + e + 82;
-    o += `<g font-family="${MONO}" font-size="10" fill="${INK2}"><rect x="${pad}" y="${sy}" width="${S}" height="6" fill="${INK}"/><rect x="${pad + S}" y="${sy}" width="${S}" height="6" fill="none" stroke="${INK}"/><text x="${pad}" y="${sy + 20}">0</text><text x="${pad + S}" y="${sy + 20}" text-anchor="middle">1</text><text x="${pad + 2 * S}" y="${sy + 20}" text-anchor="middle">2 m</text></g>`;
+    const VW = Math.max(W + pad * 2 + 120, 760), sy = Y(P.prof) + e + 82, paso = S < 60 ? 5 : 1;
+    o += `<g font-family="${MONO}" font-size="10" fill="${INK2}"><rect x="${pad}" y="${sy}" width="${S * paso}" height="6" fill="${INK}"/><rect x="${pad + S * paso}" y="${sy}" width="${S * paso}" height="6" fill="none" stroke="${INK}"/><text x="${pad}" y="${sy + 20}">0</text><text x="${pad + S * paso}" y="${sy + 20}" text-anchor="middle">${paso}</text><text x="${pad + 2 * S * paso}" y="${sy + 20}" text-anchor="middle">${2 * paso} m</text></g>`;
     const ry = sy + 40;
-    o += rotulo(pad, ry, VW - pad * 2, `${(m.nombre || '').toUpperCase()} · PLANTA`, `${m.m2} m² cubiertos${+m.deck ? ' · ' + m.deck + ' m² de decks' : ''} · ${f2(P.ancho + 2 * P.eExt)} × ${f2(P.prof + 2 * P.eExt)} m exterior · cotas en metros`);
+    const medida = P.medida || `${f2(P.ancho + (P.murosExt ? 0 : 2 * P.eExt))} × ${f2(P.prof + (P.murosExt ? 0 : 2 * P.eExt))} m`;
+    o += rotulo(pad, ry, VW - pad * 2, `${(m.nombre || '').toUpperCase()} · ${(P.nivel || 'planta').toUpperCase()}`, `${m.m2} m² cubiertos${+m.deck ? ' · ' + m.deck + ' m² de decks' : ''} · ${medida} · cotas en metros`);
     const VH = ry + 62;
     return `<svg viewBox="0 0 ${VW} ${VH}" role="img" aria-label="Planta de ${m.nombre}">${papel('pl', VW, VH)}${o}</svg>`;
   };

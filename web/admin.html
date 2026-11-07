@@ -397,7 +397,7 @@ function mForm(){
    <h3 style="margin-top:22px">Así se ven los dibujos en la web</h3>
    <div id="mdib" style="display:grid;gap:14px"></div>`;
   const dib=()=>{const P=m.planta&&D.plantas[m.planta],C=m.cercha;
-    $('mdib').innerHTML=(P?`<div style="border:1px solid var(--line);border-radius:6px;overflow:hidden">${window.SBUplanta(P,m)}</div>${P.ejemplo?'<p class="note warn">Esta planta es de ejemplo: en la web pública no se muestra.</p>':''}`:'<p class="note">Este modelo todavía no tiene planta cargada.</p>')+
+    $('mdib').innerHTML=(P?`<div style="border:1px solid var(--line);border-radius:6px;overflow:hidden">${[].concat(P).map(p=>window.SBUplanta(p,m)).join('')}</div>${P.ejemplo?'<p class="note warn">Esta planta es de ejemplo: en la web pública no se muestra.</p>':''}`:'<p class="note">Este modelo todavía no tiene planta cargada.</p>')+
       (C&&+C.luz>0&&+C.altura>0?`<div style="border:1px solid var(--line);border-radius:6px;overflow:hidden">${window.SBUcercha(C,m)}</div>`:'');
     $('mdib').querySelectorAll('svg').forEach(v=>{v.style.width='100%';v.style.height='auto';v.style.display='block'})};
   $('mform').querySelectorAll('[data-c]').forEach(el=>{const k=el.dataset.c,num=el.type==='number';
