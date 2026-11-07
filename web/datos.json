@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-07T12:52:18.452Z",
+ "actualizado": "2026-11-07T19:03:16.623Z",
  "contacto": {
   "whatsapp": "59898526226",
   "instagram": "smartbuildinguruguay",
@@ -166,6 +166,7 @@
    "factor": 1,
    "fachadaM2": null,
    "fachadaMat": [
+    "*3",
     "*7"
    ],
    "planta": null,
@@ -173,7 +174,8 @@
     "dormitorios",
     "baños"
    ],
-   "revOriginal": ""
+   "revOriginal": "",
+   "texEsc": 0.25
   },
   {
    "id": "smartrancho",
