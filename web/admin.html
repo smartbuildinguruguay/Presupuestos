@@ -7,7 +7,7 @@
 <title>Panel SBU</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..100,500..800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..100,500..800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@500;700&family=Fraunces:ital,opsz,wght@1,9..144,500&display=swap" rel="stylesheet">
 <style>
 /* Panel de trabajo: misma tinta y cobre que la web, más denso, sin grilla de fondo */
 :root{--paper:#f3f1ec;--sheet:#fbfaf7;--ink:#161513;--ink2:#4b4842;--mute:#8a857b;--line:#d9d4c9;--cu:#a8612f;--ok:#2f6b45;--warn:#b23b2b;--hi:#f6e7d8;
@@ -456,6 +456,7 @@ function mForm(){
    <div id="mdib" style="display:grid;gap:14px"></div>`;
   const dib=()=>{const P=m.planta&&D.plantas[m.planta],C=m.cercha;
     $('mdib').innerHTML=(P?`<div style="border:1px solid var(--line);border-radius:6px;overflow:hidden">${[].concat(P).map(p=>window.SBUplanta(p,m)).join('')}</div>${P.ejemplo?'<p class="note warn">Esta planta es de ejemplo: en la web pública no se muestra.</p>':''}`:'<p class="note">Este modelo todavía no tiene planta cargada.</p>')+
+      (m.fachada&&m.fachada.volumenes?`<div style="border:1px solid var(--line);border-radius:6px;overflow:hidden">${window.SBUfachada(m.fachada,m)}</div>`:'')+
       (C&&+C.luz>0&&+C.altura>0?`<div style="border:1px solid var(--line);border-radius:6px;overflow:hidden">${window.SBUcercha(C,m)}</div>`:'');
     $('mdib').querySelectorAll('svg').forEach(v=>{v.style.width='100%';v.style.height='auto';v.style.display='block'})};
   $('mform').querySelectorAll('[data-c]').forEach(el=>{const k=el.dataset.c,num=el.type==='number';
