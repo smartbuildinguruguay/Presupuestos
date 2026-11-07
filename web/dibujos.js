@@ -456,7 +456,7 @@
       casa += obj(w, l);
       // frontón vidriado
       (F.aberturas || []).filter(a => a.tipo === 'frontonVidrio' && a.x + a.w / 2 >= v.x && a.x + a.w / 2 <= v.x + v.w).forEach(() => {
-        const ins = .3 * S, k1 = x0 + ins, k2 = x1 - ins, y1 = yE, yt = yR + ins * 1.4, fr = Math.max(2.5, .05 * S);
+        const ins = .06 * S, k1 = x0 + ins, k2 = x1 - ins, y1 = yE, yt = yR + (F.cercha ? .2 * S / Math.cos(Math.atan(sl)) : ins * 2.2), fr = Math.max(2.5, .05 * S);
         let w2 = poly([[k1, y1], [xm, yt], [k2, y1]], 'fill="#2f3236"') + poly([[k1 + fr * 1.6, y1 - fr], [xm, yt + fr * 1.8], [k2 - fr * 1.6, y1 - fr]], 'fill="url(#f-warm)"');
         w2 += poly([[k1 + (k2 - k1) * .18, y1 - fr], [xm - (xm - k1) * .25, yt + (y1 - yt) * .35], [xm - (xm - k1) * .1, yt + (y1 - yt) * .45], [k1 + (k2 - k1) * .28, y1 - fr]], 'fill="#fff" opacity=".28"');
         w2 += `<rect x="${f1(xm - fr / 2)}" y="${f1(yt)}" width="${f1(fr)}" height="${f1(y1 - yt)}" fill="#2f3236"/>`;
