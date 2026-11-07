@@ -111,6 +111,17 @@ tr.vrow{cursor:pointer}tr.vrow:hover td{background:var(--hi)}
 .tl span{display:grid;grid-template-columns:130px 1fr;gap:8px}.tl em{font-style:normal;font:500 .74rem var(--f-m);color:var(--mute)}
 .pill{display:inline-block;font:500 .68rem var(--f-m);border:1px solid var(--line);border-radius:99px;padding:1px 7px;margin-right:4px}
 .pill.wa{border-color:var(--ok);color:var(--ok)}
+.p3d{grid-column:1 / -1;display:grid;grid-template-columns:minmax(0,1.6fr) minmax(0,1fr);gap:10px;border:1px solid var(--line);border-radius:6px;padding:10px;background:var(--paper)}
+@media(max-width:760px){.p3d{grid-template-columns:1fr}}
+.p3v{position:relative;aspect-ratio:4/3;background:#111;border-radius:4px;overflow:hidden}
+.p3v iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.p3v .pm{position:absolute;inset:auto 0 0 0;padding:6px 8px;color:#fff;font-size:.78rem;background:rgba(0,0,0,.55)}
+.p3l{display:grid;gap:8px;align-content:start;min-width:0}
+.p3m{display:grid;gap:3px;max-height:300px;overflow:auto}
+.p3m label{display:flex!important;align-items:center;gap:6px;font-weight:500!important;font-size:.82rem!important;color:var(--ink)!important;padding:3px 4px;border-radius:3px}
+.p3m label:has(input:checked){background:rgba(196,112,60,.14)}
+.p3m input{width:auto!important}
+.p3m button{margin-left:auto;border:1px solid var(--line);background:transparent;border-radius:3px;font-size:.72rem;padding:2px 6px}
 </style>
 </head>
 <body>
@@ -218,6 +229,7 @@ tr.vrow{cursor:pointer}tr.vrow:hover td{background:var(--hi)}
 
 <script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js" defer></script>
 <script src="precio.js"></script>
+<script src="texturas.js"></script>
 <script>
 (async function(){
 const $=id=>document.getElementById(id);
@@ -362,12 +374,16 @@ function mForm(){
     <label class="wide">Para qué sirve (lo usa el buscador)<div class="chk">${Object.entries(USOS).map(([k,v])=>`<label><input type="checkbox" data-uso="${k}"${m.usos.includes(k)?' checked':''}>${v}</label>`).join('')}</div></label>
     <label class="wide">Sketchfab · código del modelo<input data-k="uid"><small>Los 32 caracteres al final del link</small></label>
     <label>Revestimiento original<select data-k="revOriginal"><option value="">Sin definir</option>${D.exterior.filter(e=>e.id!=='original').map(e=>`<option value="${e.id}">${esc(e.nombre)}</option>`).join('')}</select><small>El que tiene el diseño: va incluido en el precio base</small></label>
-    <label class="wide">Material de fachada en el 3D<input data-k="fachadaMat" data-t="csv"><small>Para encontrarlo: abrí la web con ?diag y tocá los materiales. Separados por coma.</small></label>
+    <label class="wide">Partes del 3D que son pared exterior<input data-k="fachadaMat" data-t="csv"><small>Son las que cambian de textura cuando el cliente elige otro revestimiento. Elegilas con el botón de abajo.</small></label>
+    <label>Tamaño de la textura<input type="number" step="0.1" min="0.05" data-k="texEsc" data-t="num" placeholder="1"><small>Si las tablas se ven gigantes, subilo; si se ven finitas, bajalo</small></label>
+    <label><span>&nbsp;</span><button type="button" class="btn ghost" id="p3go">Elegir paredes en el 3D</button></label>
+    <div id="p3d" style="grid-column:1 / -1"></div>
     <label class="wide">Imagen de portada<input data-k="imagen" placeholder="se completa sola al subir un render"><small>Si está vacío usa la miniatura de Sketchfab.</small></label>
     <label class="wide">A confirmar (uno por línea; solo lo ves vos en el panel)<textarea data-k="pendiente" data-t="list"></textarea></label>
     <label><span><input type="checkbox" data-k="visible" style="width:auto"> Visible en la web</span></label>
    </div>`;
-  bindForm($('mform'),m,k=>{if(k==='m2')ordenar();if(k==='nombre'||k==='m2'||k==='visible'||k==='imagen')mList();mPrice();if(k==='m2'){const au=Math.round(4*Math.sqrt(m.m2||0)*D.precio.alturaMuro*(1-D.precio.huecos/100)),fi=$('mform').querySelector('[data-k="fachadaM2"]');if(fi){fi.placeholder='auto: '+au;fi.nextElementSibling.textContent=`Vacío = cálculo automático (${au} m²)`}}});
+  papi=null;$('p3go').onclick=()=>pick3D(m);
+  bindForm($('mform'),m,k=>{if(k==='texEsc'||k==='fachadaMat')p3paint(m);if(k==='m2')ordenar();if(k==='nombre'||k==='m2'||k==='visible'||k==='imagen')mList();mPrice();if(k==='m2'){const au=Math.round(4*Math.sqrt(m.m2||0)*D.precio.alturaMuro*(1-D.precio.huecos/100)),fi=$('mform').querySelector('[data-k="fachadaM2"]');if(fi){fi.placeholder='auto: '+au;fi.nextElementSibling.textContent=`Vacío = cálculo automático (${au} m²)`}}});
   $('mform').querySelectorAll('[data-uso]').forEach(c=>c.onchange=()=>{m.usos=[...$('mform').querySelectorAll('[data-uso]:checked')].map(x=>x.dataset.uso);saveDraft()});
   $('mDel').onclick=()=>{if($('mDel').dataset.c){D.modelos=D.modelos.filter(x=>x!==m);selId=(D.modelos[0]||{}).id;changed()}else{$('mDel').dataset.c=1;$('mDel').textContent='¿Seguro? Tocá de nuevo';$('mDel').classList.add('cu')}};
 }
@@ -391,6 +407,55 @@ function mPrice(){
 $('mAdd').onclick=()=>{let n=1;while(D.modelos.some(m=>m.id==='modelo-'+n))n++;
   const m={id:'modelo-'+n,visible:false,nombre:'Modelo nuevo',lugar:'',frase:'',uid:'',thumb:'',imagen:'',m2:60,deck:0,dorm:2,banos:1,usos:['vivir'],factor:1,fachadaM2:null,fachadaMat:[],planta:null,pendiente:['todo']};
   D.modelos.push(m);ordenar();selId=m.id;changed()};
+
+/* ---------- elegir paredes en el 3D ---------- */
+let papi=null,pmats=[],porig={},ptex={},ptouch=new Set();
+const clone=o=>JSON.parse(JSON.stringify(o));
+function p3albedo(mat,uid,color,e){
+  ['AlbedoPBR','DiffusePBR','DiffuseColor'].forEach(ch=>{const c=mat.channels[ch];if(!c)return;c.enable=true;
+    if(uid){c.texture={uid,UVTransforms:{scale:[e,e],offset:[0,0],rotation:0},wrapS:'REPEAT',wrapT:'REPEAT',magFilter:'LINEAR',minFilter:'LINEAR_MIPMAP_LINEAR',texCoordUnit:0,textureTarget:'TEXTURE_2D',internalFormat:'RGB'};c.factor=1;c.color=[1,1,1]}
+    else if(color){delete c.texture;c.color=color}});
+}
+function pick3D(m){
+  const box=$('p3d');
+  if(!m.uid){box.innerHTML='<p class="note warn">Primero poné el código de Sketchfab del modelo.</p>';return}
+  if(!window.Sketchfab){box.innerHTML='<p class="note">Cargando visor…</p>';setTimeout(()=>pick3D(m),400);return}
+  const conTex=D.exterior.filter(e=>e.tex);
+  box.innerHTML=`<div class="p3d"><div class="p3v"><iframe title="Modelo 3D" allow="autoplay; fullscreen"></iframe><div class="pm" id="p3msg">Cargando el modelo…</div></div>
+   <div class="p3l"><p class="note">Marcá las partes que son <b>pared exterior</b>. Se pintan con el revestimiento de prueba, así ves al toque si quedó bien. "Ver" la pinta de rojo un momento para ubicarla.</p>
+    <label>Probar con<select id="p3x">${conTex.map(e=>`<option value="${e.id}"${e.id!==m.revOriginal?'':' '}>${esc(e.nombre)}</option>`).join('')}</select></label>
+    <div class="p3m" id="p3m"></div></div></div>`;
+  const pre=conTex.find(e=>e.id!==m.revOriginal);if(pre)$('p3x').value=pre.id;
+  $('p3x').onchange=()=>p3paint(m);
+  pmats=[];porig={};ptex={};ptouch=new Set();papi=null;
+  const c=new Sketchfab(box.querySelector('iframe'));
+  c.init(m.uid,{autostart:1,preload:1,ui_infos:0,ui_watermark:0,ui_watermark_link:0,ui_inspector:0,ui_settings:0,ui_help:0,ui_vr:0,ui_ar:0,ui_annotations:0,ui_stop:0,ui_hint:0,dnt:1,
+    success(a){a.start();a.addEventListener('viewerready',()=>{a.getMaterialList((e,l)=>{
+      if(m.id!==selId)return;papi=a;pmats=l||[];pmats.forEach(x=>porig[x.name]=clone(x));
+      $('p3msg').textContent=pmats.length+' partes con material distinto en este modelo';
+      p3list(m);p3paint(m)})})},
+    error(){$('p3msg').textContent='No se pudo abrir el modelo en Sketchfab.'}});
+}
+function p3list(m){
+  const sel=new Set(m.fachadaMat||[]);
+  $('p3m').innerHTML=pmats.map((x,i)=>`<label><input type="checkbox" data-i="${i}"${sel.has(x.name)?' checked':''}>${esc(x.name)}<button type="button" data-v="${i}">ver</button></label>`).join('')||'<p class="note">El modelo no devolvió materiales.</p>';
+  $('p3m').querySelectorAll('[data-i]').forEach(cb=>cb.onchange=()=>{
+    m.fachadaMat=[...$('p3m').querySelectorAll('[data-i]:checked')].map(c=>pmats[+c.dataset.i].name);
+    const inp=$('mform').querySelector('[data-k="fachadaMat"]');if(inp)inp.value=m.fachadaMat.join(', ');
+    saveDraft();p3paint(m)});
+  $('p3m').querySelectorAll('[data-v]').forEach(b=>b.onclick=ev=>{ev.preventDefault();if(!papi)return;
+    const n=pmats[+b.dataset.v].name,x=clone(porig[n]);p3albedo(x,null,[1,0,0]);papi.setMaterial(x);
+    setTimeout(()=>p3paint(m),1400)});
+}
+function p3paint(m){
+  if(!papi||m.id!==selId)return;
+  const sel=new Set(m.fachadaMat||[]),e=D.exterior.find(x=>x.id===($('p3x')||{}).value),esc_=+m.texEsc||1;
+  ptouch.forEach(n=>{if(!sel.has(n)&&porig[n]){papi.setMaterial(clone(porig[n]));ptouch.delete(n)}});
+  if(!e||!e.tex)return;
+  const go=uid=>sel.forEach(n=>{if(!porig[n])return;const x=clone(porig[n]);p3albedo(x,uid,null,esc_);papi.setMaterial(x);ptouch.add(n)});
+  if(ptex[e.tex])go(ptex[e.tex]);
+  else papi.addTexture(window.SBUtex(e.tex).toDataURL('image/jpeg',.85),(err,uid)=>{if(!err){ptex[e.tex]=uid;go(uid)}});
+}
 
 /* ---------- PRECIOS ---------- */
 function precios(){
