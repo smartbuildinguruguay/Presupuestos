@@ -108,6 +108,7 @@
         h += f('x', 'x', o.x) + f('y', 'y', o.y);
         if (!DIM[o.t]) h += f('Ancho (m)', 'w', o.w) + f('Largo (m)', 'h', o.h);
         if (o.t === 'inodoro') h += `<label>Mirando<select data-f="rot"><option value="0">hacia abajo</option><option value="180"${o.rot === 180 ? ' selected' : ''}>hacia arriba</option></select></label>`;
+        if (o.t === 'cama') h += `<label>Cabecera<select data-f="rot">${[[0, 'arriba'], [180, 'abajo'], [90, 'a la izquierda'], [270, 'a la derecha']].map(([v, t]) => `<option value="${v}"${(o.rot || 0) === v ? ' selected' : ''}>${t}</option>`).join('')}</select><small>Si la ponés de costado, cambiá ancho y largo</small></label>`;
       } else if (sel.k === 'locales') {
         h += f('Nombre', 'n', o.n, 'text') + f('m²', 'a', o.a) + f('x', 'x', o.x) + f('y', 'y', o.y);
       } else {
