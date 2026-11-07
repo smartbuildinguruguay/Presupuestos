@@ -334,7 +334,7 @@
       return p + 'Z';
     };
     const arbol = a => {
-      const k = a.k || 'redondo', H = (a.h || a.r * 3.2) * S, x0 = X(a.x), y0 = base;
+      const k = a.k || 'redondo', H = (a.h || a.r * 3.2) * S * .86, x0 = X(a.x), y0 = base;
       let w = '', l = '';
       w += `<ellipse cx="${f1(x0 + H * .08)}" cy="${y0 + 2}" rx="${f1(H * .22)}" ry="${f1(H * .025 + 2)}" fill="#4b4030" opacity=".22"/>`;
       if (k === 'palmera') {
@@ -399,7 +399,7 @@
     /* ---- carpinterías ---- */
     const abertura = (x0, y0, x1, y1, a) => {
       let w = '', l = '';
-      const fr = Math.max(2.5, .05 * S), glass = a.tipo === 'puerta' ? null : a.tipo === 'fija' ? 'url(#f-cool)' : 'url(#f-warm)';
+      const fr = Math.max(2.5, .05 * S), glass = a.tipo === 'puerta' ? null : a.tipo === 'fija' && !a.calido ? 'url(#f-cool)' : 'url(#f-warm)';
       w += `<rect x="${f1(x0)}" y="${f1(y0)}" width="${f1(x1 - x0)}" height="${f1(y1 - y0)}" fill="#2f3236"/>`;
       if (glass) {
         w += `<rect x="${f1(x0 + fr)}" y="${f1(y0 + fr)}" width="${f1(x1 - x0 - 2 * fr)}" height="${f1(y1 - y0 - 2 * fr)}" fill="${glass}"/>`;
@@ -420,6 +420,7 @@
     };
 
     /* ---- volúmenes ---- */
+    { const xa = Math.min(...vols.map(v => v.x)), xb = Math.max(...vols.map(v => v.x + v.w)); fondo += `<ellipse cx="${f1(X((xa + xb) / 2 + .4))}" cy="${f1(base + 4)}" rx="${f1((xb - xa) / 2 * S * 1.12)}" ry="${f1(.32 * S + 4)}" fill="#3b2f22" opacity=".22" filter="url(#faa)"/>` }
     const gable = v => { const p0 = v.piso || 0, x0 = X(v.x), x1 = X(v.x + v.w), xm = (x0 + x1) / 2, yE = Y(p0 + v.muro), yR = Y(p0 + (v.cumbrera || v.muro)); return { p0, x0, x1, xm, yE, yR, sl: (yE - yR) / (xm - x0) } };
     [...vols].sort((p, q) => (p.techo === 'ala' ? 0 : 1) - (q.techo === 'ala' ? 0 : 1)).forEach(v => {
       if (v.techo === 'ala') {
@@ -452,7 +453,7 @@
           l += poly([[xa0, ya0], [xm, yR], [xa1, ya0], [xa1, ya0 - tv], [xm, yR - tv], [xa0, ya0 - tv]], 'stroke-width="1.6"');
           l += `<path d="M${f1(xa0)} ${f1(ya0 - tv * .45)}L${f1(xm)} ${f1(yR - tv * .45)}L${f1(xa1)} ${f1(ya0 - tv * .45)}" stroke-width=".5"/>`;
         }
-        l += `<path d="M${f1(x0)} ${f1(zt)}V${f1(yE)}L${f1(xm)} ${f1(yR)}L${f1(x1)} ${f1(yE)}V${f1(zt)}" stroke-width="1.4"/>`;
+        l += `<path d="M${f1(x0)} ${f1(zt)}V${f1(yE)}L${f1(xm)} ${f1(yR)}L${f1(x1)} ${f1(yE)}V${f1(zt)}" stroke-width="2"/>`;
       } else if (v.techo === 'lado' || v.techo === 'cuatroAguas') {
         const al = (v.alero ?? .4) * S, a0 = x0 - al, a1 = x1 + al, yEa = yE + al * .35, h = v.techo === 'lado' ? 0 : (x1 - x0) * (v.hip ?? .3), r0 = a0 + h, r1 = a1 - h;
         w += `<rect x="${f1(x0)}" y="${f1(yE)}" width="${f1(x1 - x0)}" height="${f1(zt - yE)}" fill="${fill}"/>`;
@@ -471,7 +472,7 @@
       casa += obj(w, l);
       // frontón vidriado
       (F.aberturas || []).filter(a => a.tipo === 'frontonVidrio' && a.x + a.w / 2 >= v.x && a.x + a.w / 2 <= v.x + v.w).forEach(() => {
-        const ins = .06 * S, k1 = x0 + ins, k2 = x1 - ins, y1 = yE, yt = yR + (F.cercha ? .2 * S / Math.cos(Math.atan(sl)) : ins * 2.2), fr = Math.max(2.5, .05 * S);
+        const ins = v.marco ? .04 * S : .06 * S, k1 = x0 + ins, k2 = x1 - ins, y1 = yE, yt = yR + (F.cercha ? .2 * S / Math.cos(Math.atan(sl)) : ins / Math.cos(Math.atan(sl))), fr = Math.max(2.5, .05 * S);
         let w2 = poly([[k1, y1], [xm, yt], [k2, y1]], 'fill="#2f3236"') + poly([[k1 + fr * 1.6, y1 - fr], [xm, yt + fr * 1.8], [k2 - fr * 1.6, y1 - fr]], 'fill="url(#f-warm)"');
         w2 += poly([[k1 + (k2 - k1) * .18, y1 - fr], [xm - (xm - k1) * .25, yt + (y1 - yt) * .35], [xm - (xm - k1) * .1, yt + (y1 - yt) * .45], [k1 + (k2 - k1) * .28, y1 - fr]], 'fill="#fff" opacity=".28"');
         w2 += `<rect x="${f1(xm - fr / 2)}" y="${f1(yt)}" width="${f1(fr)}" height="${f1(y1 - yt)}" fill="#2f3236"/>`;
