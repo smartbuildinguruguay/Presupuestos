@@ -222,21 +222,46 @@ tr.vrow{cursor:pointer}tr.vrow:hover td{background:var(--hi)}
 (async function(){
 const $=id=>document.getElementById(id);
 const GH={repo:'smartbuildinguruguay/Presupuestos',dir:'web',branch:'main'};
-const TKEY='sbu-gh-token', DKEY='sbu-admin-draft';
+const TKEY='sbu-gh-token', DKEY='sbu-admin-draft-v2';
 const usd=n=>'USD '+Math.round(n).toLocaleString('es-UY');
 const esc=s=>String(s??'').replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
 const USOS={vivir:'Vivir',finde:'Campo / finde',renta:'Alquilar',empezar:'Empezar chico'};
 const tok=()=>{try{return localStorage.getItem(TKEY)||''}catch(e){return ''}};
 
 /* ---------- datos ---------- */
-let remote=null;try{const q=await fetch('datos.json?t='+Date.now(),{cache:'no-store'});if(q.ok)remote=await q.json()}catch(e){}
-let D=null,draftBase=null;
-try{const d=JSON.parse(localStorage.getItem(DKEY)||'null');if(d&&d.data){D=d.data;draftBase=d.base}}catch(e){}
+const dec64=c=>JSON.parse(new TextDecoder().decode(Uint8Array.from(atob(c.replace(/\n/g,'')),x=>x.charCodeAt(0))));
+// Lee datos.json directo de GitHub (sin la demora de la web publicada); si no se puede, de la web.
+async function ghGet(){
+  const t=(()=>{try{return localStorage.getItem('sbu-gh-token')||''}catch(e){return ''}})();
+  const h={Accept:'application/vnd.github+json'};if(t)h.Authorization='Bearer '+t;
+  try{const q=await fetch(`https://api.github.com/repos/smartbuildinguruguay/Presupuestos/contents/web/datos.json?ref=main&t=${Date.now()}`,{headers:h,cache:'no-store'});
+    if(q.ok){const j=await q.json();return {data:dec64(j.content),sha:j.sha}}}catch(e){}
+  try{const q=await fetch('datos.json?t='+Date.now(),{cache:'no-store'});if(q.ok)return {data:await q.json(),sha:null}}catch(e){}
+  return null;
+}
+let remote=null;{const g=await ghGet();if(g)remote=g.data}
+let D=null,draftBase=null,BASE=null;
+// Fusión: lo que cambiaste en el borrador gana; lo que no tocaste toma lo último de GitHub.
+const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
+function merge3(base,mine,theirs){
+  if(same(mine,base))return theirs;
+  if(same(theirs,base))return mine;
+  const isObj=x=>x&&typeof x==='object'&&!Array.isArray(x);
+  if(isObj(base)&&isObj(mine)&&isObj(theirs)){const o={};new Set([...Object.keys(base),...Object.keys(mine),...Object.keys(theirs)]).forEach(k=>{
+    const v=merge3(base[k],mine[k],theirs[k]);if(v!==undefined)o[k]=v});return o}
+  const byId=a=>Array.isArray(a)&&a.every(x=>x&&x.id!=null);
+  if(byId(base)&&byId(mine)&&byId(theirs)){const B=Object.fromEntries(base.map(x=>[x.id,x])),T=Object.fromEntries(theirs.map(x=>[x.id,x]));
+    const out=mine.filter(x=>!(B[x.id]&&!T[x.id]&&same(x,B[x.id]))).map(x=>T[x.id]&&B[x.id]?merge3(B[x.id],x,T[x.id]):x);
+    theirs.forEach(x=>{if(!B[x.id]&&!out.some(y=>y.id===x.id))out.push(x)});return out}
+  return mine;
+}
+try{const d=JSON.parse(localStorage.getItem(DKEY)||'null');if(d&&d.data&&d.base){D=remote?merge3(d.base,d.data,remote):d.data;draftBase=d.base}}catch(e){}
 if(!D)D=JSON.parse(JSON.stringify(remote));
+BASE=JSON.parse(JSON.stringify(remote));
 if(!D){document.body.innerHTML='<p style="padding:20px">No se pudo leer datos.json.</p>';return}
 const ordenar=()=>D.modelos.sort((a,b)=>(+b.m2||0)-(+a.m2||0));ordenar();
 const pending=()=>JSON.stringify(D)!==JSON.stringify(remote);
-function saveDraft(){try{localStorage.setItem(DKEY,JSON.stringify({data:D,base:remote&&remote.actualizado}))}catch(e){}syncUI()}
+function saveDraft(){try{if(pending())localStorage.setItem(DKEY,JSON.stringify({data:D,base:remote}));else localStorage.removeItem(DKEY)}catch(e){}syncUI()}
 function changed(){saveDraft();renderAll(true)}
 
 /* ---------- GitHub ---------- */
@@ -256,6 +281,7 @@ async function subir(){
   if(busy)return;if(!tok()){askTok=true;syncUI();return}
   busy=true;syncMsg='Subiendo…';syncUI();
   try{
+    const g=await ghGet();if(g&&g.sha&&!same(g.data,remote))D=merge3(remote,D,g.data);
     D.actualizado=new Date().toISOString();
     await ghPut('datos.json',b64s(JSON.stringify(D,null,1)),'Web SBU: datos actualizados desde el panel');
     remote=JSON.parse(JSON.stringify(D));saveDraft();syncMsg='Subido. La web se actualiza en 1 o 2 minutos.';
@@ -408,6 +434,7 @@ $('rAdd').onclick=()=>{let n=1;while(D.exterior.some(e=>e.id==='rev-'+n))n++;D.e
 function general(){
   $('gform').innerHTML=`<label>WhatsApp<input data-k="contacto.whatsapp" placeholder="59899123456"><small>Con 598, sin + ni espacios</small></label>
    <label>Instagram<input data-k="contacto.instagram"><small>Sin @</small></label>
+   <label>Mail<input data-k="contacto.email" type="email"></label>
    <label class="wide">Registro de visitas · dirección de la planilla<input data-k="visitas.url" placeholder="https://script.google.com/macros/s/…/exec"><small>Ver pestaña Visitas para armarla</small></label>
    <label class="wide">Modelo de la portada<select data-k="precio.heroModelo">${D.modelos.map(m=>`<option value="${m.id}">${esc(m.nombre)}</option>`).join('')}</select></label>
    <p class="note wide" style="grid-column:1/-1">Link directo a cada modelo para anuncios: <span class="mono">…/web/#${esc(D.modelos[0]?D.modelos[0].id:'')}</span>. Ids: ${D.modelos.map(m=>`<span class="mono">#${esc(m.id)}</span>`).join(' · ')}</p>`;
@@ -589,7 +616,7 @@ function renderAll(full){
   if(tab==='modelos'){mList();if(full!==false)mForm();mPrice()}
   else if(tab==='precios')precios();else if(tab==='rev')revs();else if(tab==='renders')renders();else if(tab==='general')general();else if(tab==='visitas')visitas();
 }
-if(draftBase&&remote&&remote.actualizado&&draftBase!==remote.actualizado)syncMsg='Ojo: alguien subió cambios después de tu borrador. Si subís, se reemplazan.';
+if(draftBase&&remote&&!same(draftBase,remote))syncMsg='Se juntaron tus cambios sin subir con lo último de la web.';
 renderAll(true);syncUI();
 })();
 </script>

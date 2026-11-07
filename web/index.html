@@ -336,7 +336,7 @@ footer .w{display:flex;flex-wrap:wrap;gap:18px 40px;justify-content:space-betwee
 
 <footer><div class="w">
   <div><b style="font-family:var(--f-d);font-stretch:70%;font-size:1.2rem;letter-spacing:.05em;color:var(--ink)">SMART BUILDING URUGUAY</b><br>Steel frame y wood frame · Maldonado y Rocha</div>
-  <div>WhatsApp <span class="mono" id="f-wa"></span><br>Instagram <a id="f-ig" href="#" target="_blank" rel="noopener"></a></div>
+  <div>WhatsApp <a class="mono" id="f-wa" href="#" data-wa="hola"></a><br>Mail <a id="f-mail" href="#"></a><br>Instagram <a id="f-ig" href="#" target="_blank" rel="noopener"></a></div>
   <p style="flex-basis:100%;margin:0;font-size:.78rem;color:var(--mute)">Esta web registra de forma anónima qué modelos mirás y la zona aproximada desde donde entrás, para atenderte mejor. No guardamos tu nombre ni tu número.</p>
 </div></footer>
 
@@ -402,7 +402,8 @@ function waText(kind){
 document.addEventListener('click',e=>{const a=e.target.closest('[data-wa]');if(!a)return;e.preventDefault();
   TR.ev('whatsapp',{detalle:a.dataset.wa==='modelo'&&cur?cfg.ext:'consulta general',modelo:a.dataset.wa==='modelo'&&cur?cur.id:'',valor:a.dataset.wa==='modelo'&&cur?precio(cur,cfg).tot:'',ya:1});
   window.open(`https://wa.me/${D.whatsapp}?text=${encodeURIComponent(waText(a.dataset.wa))}`,'_blank','noopener')});
-$('f-wa').textContent='+'+D.whatsapp;$('f-ig').textContent='@'+D.instagram;$('f-ig').href='https://instagram.com/'+D.instagram;
+{const w=String(D.whatsapp||'');$('f-wa').textContent=/^598\d{8}$/.test(w)?'0'+w.slice(3,5)+' '+w.slice(5,8)+' '+w.slice(8):'+'+w;}
+if(D.contacto.email){$('f-mail').textContent=D.contacto.email;$('f-mail').href='mailto:'+D.contacto.email}else $('f-mail').parentNode.innerHTML=$('f-mail').parentNode.innerHTML.replace(/Mail <a[^>]*><\/a><br>/,'');$('f-ig').textContent='@'+D.instagram;$('f-ig').href='https://instagram.com/'+D.instagram;
 
 /* ---------- tarjetas ---------- */
 const pendTxt=m=>m.pendiente&&m.pendiente.length?' title="A confirmar: '+m.pendiente.join(', ')+'"':'';
