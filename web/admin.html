@@ -230,6 +230,7 @@ tr.vrow{cursor:pointer}tr.vrow:hover td{background:var(--hi)}
 <script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js" defer></script>
 <script src="precio.js"></script>
 <script src="texturas.js"></script>
+<script src="dibujos.js"></script>
 <script>
 (async function(){
 const $=id=>document.getElementById(id);
@@ -381,9 +382,31 @@ function mForm(){
     <label class="wide">Imagen de portada<input data-k="imagen" placeholder="se completa sola al subir un render"><small>Si está vacío usa la miniatura de Sketchfab.</small></label>
     <label class="wide">A confirmar (uno por línea; solo lo ves vos en el panel)<textarea data-k="pendiente" data-t="list"></textarea></label>
     <label><span><input type="checkbox" data-k="visible" style="width:auto"> Visible en la web</span></label>
-   </div>`;
+   </div>
+   <h3 style="margin-top:22px">Cercha a la vista <small class="note">(los barn; si la dejás vacía no se muestra el corte)</small></h3>
+   <div class="f">
+    <label>Luz (m)<input type="number" step="0.01" min="0" data-c="luz"></label>
+    <label>Altura de la cercha (m)<input type="number" step="0.01" min="0" data-c="altura"><small>del tirante a la cumbrera</small></label>
+    <label>Sección (cm)<input type="number" min="5" data-c="seccion" placeholder="20"></label>
+    <label>Madera<input data-c="material" placeholder="lapacho" list="maderas"><datalist id="maderas"><option>lapacho</option><option>cumarú</option><option>eucalipto</option><option>pino</option></datalist></label>
+    <label>Separación (m)<input type="number" step="0.01" min="0" data-c="separacion"></label>
+    <label>Cantidad<input type="number" min="0" data-c="cantidad"></label>
+    <label>Altura de columna (m)<input type="number" step="0.01" min="0" data-c="columna" placeholder="3"></label>
+    <label class="wide">Techo (texto de la llamada)<input data-c="techo" placeholder="machimbre + panel aislante"></label>
+   </div>
+   <h3 style="margin-top:22px">Así se ven los dibujos en la web</h3>
+   <div id="mdib" style="display:grid;gap:14px"></div>`;
+  const dib=()=>{const P=m.planta&&D.plantas[m.planta],C=m.cercha;
+    $('mdib').innerHTML=(P?`<div style="border:1px solid var(--line);border-radius:6px;overflow:hidden">${window.SBUplanta(P,m)}</div>${P.ejemplo?'<p class="note warn">Esta planta es de ejemplo: en la web pública no se muestra.</p>':''}`:'<p class="note">Este modelo todavía no tiene planta cargada.</p>')+
+      (C&&+C.luz>0&&+C.altura>0?`<div style="border:1px solid var(--line);border-radius:6px;overflow:hidden">${window.SBUcercha(C,m)}</div>`:'');
+    $('mdib').querySelectorAll('svg').forEach(v=>{v.style.width='100%';v.style.height='auto';v.style.display='block'})};
+  $('mform').querySelectorAll('[data-c]').forEach(el=>{const k=el.dataset.c,num=el.type==='number';
+    el.value=m.cercha&&m.cercha[k]!=null?m.cercha[k]:'';
+    el.oninput=()=>{const c=m.cercha||{};if(el.value==='')delete c[k];else c[k]=num?+el.value:el.value;
+      if(Object.keys(c).length)m.cercha=c;else delete m.cercha;saveDraft();dib()}});
+  dib();
   papi=null;$('p3go').onclick=()=>pick3D(m);
-  bindForm($('mform'),m,k=>{if(k==='texEsc'||k==='fachadaMat')p3paint(m);if(k==='m2')ordenar();if(k==='nombre'||k==='m2'||k==='visible'||k==='imagen')mList();mPrice();if(k==='m2'){const au=Math.round(4*Math.sqrt(m.m2||0)*D.precio.alturaMuro*(1-D.precio.huecos/100)),fi=$('mform').querySelector('[data-k="fachadaM2"]');if(fi){fi.placeholder='auto: '+au;fi.nextElementSibling.textContent=`Vacío = cálculo automático (${au} m²)`}}});
+  bindForm($('mform'),m,k=>{if(k==='nombre'||k==='m2'||k==='deck')dib();if(k==='texEsc'||k==='fachadaMat')p3paint(m);if(k==='m2')ordenar();if(k==='nombre'||k==='m2'||k==='visible'||k==='imagen')mList();mPrice();if(k==='m2'){const au=Math.round(4*Math.sqrt(m.m2||0)*D.precio.alturaMuro*(1-D.precio.huecos/100)),fi=$('mform').querySelector('[data-k="fachadaM2"]');if(fi){fi.placeholder='auto: '+au;fi.nextElementSibling.textContent=`Vacío = cálculo automático (${au} m²)`}}});
   $('mform').querySelectorAll('[data-uso]').forEach(c=>c.onchange=()=>{m.usos=[...$('mform').querySelectorAll('[data-uso]:checked')].map(x=>x.dataset.uso);saveDraft()});
   $('mDel').onclick=()=>{if($('mDel').dataset.c){D.modelos=D.modelos.filter(x=>x!==m);selId=(D.modelos[0]||{}).id;changed()}else{$('mDel').dataset.c=1;$('mDel').textContent='¿Seguro? Tocá de nuevo';$('mDel').classList.add('cu')}};
 }

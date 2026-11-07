@@ -177,6 +177,7 @@ input[type=range]{width:100%;accent-color:var(--cu);height:28px}
 @media (max-width:900px){.plan-wrap{grid-template-columns:minmax(0,1fr)}}
 .plan{background:#fbfaf7;border:1px solid var(--line);border-radius:6px;overflow-x:auto}
 .plan svg{display:block;width:100%;min-width:520px;height:auto}
+#cer-blk{margin-top:24px}
 .plan .empty{padding:44px 20px;text-align:center;color:#8a857b;font:500 .85rem var(--f-m)}
 .incl{display:grid;gap:8px;font-size:.92rem;color:var(--ink2);margin:0;padding:0;list-style:none}
 .incl li{display:grid;grid-template-columns:18px 1fr;gap:8px}
@@ -337,7 +338,7 @@ footer .w{display:flex;flex-wrap:wrap;gap:18px 40px;justify-content:space-betwee
     </div>
   </div>
   <div class="plan-wrap">
-    <div><div class="blk"><h3>Planta <small id="plan-esc"></small></h3><div class="plan" id="plan"></div></div></div>
+    <div><div class="blk" id="plan-blk"><h3>Planta <small id="plan-esc"></small></h3><div class="plan" id="plan"></div></div><div class="blk" id="cer-blk" hidden><h3>Corte <small>la cercha a la vista</small></h3><div class="plan" id="cer"></div></div></div>
     <div class="blk"><h3>Qué incluye</h3>
       <ul class="incl">
         <li>Proyecto, permisos y dirección de obra</li>
@@ -413,6 +414,7 @@ footer .w{display:flex;flex-wrap:wrap;gap:18px 40px;justify-content:space-betwee
 <script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js" defer></script>
 <script src="precio.js"></script>
 <script src="texturas.js"></script>
+<script src="dibujos.js"></script>
 <script>
 (async function(){
 let D=null;
@@ -604,67 +606,17 @@ function diag(){
 }
 
 /* ---------- planta técnica ---------- */
+const BORRADOR=/[?&]borrador/.test(location.search);
 function planta(m){
-  const P=m.planta&&D.plantas[m.planta];
-  if(!P){$('plan').innerHTML=`<div class="empty">Planta de ${m.nombre} en preparación</div>`;$('plan-esc').textContent='';return}
-  $('plan-esc').textContent=P.ejemplo?'EJEMPLO · reemplazar por la real':'';
-  const S=100,pad=95,W=P.ancho*S,H=P.prof*S,e=P.eExt*S,ei=P.eInt*S;
-  const X=x=>pad+x*S,Y=y=>pad+y*S;
-  let o='';
-  // hatch muros
-  o+=`<defs><pattern id="hx" width="6" height="6" patternUnits="userSpaceOnUse" patternTransform="rotate(45)"><rect width="6" height="6" fill="#161513"/><line x1="0" y1="0" x2="0" y2="6" stroke="#4b4842" stroke-width="2"/></pattern></defs>`;
-  // contorno muros exteriores (anillo)
-  o+=`<path fill-rule="evenodd" fill="url(#hx)" d="M${X(0)-e} ${Y(0)-e}h${W+2*e}v${H+2*e}h${-W-2*e}Z M${X(0)} ${Y(0)}v${H}h${W}v${-H}Z"/>`;
-  // muros interiores
-  P.muros.forEach(w=>{const [x1,y1,x2,y2]=w;if(x1===x2)o+=`<rect x="${X(x1)-ei/2}" y="${Y(y1)}" width="${ei}" height="${(y2-y1)*S}" fill="#161513"/>`;else o+=`<rect x="${X(x1)}" y="${Y(y1)-ei/2}" width="${(x2-x1)*S}" height="${ei}" fill="#161513"/>`});
-  const side=(mm)=>{ // devuelve {x1,y1,x2,y2,th,out}
-    if(Array.isArray(mm)){const [a,b,c,d]=mm;return {x1:a,y1:b,x2:c,y2:d,th:P.eInt}}
-    return {N:{x1:0,y1:0,x2:P.ancho,y2:0},S:{x1:0,y1:P.prof,x2:P.ancho,y2:P.prof},O:{x1:0,y1:0,x2:0,y2:P.prof},E:{x1:P.ancho,y1:0,x2:P.ancho,y2:P.prof}}[mm];
-  };
-  const ext=k=>typeof k==='string';
-  // ventanas
-  P.ventanas.forEach(v=>{const s=side(v.m),h=s.y1===s.y2;const off=ext(v.m)?(v.m==='N'||v.m==='O'?-e:0):0,t=e;
-    if(h){const x=X(s.x1+v.en-v.a/2),y=Y(s.y1)+off;o+=`<rect x="${x}" y="${y}" width="${v.a*S}" height="${t}" fill="#fbfaf7" stroke="#161513" stroke-width="1"/><line x1="${x}" y1="${y+t/2}" x2="${x+v.a*S}" y2="${y+t/2}" stroke="#161513" stroke-width="1"/>`}
-    else{const y=Y(s.y1+v.en-v.a/2),x=X(s.x1)+off;o+=`<rect x="${x}" y="${y}" width="${t}" height="${v.a*S}" fill="#fbfaf7" stroke="#161513" stroke-width="1"/><line x1="${x+t/2}" y1="${y}" x2="${x+t/2}" y2="${y+v.a*S}" stroke="#161513" stroke-width="1"/>`}});
-  // puertas
-  P.puertas.forEach(d=>{const s=side(d.m),h=s.y1===s.y2,ex=ext(d.m);const t=(ex?P.eExt:P.eInt)*S,off=ex?(d.m==='N'||d.m==='O'?-e:0):-t/2;const r=d.a*S;
-    if(h){const x=X(s.x1+d.en-d.a/2),y=Y(s.y1)+off;o+=`<rect x="${x}" y="${y-1}" width="${r}" height="${t+2}" fill="#fbfaf7"/>`;
-      const yb=d.giro>0?y:y+t, dir=d.giro>0?-1:1;o+=`<line x1="${x}" y1="${yb}" x2="${x}" y2="${yb+dir*r}" stroke="#161513" stroke-width="1.6"/><path d="M${x} ${yb+dir*r} A${r} ${r} 0 0 ${dir>0?0:1} ${x+r} ${yb}" fill="none" stroke="#161513" stroke-width=".8" stroke-dasharray="4 3"/>`}
-    else{const y=Y(s.y1+d.en-d.a/2),x=X(s.x1)+off;o+=`<rect x="${x-1}" y="${y}" width="${t+2}" height="${r}" fill="#fbfaf7"/>`;
-      o+=`<line x1="${x}" y1="${y}" x2="${x+r}" y2="${y}" stroke="#161513" stroke-width="1.6"/><path d="M${x+r} ${y} A${r} ${r} 0 0 1 ${x} ${y+r}" fill="none" stroke="#161513" stroke-width=".8" stroke-dasharray="4 3"/>`}});
-  // equipamiento
-  const st='fill="none" stroke="#8a857b" stroke-width="1"';
-  P.equip.forEach(q=>{
-    if(q.t==='mesada'){o+=`<rect x="${X(q.x)}" y="${Y(q.y)}" width="${q.w*S}" height="${q.h*S}" ${st}/><rect x="${X(q.x+.25)}" y="${Y(q.y+.1)}" width="45" height="38" rx="3" ${st}/><circle cx="${X(q.x+1.35)}" cy="${Y(q.y+.18)}" r="9" ${st}/><circle cx="${X(q.x+1.6)}" cy="${Y(q.y+.18)}" r="9" ${st}/><circle cx="${X(q.x+1.35)}" cy="${Y(q.y+.42)}" r="9" ${st}/><circle cx="${X(q.x+1.6)}" cy="${Y(q.y+.42)}" r="9" ${st}/>`}
-    if(q.t==='cama'){o+=`<rect x="${X(q.x)}" y="${Y(q.y)}" width="${q.w*S}" height="${q.h*S}" ${st}/><rect x="${X(q.x+.12)}" y="${Y(q.y+.08)}" width="${.6*S}" height="${.4*S}" rx="6" ${st}/><rect x="${X(q.x+.88)}" y="${Y(q.y+.08)}" width="${.6*S}" height="${.4*S}" rx="6" ${st}/><line x1="${X(q.x)}" y1="${Y(q.y+.6)}" x2="${X(q.x+q.w)}" y2="${Y(q.y+.6)}" stroke="#8a857b"/>`}
-    if(q.t==='inodoro'){o+=`<rect x="${X(q.x)}" y="${Y(q.y)}" width="40" height="18" ${st}/><ellipse cx="${X(q.x)+20}" cy="${Y(q.y)+42}" rx="17" ry="24" ${st}/>`}
-    if(q.t==='ducha'){o+=`<rect x="${X(q.x)}" y="${Y(q.y)}" width="${q.w*S}" height="${q.h*S}" ${st}/><line x1="${X(q.x)}" y1="${Y(q.y)}" x2="${X(q.x+q.w)}" y2="${Y(q.y+q.h)}" stroke="#8a857b"/><line x1="${X(q.x+q.w)}" y1="${Y(q.y)}" x2="${X(q.x)}" y2="${Y(q.y+q.h)}" stroke="#8a857b"/>`}
-    if(q.t==='lav'){o+=`<rect x="${X(q.x)}" y="${Y(q.y)}" width="45" height="40" rx="4" ${st}/><ellipse cx="${X(q.x)+24}" cy="${Y(q.y)+20}" rx="14" ry="12" ${st}/>`}
-  });
-  // locales
-  P.locales.forEach(l=>{o+=`<text x="${X(l.x)}" y="${Y(l.y)}" text-anchor="middle" font-family="Archivo,Arial Narrow,sans-serif" font-stretch="75%" font-weight="700" font-size="17" letter-spacing=".5" fill="#161513">${l.n.toUpperCase()}</text><text x="${X(l.x)}" y="${Y(l.y)+17}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="12" fill="#4b4842">${l.a.toFixed(1).replace('.',',')} m²</text>`});
-  // cotas
-  const dimC='#4b4842';
-  const chain=(arr,isX)=>{const off=isX?Y(P.prof)+e+34:X(P.ancho)+e+34;
-    for(let i=0;i<arr.length;i++){const v=isX?X(arr[i]):Y(arr[i]);
-      o+=isX?`<line x1="${v}" y1="${off-8}" x2="${v}" y2="${off+8}" stroke="${dimC}" stroke-width="1"/><line x1="${v-5}" y1="${off+5}" x2="${v+5}" y2="${off-5}" stroke="${dimC}" stroke-width="1.6"/>`
-             :`<line x1="${off-8}" y1="${v}" x2="${off+8}" y2="${v}" stroke="${dimC}" stroke-width="1"/><line x1="${off-5}" y1="${v+5}" x2="${off+5}" y2="${v-5}" stroke="${dimC}" stroke-width="1.6"/>`;
-      if(i){const a=isX?X(arr[i-1]):Y(arr[i-1]),mid=(a+v)/2,txt=(arr[i]-arr[i-1]).toFixed(2).replace('.',',');
-        o+=isX?`<text x="${mid}" y="${off-6}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="12" fill="${dimC}">${txt}</text>`
-               :`<text x="${off+6}" y="${mid+4}" font-family="IBM Plex Mono,monospace" font-size="12" fill="${dimC}">${txt}</text>`}}
-    o+=isX?`<line x1="${X(arr[0])-10}" y1="${off}" x2="${X(arr[arr.length-1])+10}" y2="${off}" stroke="${dimC}" stroke-width="1"/>`:`<line x1="${off}" y1="${Y(arr[0])-10}" x2="${off}" y2="${Y(arr[arr.length-1])+10}" stroke="${dimC}" stroke-width="1"/>`;
-  };
-  chain(P.cotasX,true);chain(P.cotasY,false);
-  // total ext
-  o+=`<text x="${X(P.ancho/2)}" y="${Y(P.prof)+e+70}" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="12" fill="${dimC}">${(P.ancho+2*P.eExt).toFixed(2).replace('.',',')} exterior</text>`;
-  // norte y escala
-  const nx=pad-50,ny=pad-40;
-  o+=`<g transform="translate(${nx} ${ny})"><circle r="16" fill="none" stroke="#161513"/><path d="M0 -14 L6 8 L0 4 L-6 8Z" fill="#161513"/><text y="-20" text-anchor="middle" font-family="IBM Plex Mono,monospace" font-size="11" fill="#161513">N</text></g>`;
-  const sx=pad,sy=Y(P.prof)+e+92;
-  o+=`<g font-family="IBM Plex Mono,monospace" font-size="10" fill="#4b4842"><rect x="${sx}" y="${sy}" width="${S}" height="6" fill="#161513"/><rect x="${sx+S}" y="${sy}" width="${S}" height="6" fill="none" stroke="#161513"/><text x="${sx}" y="${sy+20}">0</text><text x="${sx+S}" y="${sy+20}" text-anchor="middle">1</text><text x="${sx+2*S}" y="${sy+20}" text-anchor="middle">2 m</text></g>`;
-  o+=`<text x="${X(P.ancho)+e+80}" y="${sy+6}" text-anchor="end" font-family="Archivo,Arial Narrow,sans-serif" font-stretch="75%" font-weight="800" font-size="18" fill="#161513">${m.nombre.toUpperCase()} · PLANTA</text>`;
-  const VW=W+pad*2+70,VH=H+pad+e+120;
-  $('plan').innerHTML=`<svg viewBox="0 0 ${VW} ${VH}" role="img" aria-label="Planta de ${m.nombre}"><rect width="${VW}" height="${VH}" fill="#fbfaf7"/>${o}</svg>`;
+  // planta: las de ejemplo solo se ven con ?borrador
+  const P=m.planta&&D.plantas[m.planta],okP=P&&(!P.ejemplo||BORRADOR);
+  $('plan-blk').hidden=!okP;
+  $('plan-esc').textContent=okP&&P.ejemplo?'EJEMPLO':'';
+  $('plan').innerHTML=okP?window.SBUplanta(P,m):'';
+  // corte con la cercha (los barn)
+  const C=m.cercha,okC=C&&+C.luz>0&&+C.altura>0;
+  $('cer-blk').hidden=!okC;
+  $('cer').innerHTML=okC?window.SBUcercha(C,m):'';
 }
 
 /* ---------- detalle ---------- */

@@ -181,7 +181,17 @@
     "baños"
    ],
    "revOriginal": "",
-   "texEsc": 0.25
+   "texEsc": 0.25,
+   "cercha": {
+    "luz": 8.05,
+    "altura": 1.75,
+    "seccion": 20,
+    "material": "lapacho",
+    "separacion": 3.37,
+    "cantidad": 8,
+    "columna": 3,
+    "techo": "machimbre + panel aislante"
+   }
   },
   {
    "id": "smartrancho",
