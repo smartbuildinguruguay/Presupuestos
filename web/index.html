@@ -337,6 +337,7 @@ footer .w{display:flex;flex-wrap:wrap;gap:18px 40px;justify-content:space-betwee
 <footer><div class="w">
   <div><b style="font-family:var(--f-d);font-stretch:70%;font-size:1.2rem;letter-spacing:.05em;color:var(--ink)">SMART BUILDING URUGUAY</b><br>Steel frame y wood frame · Maldonado y Rocha</div>
   <div>WhatsApp <span class="mono" id="f-wa"></span><br>Instagram <a id="f-ig" href="#" target="_blank" rel="noopener"></a></div>
+  <p style="flex-basis:100%;margin:0;font-size:.78rem;color:var(--mute)">Esta web registra de forma anónima qué modelos mirás y la zona aproximada desde donde entrás, para atenderte mejor. No guardamos tu nombre ni tu número.</p>
 </div></footer>
 
 <div class="bar" id="bar"><div class="bt"><small id="bar-m"></small><b class="mono" id="bar-t"></b></div><a class="btn" data-wa="modelo" href="#">La quiero</a></div>
@@ -351,12 +352,39 @@ if(!D){document.body.insertAdjacentHTML('beforeend','<p style="padding:20px">No 
 const M=D.modelos.filter(m=>m.visible!==false), byId=Object.fromEntries(M.map(m=>[m.id,m]));
 D.whatsapp=D.contacto.whatsapp;D.instagram=D.contacto.instagram;
 const pic=m=>m.imagen||m.thumb||'';
+
+
 const $=id=>document.getElementById(id);
 const usd=n=>'USD '+Math.round(n).toLocaleString('es-UY');
 const usdK=n=>'USD '+(Math.round(n/1000)).toLocaleString('es-UY')+' mil';
 const DIAG=/[?&]diag/.test(location.search);
 const ls={get(k){try{return JSON.parse(localStorage.getItem('sbu-'+k))}catch(e){return null}},set(k,v){try{localStorage.setItem('sbu-'+k,JSON.stringify(v))}catch(e){}}};
 const USOS={vivir:'Para vivir',finde:'Campo · fin de semana',renta:'Para alquilar',empezar:'Para empezar'};
+
+/* ---------- registro de visitas (anónimo) ---------- */
+const TR=(()=>{
+  const url=D.visitas&&D.visitas.url, off=!url||DIAG||ls.get('notrack');
+  const rid=n=>Array.from({length:n},()=>'ABCDEFGHJKLMNPQRSTUVWXYZ23456789'[Math.random()*32|0]).join('');
+  let vid=ls.get('vid');if(!vid){vid='SB-'+rid(4);ls.set('vid',vid)}
+  let sid='';try{sid=sessionStorage.getItem('sbu-sid')||rid(6);sessionStorage.setItem('sbu-sid',sid)}catch(e){sid=rid(6)}
+  const qs=new URLSearchParams(location.search),ua=navigator.userAgent,ref=document.referrer;
+  let refHost='';try{refHost=ref?new URL(ref).hostname.replace(/^www\./,''):''}catch(e){}
+  const origen=qs.get('utm_source')||(/Instagram/i.test(ua)?'instagram':/FBAN|FBAV/i.test(ua)?'facebook':/WhatsApp/i.test(ua)?'whatsapp':refHost&&refHost!==location.hostname?refHost:'directo');
+  const campana=qs.get('utm_campaign')||'';
+  const disp=/iPad|Tablet/i.test(ua)?'tablet':/Mobi|Android|iPhone/i.test(ua)?'celular':'compu';
+  let geo={},q=[],t=null;
+  function flush(){if(off||!q.length)return;const body=JSON.stringify(q);q=[];
+    try{if(!navigator.sendBeacon(url,new Blob([body],{type:'text/plain'})))fetch(url,{method:'POST',body,mode:'no-cors',keepalive:true})}catch(e){}}
+  function ev(evento,o={}){if(off)return;q.push({visitante:vid,sesion:sid,evento,detalle:o.detalle||'',modelo:o.modelo||'',valor:o.valor||'',origen,campana,dispositivo:disp,ciudad:geo.city||'',region:geo.region||'',pais:geo.country||'',pagina:location.hash||'/'});
+    clearTimeout(t);t=setTimeout(flush,o.ya?0:1500)}
+  document.addEventListener('visibilitychange',()=>{if(document.visibilityState==='hidden')flush()});
+  if(!off){const c=ls.get('geo');
+    if(c&&c.t>Date.now()-864e5){geo=c.g;ev('visita',{detalle:refHost||ref})}
+    else fetch('https://get.geojs.io/v1/ip/geo.json').then(x=>x.json()).then(g=>{geo={city:g.city||'',region:g.region||'',country:g.country||''};ls.set('geo',{t:Date.now(),g:geo})}).catch(()=>{}).finally(()=>ev('visita',{detalle:refHost||ref}));
+    const seen=new Set();const io2=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting&&!seen.has(x.target.id)){seen.add(x.target.id);ev('seccion',{detalle:x.target.id})}}),{threshold:.35});
+    ['buscar','catalogo','como'].forEach(id=>{const el=document.getElementById(id);if(el)io2.observe(el)});}
+  return {ev,vid};
+})();
 
 /* ---------- precio ---------- */
 const fachada=m=>window.SBUprecio(D,m,'original').fachM2;
@@ -367,10 +395,11 @@ const desde=m=>precio(m,{ext:D.exterior.some(e=>e.id==='pino')?'pino':D.exterior
 let cur=null, cfg={ext:'original'};
 function waText(kind){
   if(kind==='modelo'&&cur){const p=precio(cur,cfg);const ext=D.exterior.find(e=>e.id===cfg.ext);
-    return `Hola! Vi en la web el modelo ${cur.nombre} (${cur.m2} m²) con fachada "${ext.nombre}". Presupuesto de referencia ${usd(p.tot)}. Me gustaría avanzar. Ref: ${cur.id}-${cfg.ext}`}
-  return 'Hola! Vengo de la web de Smart Building y quiero consultar por una casa.';
+    return `Hola! Vi en la web el modelo ${cur.nombre} (${cur.m2} m²) con fachada "${ext.nombre}". Presupuesto de referencia ${usd(p.tot)}. Me gustaría avanzar. Ref: ${cur.id}-${cfg.ext} · ${TR.vid}`}
+  return `Hola! Vengo de la web de Smart Building y quiero consultar por una casa. (${TR.vid})`;
 }
 document.addEventListener('click',e=>{const a=e.target.closest('[data-wa]');if(!a)return;e.preventDefault();
+  TR.ev('whatsapp',{detalle:a.dataset.wa==='modelo'&&cur?cfg.ext:'consulta general',modelo:a.dataset.wa==='modelo'&&cur?cur.id:'',valor:a.dataset.wa==='modelo'&&cur?precio(cur,cfg).tot:'',ya:1});
   window.open(`https://wa.me/${D.whatsapp}?text=${encodeURIComponent(waText(a.dataset.wa))}`,'_blank','noopener')});
 $('f-wa').textContent='+'+D.whatsapp;$('f-ig').textContent='@'+D.instagram;$('f-ig').href='https://instagram.com/'+D.instagram;
 
@@ -406,13 +435,14 @@ function renderPick(){
    <div class="alts"><span>También:</span>${list.slice(1,3).map(m=>`<button type="button" data-open="${m.id}">${m.nombre} · ${m.m2} m²</button>`).join('')}</div>`;
 }
 function bindOpts(id,key){document.querySelectorAll(`#${id} .opt`).forEach(b=>{b.setAttribute('aria-pressed',String(ans[key])===b.dataset.v);
-  b.addEventListener('click',()=>{ans[key]=key==='pers'?+b.dataset.v:b.dataset.v;ls.set('ans',ans);
+  b.addEventListener('click',()=>{ans[key]=key==='pers'?+b.dataset.v:b.dataset.v;ls.set('ans',ans);TR.ev('buscador',{detalle:key+': '+b.querySelector('b').textContent});
    document.querySelectorAll(`#${id} .opt`).forEach(x=>x.setAttribute('aria-pressed',x===b));renderPick()})})}
 bindOpts('q-uso','uso');bindOpts('q-pers','pers');
 document.querySelectorAll('[data-ft]').forEach(b=>b.addEventListener('click',()=>{ftab=b.dataset.ft;
   document.querySelectorAll('[data-ft]').forEach(x=>x.setAttribute('aria-selected',x===b));
   $('ft-ayuda').hidden=ftab!=='ayuda';$('ft-m2').hidden=ftab!=='m2';renderPick()}));
 $('m2r').addEventListener('input',renderPick);
+$('m2r').addEventListener('change',()=>TR.ev('buscador',{detalle:'m²: '+$('m2r').value}));
 renderPick();
 
 /* ---------- texturas de revestimiento (procedurales) ---------- */
@@ -437,6 +467,7 @@ const TEX={};D.exterior.forEach(e=>{if(e.tex)TEX[e.tex]=tex(e.tex)});
 let api=null,mats=[],orig={},texUid={},loadedUid=null;
 function vstat(t){const s=$('viewer').querySelector('.vs');if(s)s.textContent=t||''}
 function open3D(){
+  if(!open3D.busy){open3D.busy=1;setTimeout(()=>open3D.busy=0,3000);TR.ev('abrir_3d',{modelo:cur.id})}
   const v=$('viewer'),m=cur;if(!window.Sketchfab){vstat('Cargando visor…');setTimeout(open3D,300);return}
   v.innerHTML=`<iframe title="${m.nombre} en 3D" allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen></iframe><div class="vs">Cargando 3D…</div>`;
   api=null;mats=[];orig={};texUid={};loadedUid=m.uid;
@@ -541,7 +572,7 @@ function swatches(){
   const dis=(o,arr)=>arr.opciones.map(x=>`<button type="button" disabled><span class="chip" style="background:var(--line)"></span><b>${x.nombre}</b><small>${+x.usdM2?(x.usdM2>0?'+':'−')+usd(Math.abs(x.usdM2))+'/m²':'incluido'}</small></button>`).join('');
   $('sw-int').innerHTML=dis('int',D.interior);$('sw-pis').innerHTML=dis('pis',D.pisos);
 }
-document.getElementById('sw-ext').addEventListener('click',e=>{const b=e.target.closest('[data-ext]');if(!b)return;cfg.ext=b.dataset.ext;
+document.getElementById('sw-ext').addEventListener('click',e=>{const b=e.target.closest('[data-ext]');if(!b)return;cfg.ext=b.dataset.ext;TR.ev('revestimiento',{modelo:cur.id,detalle:cfg.ext,valor:precio(cur,cfg).tot});
   document.querySelectorAll('[data-ext]').forEach(x=>x.setAttribute('aria-pressed',x===b));renderPrice();applyExt();
   if(cur&&!(cur.fachadaMat||[]).length&&api)vstat('El 3D muestra la terminación original de este modelo');});
 function renderPrice(){
@@ -554,7 +585,7 @@ function renderPrice(){
   $('bar-m').textContent=`${cur.nombre} · ${D.exterior.find(e=>e.id===cfg.ext).nombre}`;$('bar-t').textContent=usd(p.tot);
 }
 function openModel(id,scroll=true){
-  const m=byId[id];if(!m)return;cur=m;cfg={ext:(ls.get('cfg-'+id)||{}).ext||'original'};api=null;loadedUid=null;
+  const m=byId[id];if(!m)return;TR.ev('ver_modelo',{modelo:id});cur=m;cfg={ext:(ls.get('cfg-'+id)||{}).ext||'original'};api=null;loadedUid=null;
   $('modelo').hidden=false;
   $('d-eb').textContent=[m.lugar,m.usos.map(u=>USOS[u]).join(' · ')].filter(Boolean).join(' — ');
   $('d-nom').textContent=m.nombre;$('d-frase').textContent=m.frase;
