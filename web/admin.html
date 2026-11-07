@@ -130,6 +130,12 @@ tr.vrow{cursor:pointer}tr.vrow:hover td{background:var(--hi)}
 .pecanvas{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fbf8f1;user-select:none}
 .peside{display:grid;gap:10px;position:sticky;top:12px}
 .peside .f{grid-template-columns:1fr 1fr}
+.mn{display:grid;gap:10px;border-top:1px solid var(--line);padding-top:12px}
+.mnres{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:8px}
+.mnres button{border:2px solid transparent;border-radius:6px;padding:0;background:none;overflow:hidden;cursor:pointer;position:relative}
+.mnres button[aria-pressed="true"]{border-color:var(--cu)}
+.mnres img{display:block;width:100%;height:auto}
+.mnres .tag{position:absolute;left:6px;top:6px;background:rgba(0,0,0,.65);color:#fff;font:500 .7rem var(--f-m);padding:2px 6px;border-radius:3px}
 </style>
 </head>
 <body>
@@ -221,6 +227,22 @@ tr.vrow{cursor:pointer}tr.vrow:hover td{background:var(--hi)}
       <div class="card">
         <h3>Resultado</h3>
         <div class="shot" id="shot"><p class="note" style="padding:20px">Todavía no sacaste ninguno.</p></div>
+        <div class="mn" id="mn">
+          <h3>Mejorar con mnml AI <small class="note">la toma del 3D pasa a foto realista</small></h3>
+          <div id="mnKeyBox" class="f" style="grid-template-columns:1fr auto;align-items:end">
+            <label>Clave de la API de mnml<input id="mnKey" type="password" autocomplete="off" placeholder="mnml_…"><small>Se crea en <a href="https://developers.mnml.ai/console/keys" target="_blank" rel="noopener">developers.mnml.ai → API keys</a>. Restringila al sitio <span class="mono">smartbuildinguruguay.github.io</span>. Queda guardada solo en este navegador.</small></label>
+            <button type="button" class="btn ghost" id="mnKeyOk">Guardar</button>
+          </div>
+          <div id="mnForm" class="f" hidden>
+            <label>Tipo<select id="mnMode"><option value="exterior">Exterior</option><option value="interior">Interior</option><option value="landscape">Paisaje</option></select></label>
+            <label>Motor<select id="mnEngine"><option value="">el de siempre</option></select></label>
+            <label>Variantes<select id="mnCount"><option>1</option><option>2</option><option>3</option><option>4</option></select></label>
+            <label class="wide" style="grid-column:1/-1">Qué querés ver<textarea id="mnPrompt" rows="3"></textarea><small>En inglés suele salir mejor. Se arma solo con el modelo y el revestimiento elegido; cambialo a gusto.</small></label>
+            <div style="grid-column:1/-1;display:flex;gap:8px;flex-wrap:wrap;align-items:center"><button type="button" class="btn cu" id="mnGo" disabled>Renderizar con mnml</button><span class="note" id="mnCost"></span><button type="button" class="btn ghost" id="mnKeyEdit" style="margin-left:auto;padding:4px 10px;font-size:.78rem">Cambiar clave</button></div>
+          </div>
+          <div class="mnres" id="mnRes"></div>
+          <label class="note" id="mnManual" hidden>¿El navegador no dejó traer la imagen? Bajala desde el enlace y subila acá: <input type="file" id="mnFile" accept="image/jpeg,image/png,image/webp"></label>
+        </div>
         <div style="display:flex;flex-wrap:wrap;gap:8px"><button type="button" class="btn cu" id="rSave" disabled>Usar como portada y subir</button></div>
         <p class="note" id="rMsg" aria-live="polite"></p>
         <h3>Portadas actuales</h3>
@@ -577,7 +599,86 @@ function general(){
 }
 
 /* ---------- RENDERS ---------- */
-let api=null,shotData=null,shotId=null,preset='natural';
+let api=null,shotData=null,shotId=null,preset='natural',toma=null;
+
+/* ---------- mnml AI: la toma del 3D pasa a render realista ---------- */
+const MK='sbu-mnml-key',MAPI='https://api.mnml.ai';
+const mkey=()=>{try{return localStorage.getItem(MK)||''}catch(e){return ''}};
+let mnEngines=null;
+async function mn(path,opt={}){
+  const r=await fetch(MAPI+path,{...opt,headers:{authorization:'Bearer '+mkey(),accept:'application/json',...(opt.body?{'content-type':'application/json'}:{})}});
+  const j=await r.json().catch(()=>({}));
+  if(!r.ok||j.success===false){const e=j.error||{};const er=new Error(e.message||('Error '+r.status));er.status=r.status;er.code=e.code;throw er}
+  return j.data;
+}
+function mnPromptDefault(){
+  const m=D.modelos.find(x=>x.id===$('rModel').value)||{};const ext=D.exterior.find(e=>e.id===(m.revOriginal||''))||{};
+  const fach={pino:'natural pine wood siding',lapacho:'dark hardwood lapacho siding',chapa:'black corrugated metal siding',eifs:'smooth white render'}[ext.tex]||'the same facade materials';
+  const barn=/barn/i.test(m.nombre||'')||m.cercha;
+  return `Photorealistic architectural photograph of this ${barn?'barn-style ':''}country house in Uruguay, ${fach}, ${m.cercha?'exposed hardwood timber trusses, ':''}black metal roof, keep the exact geometry and openings, golden hour light, eucalyptus trees and natural grass around, soft sky, high-end real estate photography`;
+}
+function mnKeyUI(){const k=!!mkey();$('mnKeyBox').hidden=k;$('mnForm').hidden=!k;if(k&&!mnEngines)mnLoadEngines();mnReady()}
+function mnReady(){
+  if(!$('mnGo'))return;
+  $('mnGo').disabled=!toma||!mkey();
+  if(!$('mnPrompt').value)$('mnPrompt').value=mnPromptDefault();
+  mnCostTxt();
+}
+function mnCostTxt(){
+  const e=(mnEngines||[]).find(x=>x.id===$('mnEngine').value)||(mnEngines||[]).find(x=>x.default);
+  $('mnCost').textContent=!toma?'Primero sacá una toma del 3D.':e?`${e.prices.render*(+$('mnCount').value||1)} créditos de tu cuenta mnml`:'';
+}
+async function mnLoadEngines(){
+  try{const d=await mn('/v2/engines');mnEngines=(d.engines||[]).filter(e=>e.available);
+    $('mnEngine').innerHTML=mnEngines.map(e=>`<option value="${esc(e.id)}"${e.default?' selected':''}>${esc(e.name)} · ${e.prices.render} cr</option>`).join('');mnCostTxt();
+  }catch(e){if(e.status===401){$('mnCost').textContent='La clave no es válida.';}else $('mnCost').textContent='No se pudo leer la lista de motores ('+e.message+'). Igual podés renderizar.'}
+}
+async function mnRender(){
+  if(!toma)return;
+  const btn=$('mnGo');btn.disabled=true;$('mnRes').innerHTML='';$('mnManual').hidden=true;
+  const msg=t=>{$('rMsg').textContent=t};
+  msg('Mandando la toma a mnml…');
+  const body={mode:$('mnMode').value,image:toma,prompt:$('mnPrompt').value.trim()||mnPromptDefault(),count:+$('mnCount').value||1,aspect_ratio:'auto'};
+  if($('mnEngine').value)body.engine=$('mnEngine').value;
+  try{
+    let d=await mn('/v2/renders?wait=60',{method:'POST',body:JSON.stringify(body)});
+    let jobs=d.jobs&&d.jobs.length?d.jobs:(d.ids||[d.id]).map(id=>({id,status:d.status,outputs:[]}));
+    const t0=Date.now();
+    while(jobs.some(j=>j.status==='queued'||j.status==='processing')){
+      if(Date.now()-t0>6*60e3)throw new Error('mnml está tardando más de lo normal. Probá de nuevo en un rato.');
+      msg('mnml está renderizando… (suele tardar menos de un minuto)');
+      jobs=await Promise.all(jobs.map(j=>j.status==='queued'||j.status==='processing'?mn('/v2/jobs/'+encodeURIComponent(j.id)+'?wait=30'):j));
+    }
+    const outs=jobs.flatMap(j=>(j.outputs||[]).filter(o=>o.media!=='video').map(o=>o.url));
+    const fail=jobs.find(j=>j.status==='failed');
+    if(!outs.length)throw new Error(fail&&fail.error?fail.error.message:'mnml no devolvió imágenes.');
+    $('mnRes').innerHTML=`<button type="button" data-raw aria-pressed="false"><span class="tag">toma 3D</span><img src="${toma}" alt="Toma del 3D"></button>`+outs.map((u,i)=>`<button type="button" data-u="${esc(u)}" aria-pressed="false"><span class="tag">mnml ${i+1}</span><img src="${esc(u)}" alt="Render de mnml ${i+1}"></button>`).join('');
+    $('mnRes').querySelectorAll('button').forEach(b=>b.onclick=()=>mnPick(b));
+    msg(`Listo${d.credits_charged?' · se usaron '+d.credits_charged+' créditos':''}. Tocá el que más te guste para usarlo de portada.`);
+  }catch(e){
+    msg(e.status===401?'mnml no aceptó la clave. Revisala con "Cambiar clave".':e.status===402?'No te alcanzan los créditos de mnml para este render.':e.message==='Failed to fetch'?'El navegador no pudo hablar con mnml. Revisá que la clave esté habilitada para este sitio (smartbuildinguruguay.github.io).':'mnml: '+e.message);
+  }
+  btn.disabled=false;
+}
+async function mnPick(b){
+  $('mnRes').querySelectorAll('button').forEach(x=>x.setAttribute('aria-pressed',x===b));
+  if(b.dataset.raw!==undefined){shotData=toma;$('shot').innerHTML=`<img src="${toma}" alt="Render">`;$('rSave').disabled=false;return}
+  const u=b.dataset.u;$('rMsg').textContent='Trayendo la imagen…';
+  try{
+    const r=await fetch(u);if(!r.ok)throw new Error();const bl=await r.blob();
+    shotData=await new Promise(ok=>{const fr=new FileReader();fr.onload=()=>ok(fr.result);fr.readAsDataURL(bl)});
+    if(!/^data:image\/jpeg/.test(shotData))shotData=await aJpg(shotData);
+    $('shot').innerHTML=`<img src="${shotData}" alt="Render">`;$('rSave').disabled=false;$('rMsg').textContent='Si te gusta, subilo como portada.';
+  }catch(e){
+    $('mnManual').hidden=false;$('rMsg').innerHTML=`No pude traer la imagen desde acá. <a href="${esc(u)}" target="_blank" rel="noopener">Abrila</a>, guardala y subila con el botón de abajo.`;
+  }
+}
+function aJpg(src){return new Promise(ok=>{const im=new Image();im.onload=()=>{const c=document.createElement('canvas');const w=Math.min(1920,im.naturalWidth),h=Math.round(im.naturalHeight*w/im.naturalWidth);c.width=w;c.height=h;c.getContext('2d').drawImage(im,0,0,w,h);ok(c.toDataURL('image/jpeg',.88))};im.src=src})}
+$('mnKeyOk').onclick=()=>{const v=$('mnKey').value.trim();if(!v)return;try{localStorage.setItem(MK,v)}catch(e){}mnEngines=null;mnKeyUI()};
+$('mnKeyEdit').onclick=()=>{try{localStorage.removeItem(MK)}catch(e){}$('mnKey').value='';mnKeyUI()};
+$('mnGo').onclick=mnRender;
+$('mnEngine').onchange=mnCostTxt;$('mnCount').onchange=mnCostTxt;
+$('mnFile').onchange=async()=>{const f=$('mnFile').files[0];if(!f)return;const du=await new Promise(ok=>{const fr=new FileReader();fr.onload=()=>ok(fr.result);fr.readAsDataURL(f)});shotData=await aJpg(du);shotId=shotId||$('rModel').value;$('shot').innerHTML=`<img src="${shotData}" alt="Render">`;$('rSave').disabled=false;$('rMsg').textContent='Si te gusta, subilo como portada.'};
 const PRESETS={
   natural:{n:'Día natural',bg:[0.86,0.89,0.91],exp:1.0,rot:0.6,int:1.2},
   atardecer:{n:'Atardecer',bg:[0.93,0.80,0.66],exp:1.1,rot:2.4,int:1.0},
@@ -585,12 +686,13 @@ const PRESETS={
   noche:{n:'Noche cálida',bg:[0.10,0.11,0.14],exp:0.75,rot:3.6,int:0.8},
 };
 function renders(){
+  mnKeyUI();
   $('rModel').innerHTML=D.modelos.map(m=>`<option value="${m.id}"${m.id===selId?' selected':''}>${esc(m.nombre)}</option>`).join('');
   $('presets').innerHTML=Object.entries(PRESETS).map(([k,v])=>`<button type="button" data-p="${k}" aria-pressed="${k===preset}">${v.n}</button>`).join('');
   $('presets').querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{preset=b.dataset.p;$('presets').querySelectorAll('[data-p]').forEach(x=>x.setAttribute('aria-pressed',x===b));applyPreset()});
   $('thumbs').innerHTML=D.modelos.map(m=>`<figure>${pic(m)?`<img src="${esc(pic(m))}" alt="">`:'<img alt="">'}<figcaption>${esc(m.nombre)} ${m.imagen?'· render propio':'· miniatura Sketchfab'}</figcaption></figure>`).join('');
 }
-$('rModel').onchange=()=>{selId=$('rModel').value;api=null;$('rShot').disabled=true;$('stage').innerHTML='<div class="msg">Tocá "Abrir modelo"</div>'};
+$('rModel').onchange=()=>{selId=$('rModel').value;$('mnPrompt').value='';toma=null;$('mnRes').innerHTML='';mnReady();api=null;$('rShot').disabled=true;$('stage').innerHTML='<div class="msg">Tocá "Abrir modelo"</div>'};
 function applyPreset(){
   if(!api)return;const p=PRESETS[preset];
   try{api.setBackground({color:p.bg})}catch(e){}
@@ -616,7 +718,7 @@ $('rShot').onclick=()=>{
   if(!api)return;$('rShot').disabled=true;$('rMsg').textContent='Sacando render…';
   api.getScreenShot(1920,1200,'image/jpeg',(err,res)=>{$('rShot').disabled=false;
     if(err||!res){$('rMsg').textContent='No se pudo sacar el render.';return}
-    shotData=res;shotId=$('rModel').value;$('shot').innerHTML=`<img src="${res}" alt="Render">`;$('rSave').disabled=false;$('rMsg').textContent='Si te gusta, subilo como portada.'});
+    shotData=res;toma=res;shotId=$('rModel').value;$('shot').innerHTML=`<img src="${res}" alt="Render">`;mnReady();$('rSave').disabled=false;$('rMsg').textContent='Si te gusta, subilo como portada.'});
 };
 $('rSave').onclick=async()=>{
   if(!shotData||!shotId)return;if(!tok()){askTok=true;syncUI();$('rMsg').textContent='Primero poné la clave de GitHub arriba.';return}
