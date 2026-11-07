@@ -82,8 +82,10 @@
    "nombre": "Siding pino tratado",
    "usdM2": 0,
    "tex": "pino",
-   "nota": "Machimbre horizontal, impregnado CCA",
-   "activo": true
+   "nota": "Machimbre vertical, impregnado CCA",
+   "activo": true,
+   "dir": "v",
+   "tam": 1
   },
   {
    "id": "lapacho",
@@ -91,7 +93,9 @@
    "usdM2": 33,
    "tex": "lapacho",
    "nota": "Madera dura, sin mantenimiento pesado",
-   "activo": true
+   "activo": true,
+   "dir": "v",
+   "tam": 1
   },
   {
    "id": "chapa",
@@ -99,7 +103,9 @@
    "usdM2": 9,
    "tex": "chapa",
    "nota": "Moderna, cero mantenimiento",
-   "activo": true
+   "activo": true,
+   "dir": "v",
+   "tam": 1
   },
   {
    "id": "eifs",

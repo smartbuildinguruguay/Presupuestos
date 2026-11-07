@@ -1,6 +1,7 @@
 /* Texturas de revestimiento dibujadas en código (las usan la web y el panel). */
 /* tam = tamaño de tabla/onda: 1 normal, 2 el doble de grande, 0.5 la mitad */
-window.SBUtex = function (kind,size=256,tam=1){
+/* dir = sentido de las tablas/ondas: 'v' vertical, 'h' horizontal */
+window.SBUtex = function (kind,size=256,tam=1,dir='v'){
   tam=+tam>0?+tam:1;
   const c=document.createElement('canvas');c.width=c.height=size;const g=c.getContext('2d');
   const rnd=(a,b)=>a+Math.random()*(b-a);
@@ -14,5 +15,14 @@ window.SBUtex = function (kind,size=256,tam=1){
   }else if(kind==='eifs'){
     g.fillStyle='#ecebe6';g.fillRect(0,0,size,size);for(let i=0;i<size*size/18;i++){g.fillStyle=`rgba(0,0,0,${rnd(0,.05)})`;g.fillRect(rnd(0,size),rnd(0,size),1,1)}
   }else{g.fillStyle='#bbb';g.fillRect(0,0,size,size)}
+  // pino/lapacho se dibujan horizontales y la chapa vertical: se gira si hace falta
+  const nativo=kind==='chapa'?'v':(kind==='pino'||kind==='lapacho')?'h':null;
+  if(nativo&&dir&&dir!==nativo){const r=document.createElement('canvas');r.width=r.height=size;const q=r.getContext('2d');
+    q.translate(size/2,size/2);q.rotate(Math.PI/2);q.drawImage(c,-size/2,-size/2);return r}
   return c;
+};
+/* tamaño y sentido finales de un revestimiento en un modelo */
+window.SBUtexDe = function (e,m){
+  const tam=(+e.tam||1)*(+(m&&m.texEsc)||1),dir=e.dir||'v';
+  return {tam,dir,key:e.tex+'@'+tam+dir};
 };

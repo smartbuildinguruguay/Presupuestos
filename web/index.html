@@ -562,7 +562,7 @@ renderPick();
 
 /* ---------- texturas de revestimiento (texturas.js) ---------- */
 const tex=window.SBUtex;
-const TEX={};D.exterior.forEach(e=>{if(e.tex)TEX[e.tex]=tex(e.tex)});
+const TEX={};D.exterior.forEach(e=>{if(e.tex)TEX[e.id]=tex(e.tex,256,1,e.dir||'v')});
 
 /* ---------- Sketchfab ---------- */
 let api=null,mats=[],orig={},texUid={},loadedUid=null;
@@ -591,9 +591,9 @@ function applyExt(){
     const m0=mats.find(q=>q.name===n);if(!m0)return;
     if(e.id==='original'||e.id===cur.revOriginal||!e.tex){if(orig[n])api.setMaterial(JSON.parse(JSON.stringify(orig[n])));return}
     const go=uid=>{const mm=JSON.parse(JSON.stringify(orig[n]||m0));setAlbedo(mm,uid);api.setMaterial(mm)};
-    const key=e.tex+'@'+(+cur.texEsc||1);
+    const T=window.SBUtexDe(e,cur),key=T.key;
     if(texUid[key])go(texUid[key]);
-    else api.addTexture(tex(e.tex,512,+cur.texEsc||1).toDataURL('image/jpeg',.85),(err,uid)=>{if(!err){texUid[key]=uid;go(uid)}});
+    else api.addTexture(tex(e.tex,512,T.tam,T.dir).toDataURL('image/jpeg',.85),(err,uid)=>{if(!err){texUid[key]=uid;go(uid)}});
   });
 }
 function diag(){
@@ -673,7 +673,7 @@ function swatches(){
   const lst=D.exterior.filter(e=>e.activo!==false&&!(og&&e.id==='original'));
   $('sw-ext').innerHTML=lst.map(e=>{const isO=og?e.id===og.id:e.id==='original';const d=((+e.usdM2||0)-base)*k;
     const tag=isO?(og?'diseño original':'incluido'):Math.round(d)===0?'mismo precio':(d>0?'+':'−')+usd(Math.abs(d))+'/m²';
-    return `<button type="button" data-ext="${e.id}" aria-pressed="${cfg.ext===e.id}">${e.tex?`<canvas width="38" height="38" data-tx="${e.tex}"></canvas>`:`<span class="chip" style="background:linear-gradient(135deg,#8a857b,#d9d4c9)"></span>`}<b>${e.nombre}</b><small>${tag}</small></button>`}).join('');
+    return `<button type="button" data-ext="${e.id}" aria-pressed="${cfg.ext===e.id}">${e.tex?`<canvas width="38" height="38" data-tx="${e.id}"></canvas>`:`<span class="chip" style="background:linear-gradient(135deg,#8a857b,#d9d4c9)"></span>`}<b>${e.nombre}</b><small>${tag}</small></button>`}).join('');
   $('sw-ext').querySelectorAll('canvas').forEach(c=>c.getContext('2d').drawImage(TEX[c.dataset.tx],0,0,38,38));
   const dis=(o,arr)=>arr.opciones.map(x=>`<button type="button" disabled><span class="chip" style="background:var(--line)"></span><b>${x.nombre}</b><small>${+x.usdM2?(x.usdM2>0?'+':'−')+usd(Math.abs(x.usdM2))+'/m²':'incluido'}</small></button>`).join('');
   $('sw-int').innerHTML=dis('int',D.interior);$('sw-pis').innerHTML=dis('pis',D.pisos);

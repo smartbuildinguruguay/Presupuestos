@@ -126,7 +126,7 @@ tr.vrow{cursor:pointer}tr.vrow:hover td{background:var(--hi)}
 </head>
 <body>
 <header class="top"><div class="w">
-  <div style="display:flex;gap:14px;align-items:baseline"><h1>PANEL SBU</h1><small style="opacity:.6;font-size:.7rem">versión 3D-paredes 2</small><a href="./" target="_blank" rel="noopener">Ver la web →</a></div>
+  <div style="display:flex;gap:14px;align-items:baseline"><h1>PANEL SBU</h1><small style="opacity:.6;font-size:.7rem">versión 3D-paredes 3</small><a href="./" target="_blank" rel="noopener">Ver la web →</a></div>
   <div class="sync" id="sync"></div>
 </div></header>
 
@@ -375,7 +375,7 @@ function mForm(){
     <label class="wide">Sketchfab · código del modelo<input data-k="uid"><small>Los 32 caracteres al final del link</small></label>
     <label>Revestimiento original<select data-k="revOriginal"><option value="">Sin definir</option>${D.exterior.filter(e=>e.id!=='original').map(e=>`<option value="${e.id}">${esc(e.nombre)}</option>`).join('')}</select><small>El que tiene el diseño: va incluido en el precio base</small></label>
     <label class="wide">Partes del 3D que son pared exterior<input data-k="fachadaMat" data-t="csv"><small>Son las que cambian de textura cuando el cliente elige otro revestimiento. Elegilas con el botón de abajo.</small></label>
-    <label>Tamaño de la textura<input type="number" step="0.1" min="0.05" data-k="texEsc" data-t="num" placeholder="1"><small>1 = normal · 2 = tablas el doble de anchas · 0,5 = la mitad. Si en el 3D casi no cambia, probá saltos grandes (0,2 o 4)</small></label>
+    <label>Ajuste de escala de este modelo<input type="number" step="0.1" min="0.05" data-k="texEsc" data-t="num" placeholder="1"><small>Multiplica el tamaño de todas las texturas solo en este modelo (si está dibujado más grande o más chico). 1 = sin cambio</small></label>
     <label><span>&nbsp;</span><button type="button" class="btn ghost" id="p3go">Elegir paredes en el 3D</button></label>
     <div id="p3d" style="grid-column:1 / -1"></div>
     <label class="wide">Imagen de portada<input data-k="imagen" placeholder="se completa sola al subir un render"><small>Si está vacío usa la miniatura de Sketchfab.</small></label>
@@ -423,10 +423,17 @@ function pick3D(m){
   const conTex=D.exterior.filter(e=>e.tex);
   box.innerHTML=`<div class="p3d"><div class="p3v"><iframe title="Modelo 3D" allow="autoplay; fullscreen"></iframe><div class="pm" id="p3msg">Cargando el modelo…</div></div>
    <div class="p3l"><p class="note">Marcá las partes que son <b>pared exterior</b>. Se pintan con el revestimiento de prueba, así ves al toque si quedó bien. "Ver" la pinta de rojo un momento para ubicarla.</p>
-    <label>Probar con<select id="p3x">${conTex.map(e=>`<option value="${e.id}"${e.id!==m.revOriginal?'':' '}>${esc(e.nombre)}</option>`).join('')}</select></label>
+    <label>Probar con<select id="p3x">${conTex.map(e=>`<option value="${e.id}">${esc(e.nombre)}</option>`).join('')}</select></label>
+    <div class="f" style="grid-template-columns:1fr 1fr"><label>Tamaño de esta textura<input type="number" step="0.1" min="0.05" id="p3t"><small>Vale para todos los modelos. 2 = el doble de ancha</small></label>
+     <label>Sentido<select id="p3s"><option value="v">Vertical</option><option value="h">Horizontal</option></select></label></div>
     <div class="p3m" id="p3m"></div></div></div>`;
   const pre=conTex.find(e=>e.id!==m.revOriginal);if(pre)$('p3x').value=pre.id;
-  $('p3x').onchange=()=>p3paint(m);
+  const p3ext=()=>D.exterior.find(x=>x.id===$('p3x').value);
+  const p3sync=()=>{const e=p3ext();if(!e)return;$('p3t').value=+e.tam||1;$('p3s').value=e.dir||'v'};
+  $('p3x').onchange=()=>{p3sync();p3paint(m)};
+  $('p3t').oninput=()=>{const e=p3ext(),v=+$('p3t').value;if(!e||!(v>0))return;e.tam=v;saveDraft();p3paint(m)};
+  $('p3s').onchange=()=>{const e=p3ext();if(!e)return;e.dir=$('p3s').value;saveDraft();p3paint(m)};
+  p3sync();
   pmats=[];porig={};ptex={};ptouch=new Set();papi=null;
   const c=new Sketchfab(box.querySelector('iframe'));
   c.init(m.uid,{autostart:1,preload:1,ui_infos:0,ui_watermark:0,ui_watermark_link:0,ui_inspector:0,ui_settings:0,ui_help:0,ui_vr:0,ui_ar:0,ui_annotations:0,ui_stop:0,ui_hint:0,dnt:1,
@@ -449,12 +456,12 @@ function p3list(m){
 }
 function p3paint(m){
   if(!papi||m.id!==selId)return;
-  const sel=new Set(m.fachadaMat||[]),e=D.exterior.find(x=>x.id===($('p3x')||{}).value),tam=+m.texEsc||1,key=e&&e.tex+'@'+tam;
+  const sel=new Set(m.fachadaMat||[]),e=D.exterior.find(x=>x.id===($('p3x')||{}).value),T=e&&e.tex?window.SBUtexDe(e,m):null,key=T&&T.key;
   ptouch.forEach(n=>{if(!sel.has(n)&&porig[n]){papi.setMaterial(clone(porig[n]));ptouch.delete(n)}});
   if(!e||!e.tex)return;
   const go=uid=>sel.forEach(n=>{if(!porig[n])return;const x=clone(porig[n]);p3albedo(x,uid,null,1);papi.setMaterial(x);ptouch.add(n)});
   if(ptex[key])go(ptex[key]);
-  else papi.addTexture(window.SBUtex(e.tex,512,tam).toDataURL('image/jpeg',.85),(err,uid)=>{if(!err){ptex[key]=uid;go(uid)}});
+  else papi.addTexture(window.SBUtex(e.tex,512,T.tam,T.dir).toDataURL('image/jpeg',.85),(err,uid)=>{if(!err){ptex[key]=uid;go(uid)}});
 }
 
 /* ---------- PRECIOS ---------- */
@@ -485,13 +492,15 @@ $('rubAdd').onclick=()=>{D.rubros.push({nombre:'Rubro nuevo',usdM2:0});changed()
 /* ---------- REVESTIMIENTOS ---------- */
 function revs(){
   const P=D.precio,k=(1+P.imprevistos/100)*(1+P.margen/100);
-  $('rtab').innerHTML=`<tr><th>Nombre</th><th class="n">Costo extra USD/m²</th><th class="n">Venta extra/m²</th><th>Textura 3D</th><th>Nota para el cliente</th><th>Activo</th><th></th></tr>`+
+  $('rtab').innerHTML=`<tr><th>Nombre</th><th class="n">Costo extra USD/m²</th><th class="n">Venta extra/m²</th><th>Textura 3D</th><th class="n">Tamaño</th><th>Sentido</th><th>Nota para el cliente</th><th>Activo</th><th></th></tr>`+
    D.exterior.map((e,i)=>`<tr><td><input data-ei="${i}" data-f="nombre" value="${esc(e.nombre)}" aria-label="Nombre"></td><td class="n"><input type="number" data-ei="${i}" data-f="usdM2" value="${e.usdM2}" aria-label="Costo extra"></td><td class="n">${usd((+e.usdM2||0)*k)}</td>
     <td><select data-ei="${i}" data-f="tex" aria-label="Textura">${['','pino','lapacho','chapa','eifs'].map(t=>`<option value="${t}"${(e.tex||'')===t?' selected':''}>${t||'original del modelo'}</option>`).join('')}</select></td>
+    <td class="n">${e.tex?`<input type="number" step="0.1" min="0.05" data-ei="${i}" data-f="tam" value="${+e.tam||1}" aria-label="Tamaño" style="width:70px">`:''}</td>
+    <td>${e.tex&&e.tex!=='eifs'?`<select data-ei="${i}" data-f="dir" aria-label="Sentido"><option value="v"${(e.dir||'v')==='v'?' selected':''}>Vertical</option><option value="h"${e.dir==='h'?' selected':''}>Horizontal</option></select>`:''}</td>
     <td><input data-ei="${i}" data-f="nota" value="${esc(e.nota||'')}" aria-label="Nota"></td><td><input type="checkbox" data-ei="${i}" data-f="activo"${e.activo!==false?' checked':''} aria-label="Activo" style="width:auto"></td>
     <td>${e.id==='original'?'':`<button type="button" class="btn ghost" data-edel="${i}" aria-label="Borrar">×</button>`}</td></tr>`).join('');
   $('rtab').querySelectorAll('[data-ei]').forEach(el=>{const ev=el.type==='checkbox'||el.tagName==='SELECT'?'change':'input';el.addEventListener(ev,()=>{const e=D.exterior[+el.dataset.ei],f=el.dataset.f;
-    e[f]=el.type==='checkbox'?el.checked:f==='usdM2'?+el.value||0:f==='tex'?(el.value||null):el.value;saveDraft();if(f==='usdM2'){el.closest('tr').children[2].textContent=usd((+el.value||0)*k)}})});
+    e[f]=el.type==='checkbox'?el.checked:f==='usdM2'?+el.value||0:f==='tam'?(+el.value||1):f==='tex'?(el.value||null):el.value;saveDraft();if(f==='usdM2'){el.closest('tr').children[2].textContent=usd((+el.value||0)*k)}})});
   $('rtab').querySelectorAll('[data-edel]').forEach(b=>b.onclick=()=>{D.exterior.splice(+b.dataset.edel,1);changed()});
 }
 $('rAdd').onclick=()=>{let n=1;while(D.exterior.some(e=>e.id==='rev-'+n))n++;D.exterior.push({id:'rev-'+n,nombre:'Revestimiento nuevo',usdM2:0,tex:null,nota:'',activo:false});changed()};
