@@ -128,7 +128,18 @@
       if (q.t === 'mesada') { o += R(x, y, q.w, q.h) + R(x + .25, y + .1, .45, .38, st, .03) + [[1.35, .18], [1.6, .18], [1.35, .42], [1.6, .42]].map(([a, b]) => C(x + a, y + b, .09)).join('') }
       if (q.t === 'isla') { o += R(x, y, q.w, q.h, `fill="#efe7d6" stroke="${INK2}" stroke-width="1.2"`) }
       if (q.t === 'parrilla') { o += R(x, y, q.w, q.h, `fill="#d9d2c4" stroke="${INK2}" stroke-width="1.2"`) + `<path d="M${X(x + .1)} ${Y(y + .12)}h${(q.w - .2) * S}M${X(x + .1)} ${Y(y + .24)}h${(q.w - .2) * S}M${X(x + .1)} ${Y(y + .36)}h${(q.w - .2) * S}" stroke="${INK2}" stroke-width="1"/>` }
-      if (q.t === 'cama') { const w = q.w || 1.6, h = q.h || 2; o += R(x, y, w, h, st, .04) + R(x + .12, y + .08, .6, .4, st, .08) + R(x + w - .72, y + .08, .6, .4, st, .08) + `<path d="M${X(x)} ${Y(y + .62)}Q${X(x + w / 2)} ${Y(y + .55)} ${X(x + w)} ${Y(y + .62)}" fill="none" stroke="${INK2}"/>` }
+      if (q.t === 'cama') {
+        // rot: 0 cabecera arriba, 180 abajo, 90 a la izquierda, 270 a la derecha (w × h es lo que ocupa en planta)
+        const w = q.w || 1.6, h = q.h || 2, r = q.rot || 0, ver = r === 0 || r === 180, anch = ver ? w : h, n = anch > 1.2 ? 2 : 1, pw = (anch - .24 - (n - 1) * .08) / n;
+        o += R(x, y, w, h, st, .04);
+        for (let i = 0; i < n; i++) { const o1 = .12 + i * (pw + .08);
+          if (r === 0) o += R(x + o1, y + .08, pw, .38, st, .08); else if (r === 180) o += R(x + o1, y + h - .46, pw, .38, st, .08);
+          else if (r === 90) o += R(x + .08, y + o1, .38, pw, st, .08); else o += R(x + w - .46, y + o1, .38, pw, st, .08) }
+        o += r === 0 ? `<path d="M${X(x)} ${Y(y + .62)}Q${X(x + w / 2)} ${Y(y + .55)} ${X(x + w)} ${Y(y + .62)}" fill="none" stroke="#6b5847"/>`
+          : r === 180 ? `<path d="M${X(x)} ${Y(y + h - .62)}Q${X(x + w / 2)} ${Y(y + h - .55)} ${X(x + w)} ${Y(y + h - .62)}" fill="none" stroke="#6b5847"/>`
+          : r === 90 ? `<path d="M${X(x + .62)} ${Y(y)}Q${X(x + .55)} ${Y(y + h / 2)} ${X(x + .62)} ${Y(y + h)}" fill="none" stroke="#6b5847"/>`
+          : `<path d="M${X(x + w - .62)} ${Y(y)}Q${X(x + w - .55)} ${Y(y + h / 2)} ${X(x + w - .62)} ${Y(y + h)}" fill="none" stroke="#6b5847"/>`;
+      }
       if (q.t === 'inodoro') { const r = q.rot === 180; o += R(x, r ? y + .42 : y, .4, .18, st, .02) + `<ellipse cx="${X(x + .2)}" cy="${Y(y + (r ? .18 : .42))}" rx="${.17 * S}" ry="${.24 * S}" ${st}/>` }
       if (q.t === 'ducha') { o += R(x, y, q.w, q.h, `fill="#e4ebec" stroke="${INK2}"`) + C(x + q.w / 2, y + q.h / 2, .05, `fill="none" stroke="${INK2}"`) }
       if (q.t === 'lav') { o += R(x, y, .45, .4, st, .04) + `<ellipse cx="${X(x + .24)}" cy="${Y(y + .2)}" rx="${.14 * S}" ry="${.12 * S}" ${st}/>` }
