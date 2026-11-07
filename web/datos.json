@@ -146,6 +146,33 @@
  },
  "modelos": [
   {
+   "id": "eden-rock",
+   "visible": true,
+   "nombre": "Eden Rock",
+   "lugar": "Maldonado",
+   "frase": "Nave principal a dos aguas con cerchas de madera a la vista.",
+   "uid": "65cc5fcecf2548a1a1cfc5bc58159a7f",
+   "thumb": "https://media.sketchfab.com/models/65cc5fcecf2548a1a1cfc5bc58159a7f/thumbnails/129f1ecedcc741599bde2278f4470642/f5f038a1b18948c9a5982e60b54f32b9.jpeg",
+   "imagen": "",
+   "m2": 194,
+   "deck": 0,
+   "dorm": 3,
+   "banos": 2,
+   "usos": [
+    "vivir"
+   ],
+   "factor": 1,
+   "fachadaM2": null,
+   "fachadaMat": [
+    "*7"
+   ],
+   "planta": null,
+   "pendiente": [
+    "dormitorios",
+    "baños"
+   ]
+  },
+  {
    "id": "smartrancho",
    "visible": true,
    "nombre": "SmartRancho",
@@ -224,33 +251,6 @@
     "m²",
     "dormitorios",
     "material de fachada en el 3D"
-   ]
-  },
-  {
-   "id": "eden-rock",
-   "visible": true,
-   "nombre": "Eden Rock",
-   "lugar": "Maldonado",
-   "frase": "Nave principal a dos aguas con cerchas de madera a la vista.",
-   "uid": "65cc5fcecf2548a1a1cfc5bc58159a7f",
-   "thumb": "https://media.sketchfab.com/models/65cc5fcecf2548a1a1cfc5bc58159a7f/thumbnails/129f1ecedcc741599bde2278f4470642/f5f038a1b18948c9a5982e60b54f32b9.jpeg",
-   "imagen": "",
-   "m2": 194,
-   "deck": 0,
-   "dorm": 3,
-   "banos": 2,
-   "usos": [
-    "vivir"
-   ],
-   "factor": 1,
-   "fachadaM2": null,
-   "fachadaMat": [
-    "*7"
-   ],
-   "planta": null,
-   "pendiente": [
-    "dormitorios",
-    "baños"
    ]
   },
   {

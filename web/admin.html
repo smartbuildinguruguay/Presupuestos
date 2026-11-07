@@ -234,6 +234,7 @@ let D=null,draftBase=null;
 try{const d=JSON.parse(localStorage.getItem(DKEY)||'null');if(d&&d.data){D=d.data;draftBase=d.base}}catch(e){}
 if(!D)D=JSON.parse(JSON.stringify(remote));
 if(!D){document.body.innerHTML='<p style="padding:20px">No se pudo leer datos.json.</p>';return}
+const ordenar=()=>D.modelos.sort((a,b)=>(+b.m2||0)-(+a.m2||0));ordenar();
 const pending=()=>JSON.stringify(D)!==JSON.stringify(remote);
 function saveDraft(){try{localStorage.setItem(DKEY,JSON.stringify({data:D,base:remote&&remote.actualizado}))}catch(e){}syncUI()}
 function changed(){saveDraft();renderAll(true)}
@@ -321,7 +322,7 @@ function mForm(){
   const m=D.modelos.find(x=>x.id===selId);if(!m){$('mform').innerHTML='';return}
   const auto=Math.round(4*Math.sqrt(m.m2)*D.precio.alturaMuro*(1-D.precio.huecos/100));
   $('mform').innerHTML=`<div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center"><h2>${esc(m.nombre)}</h2>
-   <div style="display:flex;gap:6px"><button type="button" class="btn ghost" id="mUp">↑</button><button type="button" class="btn ghost" id="mDn">↓</button><button type="button" class="btn ghost" id="mDel">Borrar</button></div></div>
+   <div style="display:flex;gap:6px"><button type="button" class="btn ghost" id="mDel">Borrar</button></div></div>
    <div class="f">
     <label>Nombre<input data-k="nombre"></label>
     <label>Lugar / obra<input data-k="lugar"></label>
@@ -339,10 +340,8 @@ function mForm(){
     <label class="wide">A confirmar (uno por línea; se muestra al cliente)<textarea data-k="pendiente" data-t="list"></textarea></label>
     <label><span><input type="checkbox" data-k="visible" style="width:auto"> Visible en la web</span></label>
    </div>`;
-  bindForm($('mform'),m,k=>{if(k==='nombre'||k==='m2'||k==='visible'||k==='imagen')mList();mPrice();if(k==='m2')mForm()});
+  bindForm($('mform'),m,k=>{if(k==='m2')ordenar();if(k==='nombre'||k==='m2'||k==='visible'||k==='imagen')mList();mPrice();if(k==='m2'){const au=Math.round(4*Math.sqrt(m.m2||0)*D.precio.alturaMuro*(1-D.precio.huecos/100)),fi=$('mform').querySelector('[data-k="fachadaM2"]');if(fi){fi.placeholder='auto: '+au;fi.nextElementSibling.textContent=`Vacío = cálculo automático (${au} m²)`}}});
   $('mform').querySelectorAll('[data-uso]').forEach(c=>c.onchange=()=>{m.usos=[...$('mform').querySelectorAll('[data-uso]:checked')].map(x=>x.dataset.uso);saveDraft()});
-  const mv=d=>{const i=D.modelos.indexOf(m),j=i+d;if(j<0||j>=D.modelos.length)return;D.modelos.splice(i,1);D.modelos.splice(j,0,m);changed()};
-  $('mUp').onclick=()=>mv(-1);$('mDn').onclick=()=>mv(1);
   $('mDel').onclick=()=>{if($('mDel').dataset.c){D.modelos=D.modelos.filter(x=>x!==m);selId=(D.modelos[0]||{}).id;changed()}else{$('mDel').dataset.c=1;$('mDel').textContent='¿Seguro? Tocá de nuevo';$('mDel').classList.add('cu')}};
 }
 function mPrice(){
@@ -364,7 +363,7 @@ function mPrice(){
 }
 $('mAdd').onclick=()=>{let n=1;while(D.modelos.some(m=>m.id==='modelo-'+n))n++;
   const m={id:'modelo-'+n,visible:false,nombre:'Modelo nuevo',lugar:'',frase:'',uid:'',thumb:'',imagen:'',m2:60,deck:0,dorm:2,banos:1,usos:['vivir'],factor:1,fachadaM2:null,fachadaMat:[],planta:null,pendiente:['todo']};
-  D.modelos.push(m);selId=m.id;changed()};
+  D.modelos.push(m);ordenar();selId=m.id;changed()};
 
 /* ---------- PRECIOS ---------- */
 function precios(){
