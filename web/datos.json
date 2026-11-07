@@ -193,13 +193,35 @@
     "techo": "machimbre + panel aislante"
    },
    "fachada": {
-    "ancho": 11,
-    "titulo": "el alero de la nave",
+    "ancho": 20,
+    "titulo": "la nave con sus dos galpones laterales",
     "nota": "cercha de lapacho a la vista",
-    "notaX": 6.4,
+    "notaX": 11.5,
     "volumenes": [
      {
-      "x": 1.475,
+      "x": 1.0,
+      "w": 4.3,
+      "muro": 2.5,
+      "alto": 3.25,
+      "piso": 0.3,
+      "techo": "ala",
+      "lado": -1,
+      "revest": "madera",
+      "alero": 0.55
+     },
+     {
+      "x": 13.35,
+      "w": 4.3,
+      "muro": 2.5,
+      "alto": 3.25,
+      "piso": 0.3,
+      "techo": "ala",
+      "lado": 1,
+      "revest": "madera",
+      "alero": 0.55
+     },
+     {
+      "x": 5.3,
       "w": 8.05,
       "muro": 3.0,
       "piso": 0.3,
@@ -212,63 +234,80 @@
     "aberturas": [
      {
       "tipo": "frontonVidrio",
-      "x": 1.5,
-      "w": 8,
+      "x": 5.3,
+      "w": 8.05,
       "h": 1
      },
      {
       "tipo": "corrediza",
-      "x": 2.6,
+      "x": 6.4,
       "y": 0,
       "w": 2.2,
       "h": 2.3
      },
      {
       "tipo": "corrediza",
-      "x": 6.2,
+      "x": 10.05,
       "y": 0,
       "w": 2.2,
       "h": 2.3
+     },
+     {
+      "tipo": "ventana",
+      "x": 2.0,
+      "y": 0.9,
+      "w": 2.0,
+      "h": 1.2,
+      "div": 2
+     },
+     {
+      "tipo": "ventana",
+      "x": 14.35,
+      "y": 0.9,
+      "w": 2.0,
+      "h": 1.2,
+      "div": 2
      }
     ],
     "cercha": {
-     "x": 1.475,
+     "x": 5.3,
      "w": 8.05,
      "piso": 0.3
     },
     "decks": [
      {
-      "x": 0.6,
-      "w": 9.8,
+      "x": 4.4,
+      "w": 9.85,
       "h": 0.3
      }
     ],
     "plantas": [
      {
-      "x": -0.3,
-      "w": 1.6
+      "x": 0.2,
+      "w": 2.4,
+      "c": "#9b86c4"
      },
      {
-      "x": 9.6,
-      "w": 1.7,
-      "c": "#9b86c4"
+      "x": 16.2,
+      "w": 2.6,
+      "c": "#9bb0d4"
      }
     ],
     "arboles": [
      {
-      "x": 0.0,
-      "h": 6.5,
+      "x": 0.1,
+      "h": 7,
       "k": "redondo"
      },
      {
-      "x": 10.9,
-      "h": 7.5,
+      "x": 19.4,
+      "h": 8,
       "k": "redondo"
      }
     ],
     "personas": [
-     4.6,
-     7.6
+     8.6,
+     11.4
     ]
    }
   },

@@ -406,7 +406,19 @@
 
     /* ---- volúmenes ---- */
     const gable = v => { const p0 = v.piso || 0, x0 = X(v.x), x1 = X(v.x + v.w), xm = (x0 + x1) / 2, yE = Y(p0 + v.muro), yR = Y(p0 + (v.cumbrera || v.muro)); return { p0, x0, x1, xm, yE, yR, sl: (yE - yR) / (xm - x0) } };
-    vols.forEach(v => {
+    [...vols].sort((p, q) => (p.techo === 'ala' ? 0 : 1) - (q.techo === 'ala' ? 0 : 1)).forEach(v => {
+      if (v.techo === 'ala') {
+        const p0 = v.piso || 0, x0 = X(v.x), x1 = X(v.x + v.w), hi = Y(p0 + v.alto), lo = Y(p0 + v.muro), yF = Y(p0), al = (v.alero ?? .45) * S;
+        const xin = v.lado < 0 ? x1 : x0, xout = v.lado < 0 ? x0 : x1, sgn = v.lado < 0 ? -1 : 1, sl2 = (lo - hi) / Math.abs(x1 - x0), t = .2 * S;
+        const xo = xout + sgn * al, yo = lo + al * sl2;
+        let w = poly([[xin, yF], [xin, hi], [xout, lo], [xout, yF]], `fill="url(#fr-${v.revest || 'madera'})"`);
+        w += poly([[xin, hi], [xout, lo], [xout, lo + al * 1.4], [xin, hi + al * 1.4]], 'fill="url(#f-eave)"');
+        if (p0 > 0) w += `<rect x="${f1(Math.min(x0, x1) + 4)}" y="${f1(yF)}" width="${f1(Math.abs(x1 - x0) - 8)}" height="${f1(base - yF)}" fill="#3a3026" opacity=".5"/>`;
+        const rf = [[xin, hi - 2], [xo, yo], [xo, yo - t], [xin, hi - t - 2]];
+        w += poly(rf, 'fill="#3d4044"') + poly([[xin, hi - t * .5 - 2], [xo, yo - t * .5], [xo, yo - t], [xin, hi - t - 2]], 'fill="#50545a"');
+        let l = poly([[xin, yF], [xin, hi], [xout, lo], [xout, yF]], 'stroke-width="1.4"') + poly(rf, 'stroke-width="1.5"') + ln(xin, hi - t * .5 - 2, xo, yo - t * .5, .5);
+        casa += obj(w, l); return;
+      }
       const g = gable(v), { p0, x0, x1, xm, yE, yR, sl } = g, fill = `url(#fr-${v.revest || 'madera'})`, roofFill = v.techoClaro ? 'url(#fr-techoG)' : 'url(#fr-techo)';
       const zt = v.zocalo ? Y(p0 + v.zocalo) : Y(p0), yF = Y(p0);
       let w = '', l = '';
@@ -461,40 +473,53 @@
     });
     if (F.chimenea) { const c = F.chimenea, x = X(c.x), wd = .2 * S; casa += obj(`<rect x="${f1(x)}" y="${f1(Y(c.y0 + c.h))}" width="${f1(wd)}" height="${f1(c.h * S)}" fill="#a9adb1"/><rect x="${f1(x + wd * .55)}" y="${f1(Y(c.y0 + c.h))}" width="${f1(wd * .45)}" height="${f1(c.h * S)}" fill="#8d9195"/>`, `<rect x="${f1(x)}" y="${f1(Y(c.y0 + c.h))}" width="${f1(wd)}" height="${f1(c.h * S)}" stroke-width="1"/><rect x="${f1(x - wd * .3)}" y="${f1(Y(c.y0 + c.h) - wd * .35)}" width="${f1(wd * 1.6)}" height="${f1(wd * .35)}" fill="#6d7175" stroke-width="1"/>`) }
 
-    /* ---- cercha del alero: misma geometría que el techo ---- */
+    /* ---- cercha del alero: piezas con sus cortes, sobre la geometría del techo ---- */
     if (F.cercha) {
       const c = F.cercha, v = vol(c.x + c.w / 2), g = gable(v), b = .2 * S, p0 = c.piso ?? g.p0, al = (v.alero ?? .45) * S;
-      const { x0, x1, xm, yE, yR, sl } = g, yT = yE; // el tirante a la altura del alero de la pared
-      const cs = Math.cos(Math.atan(sl)), bv = b / cs;
+      const { x0, x1, xm, yR, sl, yE } = g, cs = Math.cos(Math.atan(sl)), bv = b / cs, k = b;
+      const Lt = x => yR + Math.abs(x - xm) * sl, Lb = x => Lt(x) + bv;
+      const xe = x0 - b * .5, xe2 = x1 + b * .5, xa0 = x0 - al, xa1 = x1 + al;
+      const yTt = Lt(xe) + b * 1.15, yTb = yTt + b, tD = b * .72, yd = Y(p0);
+      const madL = '#c98d52', mad = '#b87a42', madD = '#a2683a';
       let w = '', l = '';
-      const madera = '#b8773f', maderaL = '#c98a4f', maderaD = '#9c6232';
-      // techo del alero por delante (tapa la pared), con la cercha justo debajo
-      const t = .24 * S, tv = t / cs, xa0 = x0 - al, ya0 = yE + al * sl, xa1 = x1 + al;
-      w += poly([[xa0, ya0], [xm, yR], [xa1, ya0], [xa1, ya0 - tv], [xm, yR - tv], [xa0, ya0 - tv]], 'fill="#33363a"');
-      w += poly([[xa0, ya0 - tv * .45], [xm, yR - tv * .45], [xa1, ya0 - tv * .45], [xa1, ya0 - tv], [xm, yR - tv], [xa0, ya0 - tv]], 'fill="#4b4f54"');
-      l += poly([[xa0, ya0], [xm, yR], [xa1, ya0], [xa1, ya0 - tv], [xm, yR - tv], [xa0, ya0 - tv]], 'stroke-width="1.6"');
-      // machimbre del cielorraso visto entre pares
-      w += poly([[xa0 + 2, ya0 + 1], [xm, yR + 1], [xa1 - 2, ya0 + 1], [xa1 - 2, ya0 + .1 * S], [xm, yR + .1 * S], [xa0 + 2, ya0 + .1 * S]], `fill="${maderaD}"`);
-      // pares (siguen la pendiente del techo)
-      const par = s => { const xe = s < 0 ? xa0 + al * .5 : xa1 - al * .5, ye = ya0 - al * .5 * sl; return [[xe, ye + .1 * S], [xm, yR + .1 * S], [xm, yR + .1 * S + bv], [xe, ye + .1 * S + bv]] };
-      w += poly(par(-1), `fill="${maderaL}"`) + poly(par(1), `fill="${madera}"`);
-      l += poly(par(-1), 'stroke-width="1.1"') + poly(par(1), 'stroke-width="1.1"');
-      // tirante
-      const tx0 = x0 - b * .5, tx1 = x1 + b * .5;
-      w += `<rect x="${f1(tx0)}" y="${f1(yT - b / 2)}" width="${f1(tx1 - tx0)}" height="${f1(b)}" fill="${madera}"/>`; l += `<rect x="${f1(tx0)}" y="${f1(yT - b / 2)}" width="${f1(tx1 - tx0)}" height="${f1(b)}" stroke-width="1.1"/>`;
-      // pendolón
-      const pk0 = yR + .1 * S + bv;
-      w += `<rect x="${f1(xm - b / 2)}" y="${f1(pk0)}" width="${f1(b)}" height="${f1(yT - b / 2 - pk0)}" fill="${maderaL}"/>`; l += `<rect x="${f1(xm - b / 2)}" y="${f1(pk0)}" width="${f1(b)}" height="${f1(yT - b / 2 - pk0)}" stroke-width="1.1"/>`;
-      // puntales: del pie del pendolón al medio de cada par
-      [-1, 1].forEach(s => { const qx = xm + s * (xm - x0) * .52, qy = yR + .1 * S + bv + (Math.abs(qx - xm)) * sl, px = xm + s * b / 2, py = yT - b / 2; const nx = -(qy - py), ny = qx - px, nl = Math.hypot(nx, ny), ox = nx / nl * b / 2, oy = ny / nl * b / 2;
-        const pts = [[px - ox, py - oy], [qx - ox, qy - oy], [qx + ox, qy + oy], [px + ox, py + oy]]; w += poly(pts, `fill="${s < 0 ? maderaL : madera}"`); l += poly(pts, 'stroke-width="1"') });
-      // columnas de madera
-      const yd = Y(p0);
-      [[x0, maderaL], [x1, madera]].forEach(([x, col]) => { w += `<rect x="${f1(x - b / 2)}" y="${f1(yT + b / 2)}" width="${f1(b)}" height="${f1(yd - yT - b / 2)}" fill="${col}"/>`; l += `<rect x="${f1(x - b / 2)}" y="${f1(yT + b / 2)}" width="${f1(b)}" height="${f1(yd - yT - b / 2)}" stroke-width="1.2"/>` });
-      // vetas
-      for (let i = 0; i < 6; i++) { const yy = yT - b / 2 + 2 + rnd() * (b - 4), xx = tx0 + rnd() * (tx1 - tx0) * .8; l += ln(xx, yy, xx + S * (.6 + rnd()), yy + .4, .35, '#7a4a22') }
-      // planchuela del nudo central
-      w += `<rect x="${f1(xm - b * .9)}" y="${f1(yT + b / 2 - 2)}" width="${f1(b * 1.8)}" height="3" fill="#222"/>`;
+      // techo (chapa) apoyado sobre los pares
+      const t = .24 * S, tv = t / cs;
+      const techo = [[xa0, Lt(xa0)], [xm, yR], [xa1, Lt(xa1)], [xa1, Lt(xa1) - tv], [xm, yR - tv], [xa0, Lt(xa0) - tv]];
+      w += poly(techo, 'fill="#33363a"') + poly([[xa0, Lt(xa0) - tv * .45], [xm, yR - tv * .45], [xa1, Lt(xa1) - tv * .45], [xa1, Lt(xa1) - tv], [xm, yR - tv], [xa0, Lt(xa0) - tv]], 'fill="#4b4f54"');
+      l += poly(techo, 'stroke-width="1.6"') + `<path d="M${f1(xa0)} ${f1(Lt(xa0) - tv * .45)}L${f1(xm)} ${f1(yR - tv * .45)}L${f1(xa1)} ${f1(Lt(xa1) - tv * .45)}" stroke-width=".5"/>`;
+      // pares: corte a plomo contra el pendolón, talón sobre el tirante y cola con corte a plomo
+      const db = (yTt - yR - bv) / sl;
+      const par = s => { const X1 = v2 => xm + s * (xm - v2) * -1; // espejo
+        const pts = [[xa0, Lt(xa0)], [xm - k / 2, Lt(xm - k / 2)], [xm - k / 2, Lb(xm - k / 2)], [xm - db, yTt], [xe, yTt], [xe, Lt(xe) + tD], [xa0, Lt(xa0) + tD]];
+        return s < 0 ? pts : pts.map(([x, y]) => [2 * xm - x, y]) };
+      // tirante entre columnas, cortado a escuadra
+      const tir = [[xe, yTt], [xe2, yTt], [xe2, yTb], [xe, yTb]];
+      // pendolón con punta a dos aguas bajo la cumbrera
+      const pend = [[xm - k / 2, Lt(xm - k / 2)], [xm, yR], [xm + k / 2, Lt(xm + k / 2)], [xm + k / 2, yTt], [xm - k / 2, yTt]];
+      // puntales: corte a plomo contra el pendolón y corte a pendiente contra el par
+      const puntal = s => {
+        const px = xm + s * k / 2, py = yTt - b * .9, qx = xm + s * (xm - x0) * .5, qy = Lb(qx) + b * .1;
+        const dx = qx - px, dy = qy - py, dl = Math.hypot(dx, dy), ux = dx / dl, uy = dy / dl, nx = -uy * b / 2, ny = ux * b / 2;
+        const hitV = (ox, oy) => { const tt = (px - ox) / ux; return [px, oy + tt * uy] };
+        const hitR = (ox, oy) => { const sg = s < 0 ? 1 : -1; // y = yR + bv + sg*(xm - x)*sl*-1  => y = yR + bv + |x-xm|*sl
+          const tt = (yR + bv + (s * (ox - xm)) * sl - oy) / (uy - s * ux * sl); return [ox + tt * ux, oy + tt * uy] };
+        const a0 = [px + nx, py + ny], a1 = [px - nx, py - ny];
+        return [hitV(...a0), hitR(...a0), hitR(...a1), hitV(...a1)];
+      };
+      // columnas: del tirante al deck
+      const col = s => s < 0 ? [[xe, yTb], [xe + b, yTb], [xe + b, yd], [xe, yd]] : [[xe2 - b, yTb], [xe2, yTb], [xe2, yd], [xe2 - b, yd]];
+      // orden: columnas, tirante, puntales, pendolón, pares (los pares tapan las uniones)
+      [[-1, madL], [1, mad]].forEach(([s, cl]) => { w += poly(col(s), `fill="${cl}"`); l += poly(col(s), 'stroke-width="1.2"') });
+      w += poly(tir, `fill="${mad}"`); l += poly(tir, 'stroke-width="1.1"');
+      [[-1, madL], [1, madD]].forEach(([s, cl]) => { const p = puntal(s); w += poly(p, `fill="${cl}"`); l += poly(p, 'stroke-width="1"') });
+      w += poly(pend, `fill="${madL}"`); l += poly(pend, 'stroke-width="1.1"');
+      [[-1, madL], [1, mad]].forEach(([s, cl]) => { const p = par(s); w += poly(p, `fill="${cl}"`); l += poly(p, 'stroke-width="1.2"') });
+      // vetas finas
+      for (let i = 0; i < 10; i++) { const yy = yTt + 2 + rnd() * (b - 4), xx = xe + 6 + rnd() * (xe2 - xe - 60); l += ln(xx, yy, xx + S * (.5 + rnd() * .8), yy + (rnd() - .5), .35, '#7a4a22') }
+      for (let i = 0; i < 2; i++) [xe + b * .5, xe2 - b * .5].forEach(x => { const yy = yTb + 10 + rnd() * (yd - yTb - 30); l += ln(x - b * .25, yy, x - b * .2, yy + S * .6, .35, '#7a4a22') });
+      // herraje del nudo central y tornillos
+      w += `<rect x="${f1(xm - b * 1.1)}" y="${f1(yTb - 2)}" width="${f1(b * 2.2)}" height="3" fill="#1e1e1e"/>`;
+      [[xe + b * .5, yTt + b * .5], [xe2 - b * .5, yTt + b * .5]].forEach(([x, y]) => { l += `<circle cx="${f1(x)}" cy="${f1(y)}" r="1.4" fill="${K}"/>` });
       frente += obj(w, l);
     }
 
