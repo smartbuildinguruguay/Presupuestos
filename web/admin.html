@@ -364,7 +364,7 @@ function mForm(){
     <label>Revestimiento original<select data-k="revOriginal"><option value="">Sin definir</option>${D.exterior.filter(e=>e.id!=='original').map(e=>`<option value="${e.id}">${esc(e.nombre)}</option>`).join('')}</select><small>El que tiene el diseño: va incluido en el precio base</small></label>
     <label class="wide">Material de fachada en el 3D<input data-k="fachadaMat" data-t="csv"><small>Para encontrarlo: abrí la web con ?diag y tocá los materiales. Separados por coma.</small></label>
     <label class="wide">Imagen de portada<input data-k="imagen" placeholder="se completa sola al subir un render"><small>Si está vacío usa la miniatura de Sketchfab.</small></label>
-    <label class="wide">A confirmar (uno por línea; se muestra al cliente)<textarea data-k="pendiente" data-t="list"></textarea></label>
+    <label class="wide">A confirmar (uno por línea; solo lo ves vos en el panel)<textarea data-k="pendiente" data-t="list"></textarea></label>
     <label><span><input type="checkbox" data-k="visible" style="width:auto"> Visible en la web</span></label>
    </div>`;
   bindForm($('mform'),m,k=>{if(k==='m2')ordenar();if(k==='nombre'||k==='m2'||k==='visible'||k==='imagen')mList();mPrice();if(k==='m2'){const au=Math.round(4*Math.sqrt(m.m2||0)*D.precio.alturaMuro*(1-D.precio.huecos/100)),fi=$('mform').querySelector('[data-k="fachadaM2"]');if(fi){fi.placeholder='auto: '+au;fi.nextElementSibling.textContent=`Vacío = cálculo automático (${au} m²)`}}});
