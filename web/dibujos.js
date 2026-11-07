@@ -7,13 +7,14 @@
     actual: {},
     sobria: { sat: .5, lum: .03, map: { '#efcf9c': '#ebe0cb', '#e9b9a0': '#e6d6c4', '#a9c6cc': '#d0d8d6', '#e8d7b8': '#efe8d9', '#cfd3c4': '#dcdbd0', '#f1e2c3': '#eee5d4', '#c79664': '#c09c76', '#c18e5b': '#b8946e', '#9fc0d3': '#bfcbd0' } },
     campo: { sat: .85, lum: 0, map: { '#efcf9c': '#eed6ae', '#e9b9a0': '#e3bb9c', '#a9c6cc': '#bccfc8', '#e8d7b8': '#ebdcc2', '#cfd3c4': '#d3d5c0', '#f1e2c3': '#efdfc0', '#9fc0d3': '#a6c3c9', '#95ab76': '#86a06a' } },
+    divertida: { sat: 1.35, lum: 0, map: { '#efcf9c': '#f7d27a', '#e9b9a0': '#f2a38a', '#a9c6cc': '#8fd0d6', '#e8d7b8': '#f3e3b8', '#cfd3c4': '#bcdcb4', '#f1e2c3': '#f6e6c2', '#9fc0d3': '#7fb8de', '#95ab76': '#7fb35f', '#c79664': '#d9944f', '#c18e5b': '#cf8746', '#f4d9a6': '#ffe2a0', '#e8b673': '#f7b65f', '#d1924f': '#e8873a', '#d6e3e6': '#cfe6f2' } },
     nordico: { sat: .45, lum: .07, map: { '#efcf9c': '#efe7d8', '#e9b9a0': '#ebdcd6', '#a9c6cc': '#d4e2e6', '#e8d7b8': '#f2ede3', '#cfd3c4': '#e0e2da', '#f1e2c3': '#f2ece0', '#c79664': '#d4b48a', '#c18e5b': '#cdac80', '#9fc0d3': '#c3d8e2', '#f4d9a6': '#f6e8cc', '#e8b673': '#eed4a4', '#d1924f': '#dcb47c' } },
   };
   const hx = h => [1, 3, 5].map(i => parseInt(h.substr(i, 2), 16) / 255);
   const toHsl = ([r, g, b]) => { const M = Math.max(r, g, b), m = Math.min(r, g, b), l = (M + m) / 2; if (M === m) return [0, 0, l]; const d = M - m, s = l > .5 ? d / (2 - M - m) : d / (M + m); let h = M === r ? (g - b) / d + (g < b ? 6 : 0) : M === g ? (b - r) / d + 2 : (r - g) / d + 4; return [h / 6, s, l] };
   const toHex = ([h, s, l]) => { const f = n => { const k = (n + h * 12) % 12, a = s * Math.min(l, 1 - l); return l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)) }; return '#' + [f(0), f(8), f(4)].map(v => Math.round(Math.max(0, Math.min(1, v)) * 255).toString(16).padStart(2, '0')).join('') };
   const recolor = svg => {
-    const P = PALETAS[window.SBUpaleta || 'actual'] || {}; if (!P.map && !P.sat) return svg;
+    const P = PALETAS[window.SBUpaleta || 'divertida'] || {}; if (!P.map && !P.sat) return svg;
     const cache = {};
     return svg.replace(/#[0-9a-fA-F]{6}\b/g, c => { c = c.toLowerCase(); if (cache[c]) return cache[c];
       let out = (P.map || {})[c];
@@ -559,7 +560,7 @@
         return [[cxp, yTb + L - e], [cxp + dir * (L - e), yTb], [cxp + dir * (L + e), yTb], [cxp, yTb + L + e]] };
       // orden: columnas, tirante, tornapuntas, puntales, pendolón, pares (los pares tapan las uniones)
       [[-1, madL], [1, mad]].forEach(([s, cl]) => { w += poly(col(s), `fill="${cl}"`); l += poly(col(s), 'stroke-width="1.2"') });
-      [[-1, madL], [1, madD]].forEach(([s, cl]) => { const p = torna(s); w += poly(p, `fill="${cl}"`); l += poly(p, 'stroke-width="1"') });
+
       w += poly(tir, `fill="${mad}"`); l += poly(tir, 'stroke-width="1.1"');
       [[-1, madL], [1, madD]].forEach(([s, cl]) => { const p = puntal(s); w += poly(p, `fill="${cl}"`); l += poly(p, 'stroke-width="1"') });
       w += poly(pend, `fill="${madL}"`); l += poly(pend, 'stroke-width="1.1"');
@@ -611,7 +612,13 @@
     const suelo = `<g mask="url(#f-fade)"><line x1="${X(-.9)}" y1="${base}" x2="${X(F.ancho + .9)}" y2="${base}" stroke="${K}" stroke-width="1.8"/><g stroke="#5b6e45" stroke-width=".6" fill="none">${pasto}</g></g>`;
 
     // personas
-    const gente = (F.personas || []).map((x, i) => `<g transform="translate(${f1(X(x))} ${base}) scale(${f1(S / 100)})"><path d="M0 -174 a10 10 0 1 0 .1 0Z M-12 -158 Q0 -163 12 -158 L16 -100 L10 -98 L8 -62 L9 0 L2 0 L0 -60 L-2 0 L-9 0 L-8 -62 L-10 -98 L-16 -100Z" fill="${i % 2 ? '#6d5a48' : '#4b4238'}" opacity=".85"/></g>`).join('');
+    const ropa = ['#d9654a', '#3f7fb5', '#e3a93a', '#5c9a6a'];
+    let gente = (F.personas || []).map((x, i) => `<g transform="translate(${f1(X(x))} ${base}) scale(${f1(S / 100)})"><circle cx="0" cy="-165" r="10" fill="#3a2e26"/><path d="M-12 -150 Q0 -155 12 -150 L16 -96 L-16 -96Z" fill="${ropa[i % 4]}"/><path d="M-11 -96 L-9 0 L-2 0 L0 -58 L2 0 L9 0 L11 -96Z" fill="#3b3a44"/><path d="M-12 -150 Q0 -155 12 -150 L16 -96 L-16 -96Z M-11 -96 L-9 0 L-2 0 L0 -58 L2 0 L9 0 L11 -96Z" fill="none" stroke="${K}" stroke-width="1.6"/></g>`).join('');
+    // un perro al lado de la primera persona
+    if ((F.personas || []).length) { const x = X(F.personas[0] + .9), k = S / 100; gente += `<g transform="translate(${f1(x)} ${base}) scale(${f1(k)})"><path d="M0 -30 Q8 -44 30 -42 L44 -46 Q52 -50 54 -42 L52 -36 L46 -34 L44 0 L38 0 L36 -22 L12 -22 L10 0 L4 0 L4 -24 Q-6 -30 -10 -40" fill="#c58a4f" stroke="${K}" stroke-width="1.6" stroke-linejoin="round"/><circle cx="49" cy="-43" r="1.6" fill="${K}"/></g>` }
+    // pájaros en tinta y sol en aguada
+    let cielo = `<circle cx="${f1(X(F.ancho * .93))}" cy="${top - 34}" r="${f1(S * .9)}" fill="#ffd27a" opacity=".55" filter="url(#faa)"/>`;
+    for (let i = 0; i < 4; i++) { const bx = X(F.ancho * (.28 + rnd() * .3)), by = top - 30 + rnd() * 50, bs = 5 + rnd() * 4; cielo += `<path d="M${f1(bx - bs)} ${f1(by)}q${f1(bs / 2)} ${f1(-bs * .6)} ${f1(bs)} 0q${f1(bs / 2)} ${f1(-bs * .6)} ${f1(bs)} 0" fill="none" stroke="${K}" stroke-width="1.3" stroke-linecap="round"/>` }
 
     // anotación y cotas
     const nota = F.nota ? `<g font-family="${HAND}" fill="${K}" paint-order="stroke" stroke="#f6f0e3" stroke-width="5" stroke-linejoin="round"><text x="${f1(X(F.notaX ?? F.ancho * .62))}" y="${top - 40}" font-size="24">${F.nota}</text></g>` : '';
@@ -619,7 +626,7 @@
     const cota = `<g stroke="${K2}" stroke-width=".7"><line x1="${f1(X(xa))}" y1="${cy}" x2="${f1(X(xb))}" y2="${cy}"/><line x1="${f1(X(xa))}" y1="${cy - 7}" x2="${f1(X(xa))}" y2="${cy + 7}"/><line x1="${f1(X(xb))}" y1="${cy - 7}" x2="${f1(X(xb))}" y2="${cy + 7}"/><line x1="${f1(X(xa) - 5)}" y1="${cy + 5}" x2="${f1(X(xa) + 5)}" y2="${cy - 5}" stroke-width="1.5"/><line x1="${f1(X(xb) - 5)}" y1="${cy + 5}" x2="${f1(X(xb) + 5)}" y2="${cy - 5}" stroke-width="1.5"/></g><text x="${f1((X(xa) + X(xb)) / 2)}" y="${cy - 8}" text-anchor="middle" font-family="${HAND}" font-size="21" fill="${K2}">${f2(xb - xa)} m</text>`;
     const tit = `<g transform="translate(${padX} ${base + 100})"><text x="0" y="0" font-family="${SERIF}" font-style="italic" font-weight="500" font-size="36" fill="${K}">${m.nombre || ''} <tspan font-size="24" fill="#6b5847">· ${F.titulo || 'fachada'}</tspan></text><text x="${VW - padX * 2}" y="0" text-anchor="end" font-family="${HAND}" font-size="22" fill="#8a7560">Smart Building Uruguay</text></g>`;
 
-    return `<svg viewBox="0 0 ${VW} ${VH}" role="img" aria-label="Fachada de ${m.nombre}">${papel('fa', VW, VH)}<defs>${defs}</defs>${fondo}${atras}${casa}${frente}${suelo}${gente}${nota}${cota}${tit}</svg>`;
+    return `<svg viewBox="0 0 ${VW} ${VH}" role="img" aria-label="Fachada de ${m.nombre}">${papel('fa', VW, VH)}<defs>${defs}</defs>${fondo}${cielo}${atras}${casa}${frente}${suelo}${gente}${nota}${cota}${tit}</svg>`;
   };
   ['SBUplanta', 'SBUfachada', 'SBUcercha'].forEach(n => { const f = window[n]; window[n] = (...a) => recolor(f(...a)) });
 })();
