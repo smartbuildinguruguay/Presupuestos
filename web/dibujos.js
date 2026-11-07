@@ -12,6 +12,7 @@
     <filter id="${id}g" x="0" y="0" width="100%" height="100%"><feTurbulence type="fractalNoise" baseFrequency=".9" numOctaves="2" seed="4"/><feColorMatrix values="0 0 0 0 .45  0 0 0 0 .38  0 0 0 0 .28  0 0 0 .06 0"/></filter>
     <filter id="${id}s" x="-5%" y="-5%" width="110%" height="110%"><feGaussianBlur stdDeviation="5"/></filter>
     <filter id="${id}m" x="0" y="0" width="100%" height="100%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".04" numOctaves="3" seed="7" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -.22 1.05" result="a"/><feComposite in="SourceGraphic" in2="a" operator="in" result="b"/><feMorphology in="SourceAlpha" operator="erode" radius="1.1" result="er"/><feComposite in="SourceAlpha" in2="er" operator="out" result="ed"/><feColorMatrix in="SourceGraphic" type="matrix" values=".78 0 0 0 0  0 .78 0 0 0  0 0 .78 0 0  0 0 0 .55 0" result="dk"/><feComposite in="dk" in2="ed" operator="in" result="rim"/><feMerge><feMergeNode in="b"/><feMergeNode in="rim"/></feMerge></filter>
+    <filter id="${id}c" x="-6%" y="-6%" width="112%" height="112%" color-interpolation-filters="sRGB"><feTurbulence type="fractalNoise" baseFrequency=".022" numOctaves="3" seed="9" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="7" xChannelSelector="R" yChannelSelector="G" result="d"/><feGaussianBlur in="d" stdDeviation="1" result="bl"/><feTurbulence type="fractalNoise" baseFrequency=".05" numOctaves="3" seed="3" result="n2"/><feColorMatrix in="n2" type="matrix" values="0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 -.5 1.15" result="a"/><feComposite in="bl" in2="a" operator="in" result="g"/><feMorphology in="g" operator="erode" radius="2" result="er"/><feComposite in="g" in2="er" operator="out" result="ed"/><feColorMatrix in="ed" type="matrix" values=".72 0 0 0 0  0 .72 0 0 0  0 0 .72 0 0  0 0 0 .38 0" result="rim"/><feColorMatrix in="g" type="matrix" values=".8 0 0 0 .18  0 .8 0 0 .17  0 0 .8 0 .15  0 0 0 .9 0" result="soft"/><feMerge><feMergeNode in="soft"/><feMergeNode in="rim"/></feMerge></filter>
     <filter id="${id}w" x="-2%" y="-2%" width="104%" height="104%"><feTurbulence type="fractalNoise" baseFrequency=".035" numOctaves="2" seed="3"/><feDisplacementMap in="SourceGraphic" scale="3.5"/></filter>
     <filter id="${id}a" x="-8%" y="-8%" width="116%" height="116%"><feTurbulence type="fractalNoise" baseFrequency=".02" numOctaves="3" seed="8" result="n"/><feDisplacementMap in="SourceGraphic" in2="n" scale="14" result="d"/><feGaussianBlur in="d" stdDeviation="1.6"/></filter>
   </defs><rect width="${VW}" height="${VH}" fill="${PAPER}"/><rect width="${VW}" height="${VH}" filter="url(#${id}g)"/>`;
@@ -291,7 +292,7 @@
     const rnd = () => { sd |= 0; sd = sd + 0x6D2B79F5 | 0; let t = Math.imul(sd ^ sd >>> 15, 1 | sd); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296 };
     const f1 = v => v.toFixed(1);
     // un objeto = aguada (granulada) + líneas (limpias)
-    const obj = (wash, lines) => `<g>${wash ? `<g filter="url(#fam)">${wash}</g>` : ''}${lines ? `<g fill="none" stroke="${K}" stroke-linecap="round" stroke-linejoin="round">${lines}</g>` : ''}</g>`;
+    const obj = (wash, lines) => `<g>${wash ? `<g filter="url(#fac)">${wash}</g>` : ''}${lines ? `<g fill="none" stroke="${K}" stroke-linecap="round" stroke-linejoin="round" stroke-opacity=".95">${lines}</g>` : ''}</g>`;
     const ln = (x1, y1, x2, y2, w = .8, c = K) => `<line x1="${f1(x1)}" y1="${f1(y1)}" x2="${f1(x2)}" y2="${f1(y2)}" stroke="${c}" stroke-width="${w}"/>`;
     const poly = (pts, extra) => `<path d="M${pts.map(p => f1(p[0]) + ' ' + f1(p[1])).join('L')}Z" ${extra}/>`;
 
@@ -319,7 +320,7 @@
     let fondo = '', atras = '', casa = '', frente = '';
 
     // cielo con nubes suaves
-    fondo += `<rect x="${X(-.9)}" y="${top - 70}" width="${(F.ancho + 1.8) * S}" height="${base - top + 70}" fill="url(#f-sky)" mask="url(#f-fade)"/>`;
+    fondo += `<rect x="${X(-.9)}" y="${top - 70}" width="${(F.ancho + 1.8) * S}" height="${base - top + 70}" fill="url(#f-sky)" mask="url(#f-fade)" filter="url(#faa)"/>`;
     // monte lejano
     let d = `M${X(-.9)} ${base}L${X(-.9)} ${f1(Y(1.4))}`; for (let x = -.9; x <= F.ancho + .9;) { const st = .5 + rnd() * .9, h = 1.3 + Math.sin(x * .7) * .4 + rnd() * .5; d += `Q${f1(X(x + st / 2))} ${f1(Y(h + .55))} ${f1(X(x + st))} ${f1(Y(h))}`; x += st } d += `L${X(F.ancho + .9)} ${base}Z`;
     fondo += `<path d="${d}" fill="#a7b9a0" opacity=".4" mask="url(#f-fade)"/>`;
@@ -400,9 +401,8 @@
     const abertura = (x0, y0, x1, y1, a) => {
       let w = '', l = '';
       const fr = Math.max(2.5, .05 * S), glass = a.tipo === 'puerta' ? null : a.tipo === 'fija' && !a.calido ? 'url(#f-cool)' : 'url(#f-warm)';
-      w += `<rect x="${f1(x0)}" y="${f1(y0)}" width="${f1(x1 - x0)}" height="${f1(y1 - y0)}" fill="#2f3236"/>`;
       if (glass) {
-        w += `<rect x="${f1(x0 + fr)}" y="${f1(y0 + fr)}" width="${f1(x1 - x0 - 2 * fr)}" height="${f1(y1 - y0 - 2 * fr)}" fill="${glass}"/>`;
+        w += `<rect x="${f1(x0 + 1)}" y="${f1(y0 + 1)}" width="${f1(x1 - x0 - 2)}" height="${f1(y1 - y0 - 2)}" fill="${glass}"/>`;
         const gw = x1 - x0;
         w += `<path d="M${f1(x0 + fr + gw * .08)} ${f1(y1 - fr)}L${f1(x0 + gw * .42)} ${f1(y0 + fr)}L${f1(x0 + gw * .55)} ${f1(y0 + fr)}L${f1(x0 + fr + gw * .21)} ${f1(y1 - fr)}Z" fill="#ffffff" opacity=".28"/><path d="M${f1(x0 + gw * .5)} ${f1(y1 - fr)}L${f1(x0 + gw * .72)} ${f1(y0 + fr)}L${f1(x0 + gw * .76)} ${f1(y0 + fr)}L${f1(x0 + gw * .54)} ${f1(y1 - fr)}Z" fill="#ffffff" opacity=".2"/>`;
       } else {
@@ -410,10 +410,10 @@
         for (let x = x0 + fr + 5; x < x1 - fr - 2; x += 5) l += ln(x, y0 + fr, x, y1, .35, '#4a3020');
         l += `<rect x="${f1(x1 - fr - .1 * S)}" y="${f1((y0 + y1) / 2 - .15 * S)}" width="2" height="${f1(.3 * S)}" fill="${K}" stroke="none"/>`;
       }
-      l += `<rect x="${f1(x0)}" y="${f1(y0)}" width="${f1(x1 - x0)}" height="${f1(y1 - y0)}" stroke-width="1.2"/>`;
+      l += `<rect x="${f1(x0 + fr / 2)}" y="${f1(y0 + fr / 2)}" width="${f1(x1 - x0 - fr)}" height="${f1(y1 - y0 - fr)}" stroke="#2c2f33" stroke-width="${f1(fr)}"/><rect x="${f1(x0)}" y="${f1(y0)}" width="${f1(x1 - x0)}" height="${f1(y1 - y0)}" stroke-width="1"/>`;
       const n = a.div ?? (a.tipo === 'corrediza' ? 2 : a.tipo === 'puerta' ? 0 : Math.max(1, Math.round(a.w / 1.2)));
-      for (let i = 1; i < n; i++) { const xx = x0 + (x1 - x0) * i / n; w += `<rect x="${f1(xx - fr / 2)}" y="${f1(y0)}" width="${f1(fr)}" height="${f1(y1 - y0)}" fill="#2f3236"/>`; l += ln(xx, y0, xx, y1, .6) }
-      if (a.travesano) { const yy = Y(a._p0 + a.travesano); w += `<rect x="${f1(x0)}" y="${f1(yy - fr / 2)}" width="${f1(x1 - x0)}" height="${f1(fr)}" fill="#2f3236"/>` }
+      for (let i = 1; i < n; i++) { const xx = x0 + (x1 - x0) * i / n; l += ln(xx, y0, xx, y1, fr, '#2c2f33') }
+      if (a.travesano) { const yy = Y(a._p0 + a.travesano); l += ln(x0, yy, x1, yy, fr, '#2c2f33') }
       if (a.tipo === 'ventana' || a.tipo === 'fija') l += ln(x0 - 3, y1 + 1.5, x1 + 3, y1 + 1.5, 1.4);
       if (a.tipo === 'corrediza') l += ln(x0 + (x1 - x0) * .48, (y0 + y1) / 2, x0 + (x1 - x0) * .48, (y0 + y1) / 2 + .25 * S, 1.6);
       return [w, l];
@@ -444,7 +444,7 @@
         const al = (v.alero ?? .45) * S, t = .24 * S, tv = t / Math.cos(Math.atan(sl));
         const xa0 = x0 - al, ya0 = yE + al * sl, xa1 = x1 + al;
         w += poly([[x0, zt], [x0, yE], [xm, yR], [x1, yE], [x1, zt]], `fill="${fill}"`);
-        if (v.marco) { const mt = .2 * S; w += `<path d="M${f1(x0 - mt)} ${f1(zt)}V${f1(yE)}L${f1(xm)} ${f1(yR - mt * 1.25)}L${f1(x1 + mt)} ${f1(yE)}V${f1(zt)}H${f1(x1)}V${f1(yE)}L${f1(xm)} ${f1(yR)}L${f1(x0)} ${f1(yE)}V${f1(zt)}Z" fill="#2c2f33"/>`; l += `<path d="M${f1(x0 - mt)} ${f1(zt)}V${f1(yE)}L${f1(xm)} ${f1(yR - mt * 1.25)}L${f1(x1 + mt)} ${f1(yE)}V${f1(zt)}" stroke-width="1.6"/>` }
+        if (v.marco) { const mt = .2 * S; l += `<path d="M${f1(x0 - mt)} ${f1(zt)}V${f1(yE)}L${f1(xm)} ${f1(yR - mt * 1.25)}L${f1(x1 + mt)} ${f1(yE)}V${f1(zt)}H${f1(x1)}V${f1(yE)}L${f1(xm)} ${f1(yR)}L${f1(x0)} ${f1(yE)}V${f1(zt)}Z" fill="#2c2f33"/>`; l += `<path d="M${f1(x0 - mt)} ${f1(zt)}V${f1(yE)}L${f1(xm)} ${f1(yR - mt * 1.25)}L${f1(x1 + mt)} ${f1(yE)}V${f1(zt)}" stroke-width="1.6"/>` }
         else {
           // sombra del alero sobre la pared
           w += poly([[x0, yE], [xm, yR], [x1, yE], [x1, yE + al * 1.3], [xm, yR + al * 1.3], [x0, yE + al * 1.3]], 'fill="url(#f-eave)"');
@@ -473,10 +473,9 @@
       // frontón vidriado
       (F.aberturas || []).filter(a => a.tipo === 'frontonVidrio' && a.x + a.w / 2 >= v.x && a.x + a.w / 2 <= v.x + v.w).forEach(() => {
         const ins = v.marco ? .04 * S : .06 * S, k1 = x0 + ins, k2 = x1 - ins, y1 = yE, yt = yR + (F.cercha ? .2 * S / Math.cos(Math.atan(sl)) : ins / Math.cos(Math.atan(sl))), fr = Math.max(2.5, .05 * S);
-        let w2 = poly([[k1, y1], [xm, yt], [k2, y1]], 'fill="#2f3236"') + poly([[k1 + fr * 1.6, y1 - fr], [xm, yt + fr * 1.8], [k2 - fr * 1.6, y1 - fr]], 'fill="url(#f-warm)"');
+        let w2 = poly([[k1, y1], [xm, yt], [k2, y1]], 'fill="url(#f-warm)"');
         w2 += poly([[k1 + (k2 - k1) * .18, y1 - fr], [xm - (xm - k1) * .25, yt + (y1 - yt) * .35], [xm - (xm - k1) * .1, yt + (y1 - yt) * .45], [k1 + (k2 - k1) * .28, y1 - fr]], 'fill="#fff" opacity=".28"');
-        w2 += `<rect x="${f1(xm - fr / 2)}" y="${f1(yt)}" width="${f1(fr)}" height="${f1(y1 - yt)}" fill="#2f3236"/>`;
-        casa += obj(w2, poly([[k1, y1], [xm, yt], [k2, y1]], 'stroke-width="1.1"') + ln(xm, yt, xm, y1, .6) + ln(k1, y1, k2, y1, 1.1));
+        casa += obj(w2, poly([[k1, y1], [xm, yt], [k2, y1]], `stroke="#2c2f33" stroke-width="${f1(fr * 1.6)}"`) + ln(xm, yt, xm, y1, fr, '#2c2f33') + ln(k1, y1, k2, y1, fr * 1.4, '#2c2f33'));
       });
     });
     // aberturas
