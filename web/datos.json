@@ -206,7 +206,7 @@
       "techo": "frente",
       "cumbrera": 4.75,
       "revest": "madera",
-      "alero": 0
+      "alero": 0.6
      }
     ],
     "aberturas": [
@@ -234,9 +234,7 @@
     "cercha": {
      "x": 1.475,
      "w": 8.05,
-     "piso": 0.3,
-     "muro": 3.0,
-     "cumbrera": 4.75
+     "piso": 0.3
     },
     "decks": [
      {
@@ -258,18 +256,19 @@
     ],
     "arboles": [
      {
-      "x": -0.2,
-      "r": 1.6,
-      "y": 3.4
+      "x": 0.0,
+      "h": 6.5,
+      "k": "redondo"
      },
      {
-      "x": 11.2,
-      "r": 1.9,
-      "y": 3.6
+      "x": 10.9,
+      "h": 7.5,
+      "k": "redondo"
      }
     ],
     "personas": [
-     4.6
+     4.6,
+     7.6
     ]
    }
   },
@@ -313,8 +312,8 @@
    "fachada": {
     "ancho": 25,
     "titulo": "galería al frente y alero con cercha",
-    "nota": "pérgola a todo lo largo",
-    "notaX": 6,
+    "nota": "galería con pérgola a todo lo largo",
+    "notaX": 7,
     "volumenes": [
      {
       "x": 0.5,
@@ -429,14 +428,19 @@
     ],
     "arboles": [
      {
-      "x": -0.4,
-      "r": 1.8,
-      "y": 3.8
+      "x": -0.2,
+      "h": 10,
+      "k": "eucalipto"
      },
      {
-      "x": 24.6,
-      "r": 2.2,
-      "y": 4.2
+      "x": 24.4,
+      "h": 11.5,
+      "k": "eucalipto"
+     },
+     {
+      "x": 23.2,
+      "h": 8,
+      "k": "eucalipto"
      }
     ],
     "personas": [
@@ -588,9 +592,14 @@
     ],
     "arboles": [
      {
-      "x": 20.6,
-      "r": 1.9,
-      "y": 3.2
+      "x": 0.3,
+      "h": 8.5,
+      "k": "pino"
+     },
+     {
+      "x": 20.5,
+      "h": 6.5,
+      "k": "redondo"
      }
     ],
     "personas": [
@@ -631,8 +640,8 @@
    "fachada": {
     "ancho": 13,
     "titulo": "el costado con la pérgola",
-    "nota": "dos plantas, frontón vidriado",
-    "notaX": 0.6,
+    "nota": "dos plantas, escalera caracol",
+    "notaX": 3.2,
     "volumenes": [
      {
       "x": 0.5,
@@ -708,9 +717,14 @@
     ],
     "arboles": [
      {
+      "x": 0.0,
+      "h": 7.5,
+      "k": "palmera"
+     },
+     {
       "x": 12.6,
-      "r": 1.5,
-      "y": 3.4
+      "h": 7,
+      "k": "palmera"
      }
     ],
     "personas": [
@@ -818,14 +832,14 @@
     ],
     "arboles": [
      {
-      "x": 0.2,
-      "r": 1.4,
-      "y": 4.4
+      "x": 0.1,
+      "h": 8.5,
+      "k": "eucalipto"
      },
      {
-      "x": 7.8,
-      "r": 1.5,
-      "y": 4.6
+      "x": 7.9,
+      "h": 9,
+      "k": "eucalipto"
      }
     ],
     "personas": []
@@ -861,7 +875,7 @@
     "ancho": 9,
     "titulo": "el deck",
     "nota": "chapa negra y madera adentro",
-    "notaX": 4.8,
+    "notaX": 2.6,
     "volumenes": [
      {
       "x": 1.3,
@@ -915,17 +929,19 @@
     ],
     "arboles": [
      {
-      "x": 0.1,
-      "r": 1.3,
-      "y": 4.2
+      "x": 0.2,
+      "h": 6,
+      "k": "palmera"
      },
      {
-      "x": 8.7,
-      "r": 1.6,
-      "y": 4.0
+      "x": 8.6,
+      "h": 5.5,
+      "k": "palmera"
      }
     ],
-    "personas": []
+    "personas": [
+     6.0
+    ]
    }
   }
  ],
