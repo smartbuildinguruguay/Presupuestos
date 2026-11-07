@@ -40,8 +40,10 @@
           e = espesor del muro (tramos); giro = lado hacia donde abre; in = lado de la luz (ventanas en tramos)
         equip: t = mesada|isla|cama|inodoro|ducha|lav|estufa|sofa|mesa|parrilla
         locales: n, x, y, a (m²)  ·  cotasX / cotasY */
+  // escala y margen del dibujo (los usa también el editor del panel)
+  window.SBUplantaGeo = function (P) { const S = Math.min(100, 1100 / P.ancho); return { S, pad: Math.max(120, 150 * S / 100 + 40) } };
   window.SBUplanta = function (P, m) {
-    const S = Math.min(100, 1100 / P.ancho), k = S / 100, pad = Math.max(120, 150 * k + 40);
+    const { S, pad } = window.SBUplantaGeo(P), k = S / 100;
     const W = P.ancho * S, H = P.prof * S, e = P.eExt * S, ei = P.eInt * S;
     const X = x => pad + x * S, Y = y => pad + y * S;
     const FS = 17, fm = 12;

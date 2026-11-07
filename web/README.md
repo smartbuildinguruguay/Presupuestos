@@ -4,6 +4,7 @@
 - `admin.html` — **tu panel**: cargar modelos, ver cómo se arma cada precio (rubros → costo/m² → imprevistos → margen), revestimientos, contacto y renders de portada. Guarda en GitHub con la misma clave que Eléctrica Sayago.
 - `datos.json` — todos los datos. Lo escribe el panel; no hace falta tocarlo a mano.
 - `precio.js` — la fórmula de precio, compartida por la web y el panel.
+- `editor-planos.js`: editor de plantas del panel (pestaña Planos): arrastrar muros, aberturas, muebles y ambientes.
 - `dibujos.js`: planta y corte por la cercha de cada modelo, dibujados en SVG (web y panel).
 - `texturas.js`: texturas de revestimiento (pino, lapacho, chapa, EIFS) que se pintan sobre las paredes del 3D. Las usan la web y el panel.
 - `img/` — renders de portada que sube el panel.

@@ -122,6 +122,14 @@ tr.vrow{cursor:pointer}tr.vrow:hover td{background:var(--hi)}
 .p3m label:has(input:checked){background:rgba(196,112,60,.14)}
 .p3m input{width:auto!important}
 .p3m button{margin-left:auto;border:1px solid var(--line);background:transparent;border-radius:3px;font-size:.72rem;padding:2px 6px}
+.petools{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.petools .btn{padding:6px 10px;font-size:.8rem;white-space:nowrap}
+.petools select{width:auto!important;padding:6px 8px!important;font-size:.8rem!important}
+.pewrap{display:grid;grid-template-columns:minmax(0,1fr) 300px;gap:14px;align-items:start}
+@media(max-width:900px){.pewrap{grid-template-columns:1fr}}
+.pecanvas{border:1px solid var(--line);border-radius:6px;overflow:hidden;background:#fbf8f1;user-select:none}
+.peside{display:grid;gap:10px;position:sticky;top:12px}
+.peside .f{grid-template-columns:1fr 1fr}
 </style>
 </head>
 <body>
@@ -135,6 +143,7 @@ tr.vrow{cursor:pointer}tr.vrow:hover td{background:var(--hi)}
     <button type="button" role="tab" data-tab="visitas" aria-selected="true">Visitas</button>
     <button type="button" role="tab" data-tab="modelos" aria-selected="false">Modelos</button>
     <button type="button" role="tab" data-tab="precios" aria-selected="false">Cómo se calcula el precio</button>
+    <button type="button" role="tab" data-tab="planos" aria-selected="false">Planos</button>
     <button type="button" role="tab" data-tab="rev" aria-selected="false">Revestimientos</button>
     <button type="button" role="tab" data-tab="renders" aria-selected="false">Renders</button>
     <button type="button" role="tab" data-tab="general" aria-selected="false">Contacto y portada</button>
@@ -170,6 +179,31 @@ tr.vrow{cursor:pointer}tr.vrow:hover td{background:var(--hi)}
     <div class="tbl"><table id="rtab"></table></div>
     <button type="button" class="btn ghost" id="rAdd" style="justify-self:start">+ Revestimiento</button>
   </div></section>
+
+  <section id="t-planos" hidden>
+    <div class="card">
+      <div style="display:flex;flex-wrap:wrap;gap:8px;align-items:center;justify-content:space-between">
+        <h2>Planos</h2>
+        <div class="f" style="display:flex;gap:8px;flex-wrap:wrap"><select id="peModel" aria-label="Modelo"></select><select id="peNivel" aria-label="Planta" hidden></select></div>
+      </div>
+      <div class="petools">
+        <button type="button" class="btn ghost" data-need data-add="muros">+ Muro</button>
+        <button type="button" class="btn ghost" data-need data-add="murosExt">+ Muro exterior</button>
+        <button type="button" class="btn ghost" data-need data-add="ventanas">+ Ventana</button>
+        <button type="button" class="btn ghost" data-need data-add="puertas">+ Puerta</button>
+        <span class="f" style="display:inline-flex;gap:4px"><select id="peTipo" aria-label="Tipo de mueble"></select><button type="button" class="btn ghost" data-need data-add="equip">+ Mueble</button></span>
+        <button type="button" class="btn ghost" data-need data-add="locales">+ Ambiente</button>
+        <button type="button" class="btn ghost" data-need data-add="cubiertos">+ Deck</button>
+        <button type="button" class="btn ghost" data-need data-add="pisos">+ Piso</button>
+        <button type="button" class="btn ghost" data-need data-add="opcionales">+ Opcional</button>
+        <button type="button" class="btn ghost" data-need id="peNivelAdd">+ Planta alta</button>
+        <span class="f" style="display:inline-flex;align-items:center;gap:4px"><select id="peSnap" aria-label="Paso"><option value="0.05">paso 5 cm</option><option value="0.1">paso 10 cm</option><option value="0.01">paso 1 cm</option></select></span>
+        <button type="button" class="btn ghost" data-need id="peUndo">Deshacer</button>
+      </div>
+      <div class="pewrap"><div id="peCanvas" class="pecanvas"></div><div id="peSide" class="peside"></div></div>
+      <p class="note">Los cambios quedan en tu borrador como el resto del panel: para que se vean en la web, tocá "Subir a la web" arriba.</p>
+    </div>
+  </section>
 
   <section id="t-renders" hidden>
     <div class="rgrid">
@@ -231,6 +265,7 @@ tr.vrow{cursor:pointer}tr.vrow:hover td{background:var(--hi)}
 <script src="precio.js"></script>
 <script src="texturas.js"></script>
 <script src="dibujos.js"></script>
+<script src="editor-planos.js"></script>
 <script>
 (async function(){
 const $=id=>document.getElementById(id);
@@ -254,6 +289,7 @@ async function ghGet(){
 }
 let remote=null;{const g=await ghGet();if(g)remote=g.data}
 let D=null,draftBase=null,BASE=null;
+window.SBUadmin={get D(){return D},saveDraft:()=>saveDraft()};
 // Fusión: lo que cambiaste en el borrador gana; lo que no tocaste toma lo último de GitHub.
 const same=(a,b)=>JSON.stringify(a)===JSON.stringify(b);
 function merge3(base,mine,theirs){
@@ -323,7 +359,7 @@ function syncUI(){
 let tab='visitas';
 document.querySelectorAll('[data-tab]').forEach(b=>b.addEventListener('click',()=>{tab=b.dataset.tab;
   document.querySelectorAll('[data-tab]').forEach(x=>x.setAttribute('aria-selected',x===b));
-  ['visitas','modelos','precios','rev','renders','general'].forEach(t=>$('t-'+t).hidden=t!==tab);renderAll(true)}));
+  ['visitas','modelos','planos','precios','rev','renders','general'].forEach(t=>$('t-'+t).hidden=t!==tab);renderAll(true)}));
 
 /* ---------- campos genéricos ---------- */
 // bind: data-k="ruta.al.valor" sobre el objeto que se pasa
@@ -394,7 +430,7 @@ function mForm(){
     <label>Altura de columna (m)<input type="number" step="0.01" min="0" data-c="columna" placeholder="3"></label>
     <label class="wide">Techo (texto de la llamada)<input data-c="techo" placeholder="machimbre + panel aislante"></label>
    </div>
-   <h3 style="margin-top:22px">Así se ven los dibujos en la web</h3>
+   <h3 style="margin-top:22px">Así se ven los dibujos en la web <button type="button" class="btn ghost" id="mPlano" style="margin-left:8px;padding:4px 10px;font-size:.78rem">Editar planta</button></h3>
    <div id="mdib" style="display:grid;gap:14px"></div>`;
   const dib=()=>{const P=m.planta&&D.plantas[m.planta],C=m.cercha;
     $('mdib').innerHTML=(P?`<div style="border:1px solid var(--line);border-radius:6px;overflow:hidden">${[].concat(P).map(p=>window.SBUplanta(p,m)).join('')}</div>${P.ejemplo?'<p class="note warn">Esta planta es de ejemplo: en la web pública no se muestra.</p>':''}`:'<p class="note">Este modelo todavía no tiene planta cargada.</p>')+
@@ -405,6 +441,7 @@ function mForm(){
     el.oninput=()=>{const c=m.cercha||{};if(el.value==='')delete c[k];else c[k]=num?+el.value:el.value;
       if(Object.keys(c).length)m.cercha=c;else delete m.cercha;saveDraft();dib()}});
   dib();
+  $('mPlano').onclick=()=>document.querySelector('[data-tab="planos"]').click();
   papi=null;$('p3go').onclick=()=>pick3D(m);
   bindForm($('mform'),m,k=>{if(k==='nombre'||k==='m2'||k==='deck')dib();if(k==='texEsc'||k==='fachadaMat')p3paint(m);if(k==='m2')ordenar();if(k==='nombre'||k==='m2'||k==='visible'||k==='imagen')mList();mPrice();if(k==='m2'){const au=Math.round(4*Math.sqrt(m.m2||0)*D.precio.alturaMuro*(1-D.precio.huecos/100)),fi=$('mform').querySelector('[data-k="fachadaM2"]');if(fi){fi.placeholder='auto: '+au;fi.nextElementSibling.textContent=`Vacío = cálculo automático (${au} m²)`}}});
   $('mform').querySelectorAll('[data-uso]').forEach(c=>c.onchange=()=>{m.usos=[...$('mform').querySelectorAll('[data-uso]:checked')].map(x=>x.dataset.uso);saveDraft()});
@@ -712,7 +749,7 @@ function vLinkOut(){const base=location.href.replace(/admin\.html.*$/,'');const 
 /* ---------- ciclo ---------- */
 function renderAll(full){
   if(tab==='modelos'){mList();if(full!==false)mForm();mPrice()}
-  else if(tab==='precios')precios();else if(tab==='rev')revs();else if(tab==='renders')renders();else if(tab==='general')general();else if(tab==='visitas')visitas();
+  else if(tab==='planos')window.SBUeditor.render(selId);else if(tab==='precios')precios();else if(tab==='rev')revs();else if(tab==='renders')renders();else if(tab==='general')general();else if(tab==='visitas')visitas();
 }
 if(draftBase&&remote&&!same(draftBase,remote))syncMsg='Se juntaron tus cambios sin subir con lo último de la web.';
 renderAll(true);syncUI();
