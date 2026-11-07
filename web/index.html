@@ -207,6 +207,28 @@ footer .w{display:flex;flex-wrap:wrap;gap:18px 40px;justify-content:space-betwee
 .obra span{color:#d7d2c8;max-width:46ch;font-size:.98rem}
 @media (max-width:600px){.obra img{height:min(118vw,520px)}}
 
+
+/* consulta personalizada */
+.sheet-bg{position:fixed;inset:0;z-index:60;background:rgba(14,13,12,.55);display:flex;align-items:flex-end;justify-content:center;opacity:0;transition:opacity .2s}
+.sheet-bg.on{opacity:1}
+.sheet{background:var(--sheet);color:var(--ink);width:100%;max-width:620px;max-height:92vh;overflow:auto;border-radius:14px 14px 0 0;padding:18px max(18px,env(safe-area-inset-right,0px)) calc(18px + env(safe-area-inset-bottom,0px)) max(18px,env(safe-area-inset-left,0px));transform:translateY(30px);transition:transform .25s;display:grid;gap:16px;overscroll-behavior:contain}
+.sheet-bg.on .sheet{transform:none}
+@media (min-width:700px){.sheet-bg{align-items:center}.sheet{border-radius:10px}}
+.sheet header{display:flex;justify-content:space-between;align-items:start;gap:12px}
+.sheet header h3{font-size:1.9rem;font-weight:800}
+.sheet header small{display:block;font:500 .78rem var(--f-m);color:var(--mute);margin-top:4px}
+.sheet .x{background:none;border:1px solid var(--line);border-radius:99px;width:36px;height:36px;flex:none;font-size:1.1rem;line-height:1}
+.sq{display:grid;gap:8px}
+.sq > b{font-weight:600;font-size:.95rem}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chips button{border:1.5px solid var(--line);background:var(--paper);border-radius:99px;padding:8px 13px;font-size:.88rem}
+.chips button[aria-pressed="true"]{border-color:var(--cu);background:color-mix(in srgb,var(--cu) 12%,var(--paper))}
+.sheet input,.sheet textarea{width:100%;border:1.5px solid var(--line);background:var(--paper);border-radius:6px;padding:10px 12px;font:inherit;font-size:16px;color:var(--ink)}
+.sheet textarea{min-height:76px;resize:vertical}
+.prev{background:var(--paper);border:1px dashed var(--line);border-radius:8px;padding:10px 12px;font-size:.84rem;white-space:pre-wrap;color:var(--ink2);max-height:160px;overflow:auto}
+.sheet .send{width:100%;padding:15px;font-size:1.02rem}
+.sheet .fine{font-size:.75rem;color:var(--mute);margin:-6px 0 0}
+
 /* barra fija (móvil) */
 .bar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--ink);color:var(--paper);padding:10px max(14px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:12px;transform:translateY(110%);visibility:hidden;transition:transform .25s,visibility .25s}
 .bar.on{transform:none;visibility:visible}
@@ -366,6 +388,27 @@ footer .w{display:flex;flex-wrap:wrap;gap:18px 40px;justify-content:space-betwee
   <p style="flex-basis:100%;margin:0;font-size:.78rem;color:var(--mute)">Esta web registra de forma anónima qué modelos mirás y la zona aproximada desde donde entrás, para atenderte mejor. No guardamos tu nombre ni tu número.</p>
 </div></footer>
 
+
+<div class="sheet-bg" id="cq" hidden role="dialog" aria-modal="true" aria-labelledby="cq-t">
+ <div class="sheet">
+  <header><div><h3 id="cq-t">Tu consulta</h3><small id="cq-sub"></small></div><button type="button" class="x" id="cq-x" aria-label="Cerrar">✕</button></header>
+  <div class="sq"><b>¿Qué te gustaría?</b><div class="chips" data-q="quiero" data-multi="1">
+   <button type="button" aria-pressed="false">Presupuesto detallado</button><button type="button" aria-pressed="false">Visita al terreno</button><button type="button" aria-pressed="false">Videollamada</button><button type="button" aria-pressed="false">Conocer una obra terminada</button><button type="button" aria-pressed="false">Adaptar el diseño</button></div></div>
+  <div class="sq"><b>¿Tenés terreno?</b><div class="chips" data-q="terreno">
+   <button type="button" aria-pressed="false">Sí, ya tengo</button><button type="button" aria-pressed="false">Lo estoy buscando</button><button type="button" aria-pressed="false">Todavía no</button></div>
+   <input id="cq-zona" placeholder="¿En qué zona? Ej: Pueblo Garzón, La Barra, Rocha" aria-label="Zona del terreno"></div>
+  <div class="sq"><b>¿Cuándo te gustaría empezar?</b><div class="chips" data-q="cuando">
+   <button type="button" aria-pressed="false">Lo antes posible</button><button type="button" aria-pressed="false">En 3 a 6 meses</button><button type="button" aria-pressed="false">Este año que viene</button><button type="button" aria-pressed="false">Estoy averiguando</button></div></div>
+  <div class="sq"><b>¿Cómo pensás pagarla?</b><div class="chips" data-q="pago">
+   <button type="button" aria-pressed="false">Contado por etapas</button><button type="button" aria-pressed="false">Con préstamo / financiación</button><button type="button" aria-pressed="false">Todavía no sé</button></div></div>
+  <div class="sq"><b>Contanos algo más <span style="font-weight:400;color:var(--mute)">(opcional)</span></b>
+   <textarea id="cq-com" placeholder="Ej: queremos un dormitorio más, el terreno tiene pendiente, es para alquilar en verano…" aria-label="Comentario"></textarea>
+   <input id="cq-nom" placeholder="Tu nombre (opcional)" autocomplete="given-name" aria-label="Tu nombre"></div>
+  <div class="sq"><b>Así nos llega tu mensaje</b><div class="prev" id="cq-prev"></div></div>
+  <a class="btn cu send" id="cq-send" href="#"><svg class="wa-ico" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2a10 10 0 0 0-8.6 15.1L2 22l5-1.3A10 10 0 1 0 12 2Zm0 18.2a8.2 8.2 0 0 1-4.2-1.1l-.3-.2-3 .8.8-2.9-.2-.3A8.2 8.2 0 1 1 12 20.2Z"/></svg>Enviar por WhatsApp</a>
+  <p class="fine">Se abre WhatsApp con el mensaje listo. Lo podés editar antes de mandarlo. Te respondemos en el día.</p>
+ </div>
+</div>
 <div class="bar" id="bar"><div class="bt"><small id="bar-m"></small><b class="mono" id="bar-t"></b></div><a class="btn" data-wa="modelo" href="#">La quiero</a></div>
 
 <script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js" defer></script>
@@ -425,7 +468,50 @@ function waText(kind){
     return `Hola! Vi en la web el modelo ${cur.nombre} (${cur.m2} m²) con fachada "${ext.nombre}". Presupuesto de referencia ${usd(p.tot)}. Me gustaría avanzar. Ref: ${cur.id}-${cfg.ext} · ${TR.vid}`}
   return `Hola! Vengo de la web de Smart Building y quiero consultar por una casa. (${TR.vid})`;
 }
+
+/* ---------- consulta personalizada ---------- */
+const CQ={quiero:[],terreno:'',cuando:'',pago:''};
+try{Object.assign(CQ,ls.get('cq')||{})}catch(e){}
+['cq-zona','cq-com','cq-nom'].forEach(id=>{const v=ls.get(id);if(v)$(id).value=v});
+function cqMsg(){
+  const p=precio(cur,cfg),ext=D.exterior.find(e=>e.id===cfg.ext),nom=$('cq-nom').value.trim(),zona=$('cq-zona').value.trim(),com=$('cq-com').value.trim();
+  const L=[`Hola! ${nom?'Soy '+nom+'. ':''}Me interesa el modelo *${cur.nombre}* (${cur.m2} m²${+cur.deck?' + '+cur.deck+' m² de deck':''}).`,
+   `Fachada: ${ext.nombre} · Presupuesto de referencia: ${usd(p.tot)}`];
+  if(CQ.quiero.length)L.push(`Me gustaría: ${CQ.quiero.join(', ').toLowerCase()}`);
+  if(CQ.terreno||zona)L.push(`Terreno: ${[CQ.terreno,zona].filter(Boolean).join(' · ')}`);
+  if(CQ.cuando)L.push(`Para empezar: ${CQ.cuando.toLowerCase()}`);
+  if(CQ.pago)L.push(`Pago: ${CQ.pago.toLowerCase()}`);
+  if(com)L.push('',com);
+  L.push('',`Código: ${TR.vid}`);
+  return L.join('\n');
+}
+function cqDraw(){
+  document.querySelectorAll('#cq [data-q]').forEach(g=>{const k=g.dataset.q;g.querySelectorAll('button').forEach(b=>b.setAttribute('aria-pressed',k==='quiero'?CQ.quiero.includes(b.textContent):CQ[k]===b.textContent))});
+  $('cq-prev').textContent=cqMsg();
+}
+document.querySelectorAll('#cq [data-q]').forEach(g=>g.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;const k=g.dataset.q,v=b.textContent;
+  if(k==='quiero'){CQ.quiero=CQ.quiero.includes(v)?CQ.quiero.filter(x=>x!==v):[...CQ.quiero,v]}else CQ[k]=CQ[k]===v?'':v;ls.set('cq',CQ);cqDraw()}));
+['cq-zona','cq-com','cq-nom'].forEach(id=>$(id).addEventListener('input',()=>{ls.set(id,$(id).value);cqDraw()}));
+let cqLast=null;
+function cqOpen(){
+  if(!cur)return;const p=precio(cur,cfg);
+  $('cq-sub').textContent=`${cur.nombre} · ${D.exterior.find(e=>e.id===cfg.ext).nombre} · ${usd(p.tot)}`;
+  cqLast=document.activeElement;const bg=$('cq');bg.hidden=false;requestAnimationFrame(()=>bg.classList.add('on'));
+  document.body.style.overflow='hidden';cqDraw();setTimeout(()=>$('cq-x').focus(),50);
+  TR.ev('consulta_abierta',{modelo:cur.id});
+}
+function cqClose(){const bg=$('cq');bg.classList.remove('on');setTimeout(()=>{bg.hidden=true},200);document.body.style.overflow='';if(cqLast)cqLast.focus()}
+$('cq-x').addEventListener('click',cqClose);
+$('cq').addEventListener('click',e=>{if(e.target.id==='cq')cqClose()});
+document.addEventListener('keydown',e=>{if(e.key==='Escape'&&!$('cq').hidden)cqClose()});
+$('cq-send').addEventListener('click',e=>{e.preventDefault();const p=precio(cur,cfg);
+  const det=[CQ.quiero.join(' + '),CQ.terreno,$('cq-zona').value.trim(),CQ.cuando,CQ.pago].filter(Boolean).join(' | ');
+  TR.ev('whatsapp',{detalle:cfg.ext,modelo:cur.id,valor:p.tot});
+  TR.ev('consulta',{modelo:cur.id,detalle:det+($('cq-com').value.trim()?' | comentó':''),valor:p.tot,ya:1});
+  window.open(`https://wa.me/${D.whatsapp}?text=${encodeURIComponent(cqMsg())}`,'_blank','noopener')});
+
 document.addEventListener('click',e=>{const a=e.target.closest('[data-wa]');if(!a)return;e.preventDefault();
+  if(a.dataset.wa==='modelo'&&cur){cqOpen();return}
   TR.ev('whatsapp',{detalle:a.dataset.wa==='modelo'&&cur?cfg.ext:'consulta general',modelo:a.dataset.wa==='modelo'&&cur?cur.id:'',valor:a.dataset.wa==='modelo'&&cur?precio(cur,cfg).tot:'',ya:1});
   window.open(`https://wa.me/${D.whatsapp}?text=${encodeURIComponent(waText(a.dataset.wa))}`,'_blank','noopener')});
 {const w=String(D.whatsapp||'');$('f-wa').textContent=/^598\d{8}$/.test(w)?'0'+w.slice(3,5)+' '+w.slice(5,8)+' '+w.slice(8):'+'+w;}

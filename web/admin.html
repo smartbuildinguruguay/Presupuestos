@@ -502,7 +502,7 @@ $('rSave').onclick=async()=>{
 try{localStorage.setItem('sbu-notrack','1')}catch(e){} // tus propias visitas no cuentan
 const VKEY='sbu-visitas-clave';
 let vDias=30,vData=null,vOpen=new Set(),vLoading=false,vErr='';
-const EVN={visita:'Entró',seccion:'Vio sección',buscador:'Buscador',ver_modelo:'Abrió modelo',abrir_3d:'Recorrió en 3D',revestimiento:'Probó revestimiento',whatsapp:'Escribió por WhatsApp'};
+const EVN={visita:'Entró',seccion:'Vio sección',buscador:'Buscador',ver_modelo:'Abrió modelo',abrir_3d:'Recorrió en 3D',revestimiento:'Probó revestimiento',consulta_abierta:'Abrió la consulta',consulta:'Respuestas',whatsapp:'Escribió por WhatsApp'};
 const mName=id=>(D.modelos.find(m=>m.id===id)||{}).nombre||id;
 const rName=id=>(D.exterior.find(e=>e.id===id)||{}).nombre||id;
 const vclave=()=>{try{return localStorage.getItem(VKEY)||''}catch(e){return ''}};
@@ -593,7 +593,7 @@ function vDraw(){
   const qy=($('vBus').value||'').toLowerCase().trim();
   const VL=V.filter(v=>!qy||[v.id,v.ciudad,v.region,v.origen,v.campana,...v.mods.map(mName)].join(' ').toLowerCase().includes(qy)).slice(0,150);
   const fd=s=>new Date(s).toLocaleString('es-UY',{day:'2-digit',month:'2-digit',hour:'2-digit',minute:'2-digit'});
-  const evTxt=e=>{let t=EVN[e.evento]||e.evento;if(e.evento==='ver_modelo'||e.evento==='abrir_3d')t+=': '+mName(e.modelo);else if(e.evento==='revestimiento')t+=': '+rName(e.detalle)+(e.valor?' · '+usd(e.valor):'');else if(e.evento==='whatsapp')t+=e.modelo?': '+mName(e.modelo)+' · '+rName(e.detalle)+(e.valor?' · '+usd(e.valor):''):'';else if(e.detalle)t+=': '+e.detalle;return esc(t)};
+  const evTxt=e=>{let t=EVN[e.evento]||e.evento;if(e.evento==='ver_modelo'||e.evento==='abrir_3d')t+=': '+mName(e.modelo);else if(e.evento==='revestimiento')t+=': '+rName(e.detalle)+(e.valor?' · '+usd(e.valor):'');else if(e.evento==='consulta')t+=': '+e.detalle;else if(e.evento==='whatsapp')t+=e.modelo?': '+mName(e.modelo)+' · '+rName(e.detalle)+(e.valor?' · '+usd(e.valor):''):'';else if(e.detalle)t+=': '+e.detalle;return esc(t)};
   $('vList').innerHTML=`<tr><th>Código</th><th>Última vez</th><th>Origen</th><th>Zona</th><th>Miró</th><th></th></tr>`+VL.map(v=>`<tr class="vrow" data-v="${esc(v.id)}"><td class="mono">${esc(v.id)}</td><td>${fd(v.last)}${v.ses>1?` <span class="pill">${v.ses} visitas</span>`:''}</td><td>${esc(v.origen)}${v.campana?' · '+esc(v.campana):''}<br><small class="note">${esc(v.disp)}</small></td><td>${esc([v.ciudad,v.region].filter(Boolean).join(', ')||'—')}</td><td>${v.mods.map(m=>esc(mName(m))).join(', ')||'—'}</td><td>${v.wa?'<span class="pill wa">WhatsApp</span>':''}</td></tr>`+
     (vOpen.has(v.id)?`<tr><td colspan="6"><div class="tl">${v.evs.map(e=>`<span><em>${fd(e.fecha)}</em>${evTxt(e)}</span>`).join('')}</div></td></tr>`:'')).join('')+(VL.length?'':'<tr><td colspan="6" class="note">Todavía no hay visitas en este período.</td></tr>');
   $('vList').querySelectorAll('[data-v]').forEach(t=>t.onclick=()=>{const id=t.dataset.v;vOpen.has(id)?vOpen.delete(id):vOpen.add(id);vDraw()});
