@@ -340,8 +340,8 @@
       if (k === 'palmera') {
         const lean = (rnd() - .5) * H * .25, tx = x0 + lean, ty = y0 - H;
         const tr = `M${f1(x0 - H * .02)} ${y0}Q${f1(x0 + lean * .2)} ${f1(y0 - H * .5)} ${f1(tx - H * .012)} ${f1(ty)}L${f1(tx + H * .012)} ${f1(ty)}Q${f1(x0 + lean * .2 + H * .025)} ${f1(y0 - H * .5)} ${f1(x0 + H * .02)} ${y0}Z`;
-        w += `<path d="${tr}" fill="#8a7a64"/>`; l += `<path d="${tr}" stroke-width=".7"/>`;
-        for (let t = .06; t < .95; t += .045) { const yy = y0 - H * t, xx = x0 + lean * t * t * .9 + lean * .1 * t; l += ln(xx - H * .022 * (1 - t * .4), yy, xx + H * .022 * (1 - t * .4), yy + 1, .45, K2) }
+        l += `<path d="${tr}" fill="#2a2420" stroke="none" opacity=".88"/>`;
+        for (let t = .06; t < .95; t += .045) { const yy = y0 - H * t, xx = x0 + lean * t * t * .9 + lean * .1 * t; l += ln(xx - H * .024 * (1 - t * .4), yy, xx + H * .024 * (1 - t * .4), yy + 1.5, .9, '#f6f0e3') }
         for (let i = 0; i < 12; i++) {
           const side = i % 2 ? 1 : -1, a = side * (.25 + (i >> 1) / 6 * 1.35) + (rnd() - .5) * .15, len = H * (.26 + rnd() * .08);
           const ex = tx + Math.sin(a) * len, ey = ty - Math.cos(a) * len * .35 + len * (.15 + Math.abs(a) * .32), qx = tx + Math.sin(a) * len * .45, qy = ty - len * (.22 + (1.6 - Math.abs(a)) * .1);
@@ -357,26 +357,41 @@
         l += `<circle cx="${f1(tx)}" cy="${f1(ty)}" r="${f1(H * .018)}" fill="#6b5a3e" stroke-width=".6"/>`;
         return obj(w, l);
       }
-      // tronco
-      const crown = k === 'eucalipto' ? .42 : k === 'pino' ? .62 : .36, cy = y0 - H * crown, lean = (rnd() - .5) * H * .08, tw = H * (k === 'eucalipto' ? .03 : .045);
-      const tr = `M${f1(x0 - tw)} ${y0}Q${f1(x0 - tw * .6)} ${f1(y0 - H * crown * .5)} ${f1(x0 + lean - tw * .4)} ${f1(cy)}L${f1(x0 + lean + tw * .4)} ${f1(cy)}Q${f1(x0 + tw * .6)} ${f1(y0 - H * crown * .5)} ${f1(x0 + tw)} ${y0}Z`;
-      w += `<path d="${tr}" fill="${k === 'eucalipto' ? '#cfc4b1' : '#7a6650'}"/>`; l += `<path d="${tr}" stroke-width=".8"/>`;
-      if (k === 'eucalipto') for (let i = 0; i < 4; i++) { const yy = y0 - H * crown * (.2 + rnd() * .7); l += `<path d="M${f1(x0 - tw * .5)} ${f1(yy)}q${f1(tw * .4)} ${f1(-tw)} ${f1(tw * .9)} ${f1(-tw * 2)}" stroke="${K3}" stroke-width=".5"/>` }
-      // ramas y masas de follaje
-      const cl = [], n = k === 'eucalipto' ? 16 : k === 'pino' ? 12 : 18;
-      const rx = H * (k === 'eucalipto' ? .26 : k === 'pino' ? .4 : .34), ry = H * (k === 'eucalipto' ? .3 : k === 'pino' ? .14 : .28), ccy = k === 'pino' ? y0 - H * .8 : y0 - H * (crown + (1 - crown) * .5);
-      for (let i = 0; i < n; i++) { const a = rnd() * 6.283, rr = Math.sqrt(rnd()); cl.push([x0 + lean + Math.cos(a) * rx * rr * .72, ccy + Math.sin(a) * ry * rr * .7, H * (k === 'pino' ? .085 : .075) * (.8 + rnd() * .5)]) }
-      cl.sort((p, q) => q[1] - p[1]);
-      cl.filter((c, i) => i % 2 === 0).forEach(([x, y]) => { const mx = (x0 + lean + x) / 2; l += `<path d="M${f1(x0 + lean)} ${f1(cy)}Q${f1(mx)} ${f1(Math.max(y, cy - H * .1))} ${f1(x)} ${f1(y)}" stroke="#5c4b3a" stroke-width="${f1(Math.min(1.6, Math.max(.7, tw * .12)))}"/>` });
-      const tonos = ['#6d8559', '#7f9768', '#93aa7b', '#a9be91'];
-      cl.forEach(([x, y, r]) => {
-        const lit = (x - x0) * -.5 + (ccy - y) * .8, ti = Math.max(0, Math.min(3, Math.round(1.5 + lit / (H * .12) + (rnd() - .5))));
-        const p = copa(x, y, r, 10 + Math.round(rnd() * 4));
-        w += `<path d="${p}" fill="${tonos[ti]}" opacity=".92"/>`;
-        l += `<path d="${p}" stroke="#4a5a3a" stroke-width=".55"/>`;
-        for (let j = 0; j < 4; j++) { const a = rnd() * 6.283, rr = r * (.3 + rnd() * .5), sx = x + Math.cos(a) * rr, sy = y + Math.sin(a) * rr; l += `<path d="M${f1(sx)} ${f1(sy)}q${f1(r * .12)} ${f1(-r * .14)} ${f1(r * .24)} 0" stroke="#4a5a3a" stroke-width=".45"/>` }
-      });
-      return obj(w, l);
+      // árbol en tinta: tronco y ramas con trazo de pincel, hojas en aguada
+      const INK = '#1f1b18';
+      const seg = (xa, ya, xb, yb, wa, wb) => { const dx = xb - xa, dy = yb - ya, dl = Math.hypot(dx, dy) || 1, nx = -dy / dl, ny = dx / dl;
+        const mx = (xa + xb) / 2 + nx * dl * (rnd() - .5) * .12, my = (ya + yb) / 2 + ny * dl * (rnd() - .5) * .12, wm = (wa + wb) / 2;
+        return `<path d="M${f1(xa + nx * wa / 2)} ${f1(ya + ny * wa / 2)}Q${f1(mx + nx * wm / 2)} ${f1(my + ny * wm / 2)} ${f1(xb + nx * wb / 2)} ${f1(yb + ny * wb / 2)}L${f1(xb - nx * wb / 2)} ${f1(yb - ny * wb / 2)}Q${f1(mx - nx * wm / 2)} ${f1(my - ny * wm / 2)} ${f1(xa - nx * wa / 2)} ${f1(ya - ny * wa / 2)}Z" fill="${INK}"/><circle cx="${f1(xb)}" cy="${f1(yb)}" r="${f1(wb / 2)}" fill="${INK}"/>` };
+      const P = { redondo: { tr: .38, sp: .62, br: 3, d: 6, up: .15, lf: .11 }, eucalipto: { tr: .5, sp: .38, br: 2, d: 6, up: .55, lf: .085 }, pino: { tr: .58, sp: 1.15, br: 2, d: 5, up: -.15, lf: .13 } }[k] || { tr: .4, sp: .6, br: 3, d: 6, up: .1, lf: .1 };
+      let ink = '', hojas = [], tips = [];
+      const grow = (x, y, ang, len, wd, depth) => {
+        const a2 = ang + (rnd() - .5) * .35, xm2 = x + Math.cos(ang) * len * .5, ym2 = y + Math.sin(ang) * len * .5, xb = xm2 + Math.cos(a2) * len * .5, yb = ym2 + Math.sin(a2) * len * .5, wb = wd * .62;
+        ink += seg(x, y, xm2, ym2, wd, (wd + wb) / 2) + seg(xm2, ym2, xb, yb, (wd + wb) / 2, wb);
+        if (depth <= 0 || len < H * .03) { tips.push([xb, yb]); return }
+        if (depth <= 2) tips.push([xb, yb]);
+        const n = P.br + (rnd() < .35 ? 1 : 0);
+        for (let i = 0; i < n; i++) {
+          const side = (i / Math.max(1, n - 1) - .5) * 2, na = a2 + side * P.sp * (.7 + rnd() * .5) - P.up * Math.sign(Math.cos(a2)) * .2 + (rnd() - .5) * .25;
+          const ca = Math.max(-Math.PI + .25, Math.min(-.25, na));
+          grow(xb, yb, k === 'pino' && depth < P.d - 1 ? (Math.cos(ca) < 0 ? -Math.PI + .12 + rnd() * .25 : -.12 - rnd() * .25) : ca, len * (.62 + rnd() * .16), wb * (.7 + rnd() * .15), depth - 1);
+        }
+      };
+      const lean = (rnd() - .5) * .35, trLen = H * P.tr, tw = H * (k === 'eucalipto' ? .045 : .06);
+      // tronco con una leve curva, base ensanchada
+      const xt = x0 + Math.sin(lean) * trLen, yt = y0 - trLen;
+      ink += seg(x0, y0, (x0 + xt) / 2 + H * .02 * (rnd() - .5), (y0 + yt) / 2, tw * 1.25, tw * .9) + seg((x0 + xt) / 2, (y0 + yt) / 2, xt, yt, tw * .9, tw * .7);
+      ink += `<path d="M${f1(x0 - tw * 1.1)} ${y0}Q${f1(x0 - tw * .5)} ${f1(y0 - tw * .8)} ${f1(x0 - tw * .4)} ${f1(y0 - tw * 2)}L${f1(x0 + tw * .5)} ${f1(y0 - tw * 2)}Q${f1(x0 + tw * .6)} ${f1(y0 - tw * .7)} ${f1(x0 + tw * 1.2)} ${y0}Z" fill="${INK}"/>`;
+      const nb = k === 'eucalipto' ? 2 : 3;
+      for (let i = 0; i < nb; i++) { const a = -Math.PI / 2 + lean + ((i / (nb - 1)) - .5) * (k === 'pino' ? 1.6 : 1.1) + (rnd() - .5) * .3; grow(xt, yt, a, H * (k === 'pino' ? .22 : .2) * (.85 + rnd() * .3), tw * .65, P.d - 1) }
+      if (k === 'pino') for (let i = 0; i < 2; i++) { const yy = y0 - trLen * (.55 + i * .2), side = i % 2 ? 1 : -1; grow(x0 + Math.sin(lean) * trLen * (.55 + i * .2), yy, side > 0 ? -.2 : -Math.PI + .2, H * .18, tw * .45, 3) }
+      // aguadas de hojas en las puntas (sin contorno, bordes de acuarela)
+      const verdes = k === 'eucalipto' ? ['#93ad8a', '#a9c09a', '#7f9a78', '#b9cba6'] : k === 'pino' ? ['#5f7d55', '#6f8d5f', '#86a170', '#4f6c49'] : ['#7f9c62', '#97b277', '#a9c08a', '#6d8a55'];
+      let lw = '';
+      tips.forEach(([tx, ty], i) => { const r = H * P.lf * (.6 + rnd() * .6), c = verdes[i % verdes.length];
+        lw += k === 'pino' ? `<ellipse cx="${f1(tx)}" cy="${f1(ty - r * .2)}" rx="${f1(r * 1.6)}" ry="${f1(r * .55)}" fill="${c}" opacity=".55"/>` : `<ellipse cx="${f1(tx + (rnd() - .5) * r)}" cy="${f1(ty - r * .25)}" rx="${f1(r)}" ry="${f1(r * .8)}" fill="${c}" opacity=".42"/>` });
+      // toques de hoja en tinta
+      let dots = ''; tips.forEach(([tx, ty]) => { for (let j = 0; j < 3; j++) { const a = rnd() * 6.283, rr = H * P.lf * .6 * rnd(), sx = tx + Math.cos(a) * rr, sy = ty + Math.sin(a) * rr * .7; dots += `<path d="M${f1(sx)} ${f1(sy)}q${f1(H * .006)} ${f1(-H * .008)} ${f1(H * .014)} ${f1(-H * .002)}" stroke="#2e3a26" stroke-width="1.1" fill="none" opacity=".75"/>` } });
+      return `<g><ellipse cx="${f1(x0 + H * .1)}" cy="${y0 + 2}" rx="${f1(H * .2)}" ry="${f1(H * .02 + 2)}" fill="#4b4030" opacity=".2"/><g filter="url(#faa)" opacity=".95">${lw}</g><g opacity=".9">${ink}</g>${dots}<g filter="url(#faa)" opacity=".5">${tips.filter((t, i) => i % 3 === 0).map(([tx, ty], i) => `<ellipse cx="${f1(tx)}" cy="${f1(ty)}" rx="${f1(H * P.lf * .7)}" ry="${f1(H * P.lf * .5)}" fill="${verdes[(i + 1) % 4]}" opacity=".5"/>`).join('')}</g></g>`;
     };
     const arbs = (F.arboles || []).map(a => ({ ...a, k: a.k || (a.r > 1.7 ? 'eucalipto' : 'redondo') }));
     arbs.forEach(a => { atras += arbol(a) });
@@ -498,7 +513,7 @@
       const pend = [[xm - k / 2, Lt(xm - k / 2)], [xm, yR], [xm + k / 2, Lt(xm + k / 2)], [xm + k / 2, yTt], [xm - k / 2, yTt]];
       // puntales: corte a plomo contra el pendolón y corte a pendiente contra el par
       const puntal = s => {
-        const px = xm + s * k / 2, py = yTt - b * .9, qx = xm + s * (xm - x0) * .5, qy = Lb(qx) + b * .1;
+        const px = xm + s * k / 2, py = yTt - b * .55, qx = xm + s * (xm - x0) * .36, qy = Lb(qx) + b * .1;
         const dx = qx - px, dy = qy - py, dl = Math.hypot(dx, dy), ux = dx / dl, uy = dy / dl, nx = -uy * b / 2, ny = ux * b / 2;
         const hitV = (ox, oy) => { const tt = (px - ox) / ux; return [px, oy + tt * uy] };
         const hitR = (ox, oy) => { const sg = s < 0 ? 1 : -1; // y = yR + bv + sg*(xm - x)*sl*-1  => y = yR + bv + |x-xm|*sl
@@ -508,8 +523,12 @@
       };
       // columnas: del tirante al deck
       const col = s => s < 0 ? [[xe, yTb], [xe + b, yTb], [xe + b, yd], [xe, yd]] : [[xe2 - b, yTb], [xe2, yTb], [xe2, yd], [xe2 - b, yd]];
-      // orden: columnas, tirante, puntales, pendolón, pares (los pares tapan las uniones)
+      // tornapuntas: tramos cortos a 45° de la columna al tirante, con cortes en ángulo en las dos puntas
+      const torna = s => { const cxp = s < 0 ? xe + b : xe2 - b, dir = -s, L = .95 * S, e = b * .75 * .707;
+        return [[cxp, yTb + L - e], [cxp + dir * (L - e), yTb], [cxp + dir * (L + e), yTb], [cxp, yTb + L + e]] };
+      // orden: columnas, tirante, tornapuntas, puntales, pendolón, pares (los pares tapan las uniones)
       [[-1, madL], [1, mad]].forEach(([s, cl]) => { w += poly(col(s), `fill="${cl}"`); l += poly(col(s), 'stroke-width="1.2"') });
+      [[-1, madL], [1, madD]].forEach(([s, cl]) => { const p = torna(s); w += poly(p, `fill="${cl}"`); l += poly(p, 'stroke-width="1"') });
       w += poly(tir, `fill="${mad}"`); l += poly(tir, 'stroke-width="1.1"');
       [[-1, madL], [1, madD]].forEach(([s, cl]) => { const p = puntal(s); w += poly(p, `fill="${cl}"`); l += poly(p, 'stroke-width="1"') });
       w += poly(pend, `fill="${madL}"`); l += poly(pend, 'stroke-width="1.1"');
@@ -546,7 +565,8 @@
       for (let i = 0; i < n; i++) {
         const cx = X(x + (i + .5) * wd / n), h = (.38 + rnd() * .3) * S, r = wd / n * S * .7;
         const p = copa(cx, base - h * .55, Math.max(r, h * .55), 9);
-        w += `<path d="${p}" fill="${['#6f8a5c', '#86a06f', '#9cb584'][i % 3]}"/>`; l += `<path d="${p}" stroke="#4a5a3a" stroke-width=".5"/>`;
+        w += `<path d="${p}" fill="${['#6f8a5c', '#86a06f', '#9cb584'][i % 3]}" opacity=".7" filter="url(#faa)"/>`;
+        for (let j = 0; j < 3; j++) { const sx = cx + (rnd() - .5) * r * 1.4, sy = base - h * (.2 + rnd() * .7); l += `<path d="M${f1(sx)} ${f1(sy)}q${f1(h * .1)} ${f1(-h * .14)} ${f1(h * .22)} ${f1(-h * .04)}" stroke="#2e3a26" stroke-width="1" opacity=".7"/>` }
         if (c && c !== '#8fa77a') {
           if (/b4|d4|c4/.test(c)) { for (let j = 0; j < 2; j++) { const sx = cx + (rnd() - .5) * r, sy = base - h * (1.1 + rnd() * .5); l += ln(cx, base - h * .5, sx, sy, .5, '#4a5a3a'); for (let k = 0; k < 7; k++) { const a = k / 7 * 6.283; w += `<circle cx="${f1(sx + Math.cos(a) * 3.2)}" cy="${f1(sy + Math.sin(a) * 2.6)}" r="1.6" fill="${c}"/>` } } }
           else for (let j = 0; j < 3; j++) { const sx = cx + (rnd() - .5) * r * 1.2, sy = base - h * (.9 + rnd() * .5); for (let k = 0; k < 5; k++) w += `<ellipse cx="${f1(sx)}" cy="${f1(sy - k * 2.4)}" rx="1.3" ry="1.6" fill="${c}"/>`; l += ln(sx, sy + 2, sx, base - h * .4, .4, '#4a5a3a') }
