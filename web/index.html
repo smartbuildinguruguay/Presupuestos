@@ -579,7 +579,7 @@ function open3D(){
       applyExt();if(DIAG)diag()})})},
     error(){vstat('No se pudo cargar el 3D. Probá de nuevo.')}});
 }
-function setAlbedo(mat,uid,color,esc){const e=+esc||+(cur&&cur.texEsc)||1;
+function setAlbedo(mat,uid,color){const e=1;
   ['AlbedoPBR','DiffusePBR','DiffuseColor'].forEach(ch=>{const c=mat.channels[ch];if(!c)return;c.enable=true;
     if(uid){c.texture={uid,UVTransforms:{scale:[e,e],offset:[0,0],rotation:0},wrapS:'REPEAT',wrapT:'REPEAT',magFilter:'LINEAR',minFilter:'LINEAR_MIPMAP_LINEAR',texCoordUnit:0,textureTarget:'TEXTURE_2D',internalFormat:'RGB'};c.factor=1;c.color=[1,1,1]}
     else if(color){delete c.texture;c.color=color}});
@@ -591,8 +591,9 @@ function applyExt(){
     const m0=mats.find(q=>q.name===n);if(!m0)return;
     if(e.id==='original'||e.id===cur.revOriginal||!e.tex){if(orig[n])api.setMaterial(JSON.parse(JSON.stringify(orig[n])));return}
     const go=uid=>{const mm=JSON.parse(JSON.stringify(orig[n]||m0));setAlbedo(mm,uid);api.setMaterial(mm)};
-    if(texUid[e.tex])go(texUid[e.tex]);
-    else api.addTexture(TEX[e.tex].toDataURL('image/jpeg',.85),(err,uid)=>{if(!err){texUid[e.tex]=uid;go(uid)}});
+    const key=e.tex+'@'+(+cur.texEsc||1);
+    if(texUid[key])go(texUid[key]);
+    else api.addTexture(tex(e.tex,512,+cur.texEsc||1).toDataURL('image/jpeg',.85),(err,uid)=>{if(!err){texUid[key]=uid;go(uid)}});
   });
 }
 function diag(){
