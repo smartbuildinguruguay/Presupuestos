@@ -1,7 +1,7 @@
 {
- "actualizado": null,
+ "actualizado": "2026-11-07T12:49:02.962Z",
  "contacto": {
-  "whatsapp": "59898526226",
+  "whatsapp": "598XXXXXXXX",
   "instagram": "smartbuildinguruguay"
  },
  "precio": {
@@ -148,7 +148,7 @@
   {
    "id": "eden-rock",
    "visible": true,
-   "nombre": "Eden Rock",
+   "nombre": "Barn Villa",
    "lugar": "Maldonado",
    "frase": "Nave principal a dos aguas con cerchas de madera a la vista.",
    "uid": "65cc5fcecf2548a1a1cfc5bc58159a7f",
@@ -175,14 +175,14 @@
   {
    "id": "smartrancho",
    "visible": true,
-   "nombre": "SmartRancho",
+   "nombre": "Barn",
    "lugar": "Pueblo Garzón",
    "frase": "130 m² en una planta, a dos aguas. La casa de campo pensada para quedarse.",
    "uid": "e934a307daf5473390842989337887c9",
    "thumb": "https://media.sketchfab.com/models/e934a307daf5473390842989337887c9/thumbnails/04063cbb7f084237ad39dbb001cd3eb0/7707b671eec44ad48d48a4a02bacc26b.jpeg",
    "imagen": "",
    "m2": 130,
-   "deck": 0,
+   "deck": 100,
    "dorm": 3,
    "banos": 2,
    "usos": [
@@ -202,7 +202,7 @@
   {
    "id": "polo-club",
    "visible": true,
-   "nombre": "Polo Club",
+   "nombre": "Club",
    "lugar": "",
    "frase": "125 m² cubiertos y 100 m² de decks. La vida pasa afuera.",
    "uid": "768fe248c0ab48c4a5e751069cfac16e",
@@ -230,7 +230,7 @@
   {
    "id": "el-tesoro",
    "visible": true,
-   "nombre": "El Tesoro",
+   "nombre": "Atelier",
    "lugar": "La Barra · obra en curso",
    "frase": "Steel frame en obra hoy en La Barra. Lo que ves es lo que se está construyendo.",
    "uid": "b689b59e6bec4f85b9e1716dbd01b4e0",
@@ -256,7 +256,7 @@
   {
    "id": "smarthouse",
    "visible": true,
-   "nombre": "SmartHouse 1.1",
+   "nombre": "Nordica",
    "lugar": "",
    "frase": "Compacta y completa. Para empezar y crecer después.",
    "uid": "b7f33d6cf36b4e5894edaa0f61249d58",
@@ -284,7 +284,7 @@
   {
    "id": "smartbnb",
    "visible": true,
-   "nombre": "SmartBnB",
+   "nombre": "TinyHouse",
    "lugar": "",
    "frase": "18 m² equipados para alquilar desde el primer mes.",
    "uid": "4539fe80c8224ae09a8e3849e97741e6",
