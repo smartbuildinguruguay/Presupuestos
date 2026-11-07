@@ -339,7 +339,7 @@ function bindForm(root,obj,after){
 /* ---------- MODELOS ---------- */
 let selId=(D.modelos[0]||{}).id;
 const pic=m=>m.imagen?m.imagen+'?v='+(D.actualizado||''):(m.thumb||'');
-const baseExt=()=>D.exterior.some(e=>e.id==='pino')?'pino':D.exterior[0].id;
+const baseExt=()=>'original';
 function mList(){
   $('mlist').innerHTML=D.modelos.map(m=>`<button type="button" data-m="${m.id}" aria-current="${m.id===selId}" class="${m.visible===false?'off':''}">${pic(m)?`<img src="${esc(pic(m))}" alt="">`:'<span class="ni"></span>'}<span><b>${esc(m.nombre)}</b><small>${m.m2} m² · ${usd(window.SBUprecio(D,m,baseExt()).venta)}</small></span></button>`).join('');
   $('mlist').querySelectorAll('[data-m]').forEach(b=>b.onclick=()=>{selId=b.dataset.m;mList();mForm();mPrice()});
@@ -361,6 +361,7 @@ function mForm(){
     <label>Fachada (m²)<input type="number" min="0" data-k="fachadaM2" data-t="num" placeholder="auto: ${auto}"><small>Vacío = cálculo automático (${auto} m²)</small></label>
     <label class="wide">Para qué sirve (lo usa el buscador)<div class="chk">${Object.entries(USOS).map(([k,v])=>`<label><input type="checkbox" data-uso="${k}"${m.usos.includes(k)?' checked':''}>${v}</label>`).join('')}</div></label>
     <label class="wide">Sketchfab · código del modelo<input data-k="uid"><small>Los 32 caracteres al final del link</small></label>
+    <label>Revestimiento original<select data-k="revOriginal"><option value="">Sin definir</option>${D.exterior.filter(e=>e.id!=='original').map(e=>`<option value="${e.id}">${esc(e.nombre)}</option>`).join('')}</select><small>El que tiene el diseño: va incluido en el precio base</small></label>
     <label class="wide">Material de fachada en el 3D<input data-k="fachadaMat" data-t="csv"><small>Para encontrarlo: abrí la web con ?diag y tocá los materiales. Separados por coma.</small></label>
     <label class="wide">Imagen de portada<input data-k="imagen" placeholder="se completa sola al subir un render"><small>Si está vacío usa la miniatura de Sketchfab.</small></label>
     <label class="wide">A confirmar (uno por línea; se muestra al cliente)<textarea data-k="pendiente" data-t="list"></textarea></label>

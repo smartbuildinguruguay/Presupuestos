@@ -172,7 +172,8 @@
    "pendiente": [
     "dormitorios",
     "baños"
-   ]
+   ],
+   "revOriginal": ""
   },
   {
    "id": "smartrancho",
@@ -199,7 +200,8 @@
     "dormitorios",
     "baños",
     "material de fachada en el 3D"
-   ]
+   ],
+   "revOriginal": ""
   },
   {
    "id": "polo-club",
@@ -227,7 +229,8 @@
     "dormitorios",
     "baños",
     "material de fachada en el 3D"
-   ]
+   ],
+   "revOriginal": ""
   },
   {
    "id": "el-tesoro",
@@ -253,7 +256,8 @@
     "m²",
     "dormitorios",
     "material de fachada en el 3D"
-   ]
+   ],
+   "revOriginal": ""
   },
   {
    "id": "smarthouse",
@@ -281,7 +285,8 @@
     "m²",
     "dormitorios",
     "material de fachada en el 3D"
-   ]
+   ],
+   "revOriginal": "chapa"
   },
   {
    "id": "smartbnb",
@@ -307,7 +312,8 @@
    "pendiente": [
     "material de fachada en el 3D",
     "planta real"
-   ]
+   ],
+   "revOriginal": ""
   }
  ],
  "plantas": {

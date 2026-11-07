@@ -459,12 +459,13 @@ const TR=(()=>{
 /* ---------- precio ---------- */
 const fachada=m=>window.SBUprecio(D,m,'original').fachM2;
 function precio(m,cfg){const p=window.SBUprecio(D,m,cfg.ext);return {tot:p.venta,items:p.lineas.map(l=>[l.t,l.venta]),m2:p.ventaM2,plazo:p.plazo}}
-const desde=m=>precio(m,{ext:D.exterior.some(e=>e.id==='pino')?'pino':D.exterior[0].id}).tot;
+const desde=m=>precio(m,{ext:m.revOriginal||'original'}).tot;
 
 /* ---------- WhatsApp ---------- */
 let cur=null, cfg={ext:'original'};
+const extOf=id=>(id==='original'&&cur&&cur.revOriginal?D.exterior.find(e=>e.id===cur.revOriginal):null)||D.exterior.find(e=>e.id===id)||D.exterior[0];
 function waText(kind){
-  if(kind==='modelo'&&cur){const p=precio(cur,cfg);const ext=D.exterior.find(e=>e.id===cfg.ext);
+  if(kind==='modelo'&&cur){const p=precio(cur,cfg);const ext=extOf(cfg.ext);
     return `Hola! Vi en la web el modelo ${cur.nombre} (${cur.m2} m²) con fachada "${ext.nombre}". Presupuesto de referencia ${usd(p.tot)}. Me gustaría avanzar. Ref: ${cur.id}-${cfg.ext} · ${TR.vid}`}
   return `Hola! Vengo de la web de Smart Building y quiero consultar por una casa. (${TR.vid})`;
 }
@@ -474,7 +475,7 @@ const CQ={quiero:[],terreno:'',cuando:'',pago:''};
 try{Object.assign(CQ,ls.get('cq')||{})}catch(e){}
 ['cq-zona','cq-com','cq-nom'].forEach(id=>{const v=ls.get(id);if(v)$(id).value=v});
 function cqMsg(){
-  const p=precio(cur,cfg),ext=D.exterior.find(e=>e.id===cfg.ext),nom=$('cq-nom').value.trim(),zona=$('cq-zona').value.trim(),com=$('cq-com').value.trim();
+  const p=precio(cur,cfg),ext=extOf(cfg.ext),nom=$('cq-nom').value.trim(),zona=$('cq-zona').value.trim(),com=$('cq-com').value.trim();
   const L=[`Hola! ${nom?'Soy '+nom+'. ':''}Me interesa el modelo *${cur.nombre}* (${cur.m2} m²${+cur.deck?' + '+cur.deck+' m² de deck':''}).`,
    `Fachada: ${ext.nombre} · Presupuesto de referencia: ${usd(p.tot)}`];
   if(CQ.quiero.length)L.push(`Me gustaría: ${CQ.quiero.join(', ').toLowerCase()}`);
@@ -495,7 +496,7 @@ document.querySelectorAll('#cq [data-q]').forEach(g=>g.addEventListener('click',
 let cqLast=null;
 function cqOpen(){
   if(!cur)return;const p=precio(cur,cfg);
-  $('cq-sub').textContent=`${cur.nombre} · ${D.exterior.find(e=>e.id===cfg.ext).nombre} · ${usd(p.tot)}`;
+  $('cq-sub').textContent=`${cur.nombre} · ${extOf(cfg.ext).nombre} · ${usd(p.tot)}`;
   cqLast=document.activeElement;const bg=$('cq');bg.hidden=false;requestAnimationFrame(()=>bg.classList.add('on'));
   document.body.style.overflow='hidden';cqDraw();setTimeout(()=>$('cq-x').focus(),50);
   TR.ev('consulta_abierta',{modelo:cur.id});
@@ -599,10 +600,10 @@ function setAlbedo(mat,uid,color){
 }
 function applyExt(){
   if(!api||!cur||!(cur.fachadaMat||[]).length)return;
-  const e=D.exterior.find(x=>x.id===cfg.ext);
+  const e=extOf(cfg.ext);
   cur.fachadaMat.forEach(n=>{
     const m0=mats.find(q=>q.name===n);if(!m0)return;
-    if(e.id==='original'||!e.tex){if(orig[n])api.setMaterial(JSON.parse(JSON.stringify(orig[n])));return}
+    if(e.id==='original'||e.id===cur.revOriginal||!e.tex){if(orig[n])api.setMaterial(JSON.parse(JSON.stringify(orig[n])));return}
     const go=uid=>{const mm=JSON.parse(JSON.stringify(orig[n]||m0));setAlbedo(mm,uid);api.setMaterial(mm)};
     if(texUid[e.tex])go(texUid[e.tex]);
     else api.addTexture(TEX[e.tex].toDataURL('image/jpeg',.85),(err,uid)=>{if(!err){texUid[e.tex]=uid;go(uid)}});
@@ -681,7 +682,11 @@ function planta(m){
 
 /* ---------- detalle ---------- */
 function swatches(){
-  $('sw-ext').innerHTML=D.exterior.filter(e=>e.activo!==false).map(e=>`<button type="button" data-ext="${e.id}" aria-pressed="${cfg.ext===e.id}">${e.tex?`<canvas width="38" height="38" data-tx="${e.tex}"></canvas>`:`<span class="chip" style="background:linear-gradient(135deg,#8a857b,#d9d4c9)"></span>`}<b>${e.nombre}</b><small>${+e.usdM2?'+'+usd(e.usdM2*window.SBUprecio(D,cur,e.id).k)+'/m²':'incluido'}</small></button>`).join('');
+  const og=cur.revOriginal&&D.exterior.find(e=>e.id===cur.revOriginal), base=og?(+og.usdM2||0):0, k=window.SBUprecio(D,cur,'original').k;
+  const lst=D.exterior.filter(e=>e.activo!==false&&!(og&&e.id==='original'));
+  $('sw-ext').innerHTML=lst.map(e=>{const isO=og?e.id===og.id:e.id==='original';const d=((+e.usdM2||0)-base)*k;
+    const tag=isO?(og?'diseño original':'incluido'):Math.round(d)===0?'mismo precio':(d>0?'+':'−')+usd(Math.abs(d))+'/m²';
+    return `<button type="button" data-ext="${e.id}" aria-pressed="${cfg.ext===e.id}">${e.tex?`<canvas width="38" height="38" data-tx="${e.tex}"></canvas>`:`<span class="chip" style="background:linear-gradient(135deg,#8a857b,#d9d4c9)"></span>`}<b>${e.nombre}</b><small>${tag}</small></button>`}).join('');
   $('sw-ext').querySelectorAll('canvas').forEach(c=>c.getContext('2d').drawImage(TEX[c.dataset.tx],0,0,38,38));
   const dis=(o,arr)=>arr.opciones.map(x=>`<button type="button" disabled><span class="chip" style="background:var(--line)"></span><b>${x.nombre}</b><small>${+x.usdM2?(x.usdM2>0?'+':'−')+usd(Math.abs(x.usdM2))+'/m²':'incluido'}</small></button>`).join('');
   $('sw-int').innerHTML=dis('int',D.interior);$('sw-pis').innerHTML=dis('pis',D.pisos);
@@ -696,10 +701,10 @@ function renderPrice(){
    <table>${p.items.map(i=>`<tr><td>${i[0]}</td><td class="n">${i[1]?usd(i[1]):'incluido'}</td></tr>`).join('')}</table>
    <a class="btn" data-wa="modelo" href="#">Quiero esta casa</a>
    <div class="disc">Precio llave en mano sin terreno. Se ajusta después de visitar el terreno. ${cur.pendiente&&cur.pendiente.length?'<br>A confirmar en este modelo: '+cur.pendiente.join(', ')+'.':''}</div>`;
-  $('bar-m').textContent=`${cur.nombre} · ${D.exterior.find(e=>e.id===cfg.ext).nombre}`;$('bar-t').textContent=usd(p.tot);
+  $('bar-m').textContent=`${cur.nombre} · ${extOf(cfg.ext).nombre}`;$('bar-t').textContent=usd(p.tot);
 }
 function openModel(id,scroll=true){
-  const m=byId[id];if(!m)return;TR.ev('ver_modelo',{modelo:id});cur=m;cfg={ext:(ls.get('cfg-'+id)||{}).ext||'original'};api=null;loadedUid=null;
+  const m=byId[id];if(!m)return;TR.ev('ver_modelo',{modelo:id});cur=m;cfg={ext:(ls.get('cfg-'+id)||{}).ext||m.revOriginal||'original'};if(m.revOriginal&&cfg.ext==='original')cfg.ext=m.revOriginal;api=null;loadedUid=null;
   $('modelo').hidden=false;
   $('d-eb').textContent=[m.lugar,m.usos.map(u=>USOS[u]).join(' · ')].filter(Boolean).join(' — ');
   $('d-nom').textContent=m.nombre;$('d-frase').textContent=m.frase;
