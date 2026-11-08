@@ -132,8 +132,8 @@
     "tex": "lapacho",
     "dir": "h",
     "deFachada": "lapacho",
-    "largo": 2.5,
-    "ancho": 2.5
+    "largo": 1,
+    "ancho": 1
    },
    {
     "id": "machimbreBlanco",
@@ -170,8 +170,8 @@
     "tex": "lapacho",
     "dir": "h",
     "deFachada": "lapacho",
-    "largo": 2.5,
-    "ancho": 2.5
+    "largo": 1,
+    "ancho": 1
    }
   ]
  },

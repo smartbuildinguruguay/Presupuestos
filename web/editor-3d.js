@@ -35,12 +35,10 @@
     const P = PARTES.find(p => p.k === parte);
     const go = (uid, color) => sel.forEach(n => { if (!orig[n]) return; const x = clone(orig[n]); albedo(x, uid, color); api.setMaterial(x); tocadas.add(n) });
     if (!o) return go(null, P.prueba);
-    if (o.deFachada && m.revOriginal === o.deFachada) {
-      const src = (m.fachadaMat || []).map(x => orig[x]).find(Boolean), ch = src && ['AlbedoPBR', 'DiffusePBR', 'DiffuseColor'].map(c => src.channels[c]).find(c => c && c.texture);
-      if (ch) { const est = $('d3est'); if (est) est.textContent = 'Aplicando…';
-        return window.SBUestirar(api, ch.texture.uid, o.largo, o.ancho, texU, (u, why) => {
-          if (est) est.textContent = why ? 'No pude leer la textura del 3D (' + why + '): se ve la dibujada con esta medida.' : 'Listo: largo ×' + (+o.largo || 1) + ', ancho ×' + (+o.ancho || 1);
-          sel.forEach(n => { if (!orig[n]) return; const x = clone(orig[n]); ['AlbedoPBR', 'DiffusePBR', 'DiffuseColor'].forEach(c => { const q = x.channels[c]; if (!q) return; q.enable = true; q.texture = clone(ch.texture); if (u) q.texture.uid = u; q.factor = ch.factor ?? 1; q.color = ch.color || [1, 1, 1] }); api.setMaterial(x); tocadas.add(n) }) }, o.dir) }
+    if (o.deFachada) {
+      const key = 'mad:' + (o.ancho || 1) + ':' + (o.largo || 1) + ':' + (o.dir || 'h'), est = $('d3est');
+      if (texU[key]) { if (est) est.textContent = 'Largo ×' + (+o.largo || 1) + ', ancho ×' + (+o.ancho || 1); return go(texU[key]) }
+      return api.addTexture(window.SBUmadera(1024, o.ancho, o.largo, o.dir).toDataURL('image/jpeg', .88), (e, uid) => { if (e) return; texU[key] = uid; if (est) est.textContent = 'Largo ×' + (+o.largo || 1) + ', ancho ×' + (+o.ancho || 1); go(uid) });
     }
     if (o.tex) {
       const T = parte === 'fachada' ? window.SBUtexDe(o, m) : { tam: +o.ancho || 1, dir: o.dir || 'h', key: o.tex + '@' + (o.dir || 'h') + (o.color || '') + (o.ancho || 1) };

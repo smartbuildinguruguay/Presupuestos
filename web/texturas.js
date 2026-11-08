@@ -57,3 +57,28 @@ window.SBUestirar = function (api, uid, largo, ancho, cache, cb0, dir) {
     } catch (x) { no('el navegador no deja leer la imagen de Sketchfab') } };
     img.src = im.url }) } catch (x) { no('esta versión del visor no deja leer texturas') }
 };
+
+/* Machimbre / deck de madera dibujado, con la medida controlada:
+   ancho = tablas más anchas (1 = 8 tablas por paño), largo = tablas más largas (1 = 2 juntas por tabla y paño).
+   El color por defecto copia el lapacho del 3D (marrón grisáceo). Se dibuja horizontal y se gira si dir='v'. */
+window.SBUmadera = function (size, ancho, largo, dir, base) {
+  size = size || 512; ancho = +ancho > 0 ? +ancho : 1; largo = +largo > 0 ? +largo : 1; base = base || [128, 104, 84];
+  let seed = 7; const r = () => (seed = (seed * 16807) % 2147483647) / 2147483647, rnd = (a, b) => a + r() * (b - a);
+  const c = document.createElement('canvas'); c.width = c.height = size; const g = c.getContext('2d');
+  const nT = Math.max(1, Math.round(8 / ancho)), bh = size / nT, jt = 2 / largo;
+  for (let t = 0; t < nT; t++) {
+    const y = t * bh, nJ = Math.floor(jt) + (r() < jt % 1 ? 1 : 0), cuts = [0]; for (let j = 0; j < nJ; j++) cuts.push(((j + rnd(.15, .85)) / nJ) * size); cuts.push(size);
+    for (let k = 0; k + 1 < cuts.length; k++) {
+      const x0 = cuts[k], x1 = cuts[k + 1], d = rnd(-10, 10), w = rnd(-4, 4);
+      g.fillStyle = `rgb(${base[0] + d + w},${base[1] + d},${base[2] + d - w})`; g.fillRect(x0, y, x1 - x0, bh);
+      // veta fina y larga
+      for (let i = 0; i < 14; i++) { const yy = y + rnd(1, bh - 1), a = rnd(.03, .1); g.strokeStyle = r() < .5 ? `rgba(40,28,20,${a})` : `rgba(255,240,220,${a * .6})`; g.lineWidth = rnd(.5, 1.4);
+        g.beginPath(); g.moveTo(x0, yy); g.bezierCurveTo(x0 + (x1 - x0) * .3, yy + rnd(-bh * .08, bh * .08), x0 + (x1 - x0) * .7, yy + rnd(-bh * .08, bh * .08), x1, yy + rnd(-1, 1)); g.stroke() }
+      if (k > 0) { g.fillStyle = 'rgba(25,18,12,.45)'; g.fillRect(x0 - 1, y, 2, bh) }
+    }
+    g.fillStyle = 'rgba(20,14,10,.5)'; g.fillRect(0, y + bh - Math.max(1.5, size / 300), size, Math.max(1.5, size / 300));
+    g.fillStyle = 'rgba(255,245,230,.08)'; g.fillRect(0, y, size, 1);
+  }
+  if (dir === 'v') { const o = document.createElement('canvas'); o.width = o.height = size; const q = o.getContext('2d'); q.translate(size / 2, size / 2); q.rotate(Math.PI / 2); q.drawImage(c, -size / 2, -size / 2); return o }
+  return c;
+};
