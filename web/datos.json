@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-08T23:44:25.351Z",
+ "actualizado": "2026-11-08T23:44:41.870Z",
  "contacto": {
   "whatsapp": "59898526226",
   "instagram": "smartbuildinguruguay",
@@ -161,7 +161,9 @@
     "nombre": "Vinílico símil madera",
     "usdM2": -8,
     "tex": "pino",
-    "dir": "h"
+    "dir": "h",
+    "largo": 1,
+    "ancho": 0.75
    },
    {
     "id": "madera",
