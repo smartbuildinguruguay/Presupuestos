@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
+<script>try{history.scrollRestoration='manual'}catch(e){}</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>Smart Building Uruguay</title>
@@ -415,6 +416,20 @@ h1,h2,h3{text-transform:none}
   </div>
 </div></section>
 
+
+
+
+<figure class="obra">
+  <img src="img/obra-barn-1800.jpg?v=1" srcset="img/obra-barn-900.jpg?v=1 900w, img/obra-barn-1800.jpg?v=1 1800w" sizes="100vw" alt="Barn Villa de madera con alero y cercha a la vista, entre árboles" loading="lazy" style="object-position:40% 50%">
+  <figcaption><div class="w"><div class="eyebrow">Barn Villa · Maldonado</div><b>Una nave a dos aguas con las cerchas a la vista.</b><span>194 m² con cuatro suites, galería y parrillero cubiertos.</span></div></figcaption>
+</figure>
+
+<section class="s" id="catalogo"><div class="w">
+  <div class="s-head"><div><div class="eyebrow">Catálogo</div><h2>Modelos</h2></div>
+    <p class="lead">Cada uno se adapta a tu terreno. Entrá a la ficha técnica para ver los planos, recorrerlo en 3D y armar tu presupuesto.</p></div>
+  <div class="mlist" id="grid"></div>
+</div></section>
+
 <section class="s" id="modelo" hidden><div class="w">
   <div class="d-head">
     <div><div class="eyebrow" id="d-eb"></div><h2 id="d-nom"></h2><p class="frase" id="d-frase"></p></div>
@@ -448,18 +463,6 @@ h1,h2,h3{text-transform:none}
       <p class="soon">No incluye terreno, conexiones de UTE y OSE ni muebles sueltos.</p>
     </div>
   </div>
-</div></section>
-
-
-<figure class="obra">
-  <img src="img/obra-barn-1800.jpg?v=1" srcset="img/obra-barn-900.jpg?v=1 900w, img/obra-barn-1800.jpg?v=1 1800w" sizes="100vw" alt="Barn Villa de madera con alero y cercha a la vista, entre árboles" loading="lazy" style="object-position:40% 50%">
-  <figcaption><div class="w"><div class="eyebrow">Barn Villa · Maldonado</div><b>Una nave a dos aguas con las cerchas a la vista.</b><span>194 m² con cuatro suites, galería y parrillero cubiertos.</span></div></figcaption>
-</figure>
-
-<section class="s" id="catalogo"><div class="w">
-  <div class="s-head"><div><div class="eyebrow">Catálogo</div><h2>Modelos</h2></div>
-    <p class="lead">Cada uno se adapta a tu terreno. Entrá a la ficha técnica para ver los planos, recorrerlo en 3D y armar tu presupuesto.</p></div>
-  <div class="mlist" id="grid"></div>
 </div></section>
 
 <figure class="obra">
@@ -837,7 +840,9 @@ const io=new IntersectionObserver(es=>es.forEach(x=>$('bar').classList.toggle('o
 io.observe($('modelo'));
 
 /* deep link: #smartrancho abre ese modelo (para el reel y para compartir) */
-const h=location.hash.slice(1);if(byId[h])openModel(h,true);
+// al recargar, la página arranca de arriba (catálogo y buscador); un link compartido a un modelo sí lo abre
+{const h=location.hash.slice(1),nav=(performance.getEntriesByType('navigation')[0]||{}).type;
+ if(byId[h]&&nav!=='reload'&&nav!=='back_forward')openModel(h,true);else if(byId[h]){history.scrollRestoration='manual';history.replaceState(null,'',location.pathname+location.search);scrollTo(0,0);addEventListener('load',()=>setTimeout(()=>scrollTo(0,0),0))}}
 window.addEventListener('hashchange',()=>{const k=location.hash.slice(1);if(byId[k]&&(!cur||cur.id!==k))openModel(k)});
 
 })();
