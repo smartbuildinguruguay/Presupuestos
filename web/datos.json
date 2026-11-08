@@ -3762,29 +3762,30 @@
   "activo": true,
   "opciones": [
    {
-    "id": "natural",
-    "nombre": "Chapa galvanizada",
-    "usdM2": 0,
-    "color": "#b9bdbf"
-   },
-   {
     "id": "negra",
     "nombre": "Chapa prepintada negra",
-    "usdM2": 5,
+    "usdM2": 0,
     "color": "#26282b"
    },
    {
     "id": "grafito",
-    "nombre": "Chapa gris grafito",
-    "usdM2": 5,
+    "nombre": "Chapa prepintada gris",
+    "usdM2": 0,
     "color": "#55595e"
    },
    {
     "id": "blanca",
     "nombre": "Chapa prepintada blanca",
-    "usdM2": 5,
+    "usdM2": 0,
     "color": "#eeeeea"
    }
   ]
+ },
+ "matsBase": {
+  "techo": [
+   "Metal_06_1K"
+  ],
+  "interior": [],
+  "piso": []
  }
 }

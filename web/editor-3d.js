@@ -11,10 +11,11 @@
     { k: 'piso', t: 'Pisos', d: 'Pisos', lista: 'pisos', prueba: [.55, .35, .2] },
     { k: 'techo', t: 'Techo', d: 'Techo', lista: 'techo', prueba: [.1, .1, .12] },
   ];
-  let modelId = null, parte = 'fachada', api = null, mats = [], orig = {}, tocadas = new Set(), texU = {}, tocar = true, busy = false;
+  let ultimo = { n: '', t: 0 }, modelId = null, parte = 'fachada', api = null, mats = [], orig = {}, tocadas = new Set(), texU = {}, tocar = true, busy = false;
 
   const modelo = () => A().D.modelos.find(m => m.id === modelId);
-  const lista = (m, k) => k === 'fachada' ? (m.fachadaMat || []) : ((m.mats || {})[k] || []);
+  const lista = (m, k) => { if (k === 'fachada') return m.fachadaMat || []; const own = (m.mats || {})[k] || []; if (own.length) return own;
+    const base = ((A().D.matsBase || {})[k] || []).map(x => x.toLowerCase()); return mats.filter(q => base.includes(q.name.toLowerCase())).map(q => q.name) };
   const setLista = (m, k, v) => { if (k === 'fachada') m.fachadaMat = v; else { m.mats = m.mats || {}; m.mats[k] = v } A().saveDraft() };
   const opciones = k => { const P = PARTES.find(p => p.k === k), D = A().D; return k === 'fachada' ? D.exterior.filter(e => e.tex) : ((D[P.lista] || {}).opciones || []) };
   const rgb = h => [1, 3, 5].map(i => Math.pow(parseInt(h.substr(i, 2), 16) / 255, 2.2));
@@ -84,6 +85,7 @@
         // tocar el modelo: marca o desmarca el material tocado en la parte activa
         try { a.addEventListener('click', info => {
           if (!tocar || !info || !info.material) return; const n = info.material.name; if (!n) return;
+          const t = Date.now(); if (n === ultimo.n && t - ultimo.t < 700) return; ultimo = { n, t };
           const L = new Set(lista(m, parte)); if (L.has(n)) L.delete(n); else L.add(n);
           setLista(m, parte, [...L]); lado(); pintar(); destellar(n) }, { pick: 'slow' }) } catch (e) { }
       }) }) },
