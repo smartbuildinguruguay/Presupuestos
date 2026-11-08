@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-08T00:34:48.199Z",
+ "actualizado": "2026-11-08T00:37:24.653Z",
  "contacto": {
   "whatsapp": "59898526226",
   "instagram": "smartbuildinguruguay",
@@ -188,7 +188,8 @@
    "factor": 1,
    "fachadaM2": null,
    "fachadaMat": [
-    "*3"
+    "*3",
+    "*7"
    ],
    "planta": "eden-rock",
    "pendiente": [
@@ -367,6 +368,18 @@
       -9.069,
       -11.236,
       2.555
+     ]
+    },
+    "fachada": {
+     "p": [
+      -3.137,
+      -28.342,
+      1.877
+     ],
+     "t": [
+      -7.845,
+      -11.265,
+      2.562
      ]
     }
    }
