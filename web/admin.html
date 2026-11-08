@@ -184,7 +184,8 @@ tr.vrow{cursor:pointer}tr.vrow:hover td{background:var(--hi)}
     <p class="note">El extra se cobra por m² de fachada, sobre lo que ya incluye el rubro de cerramiento (siding de pino). Al extra se le suman imprevistos y margen. "Textura" es la que se pinta en el 3D: pino, lapacho, chapa o eifs.</p>
     <div class="tbl"><table id="rtab"></table></div>
     <button type="button" class="btn ghost" id="rAdd" style="justify-self:start">+ Revestimiento</button>
-  </div></section>
+  </div>
+  <div id="tlistas" style="display:grid;gap:18px;margin-top:18px"></div></section>
 
   <section id="t-planos" hidden>
     <div class="card">
@@ -435,7 +436,7 @@ function mForm(){
     <label>Revestimiento original<select data-k="revOriginal"><option value="">Sin definir</option>${D.exterior.filter(e=>e.id!=='original').map(e=>`<option value="${e.id}">${esc(e.nombre)}</option>`).join('')}</select><small>El que tiene el diseño: va incluido en el precio base</small></label>
     <label class="wide">Partes del 3D que son pared exterior<input data-k="fachadaMat" data-t="csv"><small>Son las que cambian de textura cuando el cliente elige otro revestimiento. Elegilas con el botón de abajo.</small></label>
     <label>Ajuste de escala de este modelo<input type="number" step="0.1" min="0.05" data-k="texEsc" data-t="num" placeholder="1"><small>Multiplica el tamaño de todas las texturas solo en este modelo (si está dibujado más grande o más chico). 1 = sin cambio</small></label>
-    <label><span>&nbsp;</span><button type="button" class="btn ghost" id="p3go">Elegir paredes en el 3D</button></label>
+    <label><span>&nbsp;</span><button type="button" class="btn ghost" id="p3go">Marcar partes y vistas en el 3D</button></label>
     <div id="p3d" style="grid-column:1 / -1"></div>
     <label class="wide">Imagen de portada<input data-k="imagen" placeholder="se completa sola al subir un render"><small>Si está vacío usa la miniatura de Sketchfab.</small></label>
     <label class="wide">A confirmar (uno por línea; solo lo ves vos en el panel)<textarea data-k="pendiente" data-t="list"></textarea></label>
@@ -505,11 +506,22 @@ function pick3D(m){
   if(!window.Sketchfab){box.innerHTML='<p class="note">Cargando visor…</p>';setTimeout(()=>pick3D(m),400);return}
   const conTex=D.exterior.filter(e=>e.tex);
   box.innerHTML=`<div class="p3d"><div class="p3v"><iframe title="Modelo 3D" allow="autoplay; fullscreen"></iframe><div class="pm" id="p3msg">Cargando el modelo…</div></div>
-   <div class="p3l"><p class="note">Marcá las partes que son <b>pared exterior</b>. Se pintan con el revestimiento de prueba, así ves al toque si quedó bien. "Ver" la pinta de rojo un momento para ubicarla.</p>
+   <div class="p3l"><label>Qué estás marcando<select id="p3c"><option value="fachada">Paredes exteriores</option><option value="interior">Paredes interiores</option><option value="piso">Pisos</option><option value="techo">Techo</option></select></label>
+    <p class="note">Marcá las partes del 3D que son eso. Se pintan con una terminación de prueba, así ves al toque si quedó bien. "Ver" la pinta de rojo un momento para ubicarla.</p>
+    <div style="display:grid;gap:6px"><span class="note"><b>Vista de cámara</b> para cuando el cliente elige esta terminación: girá el 3D hasta donde quieras y guardala.</span>
+     <div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="btn ghost" id="p3vs" style="padding:5px 10px;font-size:.78rem">Guardar esta vista</button><button type="button" class="btn ghost" id="p3vg" style="padding:5px 10px;font-size:.78rem">Ir a la guardada</button><button type="button" class="btn ghost" id="p3vb" style="padding:5px 10px;font-size:.78rem">Borrar</button></div><span class="note" id="p3vm"></span></div>
+    <div id="p3fx" style="display:grid;gap:8px">
     <label>Probar con<select id="p3x">${conTex.map(e=>`<option value="${e.id}">${esc(e.nombre)}</option>`).join('')}</select></label>
     <div class="f" style="grid-template-columns:1fr 1fr"><label>Tamaño de esta textura<input type="number" step="0.1" min="0.05" id="p3t"><small>Vale para todos los modelos. 2 = el doble de ancha</small></label>
-     <label>Sentido<select id="p3s"><option value="v">Vertical</option><option value="h">Horizontal</option></select></label></div>
+     <label>Sentido<select id="p3s"><option value="v">Vertical</option><option value="h">Horizontal</option></select></label></div></div>
     <div class="p3m" id="p3m"></div></div></div>`;
+  const parte=()=>$('p3c').value;
+  const vmsg=()=>{const v=(m.vistas||{})[parte()];$('p3vm').textContent=v?'Hay una vista guardada para '+$('p3c').selectedOptions[0].text.toLowerCase()+'.':'Sin vista guardada: la web usa una aproximada.'};
+  $('p3c').onchange=()=>{$('p3fx').hidden=parte()!=='fachada';vmsg();p3list(m);p3paint(m)};
+  $('p3vs').onclick=()=>{if(!papi)return;papi.getCameraLookAt((e,c)=>{if(e||!c)return;m.vistas=m.vistas||{};m.vistas[parte()]={p:c.position.map(v=>+v.toFixed(3)),t:c.target.map(v=>+v.toFixed(3))};saveDraft();vmsg()})};
+  $('p3vg').onclick=()=>{const v=(m.vistas||{})[parte()];if(papi&&v)papi.setCameraLookAt(v.p,v.t,1.2)};
+  $('p3vb').onclick=()=>{if(m.vistas){delete m.vistas[parte()];saveDraft();vmsg()}};
+  vmsg();
   const pre=conTex.find(e=>e.id!==m.revOriginal);if(pre)$('p3x').value=pre.id;
   const p3ext=()=>D.exterior.find(x=>x.id===$('p3x').value);
   const p3sync=()=>{const e=p3ext();if(!e)return;$('p3t').value=+e.tam||1;$('p3s').value=e.dir||'v'};
@@ -526,12 +538,14 @@ function pick3D(m){
       p3list(m);p3paint(m)})})},
     error(){$('p3msg').textContent='No se pudo abrir el modelo en Sketchfab.'}});
 }
+const p3parte=()=>($('p3c')||{}).value||'fachada';
+const p3get=m=>{const c=p3parte();if(c==='fachada')return m.fachadaMat||[];return (m.mats||{})[c]||[]};
+const p3set=(m,v)=>{const c=p3parte();if(c==='fachada'){m.fachadaMat=v;const inp=$('mform').querySelector('[data-k="fachadaMat"]');if(inp)inp.value=v.join(', ')}else{m.mats=m.mats||{};m.mats[c]=v}};
 function p3list(m){
-  const sel=new Set(m.fachadaMat||[]);
+  const sel=new Set(p3get(m));
   $('p3m').innerHTML=pmats.map((x,i)=>`<label><input type="checkbox" data-i="${i}"${sel.has(x.name)?' checked':''}>${esc(x.name)}<button type="button" data-v="${i}">ver</button></label>`).join('')||'<p class="note">El modelo no devolvió materiales.</p>';
   $('p3m').querySelectorAll('[data-i]').forEach(cb=>cb.onchange=()=>{
-    m.fachadaMat=[...$('p3m').querySelectorAll('[data-i]:checked')].map(c=>pmats[+c.dataset.i].name);
-    const inp=$('mform').querySelector('[data-k="fachadaMat"]');if(inp)inp.value=m.fachadaMat.join(', ');
+    p3set(m,[...$('p3m').querySelectorAll('[data-i]:checked')].map(c=>pmats[+c.dataset.i].name));
     saveDraft();p3paint(m)});
   $('p3m').querySelectorAll('[data-v]').forEach(b=>b.onclick=ev=>{ev.preventDefault();if(!papi)return;
     const n=pmats[+b.dataset.v].name,x=clone(porig[n]);p3albedo(x,null,[1,0,0]);papi.setMaterial(x);
@@ -539,8 +553,12 @@ function p3list(m){
 }
 function p3paint(m){
   if(!papi||m.id!==selId)return;
-  const sel=new Set(m.fachadaMat||[]),e=D.exterior.find(x=>x.id===($('p3x')||{}).value),T=e&&e.tex?window.SBUtexDe(e,m):null,key=T&&T.key;
+  const sel=new Set(p3get(m));
   ptouch.forEach(n=>{if(!sel.has(n)&&porig[n]){papi.setMaterial(clone(porig[n]));ptouch.delete(n)}});
+  if(p3parte()!=='fachada'){ // otras partes: un color de prueba bien visible
+    const c={interior:[.95,.85,.55],piso:[.55,.35,.2],techo:[.1,.1,.12]}[p3parte()];
+    sel.forEach(n=>{if(!porig[n])return;const x=clone(porig[n]);p3albedo(x,null,c,1);papi.setMaterial(x);ptouch.add(n)});return}
+  const e=D.exterior.find(x=>x.id===($('p3x')||{}).value),T=e&&e.tex?window.SBUtexDe(e,m):null,key=T&&T.key;
   if(!e||!e.tex)return;
   const go=uid=>sel.forEach(n=>{if(!porig[n])return;const x=clone(porig[n]);p3albedo(x,uid,null,1);papi.setMaterial(x);ptouch.add(n)});
   if(ptex[key])go(ptex[key]);
@@ -585,6 +603,27 @@ function revs(){
   $('rtab').querySelectorAll('[data-ei]').forEach(el=>{const ev=el.type==='checkbox'||el.tagName==='SELECT'?'change':'input';el.addEventListener(ev,()=>{const e=D.exterior[+el.dataset.ei],f=el.dataset.f;
     e[f]=el.type==='checkbox'?el.checked:f==='usdM2'?+el.value||0:f==='tam'?(+el.value||1):f==='tex'?(el.value||null):el.value;saveDraft();if(f==='usdM2'){el.closest('tr').children[2].textContent=usd((+el.value||0)*k)}})});
   $('rtab').querySelectorAll('[data-edel]').forEach(b=>b.onclick=()=>{D.exterior.splice(+b.dataset.edel,1);changed()});
+}
+/* interior, pisos y techo: la primera opción va incluida; las otras suman o restan por m² */
+const LISTAS=[['interior','Paredes interiores','por m² de pared interior (≈ fachada × 1,6)'],['pisos','Pisos','por m² de piso'],['techo','Techo','por m² de techo (≈ planta × 1,25)']];
+function listas(){
+  const P=D.precio,k=(1+P.imprevistos/100)*(1+P.margen/100);
+  $('tlistas').innerHTML=LISTAS.map(([key,tit,nota])=>{const L=D[key]=D[key]||{activo:true,opciones:[]};
+    return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2>${tit}</h2><label class="note"><input type="checkbox" data-la="${key}"${L.activo!==false?' checked':''} style="width:auto"> Se muestra en la web</label></div>
+     <p class="note">Costo extra ${nota}. La primera de la lista es la incluida. Color: el que se pinta en el 3D; textura: madera dibujada (opcional).</p>
+     <div class="tbl"><table><tr><th>Nombre</th><th class="n">Extra USD/m²</th><th class="n">Venta/m²</th><th>Color</th><th>Textura</th><th></th></tr>
+     ${L.opciones.map((o,i)=>`<tr><td><input data-l="${key}" data-li="${i}" data-f="nombre" value="${esc(o.nombre)}" aria-label="Nombre"></td>
+      <td class="n"><input type="number" data-l="${key}" data-li="${i}" data-f="usdM2" value="${+o.usdM2||0}" aria-label="Extra" style="width:80px"></td><td class="n">${usd((+o.usdM2||0)*k)}</td>
+      <td><input type="color" data-l="${key}" data-li="${i}" data-f="color" value="${o.color||'#cccccc'}" aria-label="Color" style="width:44px;padding:2px"></td>
+      <td><select data-l="${key}" data-li="${i}" data-f="tex" aria-label="Textura">${['','pino','lapacho'].map(t=>`<option value="${t}"${(o.tex||'')===t?' selected':''}>${t||'solo color'}</option>`).join('')}</select></td>
+      <td><button type="button" class="btn ghost" data-ld="${key}" data-li="${i}" aria-label="Borrar">×</button></td></tr>`).join('')}</table></div>
+     <button type="button" class="btn ghost" data-ladd="${key}" style="justify-self:start">+ Opción</button></div>`}).join('');
+  const T=$('tlistas');
+  T.querySelectorAll('[data-l]').forEach(el=>el.addEventListener(el.tagName==='SELECT'||el.type==='color'?'change':'input',()=>{const o=D[el.dataset.l].opciones[+el.dataset.li],f=el.dataset.f;
+    if(f==='usdM2')o.usdM2=+el.value||0;else if(f==='tex'){if(el.value)o.tex=el.value;else delete o.tex}else o[f]=el.value;saveDraft()}));
+  T.querySelectorAll('[data-la]').forEach(el=>el.onchange=()=>{D[el.dataset.la].activo=el.checked;saveDraft()});
+  T.querySelectorAll('[data-ld]').forEach(b=>b.onclick=()=>{D[b.dataset.ld].opciones.splice(+b.dataset.li,1);changed()});
+  T.querySelectorAll('[data-ladd]').forEach(b=>b.onclick=()=>{const L=D[b.dataset.ladd];let n=1;while(L.opciones.some(o=>o.id==='op-'+n))n++;L.opciones.push({id:'op-'+n,nombre:'Opción nueva',usdM2:0,color:'#cccccc'});changed()});
 }
 $('rAdd').onclick=()=>{let n=1;while(D.exterior.some(e=>e.id==='rev-'+n))n++;D.exterior.push({id:'rev-'+n,nombre:'Revestimiento nuevo',usdM2:0,tex:null,nota:'',activo:false});changed()};
 
@@ -852,7 +891,7 @@ function vLinkOut(){const base=location.href.replace(/admin\.html.*$/,'');const 
 /* ---------- ciclo ---------- */
 function renderAll(full){
   if(tab==='modelos'){mList();if(full!==false)mForm();mPrice()}
-  else if(tab==='planos')window.SBUeditor.render(selId);else if(tab==='precios')precios();else if(tab==='rev')revs();else if(tab==='renders')renders();else if(tab==='general')general();else if(tab==='visitas')visitas();
+  else if(tab==='planos')window.SBUeditor.render(selId);else if(tab==='precios')precios();else if(tab==='rev'){revs();listas()}else if(tab==='renders')renders();else if(tab==='general')general();else if(tab==='visitas')visitas();
 }
 if(draftBase&&remote&&!same(draftBase,remote))syncMsg='Se juntaron tus cambios sin subir con lo último de la web.';
 renderAll(true);syncUI();

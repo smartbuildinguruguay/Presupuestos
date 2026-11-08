@@ -1,6 +1,8 @@
 /* Cálculo de precio: lo usan la web pública y el panel, así los dos dan lo mismo.
    Venta = costo directo × (1 + imprevistos) × (1 + margen), redondeado línea por línea. */
 window.SBUprecio = function (D, m, extId) {
+  // extId puede ser el id del revestimiento o la configuración entera {ext, int, pis, techo}
+  const cfg = typeof extId === 'object' && extId ? extId : { ext: extId }; extId = cfg.ext || 'original';
   const P = D.precio;
   const k = (1 + P.imprevistos / 100) * (1 + P.margen / 100);
   const rd = v => Math.round(v / (P.redondeo || 1)) * (P.redondeo || 1);
@@ -16,6 +18,12 @@ window.SBUprecio = function (D, m, extId) {
   ];
   if (+m.deck) L.push({ id: 'deck', t: `Decks ${m.deck} m²`, det: `${m.deck} m² × USD ${P.deckM2} costo/m²`, costo: m.deck * P.deckM2 });
   L.push({ id: 'fachada', t: `Fachada: ${ext.nombre}${esOriginal && orig ? ' (diseño original)' : ''}`, det: `${fachM2} m² de fachada × USD ${+ext.usdM2 || 0} extra/m²`, costo: fachM2 * (+ext.usdM2 || 0) });
+  // terminaciones: la primera opción de cada lista va incluida; las otras suman (o restan) por m²
+  const extra = (lista, id, nom, area, det) => { const L0 = D[lista]; if (!L0 || L0.activo === false || !id) return; const o = L0.opciones.find(x => x.id === id); if (!o || !+o.usdM2) return;
+    L.push({ id: lista, t: `${nom}: ${o.nombre}`, det: `${area} m² ${det} × USD ${+o.usdM2} extra/m²`, costo: area * (+o.usdM2) }) };
+  extra('interior', cfg.int, 'Interior', Math.round(fachM2 * 1.6), 'de paredes interiores (≈ fachada × 1,6)');
+  extra('pisos', cfg.pis, 'Pisos', m.m2, 'de piso');
+  extra('techo', cfg.techo, 'Techo', Math.round(m.m2 * 1.25), 'de techo (≈ planta × 1,25)');
   L.forEach(l => { l.venta = rd(l.costo * k) });
   const costo = L.reduce((a, l) => a + l.costo, 0);
   const venta = L.reduce((a, l) => a + l.venta, 0);

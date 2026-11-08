@@ -113,41 +113,57 @@
    "usdM2": 20,
    "tex": "eifs",
    "nota": "Aislación exterior + revoque fino",
-   "activo": true
+   "activo": false
   }
  ],
  "interior": {
-  "activo": false,
+  "activo": true,
   "opciones": [
    {
     "id": "yeso",
     "nombre": "Placa de yeso pintada",
-    "usdM2": 0
+    "usdM2": 0,
+    "color": "#ece8df"
    },
    {
     "id": "machimbre",
     "nombre": "Machimbre de pino",
-    "usdM2": 18
+    "usdM2": 18,
+    "tex": "pino",
+    "dir": "h"
+   },
+   {
+    "id": "machimbreBlanco",
+    "nombre": "Machimbre pintado blanco",
+    "usdM2": 22,
+    "tex": "pino",
+    "dir": "v",
+    "color": "#f1eee7"
    }
   ]
  },
  "pisos": {
-  "activo": false,
+  "activo": true,
   "opciones": [
    {
     "id": "porcelanato",
     "nombre": "Porcelanato 60×60",
-    "usdM2": 0
+    "usdM2": 0,
+    "color": "#cfcac1"
    },
    {
     "id": "vinilico",
     "nombre": "Vinílico símil madera",
-    "usdM2": -8
+    "usdM2": -8,
+    "tex": "pino",
+    "dir": "h"
    },
    {
     "id": "madera",
-    "nombre": "Deck interior de madera",
-    "usdM2": 35
+    "nombre": "Piso de madera dura",
+    "usdM2": 35,
+    "tex": "lapacho",
+    "dir": "h"
    }
   ]
  },
@@ -3686,5 +3702,34 @@
  },
  "visitas": {
   "url": ""
+ },
+ "techo": {
+  "activo": true,
+  "opciones": [
+   {
+    "id": "natural",
+    "nombre": "Chapa galvanizada",
+    "usdM2": 0,
+    "color": "#b9bdbf"
+   },
+   {
+    "id": "negra",
+    "nombre": "Chapa prepintada negra",
+    "usdM2": 5,
+    "color": "#26282b"
+   },
+   {
+    "id": "grafito",
+    "nombre": "Chapa gris grafito",
+    "usdM2": 5,
+    "color": "#55595e"
+   },
+   {
+    "id": "blanca",
+    "nombre": "Chapa prepintada blanca",
+    "usdM2": 5,
+    "color": "#eeeeea"
+   }
+  ]
  }
 }

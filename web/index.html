@@ -232,7 +232,7 @@ footer .w{display:flex;flex-wrap:wrap;gap:18px 40px;justify-content:space-betwee
 .sheet .fine{font-size:.75rem;color:var(--mute);margin:-6px 0 0}
 
 /* barra fija (móvil) */
-.bar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:var(--ink);color:var(--paper);padding:10px max(14px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:12px;transform:translateY(110%);visibility:hidden;transition:transform .25s,visibility .25s}
+.bar{position:fixed;left:0;right:0;bottom:0;z-index:40;background:#4d5258;color:var(--ink);border-top:1.5px solid var(--ink);padding:10px max(14px,env(safe-area-inset-right,0px)) calc(10px + env(safe-area-inset-bottom,0px)) max(14px,env(safe-area-inset-left,0px));display:flex;align-items:center;gap:12px;transform:translateY(110%);visibility:hidden;transition:transform .25s,visibility .25s}
 .bar.on{transform:none;visibility:visible}
 .bar .bt{flex:1;min-width:0}
 .bar .bt small{display:block;font:500 .68rem var(--f-m);opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -306,6 +306,23 @@ h1,h2,h3{text-transform:none}
 .card:hover{box-shadow:5px 5px 0 var(--cu)}
 .price{background:#4d5258;color:var(--ink);border:1.5px solid var(--ink)}
 .opt[aria-pressed="true"]{background:color-mix(in srgb,var(--cu) 16%,var(--paper))}
+
+/* visor con las opciones adentro, a la derecha */
+.vwrap{position:relative;border:1.5px solid var(--ink);background:#1d1b18}
+.vwrap .viewer{aspect-ratio:16/9;border-radius:0}
+.opts{position:absolute;top:12px;right:12px;bottom:12px;width:min(300px,34%);background:rgba(54,58,64,.9);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(245,244,240,.35);display:flex;flex-direction:column;gap:10px;padding:12px;overflow:auto;z-index:2}
+.otabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.otabs button{background:transparent;border:1px solid rgba(245,244,240,.35);color:var(--ink);font:500 .72rem var(--f-m);letter-spacing:.06em;text-transform:uppercase;padding:8px 2px}
+.otabs button[aria-selected="true"]{background:var(--cu);border-color:var(--cu);color:#22252a}
+.ohead{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
+.ohead b{font:800 1.15rem var(--f-d);font-stretch:75%}
+.ohead small{font:500 .68rem var(--f-m);color:var(--mute)}
+.opts .sw{grid-template-columns:minmax(0,1fr)}
+.opts .sw button{background:rgba(245,244,240,.06);border-color:rgba(245,244,240,.25)}
+.opts .sw button[aria-pressed="true"]{border-color:var(--cu);background:rgba(255,179,71,.14)}
+.vwrap+.d-grid{margin-top:16px;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
+.vwrap+.d-grid .ficha{margin-top:0;align-self:start}
+@media (max-width:760px){.vwrap .viewer{aspect-ratio:4/3}.opts{position:static;width:auto;background:var(--sheet);backdrop-filter:none;border:0;border-top:1.5px solid var(--ink)}.vwrap+.d-grid{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
@@ -386,17 +403,17 @@ h1,h2,h3{text-transform:none}
     <div><div class="eyebrow" id="d-eb"></div><h2 id="d-nom"></h2><p class="frase" id="d-frase"></p></div>
     <button type="button" class="back" id="d-back">← Ver otros modelos</button>
   </div>
+  <div class="vwrap">
+    <div class="viewer" id="viewer"></div>
+    <aside class="opts" id="opts" aria-label="Terminaciones">
+      <div class="otabs" id="otabs" role="tablist"></div>
+      <div class="ohead"><b id="o-tit"></b><small id="o-sub"></small></div>
+      <div class="sw" id="sw"></div>
+    </aside>
+  </div>
   <div class="d-grid">
-    <div>
-      <div class="viewer" id="viewer"></div>
-      <div class="ficha" id="ficha"></div>
-    </div>
-    <div class="panel">
-      <div class="blk"><h3>Revestimiento exterior <small id="fach-m2"></small></h3><div class="sw" id="sw-ext"></div></div>
-      <div class="blk"><h3>Interior <small>próximamente</small></h3><div class="sw" id="sw-int"></div></div>
-      <div class="blk"><h3>Pisos <small>próximamente</small></h3><div class="sw" id="sw-pis"></div></div>
-      <div class="price" id="price"></div>
-    </div>
+    <div class="ficha" id="ficha"></div>
+    <div class="price" id="price"></div>
   </div>
   <div class="plan-wrap">
     <div><div class="blk" id="plan-blk"><h3>Planta <small id="plan-esc"></small></h3><div class="plan" id="plan"></div></div><div class="blk" id="fa-blk" hidden style="margin-top:24px"><h3>Fachada <small>dibujada del render</small></h3><div class="plan" id="fa"></div></div><div class="blk" id="cer-blk" hidden><h3>Corte <small>la cercha a la vista</small></h3><div class="plan" id="cer"></div></div></div>
@@ -526,7 +543,7 @@ const TR=(()=>{
 
 /* ---------- precio ---------- */
 const fachada=m=>window.SBUprecio(D,m,'original').fachM2;
-function precio(m,cfg){const p=window.SBUprecio(D,m,cfg.ext);return {tot:p.venta,items:p.lineas.map(l=>[l.t,l.venta]),m2:p.ventaM2,plazo:p.plazo}}
+function precio(m,cfg){const p=window.SBUprecio(D,m,cfg);return {tot:p.venta,items:p.lineas.map(l=>[l.t,l.venta]),m2:p.ventaM2,plazo:p.plazo}}
 const desde=m=>precio(m,{ext:m.revOriginal||'original'}).tot;
 
 /* ---------- WhatsApp ---------- */
@@ -534,7 +551,7 @@ let cur=null, cfg={ext:'original'};
 const extOf=id=>(id==='original'&&cur&&cur.revOriginal?D.exterior.find(e=>e.id===cur.revOriginal):null)||D.exterior.find(e=>e.id===id)||D.exterior[0];
 function waText(kind){
   if(kind==='modelo'&&cur){const p=precio(cur,cfg);const ext=extOf(cfg.ext);
-    return `Hola! Vi en la web el modelo ${cur.nombre} (${cur.m2} m²) con fachada "${ext.nombre}". Presupuesto de referencia ${usd(p.tot)}. Me gustaría avanzar. Ref: ${cur.id}-${cfg.ext} · ${TR.vid}`}
+    return `Hola! Vi en la web el modelo ${cur.nombre} (${cur.m2} m²) con ${resumen()}. Presupuesto de referencia ${usd(p.tot)}. Me gustaría avanzar. Ref: ${cur.id}-${cfg.ext} · ${TR.vid}`}
   return `Hola! Vengo de la web de Smart Building y quiero consultar por una casa. (${TR.vid})`;
 }
 
@@ -633,18 +650,20 @@ const tex=window.SBUtex;
 const TEX={};D.exterior.forEach(e=>{if(e.tex)TEX[e.id]=tex(e.tex,256,1,e.dir||'v')});
 
 /* ---------- Sketchfab ---------- */
-let api=null,mats=[],orig={},texUid={},loadedUid=null;
+let api=null,mats=[],orig={},texUid={},loadedUid=null,cam0=null,pendView=null;
 function vstat(t){const s=$('viewer').querySelector('.vs');if(s)s.textContent=t||''}
 function open3D(){
   if(!open3D.busy){open3D.busy=1;setTimeout(()=>open3D.busy=0,3000);TR.ev('abrir_3d',{modelo:cur.id})}
   const v=$('viewer'),m=cur;if(!window.Sketchfab){vstat('Cargando visor…');setTimeout(open3D,300);return}
   v.innerHTML=`<iframe title="${m.nombre} en 3D" allow="autoplay; fullscreen; xr-spatial-tracking" allowfullscreen></iframe><div class="vs">Cargando 3D…</div>`;
-  api=null;mats=[];orig={};texUid={};loadedUid=m.uid;
+  api=null;mats=[];orig={};texUid={};loadedUid=m.uid;cam0=null;
   const client=new Sketchfab(v.querySelector('iframe'));
   client.init(m.uid,{autostart:1,preload:1,ui_infos:0,ui_watermark:0,ui_watermark_link:0,ui_inspector:0,ui_settings:0,ui_help:0,ui_vr:0,ui_ar:0,ui_annotations:0,ui_stop:0,ui_theme:'dark',dnt:1,
-    success(a){api=a;api.start();api.addEventListener('viewerready',()=>{vstat('');api.getMaterialList((e,l)=>{mats=l||[];
-      (m.fachadaMat||[]).forEach(n=>{const x=mats.find(q=>q.name===n);if(x)orig[n]=JSON.parse(JSON.stringify(x))});
-      applyExt();if(DIAG)diag()})})},
+    success(a){api=a;api.start();api.addEventListener('viewerready',()=>{vstat('');
+      api.getCameraLookAt((e,c)=>{if(!e&&c)cam0={p:c.position,t:c.target};if(pendView){const v=pendView;pendView=null;setTimeout(()=>goView(v),400)}});
+      api.getMaterialList((e,l)=>{mats=l||[];
+      Object.values(CATS).forEach(C=>matsDe(m,C.k).forEach(n=>{const x=mats.find(q=>q.name===n);if(x)orig[n]=JSON.parse(JSON.stringify(x))}));
+      applyAll();if(DIAG)diag()})})},
     error(){vstat('No se pudo cargar el 3D. Probá de nuevo.')}});
 }
 function setAlbedo(mat,uid,color){const e=1;
@@ -652,17 +671,48 @@ function setAlbedo(mat,uid,color){const e=1;
     if(uid){c.texture={uid,UVTransforms:{scale:[e,e],offset:[0,0],rotation:0},wrapS:'REPEAT',wrapT:'REPEAT',magFilter:'LINEAR',minFilter:'LINEAR_MIPMAP_LINEAR',texCoordUnit:0,textureTarget:'TEXTURE_2D',internalFormat:'RGB'};c.factor=1;c.color=[1,1,1]}
     else if(color){delete c.texture;c.color=color}});
 }
-function applyExt(){
-  if(!api||!cur||!(cur.fachadaMat||[]).length)return;
-  const e=extOf(cfg.ext);
-  cur.fachadaMat.forEach(n=>{
-    const m0=mats.find(q=>q.name===n);if(!m0)return;
-    if(e.id==='original'||e.id===cur.revOriginal||!e.tex){if(orig[n])api.setMaterial(JSON.parse(JSON.stringify(orig[n])));return}
-    const go=uid=>{const mm=JSON.parse(JSON.stringify(orig[n]||m0));setAlbedo(mm,uid);api.setMaterial(mm)};
-    const T=window.SBUtexDe(e,cur),key=T.key;
-    if(texUid[key])go(texUid[key]);
-    else api.addTexture(tex(e.tex,512,T.tam,T.dir).toDataURL('image/jpeg',.85),(err,uid)=>{if(!err){texUid[key]=uid;go(uid)}});
-  });
+/* terminaciones: categorías, materiales del 3D y vistas de cámara */
+const CATS={ext:{k:'ext',t:'Fachada',tab:'Fachada',lista:null,vista:'fachada'},int:{k:'int',t:'Interior',tab:'Interior',lista:'interior',vista:'interior'},pis:{k:'pis',t:'Pisos',tab:'Pisos',lista:'pisos',vista:'piso'},techo:{k:'techo',t:'Techo',tab:'Techo',lista:'techo',vista:'techo'}};
+const catsOn=()=>Object.values(CATS).filter(C=>!C.lista||(D[C.lista]&&D[C.lista].activo!==false));
+const matsDe=(m,k)=>k==='ext'?(m.fachadaMat||[]):((m.mats||{})[CATS[k].vista]||[]);
+const opDe=(k,id)=>{const L=D[CATS[k].lista];return L&&(L.opciones.find(o=>o.id===id)||L.opciones[0])};
+const rgb=h=>[1,3,5].map(i=>Math.pow(parseInt(h.substr(i,2),16)/255,2.2));
+let cat='ext';
+function applyCat(k){
+  if(!api||!cur)return;const names=matsDe(cur,k);if(!names.length)return;
+  if(k==='ext'){
+    const e=extOf(cfg.ext);
+    names.forEach(n=>{const m0=mats.find(q=>q.name===n);if(!m0)return;
+      if(e.id==='original'||e.id===cur.revOriginal||!e.tex){if(orig[n])api.setMaterial(JSON.parse(JSON.stringify(orig[n])));return}
+      const go=uid=>{const mm=JSON.parse(JSON.stringify(orig[n]||m0));setAlbedo(mm,uid);api.setMaterial(mm)};
+      const T=window.SBUtexDe(e,cur),key=T.key;
+      if(texUid[key])go(texUid[key]);else api.addTexture(tex(e.tex,512,T.tam,T.dir).toDataURL('image/jpeg',.85),(err,uid)=>{if(!err){texUid[key]=uid;go(uid)}})});
+    return;
+  }
+  const L=D[CATS[k].lista],o=opDe(k,cfg[k]);if(!o)return;
+  names.forEach(n=>{const m0=mats.find(q=>q.name===n);if(!m0)return;
+    if(o===L.opciones[0]&&!o.color&&!o.tex){if(orig[n])api.setMaterial(JSON.parse(JSON.stringify(orig[n])));return}
+    if(o.tex){const key=o.tex+'@'+(o.dir||'h')+(o.color||'');const go=uid=>{const mm=JSON.parse(JSON.stringify(orig[n]||m0));setAlbedo(mm,uid);api.setMaterial(mm)};
+      if(texUid[key])go(texUid[key]);else{const c=tex(o.tex,512,1,o.dir||'h');if(o.color){const g=c.getContext('2d');g.globalAlpha=.78;g.fillStyle=o.color;g.fillRect(0,0,512,512)}api.addTexture(c.toDataURL('image/jpeg',.85),(err,uid)=>{if(!err){texUid[key]=uid;go(uid)}})}}
+    else{const mm=JSON.parse(JSON.stringify(orig[n]||m0));setAlbedo(mm,null,rgb(o.color||'#cccccc'));api.setMaterial(mm)}});
+}
+function applyAll(){Object.keys(CATS).forEach(applyCat)}
+const applyExt=()=>applyCat('ext');
+/* cámara: vista guardada en el panel, o una aproximada a partir de la inicial */
+function vistaDe(name){
+  const v=cur&&cur.vistas&&cur.vistas[name];if(v)return v;if(!cam0)return null;
+  const P=cam0.p,T=cam0.t,d=[P[0]-T[0],P[1]-T[1],P[2]-T[2]],L=Math.hypot(...d),h=Math.hypot(d[0],d[1])||1,ux=d[0]/h,uy=d[1]/h;
+  if(name==='fachada')return cam0;
+  if(name==='techo')return{p:[T[0]+ux*L*.55,T[1]+uy*L*.55,T[2]+L*.9],t:T};
+  if(name==='interior')return{p:[T[0]+ux*L*.06,T[1]+uy*L*.06,T[2]+L*.03],t:[T[0]-ux*L*.4,T[1]-uy*L*.4,T[2]+L*.02]};
+  if(name==='piso')return{p:[T[0]+ux*L*.12,T[1]+uy*L*.12,T[2]+L*.1],t:[T[0]-ux*L*.25,T[1]-uy*L*.25,T[2]-L*.14]};
+  return null;
+}
+function goView(k){
+  const name=CATS[k].vista;
+  if(!api){pendView=k;if(!loadedUid||loadedUid!==cur.uid)open3D();return}
+  const v=vistaDe(name);if(v)try{api.setCameraLookAt(v.p,v.t,1.4)}catch(e){}
+  if(!matsDe(cur,k).length)vstat(k==='ext'?'El 3D muestra la terminación original de este modelo':'En este modelo el 3D todavía no cambia '+CATS[k].t.toLowerCase()+'; el precio sí.');else vstat('');
 }
 function diag(){
   const box=document.createElement('div');box.className='diag';
@@ -691,18 +741,35 @@ function planta(m){
 
 /* ---------- detalle ---------- */
 function swatches(){
-  const og=cur.revOriginal&&D.exterior.find(e=>e.id===cur.revOriginal), base=og?(+og.usdM2||0):0, k=window.SBUprecio(D,cur,'original').k;
-  const lst=D.exterior.filter(e=>e.activo!==false&&!(og&&e.id==='original'));
-  $('sw-ext').innerHTML=lst.map(e=>{const isO=og?e.id===og.id:e.id==='original';const d=((+e.usdM2||0)-base)*k;
-    const tag=isO?(og?'diseño original':'incluido'):Math.round(d)===0?'mismo precio':(d>0?'+':'−')+usd(Math.abs(d))+'/m²';
-    return `<button type="button" data-ext="${e.id}" aria-pressed="${cfg.ext===e.id}">${e.tex?`<canvas width="38" height="38" data-tx="${e.id}"></canvas>`:`<span class="chip" style="background:linear-gradient(135deg,#8a857b,#d9d4c9)"></span>`}<b>${e.nombre}</b><small>${tag}</small></button>`}).join('');
-  $('sw-ext').querySelectorAll('canvas').forEach(c=>c.getContext('2d').drawImage(TEX[c.dataset.tx],0,0,38,38));
-  const dis=(o,arr)=>arr.opciones.map(x=>`<button type="button" disabled><span class="chip" style="background:var(--line)"></span><b>${x.nombre}</b><small>${+x.usdM2?(x.usdM2>0?'+':'−')+usd(Math.abs(x.usdM2))+'/m²':'incluido'}</small></button>`).join('');
-  $('sw-int').innerHTML=dis('int',D.interior);$('sw-pis').innerHTML=dis('pis',D.pisos);
+  const k0=window.SBUprecio(D,cur,'original').k;
+  $('otabs').innerHTML=catsOn().map(C=>`<button type="button" role="tab" data-cat="${C.k}" aria-selected="${cat===C.k}">${C.tab}</button>`).join('');
+  $('o-tit').textContent=CATS[cat].t;
+  let h='';
+  if(cat==='ext'){
+    const og=cur.revOriginal&&D.exterior.find(e=>e.id===cur.revOriginal), base=og?(+og.usdM2||0):0;
+    const lst=D.exterior.filter(e=>e.activo!==false&&!(og&&e.id==='original'));
+    $('o-sub').textContent=`≈ ${fachada(cur)} m² de fachada`;
+    h=lst.map(e=>{const isO=og?e.id===og.id:e.id==='original';const d=((+e.usdM2||0)-base)*k0;
+      const tag=isO?(og?'diseño original':'incluido'):Math.round(d)===0?'mismo precio':(d>0?'+':'−')+usd(Math.abs(d))+'/m²';
+      return `<button type="button" data-o="${e.id}" aria-pressed="${cfg.ext===e.id}">${e.tex?`<canvas width="38" height="38" data-tx="${e.id}"></canvas>`:`<span class="chip" style="background:linear-gradient(135deg,#8a857b,#d9d4c9)"></span>`}<b>${e.nombre}</b><small>${tag}</small></button>`}).join('');
+  }else{
+    const L=D[CATS[cat].lista],b0=+L.opciones[0].usdM2||0;
+    $('o-sub').textContent=cat==='pis'?`${cur.m2} m² de piso`:cat==='techo'?`≈ ${Math.round(cur.m2*1.25)} m² de techo`:`≈ ${Math.round(fachada(cur)*1.6)} m² de paredes`;
+    h=L.opciones.map((o,i)=>{const d=((+o.usdM2||0)-b0)*k0,tag=i===0?'incluido':Math.round(d)===0?'mismo precio':(d>0?'+':'−')+usd(Math.abs(d))+'/m²';
+      return `<button type="button" data-o="${o.id}" aria-pressed="${(cfg[cat]||L.opciones[0].id)===o.id}">${o.tex?`<canvas width="38" height="38" data-ot="${o.tex}" data-od="${o.dir||'h'}" data-oc="${o.color||''}"></canvas>`:`<span class="chip" style="background:${o.color||'#ccc'}"></span>`}<b>${o.nombre}</b><small>${tag}</small></button>`}).join('');
+  }
+  $('sw').innerHTML=h;
+  $('sw').querySelectorAll('canvas[data-tx]').forEach(c=>c.getContext('2d').drawImage(TEX[c.dataset.tx],0,0,38,38));
+  $('sw').querySelectorAll('canvas[data-ot]').forEach(c=>{const g=c.getContext('2d');g.drawImage(tex(c.dataset.ot,128,1,c.dataset.od),0,0,38,38);if(c.dataset.oc){g.globalAlpha=.78;g.fillStyle=c.dataset.oc;g.fillRect(0,0,38,38)}});
 }
-document.getElementById('sw-ext').addEventListener('click',e=>{const b=e.target.closest('[data-ext]');if(!b)return;cfg.ext=b.dataset.ext;TR.ev('revestimiento',{modelo:cur.id,detalle:cfg.ext,valor:precio(cur,cfg).tot});
-  document.querySelectorAll('[data-ext]').forEach(x=>x.setAttribute('aria-pressed',x===b));renderPrice();applyExt();
-  if(cur&&!(cur.fachadaMat||[]).length&&api)vstat('El 3D muestra la terminación original de este modelo');});
+document.getElementById('opts').addEventListener('click',e=>{
+  const t=e.target.closest('[data-cat]');if(t){cat=t.dataset.cat;swatches();goView(cat);return}
+  const b=e.target.closest('[data-o]');if(!b||!cur)return;
+  cfg[cat]=b.dataset.o;ls.set('cfg-'+cur.id,cfg);
+  TR.ev(cat==='ext'?'revestimiento':'terminacion',{modelo:cur.id,detalle:cat+': '+cfg[cat],valor:precio(cur,cfg).tot});
+  $('sw').querySelectorAll('[data-o]').forEach(x=>x.setAttribute('aria-pressed',x===b));renderPrice();applyCat(cat);goView(cat);
+});
+const resumen=()=>[`fachada "${extOf(cfg.ext).nombre}"`,...['int','pis','techo'].filter(k=>catsOn().some(C=>C.k===k)).map(k=>{const o=opDe(k,cfg[k]);return o?`${CATS[k].t.toLowerCase()} "${o.nombre}"`:''})].filter(Boolean).join(', ');
 function renderPrice(){
   const p=precio(cur,cfg);
   $('price').innerHTML=`<div class="eyebrow" style="color:inherit;opacity:.7">Presupuesto de referencia</div>
@@ -713,13 +780,12 @@ function renderPrice(){
   $('bar-m').textContent=`${cur.nombre} · ${extOf(cfg.ext).nombre}`;$('bar-t').textContent=usd(p.tot);
 }
 function openModel(id,scroll=true){
-  const m=byId[id];if(!m)return;TR.ev('ver_modelo',{modelo:id});cur=m;cfg={ext:(ls.get('cfg-'+id)||{}).ext||m.revOriginal||'original'};if(m.revOriginal&&cfg.ext==='original')cfg.ext=m.revOriginal;api=null;loadedUid=null;
+  const m=byId[id];if(!m)return;TR.ev('ver_modelo',{modelo:id});cur=m;{const sv=ls.get('cfg-'+id)||{};cfg={ext:sv.ext||m.revOriginal||'original',int:sv.int,pis:sv.pis,techo:sv.techo};cat='ext';}if(m.revOriginal&&cfg.ext==='original')cfg.ext=m.revOriginal;api=null;loadedUid=null;
   $('modelo').hidden=false;
   $('d-eb').textContent=[m.lugar,m.usos.map(u=>USOS[u]).join(' · ')].filter(Boolean).join(' — ');
   $('d-nom').textContent=m.nombre;$('d-frase').textContent=m.frase;
   const pen=k=>'';
   $('ficha').innerHTML=`<div><small>Cubiertos</small><b class="mono">${m.m2}</b> m²${pen('m²')}</div><div><small>Decks</small><b class="mono">${m.deck||'—'}</b>${m.deck?' m²':''}</div><div><small>Dormitorios</small><b class="mono">${m.dorm}</b>${pen('dorm')}</div><div><small>Baños</small><b class="mono">${m.banos}</b>${pen('baños')}</div>`;
-  $('fach-m2').textContent=`≈ ${fachada(m)} m² de fachada`;
   $('viewer').innerHTML=`${pic(m)?`<img class="poster" src="${pic(m)}" alt="">`:''}<button type="button" class="play" id="play"><span><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L18.7 8 12 11.7 5.3 8 12 4.3ZM5 9.7l6 3.3v6.7l-6-3.3V9.7Zm8 10V13l6-3.3v6.7l-6 3.3Z"/></svg>Recorrer en 3D</span></button><div class="vs"></div>`;
   $('play').addEventListener('click',open3D);
   swatches();renderPrice();planta(m);
@@ -728,7 +794,6 @@ function openModel(id,scroll=true){
 }
 document.addEventListener('click',e=>{const b=e.target.closest('[data-open]');if(!b)return;openModel(b.dataset.open)});
 $('d-back').addEventListener('click',()=>{$('catalogo').scrollIntoView({behavior:'smooth'})});
-document.addEventListener('click',e=>{if(e.target.closest('[data-ext]')&&cur)ls.set('cfg-'+cur.id,cfg)});
 
 /* barra fija: visible mientras se ve el detalle */
 const io=new IntersectionObserver(es=>es.forEach(x=>$('bar').classList.toggle('on',x.isIntersecting&&!!cur)),{threshold:0.05});
