@@ -327,8 +327,13 @@
     ]
    },
    "mats": {
-    "interior": [],
-    "piso": [],
+    "interior": [
+     "material_0",
+     "*"
+    ],
+    "piso": [
+     "*1"
+    ],
     "techo": []
    },
    "vistas": {
