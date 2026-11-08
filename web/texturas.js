@@ -59,17 +59,18 @@ window.SBUestirar = function (api, uid, largo, ancho, cache, cb0, dir) {
 };
 
 /* Machimbre / deck de madera dibujado, con la medida controlada:
-   ancho = tablas más anchas (1 = 8 tablas por paño), largo = tablas más largas (1 = 2 juntas por tabla y paño).
+   ancho = tablas más anchas (1 = 8 tablas por paño), largo = tablas más largas (1 = pocas juntas: una cada ~2 paños).
    El color por defecto copia el lapacho del 3D (marrón grisáceo). Se dibuja horizontal y se gira si dir='v'. */
 window.SBUmadera = function (size, ancho, largo, dir, base) {
   size = size || 512; ancho = +ancho > 0 ? +ancho : 1; largo = +largo > 0 ? +largo : 1; base = base || [128, 104, 84];
   let seed = 7; const r = () => (seed = (seed * 16807) % 2147483647) / 2147483647, rnd = (a, b) => a + r() * (b - a);
   const c = document.createElement('canvas'); c.width = c.height = size; const g = c.getContext('2d');
-  const nT = Math.max(1, Math.round(8 / ancho)), bh = size / nT, jt = 2 / largo;
+  const nT = Math.max(1, Math.round(8 / ancho)), bh = size / nT, jt = .6 / largo;
   for (let t = 0; t < nT; t++) {
     const y = t * bh, nJ = Math.floor(jt) + (r() < jt % 1 ? 1 : 0), cuts = [0]; for (let j = 0; j < nJ; j++) cuts.push(((j + rnd(.15, .85)) / nJ) * size); cuts.push(size);
+    const tonos = cuts.slice(1).map(() => [rnd(-10, 10), rnd(-4, 4)]); tonos[tonos.length - 1] = tonos[0]; // la tabla sigue igual al repetirse el paño
     for (let k = 0; k + 1 < cuts.length; k++) {
-      const x0 = cuts[k], x1 = cuts[k + 1], d = rnd(-10, 10), w = rnd(-4, 4);
+      const x0 = cuts[k], x1 = cuts[k + 1], d = tonos[k][0], w = tonos[k][1];
       g.fillStyle = `rgb(${base[0] + d + w},${base[1] + d},${base[2] + d - w})`; g.fillRect(x0, y, x1 - x0, bh);
       // veta fina y larga
       for (let i = 0; i < 14; i++) { const yy = y + rnd(1, bh - 1), a = rnd(.03, .1); g.strokeStyle = r() < .5 ? `rgba(40,28,20,${a})` : `rgba(255,240,220,${a * .6})`; g.lineWidth = rnd(.5, 1.4);
