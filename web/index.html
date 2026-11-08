@@ -310,19 +310,19 @@ h1,h2,h3{text-transform:none}
 /* visor con las opciones adentro, a la derecha */
 .vwrap{position:relative;border:1.5px solid var(--ink);background:#1d1b18}
 .vwrap .viewer{aspect-ratio:16/9;border-radius:0}
-.opts{position:absolute;top:12px;right:12px;bottom:12px;width:min(300px,34%);background:rgba(54,58,64,.9);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(245,244,240,.35);display:flex;flex-direction:column;gap:10px;padding:12px;overflow:auto;z-index:2}
+.vopts{position:absolute;top:12px;right:12px;bottom:12px;width:min(300px,34%);background:rgba(54,58,64,.9);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(245,244,240,.35);display:flex;flex-direction:column;gap:10px;padding:12px;overflow:auto;z-index:2}
 .otabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
 .otabs button{background:transparent;border:1px solid rgba(245,244,240,.35);color:var(--ink);font:500 .72rem var(--f-m);letter-spacing:.06em;text-transform:uppercase;padding:8px 2px}
 .otabs button[aria-selected="true"]{background:var(--cu);border-color:var(--cu);color:#22252a}
 .ohead{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
 .ohead b{font:800 1.15rem var(--f-d);font-stretch:75%}
 .ohead small{font:500 .68rem var(--f-m);color:var(--mute)}
-.opts .sw{grid-template-columns:minmax(0,1fr)}
-.opts .sw button{background:rgba(245,244,240,.06);border-color:rgba(245,244,240,.25)}
-.opts .sw button[aria-pressed="true"]{border-color:var(--cu);background:rgba(255,179,71,.14)}
+.vopts .sw{grid-template-columns:minmax(0,1fr)}
+.vopts .sw button{background:rgba(245,244,240,.06);border-color:rgba(245,244,240,.25)}
+.vopts .sw button[aria-pressed="true"]{border-color:var(--cu);background:rgba(255,179,71,.14)}
 .vwrap+.d-grid{margin-top:16px;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
 .vwrap+.d-grid .ficha{margin-top:0;align-self:start}
-@media (max-width:760px){.vwrap .viewer{aspect-ratio:4/3}.opts{position:static;width:auto;background:var(--sheet);backdrop-filter:none;border:0;border-top:1.5px solid var(--ink)}.vwrap+.d-grid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:760px){.vwrap .viewer{aspect-ratio:4/3}.vopts{position:static;width:auto;background:var(--sheet);backdrop-filter:none;border:0;border-top:1.5px solid var(--ink)}.vwrap+.d-grid{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
@@ -405,7 +405,7 @@ h1,h2,h3{text-transform:none}
   </div>
   <div class="vwrap">
     <div class="viewer" id="viewer"></div>
-    <aside class="opts" id="opts" aria-label="Terminaciones">
+    <aside class="vopts" id="opts" aria-label="Terminaciones">
       <div class="otabs" id="otabs" role="tablist"></div>
       <div class="ohead"><b id="o-tit"></b><small id="o-sub"></small></div>
       <div class="sw" id="sw"></div>
