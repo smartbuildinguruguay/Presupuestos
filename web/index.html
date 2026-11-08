@@ -8,7 +8,7 @@
 <meta property="og:title" content="Smart Building Uruguay · Tu casa en 3D, con precio al instante">
 <meta property="og:description" content="Elegí un modelo, configuralo y recibí el presupuesto en el momento.">
 <meta property="og:image" content="https://media.sketchfab.com/models/e934a307daf5473390842989337887c9/thumbnails/04063cbb7f084237ad39dbb001cd3eb0/7707b671eec44ad48d48a4a02bacc26b.jpeg">
-<meta name="theme-color" content="#161513">
+<meta name="theme-color" content="#5c6168">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..100,500..800&family=Instrument+Sans:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500&family=Caveat:wght@500;700&family=Fraunces:ital,opsz,wght@1,9..144,500&display=swap" rel="stylesheet">
@@ -292,6 +292,20 @@ body{background-size:40px 40px}
 .plan{border:var(--rule);border-radius:0}
 .obra{border-block:var(--rule)}
 footer{border-top:var(--rule)}
+
+/* ===== Estilo plano grafito: gris claro, línea blanca, acento naranja ===== */
+:root:root:root{--paper:#5c6168;--sheet:#656a72;--ink:#f5f4f0;--ink2:#e4e5e8;--mute:#d6d8dc;--line:#868b93;--grid:rgba(245,244,240,.07);--cu:#ffb347;--cu2:#ffc978;--ok:#9be3b0;color-scheme:dark}
+body{background-image:linear-gradient(rgba(245,244,240,.08) 1px,transparent 1px),linear-gradient(90deg,rgba(245,244,240,.08) 1px,transparent 1px),linear-gradient(rgba(245,244,240,.035) 1px,transparent 1px),linear-gradient(90deg,rgba(245,244,240,.035) 1px,transparent 1px);background-size:80px 80px,80px 80px,16px 16px,16px 16px}
+.btn.cu,.price .btn,.bar .btn{color:#22252a}
+.top{background:color-mix(in srgb,var(--paper) 92%,transparent)}
+.plan{background:transparent}
+.eyebrow,.mono,.card .meta,.card .no{letter-spacing:.08em}
+h1,h2,h3{text-transform:none}
+.card{background:var(--sheet)}
+.card .tag{background:var(--paper)}
+.card:hover{box-shadow:5px 5px 0 var(--cu)}
+.price{background:#4d5258;color:var(--ink);border:1.5px solid var(--ink)}
+.opt[aria-pressed="true"]{background:color-mix(in srgb,var(--cu) 16%,var(--paper))}
 </style>
 </head>
 <body>

@@ -13,15 +13,37 @@
   const hx = h => [1, 3, 5].map(i => parseInt(h.substr(i, 2), 16) / 255);
   const toHsl = ([r, g, b]) => { const M = Math.max(r, g, b), m = Math.min(r, g, b), l = (M + m) / 2; if (M === m) return [0, 0, l]; const d = M - m, s = l > .5 ? d / (2 - M - m) : d / (M + m); let h = M === r ? (g - b) / d + (g < b ? 6 : 0) : M === g ? (b - r) / d + 2 : (r - g) / d + 4; return [h / 6, s, l] };
   const toHex = ([h, s, l]) => { const f = n => { const k = (n + h * 12) % 12, a = s * Math.min(l, 1 - l); return l - a * Math.max(-1, Math.min(k - 3, 9 - k, 1)) }; return '#' + [f(0), f(8), f(4)].map(v => Math.round(Math.max(0, Math.min(1, v)) * 255).toString(16).padStart(2, '0')).join('') };
+  /* Estilo plano grafito: línea blanca sobre gris, sin texturas, acento naranja en vidrios */
+  const G = { bg: '#5c6168', line: '#f5f4f0', acc: '#ffb347' };
+  const mix = (a, b, t) => { const A = hx(a), B = hx(b); return toHex(toHsl(A.map((v, i) => v + (B[i] - v) * t))) };
+  const TINTA = new Set(['#3b2f25', '#1f1b18', '#2a241e', '#2b241d', '#1d1b18', '#171614', '#2c2f33', '#1e1e1e', '#1b1a2e', '#3a2e26', '#2e3a26', '#4a5a3a', '#4d5c36', '#3e4a2c', '#5c4b3a', '#6b5847', '#5f6f4f', '#4b4842', '#8a7560', '#5a4e42', '#2a2420', '#7a4a22', '#6e4b2c', '#4a3020', '#6b4a2b', '#3b3a44', '#5b6e45']);
+  const VIDRIO = new Set(['#f4d9a6', '#e8b673', '#d1924f', '#f0c27c', '#f7dca4', '#dfa05a']);
+  const grafito = svg => {
+    const fillOf = c => { c = c.toLowerCase(); if (TINTA.has(c)) return G.line; const [h, s0, l] = toHsl(hx(c));
+      if (l < .45) return mix(G.bg, '#000000', .1);
+      if (VIDRIO.has(c)) return mix(G.bg, G.acc, .55);
+      return mix(G.bg, '#ffffff', Math.max(0, (l - .45)) * .32) };
+    const strokeOf = c => { const [, , l] = toHsl(hx(c.toLowerCase())); return l < .62 ? G.line : G.bg };
+    svg = svg.replace(/<rect width="[\d.]+" height="[\d.]+" filter="url\(#\w+g\)"\/>/g, '')
+      .replace(/ filter="url\(#[^)]*\)"/g, '')
+      .replace(/(stroke|stop-color|fill|color)="(#[0-9a-fA-F]{6})"/g, (m, a, c) => `${a}="${a === 'stroke' ? strokeOf(c) : fillOf(c)}"`)
+      .replace(/(fill|stroke): ?(#[0-9a-fA-F]{6})/g, (m, a, c) => `${a}:${a === 'stroke' ? strokeOf(c) : fillOf(c)}`)
+      .replace(/<(text|g|tspan)([^>]*)>/g, (m, t, at) => { if (!/Caveat|Fraunces/.test(at)) return m;
+        at = at.replace(/font-family="Caveat,cursive"/, 'font-family="IBM Plex Mono,monospace"').replace(/font-family="Fraunces,Georgia,serif"/, 'font-family="Archivo,Arial Narrow,sans-serif" font-stretch="72%"').replace(/ font-style="italic"/, '')
+          .replace(/font-size="([\d.]+)"/, (x, n) => `font-size="${Math.round(n * (/Plex/.test(at) ? .66 : .9))}"`);
+        return `<${t}${at}>` });
+    return svg;
+  };
   const recolor = svg => {
-    const P = PALETAS[window.SBUpaleta || 'divertida'] || {}; if (!P.map && !P.sat) return svg;
+    if ((window.SBUpaleta || 'grafito') === 'grafito') return grafito(svg);
+    const P = PALETAS[window.SBUpaleta] || {}; if (!P.map && !P.sat) return svg;
     const cache = {};
     return svg.replace(/#[0-9a-fA-F]{6}\b/g, c => { c = c.toLowerCase(); if (cache[c]) return cache[c];
       let out = (P.map || {})[c];
       if (!out) { const [h, s0, l] = toHsl(hx(c)); out = l < .32 ? c : toHex([h, s0 * (P.sat ?? 1), Math.min(.97, l + (P.lum || 0) * (1 - l) * 2)]) }
       return cache[c] = out });
   };
-  window.SBUpaletas = Object.keys(PALETAS);
+  window.SBUpaletas = ['grafito', ...Object.keys(PALETAS)];
   const INK = '#1d1b18', INK2 = '#4b4842', MUTE = '#8a857b', PAPER = '#f6f0e3', WASH = '#e9dfcc';
   const MONO = "IBM Plex Mono,monospace", ARCH = "Archivo,Arial Narrow,sans-serif", HAND = "Caveat,cursive", SERIF = "Fraunces,Georgia,serif";
   const f2 = v => (+v).toFixed(2).replace('.', ',');
@@ -318,7 +340,7 @@
     const vols = F.volumenes || [];
     const alto = Math.max(...vols.map(v => (v.piso || 0) + (v.techo === 'plano' ? v.muro + .35 : (v.cumbrera || v.muro) + .3)),  ...(F.arboles || []).map(a => (a.h || a.r * 3.2) * .9)) + .3;
     const base = top + alto * S, X = x => padX + x * S, Y = y => base - y * S;
-    const VW = Math.round(F.ancho * S + padX * 2), VH = Math.round(base + 150);
+    const VW = Math.round(F.ancho * S + padX * 2), VH = Math.round(base + 175);
     const K = '#2a241e', K2 = '#5a4e42', K3 = '#8a7c6c';
     let sd = 0; for (const c of (m.id || 'x')) sd = (sd * 31 + c.charCodeAt(0)) | 0;
     const rnd = () => { sd |= 0; sd = sd + 0x6D2B79F5 | 0; let t = Math.imul(sd ^ sd >>> 15, 1 | sd); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296 };
@@ -621,10 +643,10 @@
     for (let i = 0; i < 4; i++) { const bx = X(F.ancho * (.28 + rnd() * .3)), by = top - 30 + rnd() * 50, bs = 5 + rnd() * 4; cielo += `<path d="M${f1(bx - bs)} ${f1(by)}q${f1(bs / 2)} ${f1(-bs * .6)} ${f1(bs)} 0q${f1(bs / 2)} ${f1(-bs * .6)} ${f1(bs)} 0" fill="none" stroke="${K}" stroke-width="1.3" stroke-linecap="round"/>` }
 
     // anotación y cotas
-    const nota = F.nota ? `<g font-family="${HAND}" fill="${K}" paint-order="stroke" stroke="#f6f0e3" stroke-width="5" stroke-linejoin="round"><text x="${f1(X(F.notaX ?? F.ancho * .62))}" y="${top - 40}" font-size="24">${F.nota}</text></g>` : '';
+    const nota = F.nota ? `<g fill="${K}" paint-order="stroke" stroke="#f6f0e3" stroke-width="5" stroke-linejoin="round"><text font-family="${HAND}" text-anchor="end" x="${f1(VW - padX * .6)}" y="${top - 40}" font-size="24">${F.nota}</text></g>` : '';
     const xa = Math.min(...vols.map(v => v.x)), xb = Math.max(...vols.map(v => v.x + v.w)), cy = base + 40;
     const cota = `<g stroke="${K2}" stroke-width=".7"><line x1="${f1(X(xa))}" y1="${cy}" x2="${f1(X(xb))}" y2="${cy}"/><line x1="${f1(X(xa))}" y1="${cy - 7}" x2="${f1(X(xa))}" y2="${cy + 7}"/><line x1="${f1(X(xb))}" y1="${cy - 7}" x2="${f1(X(xb))}" y2="${cy + 7}"/><line x1="${f1(X(xa) - 5)}" y1="${cy + 5}" x2="${f1(X(xa) + 5)}" y2="${cy - 5}" stroke-width="1.5"/><line x1="${f1(X(xb) - 5)}" y1="${cy + 5}" x2="${f1(X(xb) + 5)}" y2="${cy - 5}" stroke-width="1.5"/></g><text x="${f1((X(xa) + X(xb)) / 2)}" y="${cy - 8}" text-anchor="middle" font-family="${HAND}" font-size="21" fill="${K2}">${f2(xb - xa)} m</text>`;
-    const tit = `<g transform="translate(${padX} ${base + 100})"><text x="0" y="0" font-family="${SERIF}" font-style="italic" font-weight="500" font-size="36" fill="${K}">${m.nombre || ''} <tspan font-size="24" fill="#6b5847">· ${F.titulo || 'fachada'}</tspan></text><text x="${VW - padX * 2}" y="0" text-anchor="end" font-family="${HAND}" font-size="22" fill="#8a7560">Smart Building Uruguay</text></g>`;
+    const tit = `<g transform="translate(${padX} ${base + 100})"><text x="0" y="0" font-family="${SERIF}" font-style="italic" font-weight="500" font-size="36" fill="${K}">${m.nombre || ''} <tspan font-size="24" fill="#6b5847">· ${F.titulo || 'fachada'}</tspan></text><text x="0" y="32" font-family="${HAND}" font-size="22" fill="#8a7560">Smart Building Uruguay</text></g>`;
 
     return `<svg viewBox="0 0 ${VW} ${VH}" role="img" aria-label="Fachada de ${m.nombre}">${papel('fa', VW, VH)}<defs>${defs}</defs>${fondo}${cielo}${atras}${casa}${frente}${suelo}${gente}${nota}${cota}${tit}</svg>`;
   };
