@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-08T00:40:00.941Z",
+ "actualizado": "2026-11-08T23:43:42.188Z",
  "contacto": {
   "whatsapp": "59898526226",
   "instagram": "smartbuildinguruguay",
@@ -132,8 +132,8 @@
     "tex": "lapacho",
     "dir": "v",
     "deFachada": "lapacho",
-    "largo": 1,
-    "ancho": 2
+    "largo": 1.25,
+    "ancho": 1.5
    },
    {
     "id": "machimbreBlanco",
