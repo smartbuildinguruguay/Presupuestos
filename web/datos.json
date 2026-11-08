@@ -395,7 +395,10 @@
       2.562
      ]
     }
-   }
+   },
+   "galeria": [
+    "img/obra-barn-900.jpg"
+   ]
   },
   {
    "id": "smartrancho",
@@ -730,7 +733,11 @@
     "personas": [
      5.8
     ]
-   }
+   },
+   "galeria": [
+    "img/polo-club.jpg",
+    "img/polo-club-2.jpg"
+   ]
   },
   {
    "id": "el-tesoro",
@@ -855,7 +862,11 @@
     "personas": [
      10.2
     ]
-   }
+   },
+   "galeria": [
+    "img/el-tesoro.jpg",
+    "img/el-tesoro-2.jpg"
+   ]
   },
   {
    "id": "smarthouse",

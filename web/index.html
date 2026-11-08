@@ -123,6 +123,23 @@ input[type=range]{width:100%;accent-color:var(--cu);height:28px}
 .card .from{font:500 .85rem var(--f-b);color:var(--mute)}
 .card .from b{color:var(--ink);font-family:var(--f-m);font-weight:500}
 .card.big h3{font-size:2.1rem}
+.mlist{display:grid;gap:28px}
+.mrow{display:grid;grid-template-columns:minmax(0,1.45fr) minmax(0,1fr);border:1.5px solid var(--ink);background:var(--sheet);min-height:420px}
+.mrow.rev{grid-template-columns:minmax(0,1fr) minmax(0,1.45fr)}.mrow.rev .mr-ph{order:2}
+.mr-ph{position:relative;overflow:hidden;background:#3f4349;min-height:300px}
+.mr-ph .mr-main{position:absolute;inset:0;width:100%;height:100%;object-fit:cover;transition:opacity .3s}
+.mr-no{position:absolute;left:14px;top:14px;background:rgba(40,43,48,.82);color:#fff;font:500 .72rem var(--f-m);letter-spacing:.14em;padding:5px 9px}
+.mr-th{position:absolute;right:12px;bottom:12px;display:flex;gap:6px}
+.mr-th button{width:64px;height:44px;padding:0;border:1.5px solid rgba(255,255,255,.55);background:none;cursor:pointer;overflow:hidden;opacity:.75}
+.mr-th button[aria-pressed="true"]{border-color:var(--cu);opacity:1}.mr-th img{width:100%;height:100%;object-fit:cover}
+.mr-bd{padding:22px 24px;display:grid;gap:10px;align-content:start;min-width:0}
+.mr-bd h3{font-size:clamp(1.8rem,3vw,2.6rem);font-weight:800;line-height:1}
+.mr-bd p{color:var(--ink2);margin:0}
+.mr-meta{display:flex;flex-wrap:wrap;gap:0;margin:0;border-top:1px solid var(--line);border-bottom:1px solid var(--line)}
+.mr-meta div{padding:8px 16px 8px 0;margin-right:16px}.mr-meta dt{font:500 .64rem var(--f-m);letter-spacing:.14em;text-transform:uppercase;color:var(--mute)}.mr-meta dd{margin:0;font:600 1rem var(--f-m)}
+.mr-plan{max-height:210px;overflow:hidden;display:grid;place-items:center}.mr-plan svg{width:100%;height:auto;max-height:210px}
+.mr-ft{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-top:auto}.mr-ft b{font-family:var(--f-m)}
+@media (max-width:820px){.mrow,.mrow.rev{grid-template-columns:minmax(0,1fr)}.mrow.rev .mr-ph{order:0}.mr-ph{aspect-ratio:16/10;min-height:0}.mr-bd{padding:18px 16px}}
 .grid6{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}
 @media (max-width:900px){.grid6{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media (max-width:560px){.grid6{grid-template-columns:minmax(0,1fr)}}
@@ -342,11 +359,11 @@ h1,h2,h3{text-transform:none}
   <img id="heroImg" src="img/portada-1800.jpg?v=1" srcset="img/portada-900.jpg?v=1 900w, img/portada-1800.jpg?v=1 1800w" sizes="100vw" alt="" fetchpriority="high" style="object-position:60% 28%">
   <div class="w">
     <div style="display:grid;gap:18px"><div class="eyebrow">Steel frame · Maldonado y Rocha</div><h1>Elegí tu casa. <em>Mirala en 3D.</em> Sabé cuánto sale hoy.</h1>
-    <p>Seis modelos diseñados y probados en obra. <span>Configurás la terminación y el presupuesto se arma solo, en el momento.</span></p></div>
+    <p>Modelos diseñados y probados en obra. <span>Configurás la terminación y el presupuesto se arma solo, en el momento.</span></p></div>
     <div style="display:grid;gap:26px">
     <div class="acts">
       <a class="btn cu" href="#buscar">Encontrar mi casa</a>
-      <a class="btn ghost" href="#catalogo">Ver los 6 modelos</a>
+      <a class="btn ghost" href="#catalogo">Ver modelos</a>
     </div>
     <div class="facts"><span>Superficie<b>18 a 194 m²</b></span><span>Entrega<b>Llave en mano</b></span><span>Plazo<b>2 a 8 meses</b></span></div></div>
   </div>
@@ -440,9 +457,9 @@ h1,h2,h3{text-transform:none}
 </figure>
 
 <section class="s" id="catalogo"><div class="w">
-  <div class="s-head"><div><div class="eyebrow">Catálogo</div><h2>Los seis modelos</h2></div>
-    <p class="lead">Cada uno se puede adaptar a tu terreno. Tocá uno para verlo en 3D y armar tu presupuesto.</p></div>
-  <div class="grid6" id="grid"></div>
+  <div class="s-head"><div><div class="eyebrow">Catálogo</div><h2>Modelos</h2></div>
+    <p class="lead">Cada uno se adapta a tu terreno. Entrá a la ficha técnica para ver los planos, recorrerlo en 3D y armar tu presupuesto.</p></div>
+  <div class="mlist" id="grid"></div>
 </div></section>
 
 <figure class="obra">
@@ -612,8 +629,23 @@ function card(m,big){
    <div class="meta"><span>${m.m2} m²</span><span>${m.dorm} dorm.</span><span>${m.banos} baño${m.banos>1?'s':''}</span></div>
    <div class="from">Desde <b>${usdK(desde(m))}</b></div></div></button>`;
 }
-$('grid').innerHTML=M.map(m=>card(m)).join('');
-{const hm=byId[D.precio.heroModelo]||M[0];const ms=M.map(m=>m.m2);document.querySelector('.hero .facts span b').textContent=`${Math.min(...ms)} a ${Math.max(...ms)} m²`;document.querySelector('.hero p').firstChild.nodeValue=`${['Cero','Un','Dos','Tres','Cuatro','Cinco','Seis','Siete','Ocho','Nueve','Diez'][M.length]||M.length} modelos diseñados y probados en obra. `;document.querySelector('[href="#catalogo"].btn').textContent=`Ver los ${M.length} modelos`;document.querySelector('#catalogo h2').textContent=`Los ${M.length} modelos`}
+function fila(m,i){
+  const P=m.planta&&D.plantas[m.planta],L=P?[].concat(P):[],pl=L.length&&(!L[0].ejemplo||BORRADOR)?L[0]:null,g=[pic(m),...(m.galeria||[])].filter(Boolean);
+  return `<article class="mrow${i%2?' rev':''}">
+   <div class="mr-ph">${g[0]?`<img class="mr-main" src="${g[0]}" alt="${m.nombre}" loading="lazy">`:'<div class="noimg">Imagen a cargar</div>'}
+    <span class="mr-no">Nº ${String(i+1).padStart(2,'0')}</span>
+    ${g.length>1?`<div class="mr-th">${g.map((u,j)=>`<button type="button" data-ph="${u}" aria-pressed="${!j}" aria-label="Ver toma ${j+1}"><img src="${u}" alt="" loading="lazy"></button>`).join('')}</div>`:''}</div>
+   <div class="mr-bd">
+    <div class="eyebrow">${[m.lugar,(m.usos||[]).map(u=>USOS[u]).join(' · ')].filter(Boolean).join(' — ')}</div>
+    <h3>${m.nombre}</h3><p>${m.frase||''}</p>
+    <dl class="mr-meta"><div><dt>Cubiertos</dt><dd>${m.m2} m²</dd></div>${m.deck?`<div><dt>Decks</dt><dd>${m.deck} m²</dd></div>`:''}<div><dt>Dorm.</dt><dd>${m.dorm}</dd></div><div><dt>Baños</dt><dd>${m.banos}</dd></div></dl>
+    ${pl?`<div class="mr-plan" aria-label="Planta de ${m.nombre}">${window.SBUplanta(pl,m)}</div>`:''}
+    <div class="mr-ft"><span>Desde <b>${usdK(desde(m))}</b></span><button type="button" class="btn cu" data-open="${m.id}">Ficha técnica y 3D →</button></div>
+   </div></article>`;
+}
+$('grid').innerHTML=M.map(fila).join('');
+$('grid').addEventListener('click',e=>{const b=e.target.closest('[data-ph]');if(!b)return;const r=b.closest('.mrow');r.querySelector('.mr-main').src=b.dataset.ph;r.querySelectorAll('[data-ph]').forEach(x=>x.setAttribute('aria-pressed',x===b))});
+{const hm=byId[D.precio.heroModelo]||M[0];const ms=M.map(m=>m.m2);document.querySelector('.hero .facts span b').textContent=`${Math.min(...ms)} a ${Math.max(...ms)} m²`;}
 
 /* ---------- buscador ---------- */
 const ans=ls.get('ans')||{uso:null,pers:null};
