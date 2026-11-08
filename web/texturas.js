@@ -29,8 +29,14 @@ window.SBUtexDe = function (e,m){
 
 /* Toma una textura que ya trae el modelo de Sketchfab y la estira: largo = tablas más largas, ancho = tablas más anchas.
    El sentido de las tablas se detecta solo. cb(uidNuevo) o cb(null, motivo) si no se pudo. */
-window.SBUestirar = function (api, uid, largo, ancho, cache, cb) {
+window.SBUestirar = function (api, uid, largo, ancho, cache, cb0, dir) {
   largo = +largo > 0 ? +largo : 1; ancho = +ancho > 0 ? +ancho : 1;
+  // si no se puede leer la del 3D, se usa la dibujada (lapacho grisáceo) con la misma medida, así los números siempre hacen algo
+  const cb = (u, why) => { if (u) return cb0(u); const k2 = 'dib:' + largo + ':' + ancho + ':' + (dir || 'h'); if (cache[k2]) return cb0(cache[k2], why);
+    const c = window.SBUtex('lapacho', 512, ancho, 'h'), g = c.getContext('2d'), bh = 512 / Math.max(1, Math.round(8 / ancho)), n = Math.max(0, Math.round(3 / largo));
+    g.fillStyle = 'rgba(0,0,0,.4)'; for (let y = 0; y < 512; y += bh) for (let i = 0; i < n; i++) g.fillRect(Math.random() * 512, y, 2, bh);
+    let out = c; if ((dir || 'h') === 'v') { out = document.createElement('canvas'); out.width = out.height = 512; const q = out.getContext('2d'); q.translate(256, 256); q.rotate(Math.PI / 2); q.drawImage(c, -256, -256) }
+    try { api.addTexture(out.toDataURL('image/jpeg', .88), (e, u2) => { if (!e) cache[k2] = u2; cb0(e ? null : u2, why) }) } catch (x) { cb0(null, why) } };
   const key = 'est:' + uid + ':' + largo + ':' + ancho; if (cache[key]) return cb(cache[key]);
   if (largo === 1 && ancho === 1) return cb(uid);
   const no = m => cb(null, m);

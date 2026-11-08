@@ -696,7 +696,7 @@ function applyCat(k){
     if(o.original||(!o.color&&!o.tex)){if(orig[n])api.setMaterial(JSON.parse(JSON.stringify(orig[n])));return}
     if(o.deFachada&&cur.revOriginal===o.deFachada){const src=(cur.fachadaMat||[]).map(x=>orig[x]).find(Boolean),ch=src&&['AlbedoPBR','DiffusePBR','DiffuseColor'].map(c=>src.channels[c]).find(c=>c&&c.texture);
       if(ch){const put=uid=>{const mm=JSON.parse(JSON.stringify(orig[n]||m0));['AlbedoPBR','DiffusePBR','DiffuseColor'].forEach(c=>{const x=mm.channels[c];if(!x)return;x.enable=true;x.texture=JSON.parse(JSON.stringify(ch.texture));if(uid)x.texture.uid=uid;x.factor=ch.factor??1;x.color=ch.color||[1,1,1]});api.setMaterial(mm)};
-      window.SBUestirar(api,ch.texture.uid,o.largo,o.ancho,texUid,(u,why)=>{if(why)console.warn('SBU textura:',why);put(u)});return}}
+      window.SBUestirar(api,ch.texture.uid,o.largo,o.ancho,texUid,(u,why)=>{if(why)console.warn('SBU textura:',why);put(u)},o.dir);return}}
     if(o.tex){const key=o.tex+'@'+(o.dir||'h')+(o.color||'')+(o.ancho||1);const go=uid=>{const mm=JSON.parse(JSON.stringify(orig[n]||m0));setAlbedo(mm,uid);api.setMaterial(mm)};
       if(texUid[key])go(texUid[key]);else{const c=tex(o.tex,512,+o.ancho||1,o.dir||'h');if(o.color){const g=c.getContext('2d');g.globalAlpha=.78;g.fillStyle=o.color;g.fillRect(0,0,512,512)}api.addTexture(c.toDataURL('image/jpeg',.85),(err,uid)=>{if(!err){texUid[key]=uid;go(uid)}})}}
     else{const mm=JSON.parse(JSON.stringify(orig[n]||m0));setAlbedo(mm,null,rgb(o.color||'#cccccc'));api.setMaterial(mm)}});

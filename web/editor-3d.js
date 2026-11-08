@@ -39,8 +39,8 @@
       const src = (m.fachadaMat || []).map(x => orig[x]).find(Boolean), ch = src && ['AlbedoPBR', 'DiffusePBR', 'DiffuseColor'].map(c => src.channels[c]).find(c => c && c.texture);
       if (ch) { const est = $('d3est'); if (est) est.textContent = 'Aplicando…';
         return window.SBUestirar(api, ch.texture.uid, o.largo, o.ancho, texU, (u, why) => {
-          if (est) est.textContent = why ? 'No se pudo estirar: ' + why + '. Se ve la original.' : 'Listo: largo ×' + (+o.largo || 1) + ', ancho ×' + (+o.ancho || 1);
-          sel.forEach(n => { if (!orig[n]) return; const x = clone(orig[n]); ['AlbedoPBR', 'DiffusePBR', 'DiffuseColor'].forEach(c => { const q = x.channels[c]; if (!q) return; q.enable = true; q.texture = clone(ch.texture); if (u) q.texture.uid = u; q.factor = ch.factor ?? 1; q.color = ch.color || [1, 1, 1] }); api.setMaterial(x); tocadas.add(n) }) }) }
+          if (est) est.textContent = why ? 'No pude leer la textura del 3D (' + why + '): se ve la dibujada con esta medida.' : 'Listo: largo ×' + (+o.largo || 1) + ', ancho ×' + (+o.ancho || 1);
+          sel.forEach(n => { if (!orig[n]) return; const x = clone(orig[n]); ['AlbedoPBR', 'DiffusePBR', 'DiffuseColor'].forEach(c => { const q = x.channels[c]; if (!q) return; q.enable = true; q.texture = clone(ch.texture); if (u) q.texture.uid = u; q.factor = ch.factor ?? 1; q.color = ch.color || [1, 1, 1] }); api.setMaterial(x); tocadas.add(n) }) }, o.dir) }
     }
     if (o.tex) {
       const T = parte === 'fachada' ? window.SBUtexDe(o, m) : { tam: +o.ancho || 1, dir: o.dir || 'h', key: o.tex + '@' + (o.dir || 'h') + (o.color || '') + (o.ancho || 1) };
