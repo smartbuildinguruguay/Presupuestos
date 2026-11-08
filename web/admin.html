@@ -157,7 +157,7 @@ tr.vrow{cursor:pointer}tr.vrow:hover td{background:var(--hi)}
 </head>
 <body>
 <header class="top"><div class="w">
-  <div style="display:flex;gap:14px;align-items:baseline"><h1>PANEL SBU</h1><small style="opacity:.6;font-size:.7rem">versión 3D-paredes 3</small><a href="./" target="_blank" rel="noopener">Ver la web →</a></div>
+  <div style="display:flex;gap:14px;align-items:baseline"><h1>PANEL SBU</h1><small style="opacity:.6;font-size:.7rem">versión tablas 4</small><a href="./" target="_blank" rel="noopener">Ver la web →</a></div>
   <div class="sync" id="sync"></div>
 </div></header>
 
@@ -643,17 +643,20 @@ function listas(){
   const P=D.precio,k=(1+P.imprevistos/100)*(1+P.margen/100);
   $('tlistas').innerHTML=LISTAS.map(([key,tit,nota])=>{const L=D[key]=D[key]||{activo:true,opciones:[]};
     return `<div class="card"><div style="display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap"><h2>${tit}</h2><label class="note"><input type="checkbox" data-la="${key}"${L.activo!==false?' checked':''} style="width:auto"> Se muestra en la web</label></div>
-     <p class="note">Costo extra ${nota}. La primera de la lista es la incluida. Color: el que se pinta en el 3D; textura: madera dibujada (opcional).</p>
-     <div class="tbl"><table><tr><th>Nombre</th><th class="n">Extra USD/m²</th><th class="n">Venta/m²</th><th>Color</th><th>Textura</th><th></th></tr>
+     <p class="note">Costo extra ${nota}. La primera de la lista es la incluida. Color: el que se pinta en el 3D; textura: madera dibujada (opcional). Ancho y largo: 2 = tablas el doble de anchas o de largas. Para verlo en el 3D al ajustar, usá la pestaña «3D: partes y vistas».</p>
+     <div class="tbl"><table><tr><th>Nombre</th><th class="n">Extra USD/m²</th><th class="n">Venta/m²</th><th>Color</th><th>Textura</th><th class="n">Ancho tabla</th><th class="n">Largo tabla</th><th>Sentido</th><th></th></tr>
      ${L.opciones.map((o,i)=>`<tr><td><input data-l="${key}" data-li="${i}" data-f="nombre" value="${esc(o.nombre)}" aria-label="Nombre"></td>
       <td class="n"><input type="number" data-l="${key}" data-li="${i}" data-f="usdM2" value="${+o.usdM2||0}" aria-label="Extra" style="width:80px"></td><td class="n">${usd((+o.usdM2||0)*k)}</td>
       <td><input type="color" data-l="${key}" data-li="${i}" data-f="color" value="${o.color||'#cccccc'}" aria-label="Color" style="width:44px;padding:2px"></td>
       <td><select data-l="${key}" data-li="${i}" data-f="tex" aria-label="Textura">${['','pino','lapacho'].map(t=>`<option value="${t}"${(o.tex||'')===t?' selected':''}>${t||'solo color'}</option>`).join('')}</select></td>
+      ${o.tex?`<td class="n"><input type="number" min="0.25" max="8" step="0.25" data-l="${key}" data-li="${i}" data-f="ancho" value="${+o.ancho||1}" aria-label="Ancho de tabla" style="width:70px"></td>
+      <td class="n"><input type="number" min="0.25" max="8" step="0.25" data-l="${key}" data-li="${i}" data-f="largo" value="${+o.largo||1}" aria-label="Largo de tabla" style="width:70px"></td>
+      <td><select data-l="${key}" data-li="${i}" data-f="dir" aria-label="Sentido">${[['v','vertical'],['h','horizontal']].map(([v,t])=>`<option value="${v}"${(o.dir||'h')===v?' selected':''}>${t}</option>`).join('')}</select></td>`:'<td></td><td></td><td></td>'}
       <td><button type="button" class="btn ghost" data-ld="${key}" data-li="${i}" aria-label="Borrar">×</button></td></tr>`).join('')}</table></div>
      <button type="button" class="btn ghost" data-ladd="${key}" style="justify-self:start">+ Opción</button></div>`}).join('');
   const T=$('tlistas');
   T.querySelectorAll('[data-l]').forEach(el=>el.addEventListener(el.tagName==='SELECT'||el.type==='color'?'change':'input',()=>{const o=D[el.dataset.l].opciones[+el.dataset.li],f=el.dataset.f;
-    if(f==='usdM2')o.usdM2=+el.value||0;else if(f==='tex'){if(el.value)o.tex=el.value;else delete o.tex}else o[f]=el.value;saveDraft()}));
+    if(f==='usdM2')o.usdM2=+el.value||0;else if(f==='ancho'||f==='largo'){if(+el.value>0)o[f]=+el.value}else if(f==='tex'){if(el.value)o.tex=el.value;else delete o.tex}else o[f]=el.value;saveDraft()}));
   T.querySelectorAll('[data-la]').forEach(el=>el.onchange=()=>{D[el.dataset.la].activo=el.checked;saveDraft()});
   T.querySelectorAll('[data-ld]').forEach(b=>b.onclick=()=>{D[b.dataset.ld].opciones.splice(+b.dataset.li,1);changed()});
   T.querySelectorAll('[data-ladd]').forEach(b=>b.onclick=()=>{const L=D[b.dataset.ladd];let n=1;while(L.opciones.some(o=>o.id==='op-'+n))n++;L.opciones.push({id:'op-'+n,nombre:'Opción nueva',usdM2:0,color:'#cccccc'});changed()});
