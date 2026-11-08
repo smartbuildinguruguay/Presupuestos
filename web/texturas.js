@@ -6,7 +6,7 @@ window.SBUtex = function (kind,size=256,tam=1,dir='v'){
   const c=document.createElement('canvas');c.width=c.height=size;const g=c.getContext('2d');
   const rnd=(a,b)=>a+Math.random()*(b-a);
   if(kind==='pino'||kind==='lapacho'){
-    const base=kind==='pino'?[196,158,104]:[112,62,40], bh=size/Math.max(1,Math.round((kind==='pino'?6:8)/tam));
+    const base=kind==='pino'?[196,158,104]:[122,102,86], bh=size/Math.max(1,Math.round((kind==='pino'?6:8)/tam));
     for(let y=0;y<size;y+=bh){const k=rnd(-14,14);g.fillStyle=`rgb(${base[0]+k},${base[1]+k},${base[2]+k})`;g.fillRect(0,y,size,bh);
       g.strokeStyle='rgba(0,0,0,.08)';for(let i=0;i<10;i++){g.beginPath();const yy=y+rnd(2,bh-2);g.moveTo(0,yy);g.bezierCurveTo(size*.3,yy+rnd(-3,3),size*.7,yy+rnd(-3,3),size,yy);g.stroke()}
       g.fillStyle='rgba(0,0,0,.35)';g.fillRect(0,y+bh-2,size,2)}

@@ -121,16 +121,17 @@
   "opciones": [
    {
     "id": "yeso",
-    "nombre": "Placa de yeso pintada",
+    "nombre": "Placa de yeso pintada blanca",
     "usdM2": 0,
-    "color": "#ece8df"
+    "color": "#f4f3ef"
    },
    {
     "id": "machimbre",
-    "nombre": "Machimbre de pino",
+    "nombre": "Machimbre de lapacho",
     "usdM2": 18,
-    "tex": "pino",
-    "dir": "h"
+    "tex": "lapacho",
+    "dir": "h",
+    "deFachada": "lapacho"
    },
    {
     "id": "machimbreBlanco",
@@ -138,7 +139,8 @@
     "usdM2": 22,
     "tex": "pino",
     "dir": "v",
-    "color": "#f1eee7"
+    "color": "#f1eee7",
+    "original": true
    }
   ]
  },
@@ -149,7 +151,8 @@
     "id": "porcelanato",
     "nombre": "Porcelanato 60×60",
     "usdM2": 0,
-    "color": "#cfcac1"
+    "color": "#cfcac1",
+    "original": true
    },
    {
     "id": "vinilico",
@@ -163,7 +166,8 @@
     "nombre": "Piso de madera dura",
     "usdM2": 35,
     "tex": "lapacho",
-    "dir": "h"
+    "dir": "h",
+    "deFachada": "lapacho"
    }
   ]
  },

@@ -693,7 +693,9 @@ function applyCat(k){
   }
   const L=D[CATS[k].lista],o=opDe(k,cfg[k]);if(!o)return;
   names.forEach(n=>{const m0=mats.find(q=>q.name===n);if(!m0)return;
-    if(o===L.opciones[0]&&(k!=='techo'||(!o.color&&!o.tex))){if(orig[n])api.setMaterial(JSON.parse(JSON.stringify(orig[n])));return}
+    if(o.original||(!o.color&&!o.tex)){if(orig[n])api.setMaterial(JSON.parse(JSON.stringify(orig[n])));return}
+    if(o.deFachada&&cur.revOriginal===o.deFachada){const src=(cur.fachadaMat||[]).map(x=>orig[x]).find(Boolean),ch=src&&['AlbedoPBR','DiffusePBR','DiffuseColor'].map(c=>src.channels[c]).find(c=>c&&c.texture);
+      if(ch){const mm=JSON.parse(JSON.stringify(orig[n]||m0));['AlbedoPBR','DiffusePBR','DiffuseColor'].forEach(c=>{const x=mm.channels[c];if(!x)return;x.enable=true;x.texture=JSON.parse(JSON.stringify(ch.texture));x.factor=ch.factor??1;x.color=ch.color||[1,1,1]});api.setMaterial(mm);return}}
     if(o.tex){const key=o.tex+'@'+(o.dir||'h')+(o.color||'');const go=uid=>{const mm=JSON.parse(JSON.stringify(orig[n]||m0));setAlbedo(mm,uid);api.setMaterial(mm)};
       if(texUid[key])go(texUid[key]);else{const c=tex(o.tex,512,1,o.dir||'h');if(o.color){const g=c.getContext('2d');g.globalAlpha=.78;g.fillStyle=o.color;g.fillRect(0,0,512,512)}api.addTexture(c.toDataURL('image/jpeg',.85),(err,uid)=>{if(!err){texUid[key]=uid;go(uid)}})}}
     else{const mm=JSON.parse(JSON.stringify(orig[n]||m0));setAlbedo(mm,null,rgb(o.color||'#cccccc'));api.setMaterial(mm)}});
