@@ -131,7 +131,8 @@
     "usdM2": 18,
     "tex": "lapacho",
     "dir": "h",
-    "deFachada": "lapacho"
+    "deFachada": "lapacho",
+    "largo": 2.5
    },
    {
     "id": "machimbreBlanco",
@@ -167,7 +168,8 @@
     "usdM2": 35,
     "tex": "lapacho",
     "dir": "h",
-    "deFachada": "lapacho"
+    "deFachada": "lapacho",
+    "largo": 2.5
    }
   ]
  },
