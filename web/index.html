@@ -696,20 +696,11 @@ function applyCat(k){
     if(o.original||(!o.color&&!o.tex)){if(orig[n])api.setMaterial(JSON.parse(JSON.stringify(orig[n])));return}
     if(o.deFachada&&cur.revOriginal===o.deFachada){const src=(cur.fachadaMat||[]).map(x=>orig[x]).find(Boolean),ch=src&&['AlbedoPBR','DiffusePBR','DiffuseColor'].map(c=>src.channels[c]).find(c=>c&&c.texture);
       if(ch){const put=uid=>{const mm=JSON.parse(JSON.stringify(orig[n]||m0));['AlbedoPBR','DiffusePBR','DiffuseColor'].forEach(c=>{const x=mm.channels[c];if(!x)return;x.enable=true;x.texture=JSON.parse(JSON.stringify(ch.texture));if(uid)x.texture.uid=uid;x.factor=ch.factor??1;x.color=ch.color||[1,1,1]});api.setMaterial(mm)};
-      if(+o.largo>1)estirar(ch.texture.uid,+o.largo,put);else put();return}}
-    if(o.tex){const key=o.tex+'@'+(o.dir||'h')+(o.color||'');const go=uid=>{const mm=JSON.parse(JSON.stringify(orig[n]||m0));setAlbedo(mm,uid);api.setMaterial(mm)};
-      if(texUid[key])go(texUid[key]);else{const c=tex(o.tex,512,1,o.dir||'h');if(o.color){const g=c.getContext('2d');g.globalAlpha=.78;g.fillStyle=o.color;g.fillRect(0,0,512,512)}api.addTexture(c.toDataURL('image/jpeg',.85),(err,uid)=>{if(!err){texUid[key]=uid;go(uid)}})}}
+      window.SBUestirar(api,ch.texture.uid,o.largo,o.ancho,texUid,(u,why)=>{if(why)console.warn('SBU textura:',why);put(u)});return}}
+    if(o.tex){const key=o.tex+'@'+(o.dir||'h')+(o.color||'')+(o.ancho||1);const go=uid=>{const mm=JSON.parse(JSON.stringify(orig[n]||m0));setAlbedo(mm,uid);api.setMaterial(mm)};
+      if(texUid[key])go(texUid[key]);else{const c=tex(o.tex,512,+o.ancho||1,o.dir||'h');if(o.color){const g=c.getContext('2d');g.globalAlpha=.78;g.fillStyle=o.color;g.fillRect(0,0,512,512)}api.addTexture(c.toDataURL('image/jpeg',.85),(err,uid)=>{if(!err){texUid[key]=uid;go(uid)}})}}
     else{const mm=JSON.parse(JSON.stringify(orig[n]||m0));setAlbedo(mm,null,rgb(o.color||'#cccccc'));api.setMaterial(mm)}});
 }
-/* estira las tablas de una textura del 3D a lo largo (se detecta solo en qué sentido van) */
-function estirar(uid,k,cb){const key='est:'+uid+':'+k;if(texUid[key])return cb(texUid[key]);
-  const no=()=>cb(null);try{api.getTextureList((e,l)=>{const t=!e&&(l||[]).find(x=>x.uid===uid);const im=t&&(t.images||[]).filter(i=>i.url).sort((a,b)=>Math.abs(a.width-1024)-Math.abs(b.width-1024))[0];if(!im)return no();
-    const img=new Image();img.crossOrigin='anonymous';img.onerror=no;img.onload=()=>{try{
-      const w=img.naturalWidth,h=img.naturalHeight,s=document.createElement('canvas'),S=Math.min(256,w,h);s.width=s.height=S;const sg=s.getContext('2d');sg.drawImage(img,0,0,S,S);const d=sg.getImageData(0,0,S,S).data;
-      let gx=0,gy=0;for(let y=1;y<S;y++)for(let x=1;x<S;x++){const i=(y*S+x)*4;gx+=Math.abs(d[i]-d[i-4]);gy+=Math.abs(d[i]-d[i-S*4])}
-      const c=document.createElement('canvas');c.width=w;c.height=h;const g=c.getContext('2d');
-      if(gx<gy)g.drawImage(img,0,0,w/k,h,0,0,w,h);else g.drawImage(img,0,0,w,h/k,0,0,w,h);
-      api.addTexture(c.toDataURL('image/jpeg',.88),(err,u)=>{if(err)return no();texUid[key]=u;cb(u)})}catch(x){no()}};img.src=im.url})}catch(x){no()}}
 function applyAll(){Object.keys(CATS).forEach(applyCat)}
 const applyExt=()=>applyCat('ext');
 /* cámara: vista guardada en el panel, o una aproximada a partir de la inicial */

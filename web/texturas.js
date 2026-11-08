@@ -26,3 +26,28 @@ window.SBUtexDe = function (e,m){
   const tam=(+e.tam||1)*(+(m&&m.texEsc)||1),dir=e.dir||'v';
   return {tam,dir,key:e.tex+'@'+tam+dir};
 };
+
+/* Toma una textura que ya trae el modelo de Sketchfab y la estira: largo = tablas más largas, ancho = tablas más anchas.
+   El sentido de las tablas se detecta solo. cb(uidNuevo) o cb(null, motivo) si no se pudo. */
+window.SBUestirar = function (api, uid, largo, ancho, cache, cb) {
+  largo = +largo > 0 ? +largo : 1; ancho = +ancho > 0 ? +ancho : 1;
+  const key = 'est:' + uid + ':' + largo + ':' + ancho; if (cache[key]) return cb(cache[key]);
+  if (largo === 1 && ancho === 1) return cb(uid);
+  const no = m => cb(null, m);
+  try { api.getTextureList((e, l) => {
+    if (e) return no('Sketchfab no pasó la lista de texturas');
+    const t = (l || []).find(x => x.uid === uid); if (!t) return no('no encontré la textura en el modelo');
+    const im = (t.images || []).filter(i => i.url).sort((a, b) => Math.abs(a.width - 1024) - Math.abs(b.width - 1024))[0];
+    if (!im) return no('Sketchfab no da la imagen de esta textura');
+    const img = new Image(); img.crossOrigin = 'anonymous'; img.onerror = () => no('no se pudo descargar la imagen de la textura');
+    img.onload = () => { try {
+      const w = img.naturalWidth, h = img.naturalHeight, s = document.createElement('canvas'), S = Math.min(256, w, h); s.width = s.height = S;
+      const sg = s.getContext('2d'); sg.drawImage(img, 0, 0, S, S); const d = sg.getImageData(0, 0, S, S).data;
+      let gx = 0, gy = 0; for (let y = 1; y < S; y++) for (let x = 1; x < S; x++) { const i = (y * S + x) * 4; gx += Math.abs(d[i] - d[i - 4]); gy += Math.abs(d[i] - d[i - S * 4]) }
+      const c = document.createElement('canvas'); c.width = w; c.height = h; const g = c.getContext('2d');
+      // gx<gy: las tablas corren a lo ancho de la imagen (x)
+      if (gx < gy) g.drawImage(img, 0, 0, w / largo, h / ancho, 0, 0, w, h); else g.drawImage(img, 0, 0, w / ancho, h / largo, 0, 0, w, h);
+      api.addTexture(c.toDataURL('image/jpeg', .88), (err, u) => { if (err) return no('Sketchfab no aceptó la textura nueva'); cache[key] = u; cb(u) });
+    } catch (x) { no('el navegador no deja leer la imagen de Sketchfab') } };
+    img.src = im.url }) } catch (x) { no('esta versión del visor no deja leer texturas') }
+};

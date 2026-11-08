@@ -35,8 +35,15 @@
     const P = PARTES.find(p => p.k === parte);
     const go = (uid, color) => sel.forEach(n => { if (!orig[n]) return; const x = clone(orig[n]); albedo(x, uid, color); api.setMaterial(x); tocadas.add(n) });
     if (!o) return go(null, P.prueba);
+    if (o.deFachada && m.revOriginal === o.deFachada) {
+      const src = (m.fachadaMat || []).map(x => orig[x]).find(Boolean), ch = src && ['AlbedoPBR', 'DiffusePBR', 'DiffuseColor'].map(c => src.channels[c]).find(c => c && c.texture);
+      if (ch) { const est = $('d3est'); if (est) est.textContent = 'Aplicando…';
+        return window.SBUestirar(api, ch.texture.uid, o.largo, o.ancho, texU, (u, why) => {
+          if (est) est.textContent = why ? 'No se pudo estirar: ' + why + '. Se ve la original.' : 'Listo: largo ×' + (+o.largo || 1) + ', ancho ×' + (+o.ancho || 1);
+          sel.forEach(n => { if (!orig[n]) return; const x = clone(orig[n]); ['AlbedoPBR', 'DiffusePBR', 'DiffuseColor'].forEach(c => { const q = x.channels[c]; if (!q) return; q.enable = true; q.texture = clone(ch.texture); if (u) q.texture.uid = u; q.factor = ch.factor ?? 1; q.color = ch.color || [1, 1, 1] }); api.setMaterial(x); tocadas.add(n) }) }) }
+    }
     if (o.tex) {
-      const T = parte === 'fachada' ? window.SBUtexDe(o, m) : { tam: 1, dir: o.dir || 'h', key: o.tex + '@h' + (o.color || '') };
+      const T = parte === 'fachada' ? window.SBUtexDe(o, m) : { tam: +o.ancho || 1, dir: o.dir || 'h', key: o.tex + '@' + (o.dir || 'h') + (o.color || '') + (o.ancho || 1) };
       if (texU[T.key]) return go(texU[T.key]);
       const c = window.SBUtex(o.tex, 512, T.tam, T.dir);
       if (o.color && parte !== 'fachada') { const g = c.getContext('2d'); g.globalAlpha = .78; g.fillStyle = o.color; g.fillRect(0, 0, 512, 512) }
@@ -56,13 +63,22 @@
     $('d3act').innerHTML = `<h3>${P.d}</h3>
       <label style="display:flex;align-items:center;gap:8px;font-weight:500"><input type="checkbox" id="d3tocar"${tocar ? ' checked' : ''} style="width:auto;margin:0"> Tocar el modelo marca o desmarca partes</label>
       <label>Probar con<select id="d3o">${ops.map(o => `<option value="${o.id}">${esc(o.nombre)}</option>`).join('')}<option value="">color de prueba</option></select></label>
+      <div id="d3tab" style="display:grid;gap:6px"></div>
       <div class="d3m">${mats.length ? mats.map((x, i) => `<label><input type="checkbox" data-i="${i}"${sel.has(x.name) ? ' checked' : ''}>${esc(x.name)}<button type="button" data-v="${i}">ver</button></label>`).join('') : '<p class="note">Abrí el modelo para ver sus partes.</p>'}</div>
       <div style="display:grid;gap:6px;border-top:1px solid var(--line);padding-top:10px"><b style="font-size:.9rem">Vista de la cámara</b>
        <span class="note">Girá y acercá el 3D hasta el encuadre que querés que vea el cliente al elegir ${P.t.toLowerCase()}, y guardala.</span>
        <div style="display:flex;gap:6px;flex-wrap:wrap"><button type="button" class="btn" id="d3vs">Guardar esta vista</button><button type="button" class="btn ghost" id="d3vg"${vistas[parte] ? '' : ' disabled'}>Ir a la guardada</button><button type="button" class="btn ghost" id="d3vb"${vistas[parte] ? '' : ' disabled'}>Borrar</button></div>
        <span class="note" id="d3vm">${vistas[parte] ? 'Hay una vista guardada.' : 'Sin vista guardada: la web usa una aproximada.'}</span></div>`;
     $('d3tocar').onchange = () => { tocar = $('d3tocar').checked };
-    $('d3o').onchange = pintar;
+    const tabla = () => { const o = ops.find(x => x.id === $('d3o').value), box = $('d3tab');
+      if (!o || !(o.tex || o.deFachada) || parte === 'fachada') { box.innerHTML = ''; return }
+      box.innerHTML = `<b style="font-size:.9rem">Medida de las tablas · ${esc(o.nombre)}</b>
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px"><label>Largo<input type="number" id="d3L" min="0.25" max="8" step="0.25" value="${+o.largo || 1}"><small>2 = el doble de largas</small></label>
+        <label>Ancho<input type="number" id="d3A" min="0.25" max="8" step="0.25" value="${+o.ancho || 1}"><small>2 = el doble de anchas</small></label></div>
+        <span class="note" id="d3est"></span><span class="note">Vale para todos los modelos. Se guarda con "Subir a la web".</span>`;
+      let t; const upd = () => { const L = +$('d3L').value, W = +$('d3A').value; if (!(L > 0 && W > 0)) return; o.largo = L; o.ancho = W; A().saveDraft(); clearTimeout(t); t = setTimeout(pintar, 350) };
+      $('d3L').oninput = upd; $('d3A').oninput = upd };
+    $('d3o').onchange = () => { tabla(); pintar() }; tabla();
     $('d3act').querySelectorAll('[data-i]').forEach(cb => cb.onchange = () => { setLista(m, parte, [...$('d3act').querySelectorAll('[data-i]:checked')].map(c => mats[+c.dataset.i].name)); pintar(); refrescarCabecera() });
     $('d3act').querySelectorAll('[data-v]').forEach(b => b.onclick = ev => { ev.preventDefault(); destellar(mats[+b.dataset.v].name) });
     $('d3vs').onclick = () => { if (!api) return; api.getCameraLookAt((e, c) => { if (e || !c) return; m.vistas = m.vistas || {}; m.vistas[parte] = { p: c.position.map(v => +v.toFixed(3)), t: c.target.map(v => +v.toFixed(3)) }; A().saveDraft(); lado() }) };
