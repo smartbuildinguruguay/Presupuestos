@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-08T00:38:02.267Z",
+ "actualizado": "2026-11-08T00:40:00.941Z",
  "contacto": {
   "whatsapp": "59898526226",
   "instagram": "smartbuildinguruguay",
@@ -188,7 +188,8 @@
    "factor": 1,
    "fachadaM2": null,
    "fachadaMat": [
-    "*7"
+    "*7",
+    "Metal_10_1K"
    ],
    "planta": "eden-rock",
    "pendiente": [
@@ -328,9 +329,7 @@
    "mats": {
     "interior": [],
     "piso": [],
-    "techo": [
-     "Metal_10_1K"
-    ]
+    "techo": []
    },
    "vistas": {
     "techo": {
