@@ -188,8 +188,7 @@
    "factor": 1,
    "fachadaM2": null,
    "fachadaMat": [
-    "*7",
-    "Metal_10_1K"
+    "*7"
    ],
    "planta": "eden-rock",
    "pendiente": [
@@ -334,7 +333,10 @@
     "piso": [
      "*1"
     ],
-    "techo": []
+    "techo": [
+     "Metal_06_1K",
+     "Metal_10_1K"
+    ]
    },
    "vistas": {
     "techo": {

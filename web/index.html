@@ -674,7 +674,7 @@ function setAlbedo(mat,uid,color){const e=1;
 /* terminaciones: categorías, materiales del 3D y vistas de cámara */
 const CATS={ext:{k:'ext',t:'Fachada',tab:'Fachada',lista:null,vista:'fachada'},int:{k:'int',t:'Interior',tab:'Interior',lista:'interior',vista:'interior'},pis:{k:'pis',t:'Pisos',tab:'Pisos',lista:'pisos',vista:'piso'},techo:{k:'techo',t:'Techo',tab:'Techo',lista:'techo',vista:'techo'}};
 const catsOn=()=>Object.values(CATS).filter(C=>!C.lista||(D[C.lista]&&D[C.lista].activo!==false));
-const matsDe=(m,k)=>{if(k==='ext')return m.fachadaMat||[];const v=CATS[k].vista,own=(m.mats||{})[v]||[];if(own.length)return own;
+const matsDe=(m,k)=>{if(k!=='techo'){const tz=matsDe(m,'techo'),L=k==='ext'?(m.fachadaMat||[]):null;if(L)return L.filter(n=>!tz.includes(n));}if(k==='ext')return [];const v=CATS[k].vista,tz=k==='techo'?[]:matsDe(m,'techo'),own=((m.mats||{})[v]||[]).filter(n=>!tz.includes(n));if(own.length||k!=='techo')return own;
   /* partes comunes a todos los modelos (ej. Metal_06_1K = chapa del techo), si el modelo las tiene */
   const base=((D.matsBase||{})[v]||[]).map(x=>x.toLowerCase());return (mats||[]).filter(q=>base.includes(String(q.name).toLowerCase())).map(q=>q.name)};
 const opDe=(k,id)=>{const L=D[CATS[k].lista];return L&&(L.opciones.find(o=>o.id===id)||L.opciones[0])};
