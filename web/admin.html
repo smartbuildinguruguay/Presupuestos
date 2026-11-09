@@ -157,7 +157,7 @@ tr.vrow{cursor:pointer}tr.vrow:hover td{background:var(--hi)}
 </head>
 <body>
 <header class="top"><div class="w">
-  <div style="display:flex;gap:14px;align-items:baseline"><h1>PANEL SBU</h1><small style="opacity:.6;font-size:.7rem">versión tablas 4</small><a href="./" target="_blank" rel="noopener">Ver la web →</a></div>
+  <div style="display:flex;gap:14px;align-items:baseline"><h1>PANEL SBU</h1><small style="opacity:.6;font-size:.7rem">versión visitas 5</small><a href="./" target="_blank" rel="noopener">Ver la web →</a></div>
   <div class="sync" id="sync"></div>
 </div></header>
 
@@ -824,9 +824,10 @@ function visitas(){
   const ok=D.visitas.url&&vclave();
   $('vSetup').hidden=!!ok;$('vMain').hidden=!ok;
   if(!ok){vSetup();return}
-  $('vDias').innerHTML=[7,30,90].map(d=>`<button type="button" data-d="${d}" aria-pressed="${d===vDias}">Últimos ${d} días</button>`).join('')+`<button type="button" id="vKey">Cambiar clave</button>`;
+  $('vDias').innerHTML=[7,30,90].map(d=>`<button type="button" data-d="${d}" aria-pressed="${d===vDias}">Últimos ${d} días</button>`).join('')+`<button type="button" id="vKey">Cambiar clave</button><button type="button" id="vTest">Probar el registro</button>`;
   $('vDias').querySelectorAll('[data-d]').forEach(b=>b.onclick=()=>{vDias=+b.dataset.d;vData=null;visitas()});
   $('vKey').onclick=()=>{try{localStorage.removeItem(VKEY)}catch(e){}visitas()};
+  $('vTest').onclick=vTest;
   vLinks();
   if(!vData&&!vLoading)vLoad();else vDraw();
 }
@@ -865,8 +866,24 @@ async function vLoad(){
   vLoading=false;vDraw();
 }
 $('vRef').onclick=()=>{vData=null;visitas()};
+/* Prueba de punta a punta: manda un evento igual que la web, espera y lo busca en la planilla */
+async function vTest(){
+  const out=m=>{$('vMsg').innerHTML=m};const u=D.visitas.url,tag='PRUEBA-'+Date.now().toString(36).toUpperCase();
+  out('Probando… 1/3: reviso la dirección que usa la web publicada');
+  let pub='';try{pub=((await (await fetch('datos.json?t='+Date.now(),{cache:'no-store'})).json()).visitas||{}).url||''}catch(e){}
+  if(pub!==u){out(pub?'⚠ La web publicada manda las visitas a <b>otra dirección</b> que la del panel. Tocá <b>Subir a la web</b> y probá de nuevo.':'⚠ La web publicada <b>no tiene</b> la dirección de la planilla, así que no manda nada. Tocá <b>Subir a la web</b>.');return}
+  out('Probando… 2/3: mando una visita de prueba ('+tag+')');
+  try{await fetch(u,{method:'POST',mode:'no-cors',body:JSON.stringify([{visitante:tag,sesion:'test',evento:'prueba',detalle:'desde el panel',origen:'panel',pagina:'/'}])})}catch(e){out('⚠ El navegador no pudo mandar la prueba ('+esc(e.message)+'). Revisá la conexión.');return}
+  out('Probando… 3/3: la busco en la planilla');
+  for(let i=0;i<4;i++){await new Promise(r=>setTimeout(r,2500));
+    try{const j=await (await fetch(`${u}?clave=${encodeURIComponent(vclave())}&dias=1&t=${Date.now()}`)).json();
+      if(j.error==='clave'){out('⚠ La clave del panel no coincide con la del Apps Script.');return}
+      if((j.eventos||[]).some(e=>e.visitante===tag)){out('✓ Funciona: la prueba llegó a la planilla. Si no ves visitas es porque no entró nadie todavía (tus propias visitas desde este navegador no cuentan).');return}
+    }catch(e){out('⚠ No se pudo leer la planilla. En Apps Script → Implementar → Administrar implementaciones: "Quién tiene acceso" tiene que ser <b>Cualquier usuario</b>.');return}}
+  out('⚠ La planilla se lee pero <b>no guarda</b> lo que llega. En Apps Script: Implementar → Administrar implementaciones → editar (lápiz) → "Ejecutar como": <b>Yo</b>, "Quién tiene acceso": <b>Cualquier usuario</b>, Versión: <b>Nueva versión</b> → Implementar. Si pegaste código nuevo, también hace falta "Nueva versión".');
+}
 function vDraw(){
-  const E=vData||[];
+  const E=(vData||[]).filter(e=>e.evento!=='prueba');
   const byV={};E.forEach(e=>{(byV[e.visitante]=byV[e.visitante]||[]).push(e)});
   const V=Object.entries(byV).map(([id,evs])=>{evs.sort((a,b)=>a.fecha<b.fecha?-1:1);const f=evs[0],l=evs[evs.length-1];
     const has=k=>evs.some(e=>e.evento===k);const ses=new Set(evs.map(e=>e.sesion)).size;
