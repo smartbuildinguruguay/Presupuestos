@@ -1260,7 +1260,8 @@
    },
    "config": [
     "ext",
-    "techo"
+    "techo",
+    "extra"
    ],
    "datos": [
     [
@@ -1281,15 +1282,19 @@
     ]
    ],
    "incluye": [
-    "Proyecto, permisos y dirección de obra",
+    "Proyecto y permiso de construcción ante la Intendencia",
     "Platea de hormigón armado",
     "Estructura metálica de pórticos, sin columnas interiores",
-    "Cubierta de chapa con aislación térmica",
+    "Cubierta de chapa con aislación térmica y canalones",
     "Cerramientos de chapa prepintada",
     "Piso de hormigón alisado",
-    "Instalación eléctrica y sanitaria hasta cada local",
-    "Baños comunes terminados"
-   ]
+    "Instalación eléctrica: tablero general, tablero por local, luminarias LED y tomas",
+    "Instalación sanitaria: agua fría y caliente a los baños y desagües a red o pozo",
+    "2 baños comunes terminados",
+    "Frentes vidriados con puerta y marquesina"
+   ],
+   "noIncluye": "No incluye terreno, conexiones de UTE, OSE y saneamiento, terminaciones interiores de cada local ni habilitaciones (comercial y de Bomberos): se suman abajo como extra.",
+   "locales": 4
   },
   {
    "visible": true,
@@ -1320,7 +1325,8 @@
    "etiqueta": "Galpón",
    "planta": "galpon-deposito",
    "config": [
-    "techo"
+    "techo",
+    "extra"
    ],
    "datos": [
     [
@@ -1403,15 +1409,18 @@
     ]
    },
    "incluye": [
-    "Proyecto, permisos y dirección de obra",
+    "Proyecto y permiso de construcción ante la Intendencia",
     "Platea de hormigón armado",
     "Estructura metálica de pórticos, sin columnas interiores",
-    "Cubierta de chapa con aislación térmica",
+    "Cubierta de chapa con aislación térmica y canalones",
     "Cerramientos de chapa prepintada",
     "Piso de hormigón alisado",
-    "Instalación eléctrica y sanitaria",
-    "Baño y oficina terminados"
-   ]
+    "Instalación eléctrica: tablero, luminarias LED de nave y tomas",
+    "Instalación sanitaria del baño",
+    "Baño y oficina terminados",
+    "Portón de 4 × 4,2 m"
+   ],
+   "noIncluye": "No incluye terreno, conexiones de UTE, OSE y saneamiento ni habilitaciones (comercial y de Bomberos): se suman como extra."
   },
   {
    "visible": true,
@@ -1429,10 +1438,10 @@
     "precio real",
     "3D"
    ],
-   "id": "pod-estudio",
+   "id": "pod-oficina",
    "linea": "pods",
-   "nombre": "Pod estudio",
-   "frase": "12 m² vidriados al jardín para trabajar, leer o pintar.",
+   "nombre": "Pod oficina",
+   "frase": "12 m² para trabajar desde el fondo de tu casa: luz natural, aire y silencio.",
    "m2": 12,
    "usos": [
     "vivir"
@@ -1440,11 +1449,12 @@
    "factor": 1.15,
    "plazo": 1.5,
    "etiqueta": "Pod",
-   "planta": "pod-estudio",
+   "planta": "pod-oficina",
    "config": [
     "ext",
     "int",
-    "pis"
+    "pis",
+    "extra"
    ],
    "datos": [
     [
@@ -1456,8 +1466,8 @@
      "4 m²"
     ],
     [
-     "Frente",
-     "vidriado"
+     "Uso",
+     "oficina / estudio"
     ],
     [
      "Plazo",
@@ -1534,10 +1544,11 @@
     "Estructura de steel frame galvanizado",
     "Aislación térmica en muros, piso y techo",
     "Aberturas de aluminio con DVH",
-    "Instalación eléctrica completa",
-    "Terminación exterior elegida",
-    "Conexión al servicio de la casa principal"
-   ]
+    "Instalación eléctrica: tablero, luces LED y 6 tomas dobles",
+    "Revestimiento interior terminado",
+    "Terminación exterior elegida"
+   ],
+   "noIncluye": "No incluye terreno, el cableado desde la casa principal más allá de 15 m ni muebles sueltos."
   },
   {
    "visible": true,
@@ -1555,10 +1566,10 @@
     "precio real",
     "3D"
    ],
-   "id": "pod-bano",
+   "id": "pod-habitable",
    "linea": "pods",
-   "nombre": "Pod huéspedes",
-   "frase": "22 m² con baño y kitchenette: cuarto de huéspedes o para alquilar.",
+   "nombre": "Pod habitable",
+   "frase": "22 m² con dormitorio, baño y kitchenette: huéspedes, un hijo grande o para alquilar.",
    "m2": 22,
    "usos": [
     "renta",
@@ -1567,12 +1578,13 @@
    "factor": 1.2,
    "plazo": 2,
    "etiqueta": "Pod",
-   "planta": "pod-bano",
+   "planta": "pod-habitable",
    "config": [
     "ext",
     "int",
     "pis",
-    "techo"
+    "techo",
+    "extra"
    ],
    "datos": [
     [
@@ -1669,10 +1681,225 @@
     "Aislación térmica en muros, piso y techo",
     "Aberturas de aluminio con DVH",
     "Instalación eléctrica completa",
-    "Terminación exterior elegida",
-    "Conexión al servicio de la casa principal",
-    "Baño y kitchenette terminados"
-   ]
+    "Instalación sanitaria: agua fría y caliente, desagües",
+    "Baño y kitchenette terminados",
+    "Terminación exterior elegida"
+   ],
+   "noIncluye": "No incluye terreno, conexión a saneamiento u OSE más allá de 15 m ni muebles sueltos."
+  },
+  {
+   "visible": true,
+   "lugar": "",
+   "uid": "",
+   "thumb": "",
+   "imagen": "",
+   "deck": 0,
+   "dorm": 0,
+   "banos": 0,
+   "fachadaM2": null,
+   "fachadaMat": [],
+   "revOriginal": "",
+   "pendiente": [
+    "precio real",
+    "3D"
+   ],
+   "linea": "pods",
+   "id": "shed-jardin",
+   "nombre": "Shed de jardín",
+   "frase": "Un galponcito de 3 × 2,4 m para herramientas, bicis y la cortadora.",
+   "m2": 7,
+   "usos": [
+    "vivir"
+   ],
+   "factor": 0.4,
+   "plazo": 0.5,
+   "etiqueta": "Shed",
+   "planta": "shed-jardin",
+   "config": [
+    "ext",
+    "techo",
+    "extra"
+   ],
+   "datos": [
+    [
+     "Superficie",
+     "7 m²"
+    ],
+    [
+     "Puerta",
+     "doble, 1,6 m"
+    ],
+    [
+     "Altura",
+     "2,4 m"
+    ],
+    [
+     "Plazo",
+     "2 semanas"
+    ]
+   ],
+   "fachada": {
+    "ancho": 6,
+    "titulo": "el frente",
+    "nota": "puerta doble y techo a un agua",
+    "notaX": 3,
+    "volumenes": [
+     {
+      "x": 1.5,
+      "w": 3,
+      "muro": 2.3,
+      "piso": 0.15,
+      "techo": "plano",
+      "revest": "madera"
+     }
+    ],
+    "aberturas": [
+     {
+      "tipo": "puerta",
+      "x": 2.2,
+      "y": 0,
+      "w": 1.6,
+      "h": 2
+     }
+    ],
+    "plantas": [
+     {
+      "x": 0.2,
+      "w": 1.2,
+      "c": "#8fa77a"
+     },
+     {
+      "x": 4.7,
+      "w": 1.1
+     }
+    ],
+    "arboles": [
+     {
+      "x": 5.6,
+      "h": 4.5,
+      "k": "redondo"
+     }
+    ],
+    "personas": []
+   },
+   "incluye": [
+    "Pilotes o base de hormigón",
+    "Estructura de madera o steel frame",
+    "Revestimiento exterior y techo de chapa",
+    "Puerta doble con cerradura",
+    "Estante de trabajo de 2,8 m"
+   ],
+   "noIncluye": "No incluye aislación ni instalación eléctrica: se suman como extra."
+  },
+  {
+   "visible": true,
+   "lugar": "",
+   "uid": "",
+   "thumb": "",
+   "imagen": "",
+   "deck": 0,
+   "dorm": 0,
+   "banos": 1,
+   "fachadaM2": null,
+   "fachadaMat": [],
+   "revOriginal": "",
+   "pendiente": [
+    "precio real",
+    "3D"
+   ],
+   "linea": "pods",
+   "id": "pod-bano",
+   "nombre": "Pod baño",
+   "frase": "Un bañito completo de 2 × 2,4 m junto a la piscina, el quincho o la obra.",
+   "m2": 5,
+   "usos": [
+    "vivir",
+    "renta"
+   ],
+   "factor": 1.6,
+   "plazo": 0.75,
+   "etiqueta": "Pod baño",
+   "planta": "pod-bano",
+   "config": [
+    "ext",
+    "techo",
+    "extra"
+   ],
+   "datos": [
+    [
+     "Superficie",
+     "4,8 m²"
+    ],
+    [
+     "Equipamiento",
+     "inodoro, lavatorio, ducha"
+    ],
+    [
+     "Plazo",
+     "3 semanas"
+    ]
+   ],
+   "fachada": {
+    "ancho": 5,
+    "titulo": "el frente",
+    "nota": "ventana alta para ventilar",
+    "notaX": 2.5,
+    "volumenes": [
+     {
+      "x": 1.5,
+      "w": 2,
+      "muro": 2.5,
+      "piso": 0.2,
+      "techo": "plano",
+      "revest": "madera"
+     }
+    ],
+    "aberturas": [
+     {
+      "tipo": "puerta",
+      "x": 1.75,
+      "y": 0,
+      "w": 0.8,
+      "h": 2.05
+     },
+     {
+      "tipo": "ventana",
+      "x": 2.75,
+      "y": 1.7,
+      "w": 0.55,
+      "h": 0.45
+     }
+    ],
+    "plantas": [
+     {
+      "x": 0.2,
+      "w": 1.1,
+      "c": "#8fa77a"
+     },
+     {
+      "x": 3.7,
+      "w": 1
+     }
+    ],
+    "arboles": [
+     {
+      "x": 4.6,
+      "h": 4,
+      "k": "palmera"
+     }
+    ],
+    "personas": []
+   },
+   "incluye": [
+    "Pilotes o platea",
+    "Estructura de steel frame galvanizado",
+    "Aislación térmica",
+    "Inodoro, lavatorio y ducha con mampara",
+    "Revestimiento cerámico en zona húmeda",
+    "Instalación sanitaria y eléctrica interior",
+    "Terminación exterior elegida"
+   ],
+   "noIncluye": "No incluye la conexión a saneamiento, pozo u OSE más allá de 15 m."
   }
  ],
  "plantas": {
@@ -4765,7 +4992,7 @@
     15
    ]
   },
-  "pod-estudio": {
+  "pod-oficina": {
    "ancho": 4,
    "prof": 3,
    "eExt": 0.15,
@@ -4829,7 +5056,7 @@
     3
    ]
   },
-  "pod-bano": {
+  "pod-habitable": {
    "ancho": 5.5,
    "prof": 4,
    "eExt": 0.15,
@@ -4960,6 +5187,110 @@
     2.3,
     4
    ]
+  },
+  "shed-jardin": {
+   "ancho": 3,
+   "prof": 2.4,
+   "eExt": 0.1,
+   "eInt": 0.1,
+   "muros": [],
+   "ventanas": [
+    {
+     "m": "E",
+     "en": 0.8,
+     "a": 0.6
+    }
+   ],
+   "puertas": [
+    {
+     "m": "S",
+     "en": 0.7,
+     "a": 1.6,
+     "giro": 1
+    }
+   ],
+   "equip": [
+    {
+     "t": "mesada",
+     "x": 0.1,
+     "y": 0.05,
+     "w": 2.8,
+     "h": 0.45
+    }
+   ],
+   "locales": [
+    {
+     "n": "Shed",
+     "x": 1.5,
+     "y": 1.4,
+     "a": 7.2
+    }
+   ],
+   "cotasX": [
+    0,
+    3
+   ],
+   "cotasY": [
+    0,
+    2.4
+   ]
+  },
+  "pod-bano": {
+   "ancho": 2,
+   "prof": 2.4,
+   "eExt": 0.12,
+   "eInt": 0.1,
+   "muros": [],
+   "ventanas": [
+    {
+     "m": "N",
+     "en": 0.7,
+     "a": 0.6
+    }
+   ],
+   "puertas": [
+    {
+     "m": "S",
+     "en": 0.15,
+     "a": 0.75,
+     "giro": -1
+    }
+   ],
+   "equip": [
+    {
+     "t": "ducha",
+     "x": 1.1,
+     "y": 0.05,
+     "w": 0.85,
+     "h": 0.85
+    },
+    {
+     "t": "inodoro",
+     "x": 0.25,
+     "y": 0.05
+    },
+    {
+     "t": "lav",
+     "x": 1.3,
+     "y": 1.75
+    }
+   ],
+   "locales": [
+    {
+     "n": "Baño",
+     "x": 0.8,
+     "y": 1.4,
+     "a": 4.8
+    }
+   ],
+   "cotasX": [
+    0,
+    2
+   ],
+   "cotasY": [
+    0,
+    2.4
+   ]
   }
  },
  "visitas": {
@@ -5013,6 +5344,245 @@
    "nombre": "Pods de jardín",
    "estado": "pronto",
    "bajada": "Un estudio, una oficina o un cuarto de huéspedes en el fondo de tu casa, listo en pocas semanas."
+  }
+ ],
+ "extras": [
+  {
+   "id": "hab-bomberos",
+   "nombre": "Habilitación de Bomberos",
+   "nota": "Técnico registrado, tasa de la DNB, extintores, luces de emergencia y señalización",
+   "usd": 2000,
+   "cant": false,
+   "para": [
+    "galpon-locales",
+    "galpon-deposito"
+   ],
+   "ley": true
+  },
+  {
+   "id": "hab-comercial",
+   "nombre": "Habilitación comercial (por local)",
+   "nota": "Consulta de viabilidad, planos de habilitación y gestión ante la Intendencia",
+   "usd": 600,
+   "cant": true,
+   "para": [
+    "galpon-locales",
+    "galpon-deposito"
+   ],
+   "ley": true
+  },
+  {
+   "id": "bano-accesible",
+   "nombre": "Baño accesible",
+   "nota": "Según UNIT 200, con barras y espacio de giro. Lo pide la habilitación si hay atención al público",
+   "usd": 3200,
+   "cant": false,
+   "para": [
+    "galpon-locales",
+    "galpon-deposito"
+   ],
+   "ley": true
+  },
+  {
+   "id": "oficina",
+   "nombre": "Oficina 3 × 3 m",
+   "nota": "En steel frame, aislada, con puerta y ventana",
+   "usd": 3800,
+   "cant": true,
+   "para": [
+    "galpon-locales",
+    "galpon-deposito"
+   ],
+   "ley": false
+  },
+  {
+   "id": "bano-extra",
+   "nombre": "Baño adicional",
+   "nota": "Inodoro, lavatorio y revestimiento cerámico",
+   "usd": 2600,
+   "cant": true,
+   "para": [
+    "galpon-locales",
+    "galpon-deposito"
+   ],
+   "ley": false
+  },
+  {
+   "id": "vestuario",
+   "nombre": "Vestuario con ducha para el personal",
+   "nota": "",
+   "usd": 3800,
+   "cant": false,
+   "para": [
+    "galpon-locales",
+    "galpon-deposito"
+   ],
+   "ley": false
+  },
+  {
+   "id": "kitchenette",
+   "nombre": "Kitchenette",
+   "nota": "Mesada con pileta y bajo mesada",
+   "usd": 1500,
+   "cant": true,
+   "para": [
+    "galpon-locales",
+    "galpon-deposito",
+    "pod-oficina"
+   ],
+   "ley": false
+  },
+  {
+   "id": "entrepiso",
+   "nombre": "Entrepiso metálico de 30 m²",
+   "nota": "Con escalera y baranda",
+   "usd": 7500,
+   "cant": true,
+   "para": [
+    "galpon-locales",
+    "galpon-deposito"
+   ],
+   "ley": false
+  },
+  {
+   "id": "trifasica",
+   "nombre": "Instalación trifásica",
+   "nota": "Tablero trifásico y alimentación a cada local",
+   "usd": 3000,
+   "cant": false,
+   "para": [
+    "galpon-locales",
+    "galpon-deposito"
+   ],
+   "ley": false
+  },
+  {
+   "id": "ac-prep",
+   "nombre": "Preinstalación de aire acondicionado (por local)",
+   "nota": "Cañería, desagüe y toma para split",
+   "usd": 350,
+   "cant": true,
+   "para": [
+    "galpon-locales",
+    "galpon-deposito"
+   ],
+   "ley": false
+  },
+  {
+   "id": "porton-motor",
+   "nombre": "Motor para el portón",
+   "nota": "Con dos controles",
+   "usd": 2200,
+   "cant": false,
+   "para": [
+    "galpon-deposito"
+   ],
+   "ley": false
+  },
+  {
+   "id": "ac-split",
+   "nombre": "Aire acondicionado split instalado",
+   "nota": "Frío/calor, 12.000 BTU",
+   "usd": 900,
+   "cant": false,
+   "para": [
+    "pod-oficina",
+    "pod-habitable"
+   ],
+   "ley": false
+  },
+  {
+   "id": "datos",
+   "nombre": "Red de datos y wifi",
+   "nota": "Cableado desde la casa y punto de acceso",
+   "usd": 250,
+   "cant": false,
+   "para": [
+    "pod-oficina"
+   ],
+   "ley": false
+  },
+  {
+   "id": "escritorio",
+   "nombre": "Escritorio y estantería a medida",
+   "nota": "En madera",
+   "usd": 600,
+   "cant": false,
+   "para": [
+    "pod-oficina"
+   ],
+   "ley": false
+  },
+  {
+   "id": "termofon",
+   "nombre": "Termofón eléctrico",
+   "nota": "30 litros",
+   "usd": 400,
+   "cant": false,
+   "para": [
+    "pod-habitable",
+    "pod-bano"
+   ],
+   "ley": false
+  },
+  {
+   "id": "aislacion-shed",
+   "nombre": "Aislación térmica",
+   "nota": "Muros y techo",
+   "usd": 700,
+   "cant": false,
+   "para": [
+    "shed-jardin"
+   ],
+   "ley": false
+  },
+  {
+   "id": "luz-shed",
+   "nombre": "Luz y toma",
+   "nota": "Tablero chico, una luz LED y una toma doble",
+   "usd": 450,
+   "cant": false,
+   "para": [
+    "shed-jardin"
+   ],
+   "ley": false
+  },
+  {
+   "id": "estanteria",
+   "nombre": "Estantería y colgadores",
+   "nota": "",
+   "usd": 300,
+   "cant": false,
+   "para": [
+    "shed-jardin"
+   ],
+   "ley": false
+  },
+  {
+   "id": "conexion-san",
+   "nombre": "Conexión sanitaria hasta 15 m",
+   "nota": "A saneamiento o pozo existente",
+   "usd": 600,
+   "cant": false,
+   "para": [
+    "pod-bano",
+    "pod-habitable"
+   ],
+   "ley": false
+  },
+  {
+   "id": "permiso-pod",
+   "nombre": "Permiso de construcción",
+   "nota": "Planos, firma técnica y gestión ante la Intendencia",
+   "usd": 900,
+   "cant": false,
+   "para": [
+    "pod-oficina",
+    "pod-habitable",
+    "pod-bano",
+    "shed-jardin"
+   ],
+   "ley": false
   }
  ]
 }

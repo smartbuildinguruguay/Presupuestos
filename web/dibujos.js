@@ -227,7 +227,7 @@
     const medida = P.medida || `${f2(P.ancho + (P.murosExt ? 0 : 2 * P.eExt))} × ${f2(P.prof + (P.murosExt ? 0 : 2 * P.eExt))} m`;
     o += `<g transform="translate(${pad} ${ry})"><text x="0" y="30" font-family="${SERIF}" font-style="italic" font-weight="500" font-size="38" fill="#3b2f25">${m.nombre || ''}${P.nivel ? ` <tspan font-size="24" fill="#6b5847">· ${P.nivel}</tspan>` : ''}</text>
       <text x="2" y="58" font-family="${HAND}" font-size="22" fill="#6b5847">${m.m2} m² cubiertos${+m.deck ? ' · ' + m.deck + ' m² de decks' : ''} · ${medida} · cotas en metros</text>
-      <text x="${VW - pad * 2}" y="58" text-anchor="end" font-family="${HAND}" font-size="20" fill="#8a7560">Smart Building Uruguay</text></g>`;
+      <text x="${VW - pad * 2}" y="30" text-anchor="end" font-family="${HAND}" font-size="20" fill="#8a7560">Smart Building Uruguay</text></g>`;
     const VH = ry + 76;
     return `<svg viewBox="0 0 ${VW} ${VH}" role="img" aria-label="Planta de ${m.nombre}">${papel('pl', VW, VH)}${o}</svg>`;
   };

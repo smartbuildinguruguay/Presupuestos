@@ -157,7 +157,7 @@ tr.vrow{cursor:pointer}tr.vrow:hover td{background:var(--hi)}
 </head>
 <body>
 <header class="top"><div class="w">
-  <div style="display:flex;gap:14px;align-items:baseline"><h1>PANEL SBU</h1><small style="opacity:.6;font-size:.7rem">versión líneas 8</small><a href="./" target="_blank" rel="noopener">Ver la web →</a></div>
+  <div style="display:flex;gap:14px;align-items:baseline"><h1>PANEL SBU</h1><small style="opacity:.6;font-size:.7rem">versión extras 9</small><a href="./" target="_blank" rel="noopener">Ver la web →</a></div>
   <div class="sync" id="sync"></div>
 </div></header>
 
@@ -203,7 +203,8 @@ tr.vrow{cursor:pointer}tr.vrow:hover td{background:var(--hi)}
     <div class="tbl"><table id="rtab"></table></div>
     <button type="button" class="btn ghost" id="rAdd" style="justify-self:start">+ Revestimiento</button>
   </div>
-  <div id="tlistas" style="display:grid;gap:18px;margin-top:18px"></div></section>
+  <div id="textras" style="display:grid;gap:16px"></div>
+      <div id="tlistas" style="display:grid;gap:18px;margin-top:18px"></div></section>
 
   <section id="t-d3" hidden>
     <div class="card">
@@ -466,6 +467,8 @@ function mForm(){
     <label>Baños<input type="number" min="0" data-k="banos" data-t="num"></label>
     <label>Factor de costo<input type="number" step="0.01" min="0.5" data-k="factor" data-t="num"><small>1 = estándar</small></label>
     <label>Fachada (m²)<input type="number" min="0" data-k="fachadaM2" data-t="num" placeholder="auto: ${auto}"><small>Vacío = cálculo automático (${auto} m²)</small></label>
+    <label class="wide">Qué incluye (uno por renglón)<textarea data-k="incluye" data-t="list" rows="4" placeholder="Vacío = la lista estándar de casas"></textarea></label>
+    <label class="wide">No incluye<input data-k="noIncluye" placeholder="Vacío = No incluye terreno, conexiones de UTE y OSE ni muebles sueltos."></label>
     <label class="wide">Para qué sirve (lo usa el buscador)<div class="chk">${Object.entries(USOS).map(([k,v])=>`<label><input type="checkbox" data-uso="${k}"${m.usos.includes(k)?' checked':''}>${v}</label>`).join('')}</div></label>
     <label class="wide">Sketchfab · código del modelo<input data-k="uid"><small>Los 32 caracteres al final del link</small></label>
     <label>Revestimiento original<select data-k="revOriginal"><option value="">Sin definir</option>${D.exterior.filter(e=>e.id!=='original').map(e=>`<option value="${e.id}">${esc(e.nombre)}</option>`).join('')}</select><small>El que tiene el diseño: va incluido en el precio base</small></label>
@@ -662,6 +665,29 @@ function listas(){
   T.querySelectorAll('[data-la]').forEach(el=>el.onchange=()=>{D[el.dataset.la].activo=el.checked;saveDraft()});
   T.querySelectorAll('[data-ld]').forEach(b=>b.onclick=()=>{D[b.dataset.ld].opciones.splice(+b.dataset.li,1);changed()});
   T.querySelectorAll('[data-ladd]').forEach(b=>b.onclick=()=>{const L=D[b.dataset.ladd];let n=1;while(L.opciones.some(o=>o.id==='op-'+n))n++;L.opciones.push({id:'op-'+n,nombre:'Opción nueva',usdM2:0,color:'#cccccc'});changed()});
+}
+/* ---------- EXTRAS (oficina, baños, habilitaciones…) ---------- */
+function extras(){
+  const P=D.precio,k=(1+P.imprevistos/100)*(1+P.margen/100);D.extras=D.extras||[];
+  const ms=D.modelos.filter(m=>(m.linea||'casas')!=='casas'||(D.extras||[]).some(x=>(x.para||[]).includes(m.id)));
+  $('textras').innerHTML=`<div class="card"><h2>Extras</h2>
+   <p class="note">Lo que el cliente puede sumar en la pestaña "Extras" del configurador. Costo directo en USD; la web le suma imprevistos y margen. "Por unidad" muestra + y − para elegir cantidad. "Habilitación" lo agrega el botón "Agregar lo necesario para habilitar". Marcá en qué modelos aparece cada uno.</p>
+   <div class="tbl"><table><tr><th>Nombre</th><th>Detalle</th><th class="n">Costo USD</th><th class="n">Venta</th><th>Por unidad</th><th>Habilitación</th><th>Modelos</th><th></th></tr>
+   ${D.extras.map((x,i)=>`<tr><td><input data-x="${i}" data-f="nombre" value="${esc(x.nombre)}" aria-label="Nombre"></td>
+    <td><input data-x="${i}" data-f="nota" value="${esc(x.nota||'')}" aria-label="Detalle"></td>
+    <td class="n"><input type="number" data-x="${i}" data-f="usd" value="${+x.usd||0}" style="width:90px" aria-label="Costo"></td><td class="n">${usd((+x.usd||0)*k)}</td>
+    <td><input type="checkbox" data-x="${i}" data-f="cant"${x.cant?' checked':''} style="width:auto" aria-label="Por unidad"></td>
+    <td><input type="checkbox" data-x="${i}" data-f="ley"${x.ley?' checked':''} style="width:auto" aria-label="Habilitación"></td>
+    <td><div class="chk" style="max-width:340px">${ms.map(m=>`<label><input type="checkbox" data-xp="${i}" data-m="${m.id}"${(x.para||[]).includes(m.id)?' checked':''}>${esc(m.nombre)}</label>`).join('')}</div></td>
+    <td><button type="button" class="btn ghost" data-xd="${i}" aria-label="Borrar">×</button></td></tr>`).join('')}</table></div>
+   <button type="button" class="btn ghost" id="xAdd" style="justify-self:start">+ Extra</button></div>`;
+  const T=$('textras');
+  T.querySelectorAll('[data-x]').forEach(el=>el.addEventListener(el.type==='checkbox'?'change':'input',()=>{const x=D.extras[+el.dataset.x],f=el.dataset.f;
+    x[f]=el.type==='checkbox'?el.checked:f==='usd'?(+el.value||0):el.value;saveDraft()}));
+  T.querySelectorAll('[data-xp]').forEach(el=>el.onchange=()=>{const x=D.extras[+el.dataset.xp],s=new Set(x.para||[]);el.checked?s.add(el.dataset.m):s.delete(el.dataset.m);x.para=[...s];
+    D.modelos.forEach(m=>{if(x.para.includes(m.id)&&m.config&&!m.config.includes('extra'))m.config.push('extra')});saveDraft()});
+  T.querySelectorAll('[data-xd]').forEach(b=>b.onclick=()=>{D.extras.splice(+b.dataset.xd,1);changed()});
+  $('xAdd').onclick=()=>{let n=1;while(D.extras.some(x=>x.id==='extra-'+n))n++;D.extras.push({id:'extra-'+n,nombre:'Extra nuevo',nota:'',usd:0,cant:false,ley:false,para:[]});changed()};
 }
 $('rAdd').onclick=()=>{let n=1;while(D.exterior.some(e=>e.id==='rev-'+n))n++;D.exterior.push({id:'rev-'+n,nombre:'Revestimiento nuevo',usdM2:0,tex:null,nota:'',activo:false});changed()};
 
@@ -953,7 +979,7 @@ function vLinkOut(){const base=location.href.replace(/admin\.html.*$/,'');const 
 /* ---------- ciclo ---------- */
 function renderAll(full){
   if(tab==='modelos'){mList();if(full!==false)mForm();mPrice()}
-  else if(tab==='d3')window.SBUeditor3d.render(selId);else if(tab==='planos')window.SBUeditor.render(selId);else if(tab==='precios')precios();else if(tab==='rev'){revs();listas()}else if(tab==='renders')renders();else if(tab==='general')general();else if(tab==='visitas')visitas();
+  else if(tab==='d3')window.SBUeditor3d.render(selId);else if(tab==='planos')window.SBUeditor.render(selId);else if(tab==='precios')precios();else if(tab==='rev'){revs();listas();extras()}else if(tab==='renders')renders();else if(tab==='general')general();else if(tab==='visitas')visitas();
 }
 if(draftBase&&remote&&!same(draftBase,remote))syncMsg='Se juntaron tus cambios sin subir con lo último de la web.';
 renderAll(true);syncUI();

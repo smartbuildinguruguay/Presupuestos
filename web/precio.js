@@ -25,6 +25,10 @@ window.SBUprecio = function (D, m, extId) {
   extra('interior', cfg.int, 'Interior', Math.round(fachM2 * 1.6), 'de paredes interiores (≈ fachada × 1,6)');
   extra('pisos', cfg.pis, 'Pisos', m.m2, 'de piso');
   extra('techo', cfg.techo, 'Techo', Math.round(m.m2 * 1.25), 'de techo (≈ planta × 1,25)');
+  // extras elegidos: {id: cantidad}
+  if (!m.config || m.config.includes('extra')) Object.entries(cfg.extras || {}).forEach(([id, n]) => {
+    const x = (D.extras || []).find(e => e.id === id && (e.para || []).includes(m.id)); n = +n || 0; if (!x || !n) return;
+    L.push({ id: 'x-' + id, t: x.nombre + (n > 1 ? ` × ${n}` : ''), det: `${n} × USD ${+x.usd} costo`, costo: n * (+x.usd || 0), extra: true }) });
   L.forEach(l => { l.venta = rd(l.costo * k) });
   const costo = L.reduce((a, l) => a + l.costo, 0);
   const venta = L.reduce((a, l) => a + l.venta, 0);
