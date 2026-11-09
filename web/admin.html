@@ -157,7 +157,7 @@ tr.vrow{cursor:pointer}tr.vrow:hover td{background:var(--hi)}
 </head>
 <body>
 <header class="top"><div class="w">
-  <div style="display:flex;gap:14px;align-items:baseline"><h1>PANEL SBU</h1><small style="opacity:.6;font-size:.7rem">versión visitas 6</small><a href="./" target="_blank" rel="noopener">Ver la web →</a></div>
+  <div style="display:flex;gap:14px;align-items:baseline"><h1>PANEL SBU</h1><small style="opacity:.6;font-size:.7rem">versión visitas 7</small><a href="./" target="_blank" rel="noopener">Ver la web →</a></div>
   <div class="sync" id="sync"></div>
 </div></header>
 
@@ -880,6 +880,9 @@ async function vTest(){
       if(j.error==='clave'){out('⚠ La clave del panel no coincide con la del Apps Script.');return}
       if((j.eventos||[]).some(e=>e.visitante===tag)){out('✓ Funciona: la prueba llegó a la planilla. Si no ves visitas es porque no entró nadie todavía (tus propias visitas desde este navegador no cuentan).');return}
     }catch(e){out('⚠ No se pudo leer la planilla. En Apps Script → Implementar → Administrar implementaciones: "Quién tiene acceso" tiene que ser <b>Cualquier usuario</b>.');return}}
+  let dg=null;try{dg=await (await fetch(`${u}?clave=${encodeURIComponent(vclave())}&diag=1&t=${Date.now()}`)).json()}catch(e){}
+  if(!dg||!dg.version){out('⚠ La visita llega al script pero no aparece en la planilla, y el script publicado es el <b>código viejo</b>. Copiá el código nuevo (abajo, "Ver el código para pegar" en Cambiar clave), pegalo en Apps Script reemplazando todo, guardá, y en Implementar → Administrar implementaciones → lápiz de la que tiene esta URL → Versión: <b>Nueva versión</b> → Implementar. Después probá de nuevo.');return}
+  out(`⚠ La visita no quedó guardada. Planilla: <b>${esc(dg.planilla)}</b> · hojas: ${esc(dg.hojas.join(', '))} · filas en "eventos": ${dg.filas}`+(dg.errores.length?` · último error: <b>${esc(dg.errores[dg.errores.length-1][1])}</b>`:' · sin errores anotados')+'. Mandale este mensaje a Claude.');return;
   out('⚠ La planilla se lee pero <b>no guarda</b> lo que llega. En Apps Script: Implementar → Administrar implementaciones → editar (lápiz) → "Ejecutar como": <b>Yo</b>, "Quién tiene acceso": <b>Cualquier usuario</b>, Versión: <b>Nueva versión</b> → Implementar. Si pegaste código nuevo, también hace falta "Nueva versión".');
 }
 function vDraw(){

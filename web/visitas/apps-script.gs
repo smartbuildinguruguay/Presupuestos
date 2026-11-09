@@ -32,7 +32,12 @@ function doPost(e) {
       const sh = hoja_();
       sh.getRange(sh.getLastRow() + 1, 1, filas.length, COLS.length).setValues(filas);
     }
-  } catch (err) { /* evento mal formado: se ignora */ }
+  } catch (err) {
+    // queda anotado en la hoja "errores" para poder ver qué pasó
+    console.error(err);
+    try { const ss = SpreadsheetApp.getActiveSpreadsheet(); const h = ss.getSheetByName('errores') || ss.insertSheet('errores');
+      h.appendRow([new Date(), String(err), String(e && e.postData && e.postData.contents || '').slice(0, 300)]); } catch (x) { }
+  }
   return ContentService.createTextOutput('ok');
 }
 
@@ -43,12 +48,19 @@ function doGet(e) {
     return ContentService.createTextOutput(JSON.stringify({ error: 'clave' }))
       .setMimeType(ContentService.MimeType.JSON);
   }
+  // diagnóstico: cuántas filas hay y las últimas, tal cual están en la planilla
+  if (p.diag) {
+    const ss = SpreadsheetApp.getActiveSpreadsheet(), sh = hoja_(), er = ss.getSheetByName('errores');
+    const ult = (h, n) => { const r = h ? h.getLastRow() : 0; return r > 1 ? h.getRange(Math.max(2, r - n + 1), 1, Math.min(n, r - 1), h.getLastColumn()).getValues().map(f => f.map(String)) : [] };
+    return ContentService.createTextOutput(JSON.stringify({ planilla: ss.getName(), hojas: ss.getSheets().map(h => h.getName()), filas: sh.getLastRow() - 1, ultimas: ult(sh, 3), errores: ult(er, 3), version: 2 }))
+      .setMimeType(ContentService.MimeType.JSON);
+  }
   const dias = Math.min(+p.dias || 30, 365);
   const desde = new Date(Date.now() - dias * 864e5);
   const sh = hoja_();
   const n = sh.getLastRow() - 1;
   let filas = n > 0 ? sh.getRange(2, 1, n, COLS.length).getValues() : [];
-  filas = filas.filter(f => f[0] instanceof Date && f[0] >= desde).slice(-20000);
+  filas = filas.map(f => { if (!(f[0] instanceof Date)) f[0] = new Date(f[0]); return f }).filter(f => !isNaN(f[0]) && f[0] >= desde).slice(-20000);
   const out = filas.map(f => {
     const o = {};
     COLS.forEach((c, i) => { o[c] = c === 'fecha' ? f[i].toISOString() : f[i]; });
