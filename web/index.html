@@ -604,7 +604,7 @@ const TR=(()=>{
   if(!off){const c=ls.get('geo');
     if(c&&c.t>Date.now()-864e5){geo=c.g;ev('visita',{detalle:refHost||ref})}
     else fetch('https://get.geojs.io/v1/ip/geo.json').then(x=>x.json()).then(g=>{geo={city:g.city||'',region:g.region||'',country:g.country||''};ls.set('geo',{t:Date.now(),g:geo})}).catch(()=>{}).finally(()=>ev('visita',{detalle:refHost||ref}));
-    const seen=new Set();const io2=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting&&!seen.has(x.target.id)){seen.add(x.target.id);ev('seccion',{detalle:x.target.id})}}),{threshold:.35});
+    const seen=new Set();const io2=new IntersectionObserver(es=>es.forEach(x=>{if(x.isIntersecting&&!seen.has(x.target.id)){seen.add(x.target.id);ev('seccion',{detalle:x.target.id})}}),{rootMargin:'-45% 0px -45% 0px',threshold:0});// cuenta la sección cuando cruza el centro de la pantalla (las altas nunca llegan a 35% visibles)
     ['buscar','catalogo','como'].forEach(id=>{const el=document.getElementById(id);if(el)io2.observe(el)});}
   return {ev,vid};
 })();
