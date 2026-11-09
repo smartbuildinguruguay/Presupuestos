@@ -51,8 +51,8 @@ function doGet(e) {
   // diagnóstico: cuántas filas hay y las últimas, tal cual están en la planilla
   if (p.diag) {
     const ss = SpreadsheetApp.getActiveSpreadsheet(), sh = hoja_(), er = ss.getSheetByName('errores');
-    const ult = (h, n) => { const r = h ? h.getLastRow() : 0; return r > 1 ? h.getRange(Math.max(2, r - n + 1), 1, Math.min(n, r - 1), h.getLastColumn()).getValues().map(f => f.map(String)) : [] };
-    return ContentService.createTextOutput(JSON.stringify({ planilla: ss.getName(), hojas: ss.getSheets().map(h => h.getName()), filas: sh.getLastRow() - 1, ultimas: ult(sh, 3), errores: ult(er, 3), version: 2 }))
+    const ult = (h, n, s) => { const r = h ? h.getLastRow() : 0; return r >= s ? h.getRange(Math.max(s, r - n + 1), 1, Math.min(n, r - s + 1), h.getLastColumn()).getValues().map(f => f.map(String)) : [] };
+    return ContentService.createTextOutput(JSON.stringify({ planilla: ss.getName(), hojas: ss.getSheets().map(h => h.getName()), filas: sh.getLastRow() - 1, ultimas: ult(sh, 3, 2), errores: ult(er, 3, 1), version: 2 }))
       .setMimeType(ContentService.MimeType.JSON);
   }
   const dias = Math.min(+p.dias || 30, 365);
