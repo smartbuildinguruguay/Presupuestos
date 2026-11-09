@@ -400,7 +400,8 @@
    },
    "galeria": [
     "img/obra-barn-900.jpg"
-   ]
+   ],
+   "linea": "casas"
   },
   {
    "id": "smartrancho",
@@ -576,7 +577,8 @@
     "personas": [
      10.4
     ]
-   }
+   },
+   "linea": "casas"
   },
   {
    "id": "polo-club",
@@ -739,7 +741,8 @@
    "galeria": [
     "img/polo-club.jpg",
     "img/polo-club-2.jpg"
-   ]
+   ],
+   "linea": "casas"
   },
   {
    "id": "el-tesoro",
@@ -868,7 +871,8 @@
    "galeria": [
     "img/el-tesoro.jpg",
     "img/el-tesoro-2.jpg"
-   ]
+   ],
+   "linea": "casas"
   },
   {
    "id": "smarthouse",
@@ -977,7 +981,8 @@
     "personas": [
      5.8
     ]
-   }
+   },
+   "linea": "casas"
   },
   {
    "id": "smartbnb",
@@ -1076,7 +1081,598 @@
     "personas": [
      6
     ]
-   }
+   },
+   "linea": "casas"
+  },
+  {
+   "visible": true,
+   "lugar": "",
+   "uid": "",
+   "thumb": "",
+   "imagen": "",
+   "deck": 0,
+   "dorm": 0,
+   "banos": 2,
+   "fachadaM2": null,
+   "fachadaMat": [],
+   "revOriginal": "",
+   "pendiente": [
+    "precio real",
+    "3D"
+   ],
+   "id": "galpon-locales",
+   "linea": "comercial",
+   "nombre": "Galpón de locales",
+   "frase": "Una nave de 20 × 12 m dividida en 4 locales con frente vidriado, para alquilar.",
+   "m2": 240,
+   "usos": [
+    "renta"
+   ],
+   "factor": 0.57,
+   "plazo": 5,
+   "etiqueta": "Galpón",
+   "planta": "galpon-locales",
+   "fachada": {
+    "ancho": 24,
+    "titulo": "el frente de los locales",
+    "nota": "4 frentes vidriados con marquesina de madera",
+    "notaX": 12,
+    "volumenes": [
+     {
+      "x": 2,
+      "w": 20,
+      "muro": 4.2,
+      "piso": 0.15,
+      "techo": "lado",
+      "cumbrera": 5.4,
+      "revest": "chapa",
+      "alero": 0.6
+     }
+    ],
+    "aberturas": [
+     {
+      "tipo": "fija",
+      "x": 2.35,
+      "y": 0,
+      "w": 2.9,
+      "h": 3.1,
+      "div": 2,
+      "calido": true
+     },
+     {
+      "tipo": "puerta",
+      "x": 5.45,
+      "y": 0,
+      "w": 1.2,
+      "h": 2.6
+     },
+     {
+      "tipo": "fija",
+      "x": 7.35,
+      "y": 0,
+      "w": 2.9,
+      "h": 3.1,
+      "div": 2,
+      "calido": true
+     },
+     {
+      "tipo": "puerta",
+      "x": 10.45,
+      "y": 0,
+      "w": 1.2,
+      "h": 2.6
+     },
+     {
+      "tipo": "fija",
+      "x": 12.35,
+      "y": 0,
+      "w": 2.9,
+      "h": 3.1,
+      "div": 2,
+      "calido": true
+     },
+     {
+      "tipo": "puerta",
+      "x": 15.45,
+      "y": 0,
+      "w": 1.2,
+      "h": 2.6
+     },
+     {
+      "tipo": "fija",
+      "x": 17.35,
+      "y": 0,
+      "w": 2.9,
+      "h": 3.1,
+      "div": 2,
+      "calido": true
+     },
+     {
+      "tipo": "puerta",
+      "x": 20.45,
+      "y": 0,
+      "w": 1.2,
+      "h": 2.6
+     }
+    ],
+    "pergolas": [
+     {
+      "x": 2,
+      "w": 5,
+      "h": 3.4,
+      "color": "#b07a45"
+     },
+     {
+      "x": 7,
+      "w": 5,
+      "h": 3.4,
+      "color": "#b07a45"
+     },
+     {
+      "x": 12,
+      "w": 5,
+      "h": 3.4,
+      "color": "#b07a45"
+     },
+     {
+      "x": 17,
+      "w": 5,
+      "h": 3.4,
+      "color": "#b07a45"
+     }
+    ],
+    "decks": [
+     {
+      "x": 1.4,
+      "w": 21.2,
+      "h": 0.15
+     }
+    ],
+    "plantas": [
+     {
+      "x": 0.2,
+      "w": 1.6
+     },
+     {
+      "x": 22.3,
+      "w": 1.6,
+      "c": "#9b86c4"
+     }
+    ],
+    "arboles": [
+     {
+      "x": -0.4,
+      "h": 9,
+      "k": "pino"
+     },
+     {
+      "x": 24.3,
+      "h": 10,
+      "k": "eucalipto"
+     }
+    ],
+    "personas": [
+     4.6,
+     9.8,
+     14.2,
+     19.1
+    ]
+   },
+   "config": [
+    "ext",
+    "techo"
+   ],
+   "datos": [
+    [
+     "Superficie",
+     "240 m²"
+    ],
+    [
+     "Locales",
+     "4 × 46 m²"
+    ],
+    [
+     "Altura libre",
+     "4,2 m"
+    ],
+    [
+     "Entrega",
+     "en blanco"
+    ]
+   ],
+   "incluye": [
+    "Proyecto, permisos y dirección de obra",
+    "Platea de hormigón armado",
+    "Estructura metálica de pórticos, sin columnas interiores",
+    "Cubierta de chapa con aislación térmica",
+    "Cerramientos de chapa prepintada",
+    "Piso de hormigón alisado",
+    "Instalación eléctrica y sanitaria hasta cada local",
+    "Baños comunes terminados"
+   ]
+  },
+  {
+   "visible": true,
+   "lugar": "",
+   "uid": "",
+   "thumb": "",
+   "imagen": "",
+   "deck": 0,
+   "dorm": 0,
+   "banos": 1,
+   "fachadaM2": null,
+   "fachadaMat": [],
+   "revOriginal": "",
+   "pendiente": [
+    "precio real",
+    "3D"
+   ],
+   "id": "galpon-deposito",
+   "linea": "comercial",
+   "nombre": "Galpón depósito",
+   "frase": "Nave abierta de 10 × 15 m con portón de 4 m, para taller, depósito o agro.",
+   "m2": 150,
+   "usos": [
+    "renta"
+   ],
+   "factor": 0.37,
+   "plazo": 3,
+   "etiqueta": "Galpón",
+   "planta": "galpon-deposito",
+   "config": [
+    "techo"
+   ],
+   "datos": [
+    [
+     "Superficie",
+     "150 m²"
+    ],
+    [
+     "Luz libre",
+     "10 m sin columnas"
+    ],
+    [
+     "Altura libre",
+     "4,5 m"
+    ],
+    [
+     "Portón",
+     "4 × 4,2 m"
+    ]
+   ],
+   "fachada": {
+    "ancho": 16,
+    "titulo": "el portón",
+    "nota": "portón de 4 m y ventilación alta",
+    "notaX": 8,
+    "volumenes": [
+     {
+      "x": 3,
+      "w": 10,
+      "muro": 4.5,
+      "piso": 0.15,
+      "techo": "frente",
+      "cumbrera": 6.6,
+      "revest": "chapa",
+      "alero": 0.3
+     }
+    ],
+    "aberturas": [
+     {
+      "tipo": "puerta",
+      "x": 6,
+      "y": 0,
+      "w": 4,
+      "h": 4.2
+     },
+     {
+      "tipo": "puerta",
+      "x": 11,
+      "y": 0,
+      "w": 0.9,
+      "h": 2.2
+     },
+     {
+      "tipo": "ventana",
+      "x": 7.2,
+      "y": 4.8,
+      "w": 1.6,
+      "h": 0.7
+     }
+    ],
+    "plantas": [
+     {
+      "x": 1.6,
+      "w": 1.4
+     }
+    ],
+    "arboles": [
+     {
+      "x": 0.6,
+      "h": 9,
+      "k": "eucalipto"
+     },
+     {
+      "x": 15.2,
+      "h": 8,
+      "k": "pino"
+     }
+    ],
+    "personas": [
+     4.6
+    ]
+   },
+   "incluye": [
+    "Proyecto, permisos y dirección de obra",
+    "Platea de hormigón armado",
+    "Estructura metálica de pórticos, sin columnas interiores",
+    "Cubierta de chapa con aislación térmica",
+    "Cerramientos de chapa prepintada",
+    "Piso de hormigón alisado",
+    "Instalación eléctrica y sanitaria",
+    "Baño y oficina terminados"
+   ]
+  },
+  {
+   "visible": true,
+   "lugar": "",
+   "uid": "",
+   "thumb": "",
+   "imagen": "",
+   "deck": 4,
+   "dorm": 0,
+   "banos": 0,
+   "fachadaM2": null,
+   "fachadaMat": [],
+   "revOriginal": "",
+   "pendiente": [
+    "precio real",
+    "3D"
+   ],
+   "id": "pod-estudio",
+   "linea": "pods",
+   "nombre": "Pod estudio",
+   "frase": "12 m² vidriados al jardín para trabajar, leer o pintar.",
+   "m2": 12,
+   "usos": [
+    "vivir"
+   ],
+   "factor": 1.15,
+   "plazo": 1.5,
+   "etiqueta": "Pod",
+   "planta": "pod-estudio",
+   "config": [
+    "ext",
+    "int",
+    "pis"
+   ],
+   "datos": [
+    [
+     "Superficie",
+     "12 m²"
+    ],
+    [
+     "Deck",
+     "4 m²"
+    ],
+    [
+     "Frente",
+     "vidriado"
+    ],
+    [
+     "Plazo",
+     "6 semanas"
+    ]
+   ],
+   "fachada": {
+    "ancho": 7,
+    "titulo": "el frente al jardín",
+    "nota": "todo vidrio hacia el pasto",
+    "notaX": 3.5,
+    "volumenes": [
+     {
+      "x": 2,
+      "w": 3.2,
+      "muro": 2.7,
+      "piso": 0.35,
+      "techo": "plano",
+      "revest": "madera"
+     }
+    ],
+    "aberturas": [
+     {
+      "tipo": "fija",
+      "x": 2.15,
+      "y": 0,
+      "w": 1.6,
+      "h": 2.4,
+      "calido": true
+     },
+     {
+      "tipo": "corrediza",
+      "x": 3.8,
+      "y": 0,
+      "w": 1.25,
+      "h": 2.3
+     }
+    ],
+    "decks": [
+     {
+      "x": 1.6,
+      "w": 4,
+      "h": 0.35
+     }
+    ],
+    "plantas": [
+     {
+      "x": 0.4,
+      "w": 1.2,
+      "c": "#8fa77a"
+     },
+     {
+      "x": 5.6,
+      "w": 1.1
+     }
+    ],
+    "arboles": [
+     {
+      "x": 0.3,
+      "h": 5.5,
+      "k": "redondo"
+     },
+     {
+      "x": 6.6,
+      "h": 6,
+      "k": "redondo"
+     }
+    ],
+    "personas": []
+   },
+   "incluye": [
+    "Proyecto y dirección de obra",
+    "Pilotes o platea según terreno",
+    "Estructura de steel frame galvanizado",
+    "Aislación térmica en muros, piso y techo",
+    "Aberturas de aluminio con DVH",
+    "Instalación eléctrica completa",
+    "Terminación exterior elegida",
+    "Conexión al servicio de la casa principal"
+   ]
+  },
+  {
+   "visible": true,
+   "lugar": "",
+   "uid": "",
+   "thumb": "",
+   "imagen": "",
+   "deck": 6,
+   "dorm": 1,
+   "banos": 1,
+   "fachadaM2": null,
+   "fachadaMat": [],
+   "revOriginal": "",
+   "pendiente": [
+    "precio real",
+    "3D"
+   ],
+   "id": "pod-bano",
+   "linea": "pods",
+   "nombre": "Pod huéspedes",
+   "frase": "22 m² con baño y kitchenette: cuarto de huéspedes o para alquilar.",
+   "m2": 22,
+   "usos": [
+    "renta",
+    "vivir"
+   ],
+   "factor": 1.2,
+   "plazo": 2,
+   "etiqueta": "Pod",
+   "planta": "pod-bano",
+   "config": [
+    "ext",
+    "int",
+    "pis",
+    "techo"
+   ],
+   "datos": [
+    [
+     "Superficie",
+     "22 m²"
+    ],
+    [
+     "Deck",
+     "6 m²"
+    ],
+    [
+     "Dormitorio",
+     "1"
+    ],
+    [
+     "Baño",
+     "1"
+    ]
+   ],
+   "fachada": {
+    "ancho": 8,
+    "titulo": "el frente",
+    "nota": "frontón vidriado y deck",
+    "notaX": 4,
+    "volumenes": [
+     {
+      "x": 1.7,
+      "w": 4.6,
+      "muro": 2.7,
+      "piso": 0.4,
+      "techo": "frente",
+      "cumbrera": 4.3,
+      "revest": "madera",
+      "marco": true
+     }
+    ],
+    "aberturas": [
+     {
+      "tipo": "frontonVidrio",
+      "x": 1.75,
+      "w": 4.5,
+      "h": 0.9
+     },
+     {
+      "tipo": "corrediza",
+      "x": 2.1,
+      "y": 0,
+      "w": 2.4,
+      "h": 2.3,
+      "calido": true
+     },
+     {
+      "tipo": "puerta",
+      "x": 4.9,
+      "y": 0,
+      "w": 0.9,
+      "h": 2.2
+     }
+    ],
+    "decks": [
+     {
+      "x": 1.2,
+      "w": 5.6,
+      "h": 0.4,
+      "escalera": 3
+     }
+    ],
+    "plantas": [
+     {
+      "x": 0.1,
+      "w": 1.3
+     }
+    ],
+    "arboles": [
+     {
+      "x": 0.2,
+      "h": 6.5,
+      "k": "pino"
+     },
+     {
+      "x": 7.6,
+      "h": 6,
+      "k": "redondo"
+     }
+    ],
+    "personas": [
+     6.5
+    ]
+   },
+   "incluye": [
+    "Proyecto y dirección de obra",
+    "Pilotes o platea según terreno",
+    "Estructura de steel frame galvanizado",
+    "Aislación térmica en muros, piso y techo",
+    "Aberturas de aluminio con DVH",
+    "Instalación eléctrica completa",
+    "Terminación exterior elegida",
+    "Conexión al servicio de la casa principal",
+    "Baño y kitchenette terminados"
+   ]
   }
  ],
  "plantas": {
@@ -3781,6 +4377,589 @@
     2.4,
     5
    ]
+  },
+  "galpon-locales": {
+   "ancho": 20,
+   "prof": 12,
+   "eExt": 0.15,
+   "eInt": 0.1,
+   "muros": [
+    [
+     0,
+     2.4,
+     20,
+     2.4
+    ],
+    [
+     5,
+     2.4,
+     5,
+     12
+    ],
+    [
+     10,
+     2.4,
+     10,
+     12
+    ],
+    [
+     15,
+     2.4,
+     15,
+     12
+    ],
+    [
+     8,
+     0,
+     8,
+     2.4
+    ],
+    [
+     10,
+     0,
+     10,
+     2.4
+    ],
+    [
+     12,
+     0,
+     12,
+     2.4
+    ]
+   ],
+   "ventanas": [
+    {
+     "m": "S",
+     "en": 0.4,
+     "a": 3
+    },
+    {
+     "m": "S",
+     "en": 5.4,
+     "a": 3
+    },
+    {
+     "m": "S",
+     "en": 10.4,
+     "a": 3
+    },
+    {
+     "m": "S",
+     "en": 15.4,
+     "a": 3
+    }
+   ],
+   "puertas": [
+    {
+     "m": "S",
+     "en": 3.6,
+     "a": 1.1,
+     "giro": 1
+    },
+    {
+     "m": "S",
+     "en": 8.6,
+     "a": 1.1,
+     "giro": 1
+    },
+    {
+     "m": "S",
+     "en": 13.6,
+     "a": 1.1,
+     "giro": 1
+    },
+    {
+     "m": "S",
+     "en": 18.6,
+     "a": 1.1,
+     "giro": 1
+    },
+    {
+     "m": [
+      8,
+      0,
+      8,
+      2.4
+     ],
+     "en": 0.6,
+     "a": 0.8,
+     "giro": 1
+    },
+    {
+     "m": [
+      12,
+      0,
+      12,
+      2.4
+     ],
+     "en": 0.6,
+     "a": 0.8,
+     "giro": -1
+    },
+    {
+     "m": [
+      0,
+      2.4,
+      20,
+      2.4
+     ],
+     "en": 1.5,
+     "a": 0.9,
+     "giro": -1
+    },
+    {
+     "m": [
+      0,
+      2.4,
+      20,
+      2.4
+     ],
+     "en": 6.5,
+     "a": 0.9,
+     "giro": -1
+    },
+    {
+     "m": [
+      0,
+      2.4,
+      20,
+      2.4
+     ],
+     "en": 11.5,
+     "a": 0.9,
+     "giro": -1
+    },
+    {
+     "m": [
+      0,
+      2.4,
+      20,
+      2.4
+     ],
+     "en": 16.5,
+     "a": 0.9,
+     "giro": -1
+    }
+   ],
+   "equip": [
+    {
+     "t": "inodoro",
+     "x": 8.3,
+     "y": 0.1
+    },
+    {
+     "t": "lav",
+     "x": 9.2,
+     "y": 1.6
+    },
+    {
+     "t": "inodoro",
+     "x": 11.2,
+     "y": 0.1
+    },
+    {
+     "t": "lav",
+     "x": 10.2,
+     "y": 1.6
+    }
+   ],
+   "locales": [
+    {
+     "n": "Local 1",
+     "x": 2.5,
+     "y": 7.2,
+     "a": 46
+    },
+    {
+     "n": "Local 2",
+     "x": 7.5,
+     "y": 7.2,
+     "a": 46
+    },
+    {
+     "n": "Local 3",
+     "x": 12.5,
+     "y": 7.2,
+     "a": 46
+    },
+    {
+     "n": "Local 4",
+     "x": 17.5,
+     "y": 7.2,
+     "a": 46
+    },
+    {
+     "n": "Depósito",
+     "x": 4,
+     "y": 1.2,
+     "a": 19
+    },
+    {
+     "n": "Baños",
+     "x": 10,
+     "y": 1.2,
+     "a": 9.6
+    },
+    {
+     "n": "Depósito",
+     "x": 16,
+     "y": 1.2,
+     "a": 19
+    }
+   ],
+   "cotasX": [
+    0,
+    5,
+    10,
+    15,
+    20
+   ],
+   "cotasY": [
+    0,
+    2.4,
+    12
+   ]
+  },
+  "galpon-deposito": {
+   "ancho": 10,
+   "prof": 15,
+   "eExt": 0.15,
+   "eInt": 0.1,
+   "muros": [
+    [
+     7,
+     12,
+     10,
+     12
+    ],
+    [
+     7,
+     12,
+     7,
+     15
+    ],
+    [
+     7,
+     13.6,
+     8.4,
+     13.6
+    ],
+    [
+     8.4,
+     12,
+     8.4,
+     13.6
+    ]
+   ],
+   "ventanas": [
+    {
+     "m": "E",
+     "en": 3,
+     "a": 2.4
+    },
+    {
+     "m": "E",
+     "en": 8,
+     "a": 2.4
+    },
+    {
+     "m": "O",
+     "en": 3,
+     "a": 2.4
+    },
+    {
+     "m": "O",
+     "en": 8,
+     "a": 2.4
+    },
+    {
+     "m": "N",
+     "en": 8.3,
+     "a": 1.2
+    }
+   ],
+   "puertas": [
+    {
+     "m": "S",
+     "en": 3,
+     "a": 4,
+     "giro": 1
+    },
+    {
+     "m": "S",
+     "en": 8.2,
+     "a": 0.9,
+     "giro": -1
+    },
+    {
+     "m": [
+      7,
+      12,
+      10,
+      12
+     ],
+     "en": 1.9,
+     "a": 0.8,
+     "giro": 1
+    },
+    {
+     "m": [
+      8.4,
+      12,
+      8.4,
+      13.6
+     ],
+     "en": 0.3,
+     "a": 0.7,
+     "giro": -1
+    }
+   ],
+   "equip": [
+    {
+     "t": "inodoro",
+     "x": 7.2,
+     "y": 14.2,
+     "rot": 0
+    },
+    {
+     "t": "lav",
+     "x": 7.9,
+     "y": 12.15
+    },
+    {
+     "t": "mesa",
+     "x": 8.7,
+     "y": 13.9,
+     "w": 1.1,
+     "h": 0.7
+    }
+   ],
+   "locales": [
+    {
+     "n": "Nave",
+     "x": 4,
+     "y": 6,
+     "a": 128
+    },
+    {
+     "n": "Oficina",
+     "x": 9.2,
+     "y": 13.2,
+     "a": 6.5
+    },
+    {
+     "n": "Baño",
+     "x": 7.7,
+     "y": 12.8,
+     "a": 2.2
+    }
+   ],
+   "cotasX": [
+    0,
+    7,
+    10
+   ],
+   "cotasY": [
+    0,
+    12,
+    15
+   ]
+  },
+  "pod-estudio": {
+   "ancho": 4,
+   "prof": 3,
+   "eExt": 0.15,
+   "eInt": 0.1,
+   "muros": [],
+   "ventanas": [
+    {
+     "m": "S",
+     "en": 0.3,
+     "a": 2.2
+    },
+    {
+     "m": "E",
+     "en": 0.8,
+     "a": 1.2
+    },
+    {
+     "m": "N",
+     "en": 1.2,
+     "a": 1.4
+    }
+   ],
+   "puertas": [
+    {
+     "m": "S",
+     "en": 2.75,
+     "a": 1,
+     "giro": -1
+    }
+   ],
+   "equip": [
+    {
+     "t": "mesa",
+     "x": 0.25,
+     "y": 0.1,
+     "w": 1.6,
+     "h": 0.7
+    },
+    {
+     "t": "sofa",
+     "x": 2.2,
+     "y": 0.1,
+     "w": 1.6,
+     "h": 0.8
+    }
+   ],
+   "locales": [
+    {
+     "n": "Estudio",
+     "x": 1.8,
+     "y": 1.7,
+     "a": 12
+    }
+   ],
+   "cotasX": [
+    0,
+    4
+   ],
+   "cotasY": [
+    0,
+    3
+   ]
+  },
+  "pod-bano": {
+   "ancho": 5.5,
+   "prof": 4,
+   "eExt": 0.15,
+   "eInt": 0.1,
+   "muros": [
+    [
+     3.6,
+     2.3,
+     5.5,
+     2.3
+    ],
+    [
+     3.6,
+     2.3,
+     3.6,
+     4
+    ]
+   ],
+   "ventanas": [
+    {
+     "m": "S",
+     "en": 0.4,
+     "a": 2.2
+    },
+    {
+     "m": "O",
+     "en": 1,
+     "a": 1.4
+    },
+    {
+     "m": "N",
+     "en": 0.6,
+     "a": 1.2
+    },
+    {
+     "m": "E",
+     "en": 0.8,
+     "a": 0.6
+    }
+   ],
+   "puertas": [
+    {
+     "m": "S",
+     "en": 3.2,
+     "a": 0.9,
+     "giro": 1
+    },
+    {
+     "m": [
+      3.6,
+      2.3,
+      5.5,
+      2.3
+     ],
+     "en": 0.15,
+     "a": 0.7,
+     "giro": 1
+    }
+   ],
+   "equip": [
+    {
+     "t": "cama",
+     "x": 0.2,
+     "y": 2,
+     "w": 1.6,
+     "h": 1.95,
+     "rot": 180
+    },
+    {
+     "t": "mesada",
+     "x": 3.7,
+     "y": 0.05,
+     "w": 1.7,
+     "h": 0.6
+    },
+    {
+     "t": "mesa",
+     "x": 2.1,
+     "y": 0.4,
+     "w": 0.9,
+     "h": 0.7
+    },
+    {
+     "t": "ducha",
+     "x": 4.6,
+     "y": 3.1,
+     "w": 0.8,
+     "h": 0.8
+    },
+    {
+     "t": "inodoro",
+     "x": 3.75,
+     "y": 3.35
+    },
+    {
+     "t": "lav",
+     "x": 4.0,
+     "y": 2.45
+    }
+   ],
+   "locales": [
+    {
+     "n": "Dormitorio · estar",
+     "x": 1.7,
+     "y": 1.6,
+     "a": 14.2
+    },
+    {
+     "n": "Baño",
+     "x": 4.5,
+     "y": 3.1,
+     "a": 3.2
+    },
+    {
+     "n": "Kitchenette",
+     "x": 4.5,
+     "y": 1,
+     "a": 4
+    }
+   ],
+   "cotasX": [
+    0,
+    3.6,
+    5.5
+   ],
+   "cotasY": [
+    0,
+    2.3,
+    4
+   ]
   }
  },
  "visitas": {
@@ -3815,5 +4994,25 @@
   ],
   "interior": [],
   "piso": []
- }
+ },
+ "lineas": [
+  {
+   "id": "casas",
+   "nombre": "Casas",
+   "estado": "activa",
+   "bajada": "Para vivir, para el fin de semana o para alquilar."
+  },
+  {
+   "id": "comercial",
+   "nombre": "Comercial y galpones",
+   "estado": "pronto",
+   "bajada": "Locales para alquilar, depósitos y talleres con estructura metálica y la misma estética de nave."
+  },
+  {
+   "id": "pods",
+   "nombre": "Pods de jardín",
+   "estado": "pronto",
+   "bajada": "Un estudio, una oficina o un cuarto de huéspedes en el fondo de tu casa, listo en pocas semanas."
+  }
+ ]
 }

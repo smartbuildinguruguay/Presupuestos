@@ -2,7 +2,8 @@
    Venta = costo directo × (1 + imprevistos) × (1 + margen), redondeado línea por línea. */
 window.SBUprecio = function (D, m, extId) {
   // extId puede ser el id del revestimiento o la configuración entera {ext, int, pis, techo}
-  const cfg = typeof extId === 'object' && extId ? extId : { ext: extId }; extId = cfg.ext || 'original';
+  const cfg = Object.assign({}, typeof extId === 'object' && extId ? extId : { ext: extId });
+  if (m.config) ['ext', 'int', 'pis', 'techo'].forEach(k => { if (!m.config.includes(k)) delete cfg[k] }); extId = cfg.ext || 'original';
   const P = D.precio;
   const k = (1 + P.imprevistos / 100) * (1 + P.margen / 100);
   const rd = v => Math.round(v / (P.redondeo || 1)) * (P.redondeo || 1);
@@ -14,10 +15,10 @@ window.SBUprecio = function (D, m, extId) {
   const ext = (extId === 'original' && orig) ? orig : (D.exterior.find(e => e.id === extId) || D.exterior[0]);
   const esOriginal = extId === 'original' || (orig && ext.id === orig.id);
   const L = [
-    { id: 'casa', t: `Casa ${m.m2} m²`, det: `${m.m2} m² × USD ${Math.round(costoM2)} costo/m²`, costo: m.m2 * costoM2 },
+    { id: 'casa', t: `${m.etiqueta || 'Casa'} ${m.m2} m²`, det: `${m.m2} m² × USD ${Math.round(costoM2)} costo/m²`, costo: m.m2 * costoM2 },
   ];
   if (+m.deck) L.push({ id: 'deck', t: `Decks ${m.deck} m²`, det: `${m.deck} m² × USD ${P.deckM2} costo/m²`, costo: m.deck * P.deckM2 });
-  L.push({ id: 'fachada', t: `Fachada: ${ext.nombre}${esOriginal && orig ? ' (diseño original)' : ''}`, det: `${fachM2} m² de fachada × USD ${+ext.usdM2 || 0} extra/m²`, costo: fachM2 * (+ext.usdM2 || 0) });
+  if (!m.config || m.config.includes('ext')) L.push({ id: 'fachada', t: `Fachada: ${ext.nombre}${esOriginal && orig ? ' (diseño original)' : ''}`, det: `${fachM2} m² de fachada × USD ${+ext.usdM2 || 0} extra/m²`, costo: fachM2 * (+ext.usdM2 || 0) });
   // terminaciones: la primera opción de cada lista va incluida; las otras suman (o restan) por m²
   const extra = (lista, id, nom, area, det) => { const L0 = D[lista]; if (!L0 || L0.activo === false || !id) return; const o = L0.opciones.find(x => x.id === id); if (!o || !+o.usdM2) return;
     L.push({ id: lista, t: `${nom}: ${o.nombre}`, det: `${area} m² ${det} × USD ${+o.usdM2} extra/m²`, costo: area * (+o.usdM2) }) };
@@ -27,7 +28,7 @@ window.SBUprecio = function (D, m, extId) {
   L.forEach(l => { l.venta = rd(l.costo * k) });
   const costo = L.reduce((a, l) => a + l.costo, 0);
   const venta = L.reduce((a, l) => a + l.venta, 0);
-  const plazo = m.m2 <= 30 ? 2 : m.m2 <= 80 ? 4 : m.m2 <= 150 ? 6 : 8;
+  const plazo = +m.plazo || (m.m2 <= 30 ? 2 : m.m2 <= 80 ? 4 : m.m2 <= 150 ? 6 : 8);
   return {
     k, rubrosM2, costoM2, fachM2, ext, orig: orig || null, esOriginal: !!esOriginal, lineas: L, costo,
     imprevistos: costo * P.imprevistos / 100,
