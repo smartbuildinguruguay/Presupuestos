@@ -5,7 +5,7 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-let R = null, S, C, O, root, partes = {}, capas = {}, orig = {}, caja, raf = 0, cache = {};
+let puertas = [], R = null, S, C, O, root, partes = {}, capas = {}, orig = {}, caja, raf = 0, cache = {};
 // estado animado: opacidad y elevación del techo, opacidad de muros y aberturas
 const ST = { techoOp: 1, techoLift: 0, murosOp: 1 }, TG = { techoOp: 1, techoLift: 0, murosOp: 1 };
 const GRUPO = { ext: 'ext', techo: 'techo', int: 'int', pis: 'pis' };
@@ -65,6 +65,7 @@ window.SBUvisor = {
     const loop = () => { raf = requestAnimationFrame(loop); let mov = false;
       for (const k in ST) { const d = TG[k] - ST[k]; if (Math.abs(d) > .001) { ST[k] += d * .12; mov = true } else ST[k] = TG[k] }
       if (root && (mov || this._dirty)) { this._dirty = false; fade(capas['Techo'], ST.techoOp, ST.techoLift); fade(capas['Muros exteriores'], ST.murosOp); fade(capas['Aberturas'], Math.max(ST.murosOp, .25)) }
+      puertas.forEach(d => { const dd = d.tg - d.t; if (Math.abs(dd) > .002) { d.t += dd * .09; d.aplicar() } });
       O.update(); R.render(S, C) }; loop();
     return new Promise(ok => new GLTFLoader().load(url, g => {
       root = g.scene; partes = {}; orig = {}; capas = {};
@@ -77,11 +78,31 @@ window.SBUvisor = {
         ['Muros exteriores', 'Techo', 'Aberturas'].forEach(k => { if (bajo(k)) (capas[k] = capas[k] || []).push(o) });
         orig[o.uuid] = o.material });
       S.add(root); caja = new THREE.Box3().setFromObject(root); encuadre('def', false);
+      // puertas y portones: la hoja gira sobre su bisagra; el portón se enrolla hacia arriba
+      puertas = []; const hojas = [];
+      root.traverse(o => { if (!o.isMesh) return; const anc = []; for (let q = o; q; q = q.parent) anc.push(String(q.name || '').replace(/_/g, ' '));
+        const el = anc.find(n => /^(Puerta|Portón) /.test(n)); const mn = String(o.material && o.material.name || '').replace(/_/g, ' ');
+        if (el && /^(Puerta|Puerta madera|Vidrio)$/.test(mn)) hojas.push([o, el]) });
+      hojas.forEach(([o, el], i) => {
+        const b = new THREE.Box3().setFromObject(o), z = b.getSize(new THREE.Vector3()), porton = el.startsWith('Portón');
+        const enX = z.x >= z.z, piv = new THREE.Object3D(), c = b.getCenter(new THREE.Vector3());
+        if (porton) piv.position.set(c.x, b.max.y, c.z);
+        else piv.position.set(enX ? b.min.x : c.x, b.min.y, enX ? c.z : b.max.z);
+        root.add(piv); piv.attach(o);
+        const d = { el, porton, piv, t: 0, tg: 0, malla: o,
+          aplicar() { if (this.porton) { this.piv.scale.y = 1 - .94 * this.t } else this.piv.rotation.y = (enX ? -1 : 1) * this.t * Math.PI * .55 } };
+        o.userData.puerta = d; puertas.push(d) });
+      const ray = new THREE.Raycaster(), pt = new THREE.Vector2(); let down = null;
+      const hit = ev => { const r = R.domElement.getBoundingClientRect(); pt.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(pt, C);
+        const h = ray.intersectObjects(puertas.map(d => d.malla), false)[0]; return h && h.object.userData.puerta };
+      R.domElement.addEventListener('pointerdown', ev => { down = [ev.clientX, ev.clientY] });
+      R.domElement.addEventListener('pointerup', ev => { if (!down || Math.hypot(ev.clientX - down[0], ev.clientY - down[1]) > 6) return; const d = hit(ev); if (d) { d.tg = d.tg ? 0 : 1; this._pbtn() } });
+      R.domElement.addEventListener('pointermove', ev => { if (ev.buttons) return; R.domElement.style.cursor = hit(ev) ? 'pointer' : 'grab' });
       const bar = document.createElement('div'); bar.className = 'v3bar';
       const grp = (t, k, ops) => `<div class="v3g"><span>${t}</span>${ops.map(([v, l]) => `<button type="button" data-${k}="${v}">${l}</button>`).join('')}</div>`;
-      bar.innerHTML = grp('Techo', 't', [['ver', 'visible'], ['trans', 'transparente'], ['subir', 'levantar'], ['off', 'sacar']]) + grp('Muros', 'm', [['ver', 'sólidos'], ['trans', 'rayos X']]);
-      bar.addEventListener('click', ev => { const b = ev.target.closest('[data-t],[data-m]'); if (!b) return; if (b.dataset.t) this.techo(b.dataset.t); else this.muros(b.dataset.m) });
-      el.appendChild(bar); this._bar = bar; this.techo('ver'); this.muros('ver'); ok(true);
+      bar.innerHTML = grp('Techo', 't', [['ver', 'visible'], ['trans', 'transparente'], ['subir', 'levantar'], ['off', 'sacar']]) + grp('Muros', 'm', [['ver', 'sólidos'], ['trans', 'rayos X']]) + (puertas.length ? grp('Puertas', 'p', [['0', 'cerradas'], ['1', 'abiertas']]) : '');
+      bar.addEventListener('click', ev => { const b = ev.target.closest('[data-t],[data-m],[data-p]'); if (!b) return; if (b.dataset.p) { puertas.forEach(d => d.tg = +b.dataset.p); this._pbtn() } else if (b.dataset.t) this.techo(b.dataset.t); else this.muros(b.dataset.m) });
+      el.appendChild(bar); this._bar = bar; this._pbtn(); this.techo('ver'); this.muros('ver'); ok(true);
     }, undefined, () => { el.innerHTML = '<div class="v3msg">No se pudo cargar el 3D.</div>'; ok(false) }));
   },
   aplicar(cfg, D, m) {
@@ -99,11 +120,14 @@ window.SBUvisor = {
     TG.techoOp = { ver: 1, trans: .16, subir: 1, off: 0 }[modo]; TG.techoLift = modo === 'subir' ? Math.min(h * .35, 2.2) : 0; this._dirty = true;
     if (this._bar) this._bar.querySelectorAll('[data-t]').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === modo));
   },
+  _pbtn() { if (!this._bar) return; const ab = puertas.length && puertas.every(d => d.tg === 1), ce = puertas.every(d => d.tg === 0);
+    this._bar.querySelectorAll('[data-p]').forEach(b => b.setAttribute('aria-pressed', b.dataset.p === '1' ? ab : ce)) },
+  puertas(abrir) { puertas.forEach(d => d.tg = abrir ? 1 : 0); this._pbtn() },
   muros(modo) {
     TG.murosOp = modo === 'trans' ? .14 : 1; this._dirty = true;
     if (this._bar) this._bar.querySelectorAll('[data-m]').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === modo));
   },
   get info() { return Object.fromEntries(Object.entries(partes).map(([k, v]) => [k, v.map(x => x.name)])) },
-  cerrar() { cancelAnimationFrame(raf); Object.assign(ST, { techoOp: 1, techoLift: 0, murosOp: 1 }); Object.assign(TG, ST); if (this._ro) this._ro.disconnect(); if (R) { R.dispose(); R.forceContextLoss && R.forceContextLoss() } R = null; root = null; caja = null },
+  cerrar() { cancelAnimationFrame(raf); puertas = []; Object.assign(ST, { techoOp: 1, techoLift: 0, murosOp: 1 }); Object.assign(TG, ST); if (this._ro) this._ro.disconnect(); if (R) { R.dispose(); R.forceContextLoss && R.forceContextLoss() } R = null; root = null; caja = null },
 };
 window.dispatchEvent(new Event('sbuvisor'));
