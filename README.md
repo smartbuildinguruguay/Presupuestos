@@ -2,6 +2,10 @@
 
 Todo junto en un solo repo, ordenado por obra. Portada: https://smartbuildinguruguay.github.io/Presupuestos/
 
+## La Armonía
+
+- [Montaje de cubierta en 3D](la-armonia/) — galpón y establo con paneles Hiansa 5G 30 mm: estructura, paneles, remates, replanteo, animación del montaje, alternativas y costos.
+
 ## Casa Sayago
 
 - [Menú de la obra](sayago/) — entrada única a todo lo de Sayago.
