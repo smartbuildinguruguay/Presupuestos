@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-10T22:37:19.331Z",
+ "actualizado": "2026-11-10T22:37:27.105Z",
  "contacto": {
   "whatsapp": "59898526226",
   "instagram": "smartbuildinguruguay",
@@ -1610,6 +1610,9 @@
    "mats": {
     "interior": [
      "Wood_Birch_Plywood_0"
+    ],
+    "piso": [
+     "Polished_Concrete_New"
     ]
    }
   },
