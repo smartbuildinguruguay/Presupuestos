@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-10T22:37:42.151Z",
+ "actualizado": "2026-11-10T22:38:52.881Z",
  "contacto": {
   "whatsapp": "59898526226",
   "instagram": "smartbuildinguruguay",
@@ -1617,6 +1617,20 @@
     "techo": [
      "__Metal_Corrugated_Shiny_1"
     ]
+   },
+   "vistas": {
+    "fachada": {
+     "p": [
+      135.355,
+      -143.956,
+      96.926
+     ],
+     "t": [
+      122.814,
+      107.097,
+      105.384
+     ]
+    }
    }
   },
   {
