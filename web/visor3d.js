@@ -6,7 +6,9 @@ import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
 let R = null, S, C, O, root, partes = {}, orig = {}, caja, raf = 0, cache = {};
-const GRUPO = { ext: 'Muros exteriores', techo: 'Techo', int: 'Muros interiores', pis: 'Platea y piso' };
+// estado animado: opacidad y elevación del techo, opacidad de muros y aberturas
+const ST = { techoOp: 1, techoLift: 0, murosOp: 1 }, TG = { techoOp: 1, techoLift: 0, murosOp: 1 };
+const GRUPO = { ext: 'Muros exteriores', techo: 'Techo', int: 'Muros interiores', pis: 'Platea y piso', ab: 'Aberturas' };
 
 // UV por proyección de caja: cada cara toma el plano según su normal (1 unidad = 1 m)
 function uvCaja(g) {
@@ -57,36 +59,46 @@ window.SBUvisor = {
     R.domElement.addEventListener('pointerdown', () => { O.autoRotate = false }, { once: true });
     const fit = () => { const w = el.clientWidth, h = el.clientHeight || w * .6; R.setSize(w, h, false); C.aspect = w / h; C.updateProjectionMatrix() };
     this._ro = new ResizeObserver(fit); this._ro.observe(el); fit();
-    const loop = () => { raf = requestAnimationFrame(loop); O.update(); R.render(S, C) }; loop();
+    const fade = (ms, op, lift) => (ms || []).forEach(mesh => { const m = mesh.material; if (!m) return;
+      const t = op < .995; if (m.transparent !== t) { m.transparent = t; m.needsUpdate = true } m.opacity = op; m.depthWrite = op > .9; mesh.visible = op > .02; mesh.castShadow = op > .9;
+      if (lift != null) { if (mesh.userData.y0 == null) mesh.userData.y0 = mesh.position.y; mesh.position.y = mesh.userData.y0 + lift } });
+    const loop = () => { raf = requestAnimationFrame(loop); let mov = false;
+      for (const k in ST) { const d = TG[k] - ST[k]; if (Math.abs(d) > .001) { ST[k] += d * .12; mov = true } else ST[k] = TG[k] }
+      if (root && (mov || this._dirty)) { this._dirty = false; fade(partes[GRUPO.techo], ST.techoOp, ST.techoLift); fade(partes[GRUPO.ext], ST.murosOp); fade(partes['Aberturas'], Math.max(ST.murosOp, .25)) }
+      O.update(); R.render(S, C) }; loop();
     return new Promise(ok => new GLTFLoader().load(url, g => {
       root = g.scene; partes = {}; orig = {};
       root.traverse(o => { if (!o.isMesh) return; o.geometry = uvCaja(o.geometry); o.geometry.computeVertexNormals(); o.castShadow = o.receiveShadow = true;
         const nm = x => String(x || '').replace(/_/g, ' '); const ns = [nm(o.material && o.material.name)]; for (let q = o; q; q = q.parent) ns.push(nm(q.name)); const key = Object.values(GRUPO).find(k => ns.some(n => n.startsWith(k)));
         if (key) (partes[key] = partes[key] || []).push(o); orig[o.uuid] = o.material });
       S.add(root); caja = new THREE.Box3().setFromObject(root); encuadre('def', false);
-      const bar = document.createElement('div'); bar.className = 'v3bar'; bar.innerHTML = '<span>Techo</span>' + [['ver', 'visible'], ['trans', 'transparente'], ['off', 'sacar']].map(([k, t]) => `<button type="button" data-t="${k}" aria-pressed="${k === 'ver'}">${t}</button>`).join('');
-      bar.addEventListener('click', ev => { const b = ev.target.closest('[data-t]'); if (b) this.techo(b.dataset.t) }); el.appendChild(bar); this._bar = bar; this._techo = 'ver'; ok(true);
+      const bar = document.createElement('div'); bar.className = 'v3bar';
+      const grp = (t, k, ops) => `<div class="v3g"><span>${t}</span>${ops.map(([v, l]) => `<button type="button" data-${k}="${v}">${l}</button>`).join('')}</div>`;
+      bar.innerHTML = grp('Techo', 't', [['ver', 'visible'], ['trans', 'transparente'], ['subir', 'levantar'], ['off', 'sacar']]) + grp('Muros', 'm', [['ver', 'sólidos'], ['trans', 'rayos X']]);
+      bar.addEventListener('click', ev => { const b = ev.target.closest('[data-t],[data-m]'); if (!b) return; if (b.dataset.t) this.techo(b.dataset.t); else this.muros(b.dataset.m) });
+      el.appendChild(bar); this._bar = bar; this.techo('ver'); this.muros('ver'); ok(true);
     }, undefined, () => { el.innerHTML = '<div class="v3msg">No se pudo cargar el 3D.</div>'; ok(false) }));
   },
   aplicar(cfg, D, m) {
-    if (!root) return; const ext = D.exterior.find(e => e.id === cfg.ext);
+    if (!root) return; this._dirty = true; const ext = D.exterior.find(e => e.id === cfg.ext);
     pintar(GRUPO.ext, ext && ext.tex ? Object.assign({ _ext: 1 }, ext) : null, 2);
     const op = (lista, id) => { const L = D[lista]; return L && L.activo !== false ? (L.opciones.find(o => o.id === id) || L.opciones[0]) : null };
-    if (!m.config || m.config.includes('techo')) { (partes[GRUPO.techo] || []).forEach(x => { if (x.userData.trans) { x.material = x.userData.op; x.userData.trans = 0 } }); pintar(GRUPO.techo, op('techo', cfg.techo), 2); if (this._techo && this._techo !== 'ver') this.techo(this._techo) }
+    if (!m.config || m.config.includes('techo')) pintar(GRUPO.techo, op('techo', cfg.techo), 2);
     if (!m.config || m.config.includes('int')) { const o = op('interior', cfg.int); pintar(GRUPO.int, o && !o.original ? o : null, 1.6) }
     if (!m.config || m.config.includes('pis')) { const o = op('pisos', cfg.pis); pintar(GRUPO.pis, o && !o.original ? o : null, 1.6) }
   },
-  vista(k) { encuadre(k); this.techo(k === 'int' || k === 'pis' ? 'trans' : 'ver') },
-  // techo: 'ver' | 'trans' | 'off' — para mirar el interior y los pisos
+  vista(k) { encuadre(k); this.techo(k === 'int' || k === 'pis' ? 'subir' : 'ver'); if (k === 'ext' || k === 'techo') this.muros('ver') },
+  // techo: 'ver' | 'trans' | 'subir' | 'off' · muros: 'ver' | 'trans' (animado)
   techo(modo) {
-    this._techo = modo; (partes[GRUPO.techo] || []).forEach(mesh => {
-      mesh.visible = modo !== 'off'; const m = mesh.material;
-      if (modo === 'trans') { if (!mesh.userData.trans) { mesh.userData.op = m; const t = m.clone(); t.transparent = true; t.opacity = .18; t.depthWrite = false; mesh.material = t; mesh.userData.trans = 1 } }
-      else if (mesh.userData.trans) { mesh.material = mesh.userData.op; mesh.userData.trans = 0 }
-      mesh.castShadow = modo === 'ver' });
+    this._techo = modo; const h = caja ? caja.getSize(new THREE.Vector3()).y : 3;
+    TG.techoOp = { ver: 1, trans: .16, subir: 1, off: 0 }[modo]; TG.techoLift = modo === 'subir' ? Math.min(h * .35, 2.2) : 0; this._dirty = true;
     if (this._bar) this._bar.querySelectorAll('[data-t]').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === modo));
   },
+  muros(modo) {
+    TG.murosOp = modo === 'trans' ? .14 : 1; this._dirty = true;
+    if (this._bar) this._bar.querySelectorAll('[data-m]').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === modo));
+  },
   get info() { return Object.fromEntries(Object.entries(partes).map(([k, v]) => [k, v.map(x => x.name)])) },
-  cerrar() { cancelAnimationFrame(raf); if (this._ro) this._ro.disconnect(); if (R) { R.dispose(); R.forceContextLoss && R.forceContextLoss() } R = null; root = null; caja = null },
+  cerrar() { cancelAnimationFrame(raf); Object.assign(ST, { techoOp: 1, techoLift: 0, murosOp: 1 }); Object.assign(TG, ST); if (this._ro) this._ro.disconnect(); if (R) { R.dispose(); R.forceContextLoss && R.forceContextLoss() } R = null; root = null; caja = null },
 };
 window.dispatchEvent(new Event('sbuvisor'));
