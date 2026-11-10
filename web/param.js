@@ -31,6 +31,16 @@
   const DEF = { pod: { tam: 'm', uso: 'oficina', vent: 'corrediza', vidrio: 'dvh' }, galpon: { tam: 'm', uso: 'deposito', cerr: 'chapa', color: 'negro', base: 'platea', banos: '1' } };
   const op = (tipo, k, id) => (G[tipo][k].ops.find(o => o.id === String(id)) || G[tipo][k].ops[0]);
 
+  /* ventanas a medida: costo directo por m² de ventana agregada o sacada (aluminio + vidrio + colocación) */
+  const VX_M2 = 280;
+  const largoPared = (k, w, l) => k === 'S' || k === 'N' ? w : l;
+  // acomoda las ventanas elegidas a mano dentro de cada pared (por si cambia la medida)
+  function ventanasA(vx, w, l, puertas) {
+    return vx.filter(v => v && 'SNEO'.includes(v.m)).map(v => {
+      const L = largoPared(v.m, w, l), a = Math.max(.4, Math.min(+v.a || 1, L - .3)), en = Math.max(a / 2 + .15, Math.min(L - a / 2 - .15, +v.en || L / 2));
+      return Object.assign({}, v, { a: +a.toFixed(2), en: +en.toFixed(2) });
+    });
+  }
   // alturas de cada vano (las mismas que usa el 3D)
   function alturas(tipo, o, pared, H) {
     if (o._t === 'p') return o.a >= 3 ? [0, Math.min(4.2, H - .4)] : [0, tipo === 'galpon' && pared === 'S' ? 2.6 : 2.05];
@@ -115,10 +125,14 @@
     virtual(base, p0, D, dims) {
       const tipo = base.param, p = this.norm(tipo, p0), T = op(tipo, 'tam', p.tam), w = dims ? dims.w : T.w, l = dims ? dims.l : T.l;
       const P = tipo === 'pod' ? planPod(w, l, p) : planGal(w, l, p);
+      const H0 = P._H, area = L => L.reduce((t, v) => { const [zb, zc] = alturas(tipo, Object.assign({ _t: 'v' }, v), v.m, H0); return t + v.a * (zc - zb) }, 0), a0 = area(P.ventanas);
+      if (Array.isArray(p.vx)) P.ventanas = ventanasA(p.vx, w, l, P.puertas); // ventanas a medida (modo editar ventanas)
       const key = '~' + base.id; if (D && !dims) D.plantas[key] = P;
       const m2 = Math.round(w * l * 10) / 10, uso = op(tipo, 'uso', p.uso);
       const m = Object.assign({}, base, { p, m2, planta: key, _P: P, fachada: fachada(tipo, P, p, base) });
       const L = []; // líneas propias (costo directo, sin margen)
+      const dA = area(P.ventanas) - a0;
+      if (Array.isArray(p.vx) && Math.abs(dA) > .05) L.push({ id: 'p-vx', t: `Ventanas a medida (${P.ventanas.length})`, det: `${dA > 0 ? '+' : '−'}${Math.abs(dA).toFixed(1)} m² de ventana × USD ${VX_M2}`, costo: dA * VX_M2 });
       if (tipo === 'pod') {
         m.factor = uso.f; m.plazo = m2 <= 8 ? .5 : m2 <= 13 ? 1.5 : 2; m.deck = p.uso === 'shed' ? 0 : Math.round(w * 1.5);
         m.etiqueta = 'Pod ' + T.n; m.config = p.uso === 'shed' ? ['conf', 'ext', 'techo', 'extra'] : ['conf', 'ext', 'int', 'pis', 'techo', 'extra'];
@@ -137,6 +151,6 @@
       m.paramLineas = L;
       return m;
     },
-    alturas,
+    alturas, largoPared, ventanasA,
   };
 })();

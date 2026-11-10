@@ -156,6 +156,11 @@ input[type=range]{width:100%;accent-color:var(--cu);height:28px}
 .v3dim b{font:500 .82rem var(--f-m);min-width:52px;text-align:center}
 .v3dim button{background:none;border:1px solid rgba(245,244,240,.35);color:#f5f4f0;font:500 .78rem var(--f-m);padding:4px 9px;cursor:pointer}
 .v3dim button:hover{border-color:var(--cu);color:var(--cu)}
+.v3dim{flex-wrap:wrap}.v3dim button[aria-pressed="true"]{background:var(--cu);border-color:var(--cu);color:#22252a}
+.vopts .vedit{width:100%;text-align:left;padding:9px 10px;border:1.5px dashed var(--cu);background:rgba(255,179,71,.08);color:inherit;font:600 .85rem var(--f-b,inherit);cursor:pointer}
+.vopts .sw .vedit,.vopts .sw .vedit[aria-pressed="true"]{display:block;grid-template-columns:none;width:100%}
+@media (max-width:760px){.v3sel{top:auto;bottom:8px;left:8px;right:8px;min-width:0;padding:7px 8px;gap:5px}.v3sel small{display:none}.v3dim button{padding:4px 7px}.vwrap .viewer.vedit-on{aspect-ratio:3/4}.vedit-on .v3bar{display:none}}
+.vopts .vedit[aria-pressed="true"]{background:var(--cu);color:#22252a;border-style:solid}
 .v3bar{position:absolute;left:12px;bottom:12px;display:flex;flex-direction:column;gap:4px;z-index:2}
 .v3g{display:flex;align-items:center;gap:4px;background:rgba(40,43,48,.82);padding:5px;backdrop-filter:blur(6px)}
 .v3bar span{min-width:52px}
@@ -548,10 +553,10 @@ h1,h2,h3{text-transform:none}
 <div class="bar" id="bar"><div class="bt"><small id="bar-m"></small><b class="mono" id="bar-t"></b></div><a class="btn" data-wa="modelo" href="#">La quiero</a></div>
 
 <script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js" defer></script>
-<script src="precio.js?v=41"></script>
-<script src="param.js?v=41"></script>
-<script src="texturas.js?v=41"></script>
-<script src="dibujos.js?v=41"></script>
+<script src="precio.js?v=42"></script>
+<script src="param.js?v=42"></script>
+<script src="texturas.js?v=42"></script>
+<script src="dibujos.js?v=42"></script>
 <script>
 (async function(){
 let D=null;
@@ -731,12 +736,15 @@ const rgb=h=>[1,3,5].map(i=>Math.pow(parseInt(h.substr(i,2),16)/255,2.2));
 let cat='ext';
 /* visor propio (glb) para los modelos sin Sketchfab */
 let glbOn=false;
-const visor=go=>{if(window.SBUvisor)go();else{$('viewer').innerHTML='<div class="v3msg">Cargando 3D…</div>';addEventListener('sbuvisor',go,{once:true});if(!document.getElementById('v3js')){const sc=document.createElement('script');sc.type='module';sc.src='visor3d.js?v=41';sc.id='v3js';document.head.appendChild(sc)}}};
+const visor=go=>{if(window.SBUvisor)go();else{$('viewer').innerHTML='<div class="v3msg">Cargando 3D…</div>';addEventListener('sbuvisor',go,{once:true});if(!document.getElementById('v3js')){const sc=document.createElement('script');sc.type='module';sc.src='visor3d.js?v=42';sc.id='v3js';document.head.appendChild(sc)}}};
 function abrirGlb(m){
   visor(()=>{window.SBUvisor.abrir($('viewer'),m,m.glb).then(ok=>{if(!ok||cur!==m)return;glbOn=true;window.SBUvisor.aplicar(cfg,D,m);modulos3d();TR.ev('abrir_3d',{modelo:m.id,detalle:'visor propio'})})});
 }
 /* Pod y Galpón: el 3D se arma en el navegador y se rehace al cambiar cada opción */
-function abrirParam(m){visor(()=>{if(cur!==m)return;glbOn=true;window.SBUvisor.param($('viewer'),m,cfg,D).then(ok=>{if(ok&&cur===m)modulos3d()})})}
+function vxHook(){const V=window.SBUvisor;if(!V)return;
+  V.vxCb=vx=>{if(!cur||!cur.param)return;cfg.p=Object.assign({},cur.p);if(vx)cfg.p.vx=vx;else delete cfg.p.vx;setParam();TR.ev('configurar',{modelo:cur.id,detalle:'ventanas a medida: '+(vx?vx.length:'originales'),valor:precio(cur,cfg).tot})};
+  V.vxFin=on=>{$('viewer').classList.toggle('vedit-on',on);document.querySelectorAll('.vedit').forEach(b=>{b.setAttribute('aria-pressed',on);b.textContent=on?'✓ Listo, terminar de editar':'✎ Editar ventanas en el 3D'})}}
+function abrirParam(m){visor(()=>{if(cur!==m)return;glbOn=true;vxHook();window.SBUvisor.param($('viewer'),m,cfg,D).then(ok=>{if(ok&&cur===m)modulos3d()})})}
 function setParam(){
   const m=window.SBUparam.virtual(PB0[cur.id],cfg.p,D),i=M.indexOf(byId[m.id]);if(i>=0)M[i]=m;byId[m.id]=m;cur=m;cfg.p=m.p;
   const okX=exDe(m).map(x=>x.id);cfg.extras=Object.fromEntries(Object.entries(cfg.extras||{}).filter(([id])=>okX.includes(id)));
@@ -824,7 +832,8 @@ function swatches(){
     $('o-sub').textContent='tocá y miralo cambiar';
     h=SP.grupos(t).map(k=>{const G=SP.grupo(t,k);return `<div class="pgrp"><span class="pgt">${G.t}</span><div class="pops${G.ops.length===4&&k==='tam'?' t4':''}">${G.ops.map(o=>{const on=cur.p[k]===o.id,d=on?0:precio(SP.virtual(base,Object.assign({},cur.p,{[k]:o.id}),null),cfg).tot-tot,
       tag=on||Math.round(d/100)===0?'':(d>0?'+':'−')+usdK(Math.abs(d)).replace(' mil','k').replace('USD ','');
-      return `<button type="button" class="${o.c?'cc':''}" data-po="${k}:${o.id}" aria-pressed="${on}" title="${o.d||''}">${o.c?`<span class="chip" style="background:${o.c}"></span>`:''}<b>${o.n}</b><small>${k==='tam'?o.d:''}${tag?`${k==='tam'?' · ':''}<i>${tag}</i>`:''}</small></button>`}).join('')}</div>${(()=>{const o=G.ops.find(x=>x.id===cur.p[k]);return o&&o.d&&k!=='tam'?`<small class="pdesc">${o.d}</small>`:''})()}</div>`}).join('');
+      return `<button type="button" class="${o.c?'cc':''}" data-po="${k}:${o.id}" aria-pressed="${on}" title="${o.d||''}">${o.c?`<span class="chip" style="background:${o.c}"></span>`:''}<b>${o.n}</b><small>${k==='tam'?o.d:''}${tag?`${k==='tam'?' · ':''}<i>${tag}</i>`:''}</small></button>`}).join('')}</div>${(()=>{const o=G.ops.find(x=>x.id===cur.p[k]);return o&&o.d&&k!=='tam'?`<small class="pdesc">${o.d}</small>`:''})()}</div>`}).join('')+
+      `<div class="pgrp"><span class="pgt">Ventanas a medida</span><button type="button" class="vedit" aria-pressed="${!!(window.SBUvisor&&window.SBUvisor.editandoVentanas)}">${window.SBUvisor&&window.SBUvisor.editandoVentanas?'✓ Listo, terminar de editar':'✎ Editar ventanas en el 3D'}</button><small class="pdesc">${Array.isArray(cur.p.vx)?`${cur._P.ventanas.length} ventanas elegidas a mano`:'agregá, mové o sacá ventanas'}</small></div>`;
   }else if(cat==='extra'){
     const xs=exDe(cur),q=cfg.extras||{},ley=xs.filter(x=>x.ley);
     $('o-sub').textContent='se suman al precio';
@@ -848,6 +857,7 @@ function swatches(){
   $('sw').querySelectorAll('canvas[data-ot]').forEach(c=>{const g=c.getContext('2d');g.drawImage(tex(c.dataset.ot,128,1,c.dataset.od),0,0,38,38);if(c.dataset.oc){g.globalAlpha=.78;g.fillStyle=c.dataset.oc;g.fillRect(0,0,38,38)}});
 }
 document.getElementById('opts').addEventListener('click',e=>{
+  if(e.target.closest('.vedit')){if(window.SBUvisor&&glbOn)window.SBUvisor.ventanas(!window.SBUvisor.editandoVentanas);else abrirParam(cur);return}
   const cs=e.target.closest('[data-casa]');if(cs){if(cs.dataset.casa!==cur.id){openModel(cs.dataset.casa,false,'casa')}return}
   const t=e.target.closest('[data-cat]');if(t){cat=t.dataset.cat;swatches();goView(cat);return}
   const xe=e.target.closest('[data-x],[data-xq],[data-xley]');

@@ -97,7 +97,7 @@ export function crear(THREE) {
       { k: 'E', L: l, pos: [w, y0, l], rot: Math.PI / 2, u: o => l - o.en, c: [0, l] },
       { k: 'O', L: l, pos: [0, y0, 0], rot: -Math.PI / 2, u: o => o.en, c: [0, l] },
     ];
-    const ops = [...P.ventanas.map(o => Object.assign({ _t: 'v' }, o)), ...P.puertas.map(o => Object.assign({ _t: 'p' }, o))];
+    const ops = [...P.ventanas.map((o, i) => Object.assign({ _t: 'v', _i: i }, o)), ...P.puertas.map(o => Object.assign({ _t: 'p' }, o))];
     let nv = 0, nd = 0;
     lados.forEach(L => {
       const alto = u => L.gable ? H + (Hc - H) * Math.max(0, 1 - Math.abs(u - L.L / 2) / (L.L / 2)) : H;
@@ -113,9 +113,10 @@ export function crear(THREE) {
       malla(g, new THREE.ExtrudeGeometry(forma(0, L.L), { depth: e - .01, bevelEnabled: false }), rev, 0, 0, .01);
       malla(g, new THREE.ShapeGeometry(forma(L.c[0], L.c[1])), intM, 0, 0, -.004).castShadow = false;
       // carpinterías del muro
-      const ga = grupo(gAb, 'Aberturas ' + L.k); ga.position.set(...L.pos); ga.rotation.y = L.rot;
+      const gaM = grupo(gAb, 'Aberturas ' + L.k); gaM.position.set(...L.pos); gaM.rotation.y = L.rot;
       mias.forEach(q => {
         const { o, a, b, zb, zc } = q, W = b - a, Hh = zc - zb, f = .05, zm = e / 2;
+        let ga = gaM; if (o._t === 'v') { ga = new THREE.Group(); ga.name = 'Ventana ' + (o._i + 1); ga.userData.vi = o._i; gaM.add(ga) }
         bx(ga, f, Hh, .07, a + f / 2, zb, zm, alu); bx(ga, f, Hh, .07, b - f / 2, zb, zm, alu); bx(ga, W, f, .07, (a + b) / 2, zc - f, zm, alu);
         if (o._t === 'v') {
           bx(ga, W + .08, .03, e + .06, (a + b) / 2, zb - .03, zm + .02, alu); // alféizar

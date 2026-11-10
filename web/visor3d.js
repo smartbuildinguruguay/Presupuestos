@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { crear } from './param3d.js?v=2';
+import { crear } from './param3d.js?v=3';
 
 const PB = crear(THREE);
 let MORPH = null;
@@ -54,6 +54,9 @@ const FORMAS = {
   kitchenette: { w: 2, d: .6, tipo: 'mesada', res: 1 }, escritorio: { w: 1.6, d: .7, tipo: 'mesa', res: 1 }, estanteria: { w: 2, d: .4, tipo: 'estante', res: 1 },
 };
 let mods = [], sel = null, onCh = null, piso = null, alto = 3, drag = null;
+/* modo editar ventanas: VE = { vx: [{m, en, a}], sel: índice, drag } */
+let VE = null, marca = null;
+const PARED = { S: 'Frente', N: 'Fondo', O: 'Izquierda', E: 'Derecha' };
 const MT = c => new THREE.MeshStandardMaterial({ color: c, roughness: .8 });
 function bx(g, w, h, d, x, y, z, m) { const b = new THREE.Mesh(new THREE.BoxGeometry(Math.max(w, .01), Math.max(h, .01), Math.max(d, .01)), m); b.position.set(x, y + h / 2, z); b.castShadow = b.receiveShadow = true; g.add(b); return b }
 function armar(md) {
@@ -100,12 +103,14 @@ window.SBUvisor = {
   },
   /* modelos configurables (Pod / Galpón): se arman acá mismo; al cambiar de medida "saltan" de una a la otra */
   param(el, m, cfg, D) {
-    const SBP = window.SBUparam; this._D = D;
+    const SBP = window.SBUparam; this._D = D; this._cfg = cfg;
     if (!R || this._modo !== 'param' || this._mid !== m.id || !el.contains(R.domElement)) {
       this._escena(el); this._modo = 'param'; this._mid = m.id; this._m = m;
       this._montar(...this._armar(m, cfg)); encuadre('def', false); this._barra(); this.aplicar(cfg, D, m); return Promise.resolve(true);
     }
-    const a = this._m._P, b = m._P; this._m = m;
+    const a = this._m._P, b = m._P;
+    if ((Math.abs(a.ancho - b.ancho) > .01 || Math.abs(a.prof - b.prof) > .01) && VE) this.ventanas(false);
+    this._m = m;
     if (Math.abs(a.ancho - b.ancho) > .01 || Math.abs(a.prof - b.prof) > .01) return new Promise(ok => {
       if (MORPH) MORPH.ok(false);
       const [r] = this._armar(m, cfg); caja = new THREE.Box3().setFromObject(r); limpiar(r); encuadre('def');
@@ -143,11 +148,26 @@ window.SBUvisor = {
       puertas.forEach(d => { const dd = d.tg - d.t; if (Math.abs(dd) > .002) { d.t += dd * .09; d.aplicar() } });
       O.update(); R.render(S, C) }; loop();
     const pnl = document.createElement('div'); pnl.className = 'v3sel'; pnl.hidden = true; el.appendChild(pnl); this._sel = pnl;
-    pnl.addEventListener('click', ev => { const b = ev.target.closest('[data-d]'); if (b) this._dim(b.dataset.d) });
+    pnl.addEventListener('click', ev => { const v = ev.target.closest('[data-ve]'); if (v) return this._veAcc(v.dataset.ve); const b = ev.target.closest('[data-d]'); if (b) this._dim(b.dataset.d) });
     const ray = new THREE.Raycaster(), pt = new THREE.Vector2(); let down = null;
     const plano = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), tmp = new THREE.Vector3();
     const rayDe = ev => { const r = R.domElement.getBoundingClientRect(); pt.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(pt, C) };
-    R.domElement.addEventListener('pointerdown', ev => { if (!mods.length || !piso) return; rayDe(ev);
+    const vGrupos = () => { const L = []; if (root) root.traverse(o => { if (o.userData && o.userData.vi != null) L.push(o) }); return L };
+    const vHit = ev => { rayDe(ev); const h = ray.intersectObjects(vGrupos(), true)[0]; if (!h) return null; let g = h.object; while (g && g.userData.vi == null) g = g.parent; return g };
+    const enDe = (k, ev) => { const P = this._m._P, pl = k === 'S' ? new THREE.Plane(new THREE.Vector3(0, 0, 1), -P.prof) : k === 'N' ? new THREE.Plane(new THREE.Vector3(0, 0, 1), 0)
+      : k === 'E' ? new THREE.Plane(new THREE.Vector3(1, 0, 0), -P.ancho) : new THREE.Plane(new THREE.Vector3(1, 0, 0), 0);
+      rayDe(ev); const q = new THREE.Vector3(); if (!ray.ray.intersectPlane(pl, q)) return null; return k === 'S' || k === 'N' ? q.x : q.z };
+    R.domElement.addEventListener('pointerdown', ev => { if (!VE) return; down = [ev.clientX, ev.clientY]; const g = vHit(ev); if (!g) return;
+      ev.stopImmediatePropagation(); const i = g.userData.vi, v = VE.vx[i]; VE.sel = i; this._veMarca(); this._panel();
+      const u = enDe(v.m, ev); VE.drag = { i, off: u == null ? 0 : v.en - u, movio: false }; O.enabled = false; R.domElement.setPointerCapture(ev.pointerId) }, { capture: true });
+    R.domElement.addEventListener('pointermove', ev => { if (!VE) return; if (!VE.drag) { if (!ev.buttons) R.domElement.style.cursor = vHit(ev) ? 'grab' : 'default'; return }
+      const d = VE.drag, v = VE.vx[d.i], u = enDe(v.m, ev); if (u == null) return; R.domElement.style.cursor = 'grabbing';
+      if (this._veMover(d.i, u + d.off)) { d.movio = true; this._veArmar() } }, { capture: true });
+    const vFin = ev => { if (!VE) return; const d = VE.drag; VE.drag = null; O.enabled = true;
+      if (d) { if (d.movio) this._veGuardar(); return }
+      if (down && Math.hypot(ev.clientX - down[0], ev.clientY - down[1]) < 6 && VE.sel != null) { VE.sel = null; this._veMarca(); this._panel() } };
+    R.domElement.addEventListener('pointerup', vFin, { capture: true }); R.domElement.addEventListener('pointercancel', vFin, { capture: true });
+    R.domElement.addEventListener('pointerdown', ev => { if (!mods.length || !piso || VE) return; rayDe(ev);
       const h = ray.intersectObjects(mods, true)[0]; if (!h) return; let g = h.object; while (g && !g.userData.md) g = g.parent;
       sel = g; resaltar(); this._panel(); O.enabled = false; plano.constant = -piso.y; ray.ray.intersectPlane(plano, tmp);
       drag = { g, dx: g.userData.md.x - tmp.x, dz: g.userData.md.z - tmp.z, movio: false }; R.domElement.setPointerCapture(ev.pointerId) }, { capture: true });
@@ -157,8 +177,8 @@ window.SBUvisor = {
     R.domElement.addEventListener('pointerup', fin); R.domElement.addEventListener('pointercancel', fin);
     const hit = ev => { rayDe(ev); const h = ray.intersectObjects(puertas.flatMap(d => d.mallas), false)[0]; return h && h.object.userData.puerta };
     R.domElement.addEventListener('pointerdown', ev => { down = [ev.clientX, ev.clientY] });
-    R.domElement.addEventListener('pointerup', ev => { if (sel && !O.enabled) return; if (!down || Math.hypot(ev.clientX - down[0], ev.clientY - down[1]) > 6) return; const d = hit(ev); if (d) { d.tg = d.tg ? 0 : 1; this._pbtn() } });
-    R.domElement.addEventListener('pointermove', ev => { if (ev.buttons) return; R.domElement.style.cursor = hit(ev) ? 'pointer' : 'grab' });
+    R.domElement.addEventListener('pointerup', ev => { if (VE || (sel && !O.enabled)) return; if (!down || Math.hypot(ev.clientX - down[0], ev.clientY - down[1]) > 6) return; const d = hit(ev); if (d) { d.tg = d.tg ? 0 : 1; this._pbtn() } });
+    R.domElement.addEventListener('pointermove', ev => { if (ev.buttons || VE) return; R.domElement.style.cursor = hit(ev) ? 'pointer' : 'grab' });
   },
   // pone un modelo en escena: grupos para pintar y transparentar, puertas y ventanas que se abren, piso para los módulos
   _montar(r, proc, rearmar) {
@@ -194,15 +214,16 @@ window.SBUvisor = {
       const pm = partes[GRUPO.pis] && partes[GRUPO.pis][0]; const b = new THREE.Box3().setFromObject(pm || root); piso = { x0: b.min.x + .15, x1: b.max.x - .15, z0: b.min.z + .15, z1: b.max.z - .15, y: pm ? b.max.y : 0 };
       alto = 3; const em = (capas['Muros exteriores'] || [])[0]; if (em) { const be = new THREE.Box3().setFromObject(em); alto = Math.max(2.5, be.max.y - piso.y) }
     }
-    this._dirty = true;
+    this._dirty = true; if (VE) this._veMarca();
   },
   _barra() {
     if (this._bar) this._bar.remove();
     const bar = document.createElement('div'), vent = puertas.some(d => /^Ventana/.test(d.el)); bar.className = 'v3bar';
     const grp = (t, k, ops) => `<div class="v3g"><span>${t}</span>${ops.map(([v, l]) => `<button type="button" data-${k}="${v}">${l}</button>`).join('')}</div>`;
     bar.innerHTML = grp('Techo', 't', [['ver', 'visible'], ['trans', 'transparente'], ['subir', 'levantar'], ['off', 'sacar']]) + grp('Muros', 'm', [['ver', 'sólidos'], ['trans', 'rayos X']]) +
-      (puertas.length ? grp(vent ? 'Puertas y ventanas' : 'Puertas', 'p', [['0', 'cerradas'], ['1', 'abiertas']]) : '');
-    bar.addEventListener('click', ev => { const b = ev.target.closest('[data-t],[data-m],[data-p]'); if (!b) return; if (b.dataset.p) { puertas.forEach(d => d.tg = +b.dataset.p); this._pbtn() } else if (b.dataset.t) this.techo(b.dataset.t); else this.muros(b.dataset.m) });
+      (puertas.length ? grp(vent ? 'Puertas y ventanas' : 'Puertas', 'p', [['0', 'cerradas'], ['1', 'abiertas']]) : '') +
+      (this._modo === 'param' && this.vxCb ? `<div class="v3g"><span>Ventanas</span><button type="button" data-vedit="1" aria-pressed="${!!VE}">✎ editar</button></div>` : '');
+    bar.addEventListener('click', ev => { if (ev.target.closest('[data-vedit]')) return this.ventanas(!VE); const b = ev.target.closest('[data-t],[data-m],[data-p]'); if (!b) return; if (b.dataset.p) { puertas.forEach(d => d.tg = +b.dataset.p); this._pbtn() } else if (b.dataset.t) this.techo(b.dataset.t); else this.muros(b.dataset.m) });
     this._el.appendChild(bar); this._bar = bar; this._pbtn(); this.techo(this._techo && this._modo === 'param' ? this._techo : 'ver'); this.muros('ver');
   },
   // dibuja los extras con forma y deja moverlos/dimensionarlos. cb(layout) al cambiar.
@@ -218,7 +239,7 @@ window.SBUvisor = {
     if (sel && !mods.includes(sel)) sel = null; resaltar(); this._panel();
   },
   _panel() {
-    if (!this._sel) return; const md = sel && sel.userData.md, F = md && FORMAS[md.id];
+    if (!this._sel) return; if (VE) return this._vePanel(); const md = sel && sel.userData.md, F = md && FORMAS[md.id];
     if (!md) { this._sel.hidden = !mods.length; this._sel.innerHTML = mods.length ? '<small>Tocá un módulo para moverlo o cambiarle la medida</small>' : ''; return }
     this._sel.hidden = false;
     this._sel.innerHTML = `<b>${md.nombre}</b>${F.res ? `<div class="v3dim"><span>Ancho</span><button type="button" data-d="w-">−</button><b>${md.w.toFixed(1)} m</b><button type="button" data-d="w+">+</button></div>
@@ -232,6 +253,58 @@ window.SBUvisor = {
     else { const k = a[0], st = md.id === 'entrepiso' || md.id === 'oficina' ? .5 : .1; md[k] = Math.max(st * 2, Math.round((md[k] + (a[1] === '+' ? st : -st)) * 10) / 10);
       const mx = k === 'w' ? piso.x1 - piso.x0 : piso.z1 - piso.z0; md[k] = Math.min(md[k], mx) }
     limitar(md); const i = mods.indexOf(sel), g = armar(md); S.remove(sel); colocar(g); S.add(g); mods[i] = g; sel = g; resaltar(); this._panel(); onCh && onCh(layout());
+  },
+  /* ---------- editar ventanas (Pod y Galpón) ---------- */
+  ventanas(on) {
+    if (this._modo !== 'param' || !root || !this._m) return false;
+    if (on && !VE) { const P = this._m._P; VE = { vx: P.ventanas.map(v => ({ m: v.m, en: v.en, a: v.a, ...(v.vidriera ? { vidriera: true } : {}) })), sel: null, drag: null };
+      O.autoRotate = false; this.puertas(false); this.techo('trans'); encuadre('def') }
+    if (!on && VE) { VE = null; this.techo('ver') }
+    this._veMarca(); this._panel(); if (this._bar) this._bar.querySelectorAll('[data-vedit]').forEach(b => { b.setAttribute('aria-pressed', !!VE); b.textContent = VE ? '✓ listo' : '✎ editar' });
+    if (this.vxFin) this.vxFin(!!VE); return true;
+  },
+  get editandoVentanas() { return !!VE },
+  _veLibre(k, en, a, menos) { // ¿entra una ventana de ancho a centrada en en, en la pared k?
+    const P = this._m._P, Lp = window.SBUparam.largoPared(k, P.ancho, P.prof);
+    if (en - a / 2 < .15 || en + a / 2 > Lp - .15) return false;
+    const otras = [...P.puertas.filter(p => p.m === k), ...VE.vx.filter((v, j) => v.m === k && j !== menos)];
+    return otras.every(o => Math.abs(o.en - en) >= (o.a + a) / 2 + .1);
+  },
+  _veMover(i, en) { const v = VE.vx[i], P = this._m._P, Lp = window.SBUparam.largoPared(v.m, P.ancho, P.prof);
+    en = Math.round(Math.max(v.a / 2 + .15, Math.min(Lp - v.a / 2 - .15, en)) * 20) / 20; if (Math.abs(en - v.en) < .01 || !this._veLibre(v.m, en, v.a, i)) return false; v.en = en; return true },
+  _veHueco(k, a, menos) { const P = this._m._P, Lp = window.SBUparam.largoPared(k, P.ancho, P.prof);
+    for (let d = 0; d <= Lp / 2; d += .05) for (const s of [1, -1]) { const en = Math.round((Lp / 2 + s * d) * 20) / 20; if (this._veLibre(k, en, a, menos)) return en } return null },
+  _veArmar() { if (this._veRaf) return; this._veRaf = requestAnimationFrame(() => { this._veRaf = 0; if (!VE || !this._m) return;
+    const mm = window.SBUparam.virtual(this._m, Object.assign({}, this._m.p, { vx: VE.vx }), null); this._montar(...this._armar(mm, this._cfg), true); this.aplicar(this._cfg, this._D, mm) }) },
+  _veGuardar() { if (this.vxCb) this.vxCb(VE.vx.map(v => Object.assign({}, v))) },
+  _veMarca() { if (marca) { S.remove(marca); marca = null } if (!VE || VE.sel == null || !root) return; let g = null; root.traverse(o => { if (o.userData && o.userData.vi === VE.sel) g = o });
+    if (!g) return; const b = new THREE.Box3().setFromObject(g).expandByScalar(.06); marca = new THREE.Box3Helper(b, new THREE.Color('#ffb347')); S.add(marca) },
+  _veAcc(a) {
+    if (!VE) return; const P = this._m._P, i = VE.sel, v = i != null ? VE.vx[i] : null, gal = this._m.param === 'galpon';
+    if (a === 'ok') return this.ventanas(false);
+    if (a === 'fab') { if (this.vxCb) this.vxCb(null); VE.sel = null; setTimeout(() => { if (VE) { VE.vx = this._m._P.ventanas.map(x => ({ m: x.m, en: x.en, a: x.a, ...(x.vidriera ? { vidriera: true } : {}) })); this._veMarca(); this._panel() } }, 60); return }
+    if (a === 'add') { const k = v ? v.m : 'S', w0 = gal ? 2 : 1; let ok = null;
+      for (const kk of [k, 'S', 'E', 'O', 'N']) for (const ww of [w0, .8, .6]) { const en = this._veHueco(kk, ww); if (en != null) { ok = { m: kk, en, a: ww }; break } } 
+      if (!ok) { this._veMsg = 'No entra otra ventana'; return this._panel() }
+      VE.vx.push(ok); VE.sel = VE.vx.length - 1 }
+    else if (!v) return;
+    else if (a === 'del') { VE.vx.splice(i, 1); VE.sel = null }
+    else if (a === 'izq' || a === 'der') { if (!this._veMover(i, v.en + (a === 'der' ? .1 : -.1))) { this._veMsg = 'Ahí choca con otra abertura'; return this._panel() } }
+    else if (a === 'w-' || a === 'w+') { const na = Math.round((v.a + (a === 'w+' ? .1 : -.1)) * 10) / 10; if (na < .4) return;
+      const Lp = window.SBUparam.largoPared(v.m, P.ancho, P.prof), en = Math.max(na / 2 + .15, Math.min(Lp - na / 2 - .15, v.en));
+      if (!this._veLibre(v.m, en, na, i)) { this._veMsg = 'No hay lugar para más ancho'; return this._panel() } v.a = na; v.en = en }
+    else if (a.startsWith('m:')) { const k = a.slice(2); if (k === v.m) return; let aa = v.a, en = null; while (aa >= .4 && (en = this._veHueco(k, aa, i)) == null) aa = Math.round((aa - .2) * 10) / 10;
+      if (en == null) { this._veMsg = 'En esa pared no hay lugar'; return this._panel() } v.m = k; v.en = en; v.a = aa }
+    this._veMsg = ''; this._veArmar(); this._veGuardar(); setTimeout(() => { this._veMarca(); this._panel() }, 30);
+  },
+  _vePanel() {
+    const v = VE.sel != null ? VE.vx[VE.sel] : null, msg = this._veMsg ? `<small style="color:#ffb347">${this._veMsg}</small>` : ''; this._veMsg = '';
+    this._sel.hidden = false;
+    this._sel.innerHTML = `<b>Editando ventanas · ${VE.vx.length}</b>` + (v ? `<div class="v3dim"><span>Pared</span>${Object.entries(PARED).map(([k, n]) => `<button type="button" data-ve="m:${k}" aria-pressed="${v.m === k}">${n}</button>`).join('')}</div>
+      <div class="v3dim"><span>Ancho</span><button type="button" data-ve="w-">−</button><b>${v.a.toFixed(2).replace('.', ',')} m</b><button type="button" data-ve="w+">+</button></div>
+      <div class="v3dim"><span>Mover</span><button type="button" data-ve="izq">◀</button><button type="button" data-ve="der">▶</button><button type="button" data-ve="del">Borrar</button></div>
+      <small>Arrastrala por la pared para moverla</small>` : `<small>Tocá una ventana para elegirla y arrastrala por la pared</small>`) + msg +
+      `<div class="v3dim"><button type="button" data-ve="add">+ Agregar ventana</button><button type="button" data-ve="ok">Listo</button></div><div class="v3dim"><button type="button" data-ve="fab">Volver a las originales</button></div>`;
   },
   aplicar(cfg, D, m) {
     if (!root) return; this._dirty = true;
@@ -272,6 +345,6 @@ window.SBUvisor = {
   _scr() { return puertas.map(d => { const b = new THREE.Box3().setFromObject(d.mallas[0]), v = b.getCenter(new THREE.Vector3()).project(C), r = R.domElement.getBoundingClientRect(); return [d.el, r.left + (v.x + 1) / 2 * r.width, r.top + (1 - v.y) / 2 * r.height, d.tg] }) },
   _scrM() { return mods.map(g => { const v = new THREE.Box3().setFromObject(g).getCenter(new THREE.Vector3()).project(C), r = R.domElement.getBoundingClientRect(); return [g.userData.md.id, r.left + (v.x + 1) / 2 * r.width, r.top + (1 - v.y) / 2 * r.height] }) },
   get info() { return Object.fromEntries(Object.entries(partes).map(([k, v]) => [k, v.map(x => x.name)])) },
-  cerrar() { cancelAnimationFrame(raf); if (MORPH) { MORPH.ok(false); MORPH = null } this._modo = null; this._mid = null; this._bar = null; puertas = []; mods = []; sel = null; piso = null; drag = null; Object.assign(ST, { techoOp: 1, techoLift: 0, murosOp: 1 }); Object.assign(TG, ST); if (this._ro) this._ro.disconnect(); if (R) { R.dispose(); R.forceContextLoss && R.forceContextLoss() } R = null; root = null; caja = null },
+  cerrar() { cancelAnimationFrame(raf); if (VE && this.vxFin) this.vxFin(false); VE = null; marca = null; if (MORPH) { MORPH.ok(false); MORPH = null } this._modo = null; this._mid = null; this._bar = null; puertas = []; mods = []; sel = null; piso = null; drag = null; Object.assign(ST, { techoOp: 1, techoLift: 0, murosOp: 1 }); Object.assign(TG, ST); if (this._ro) this._ro.disconnect(); if (R) { R.dispose(); R.forceContextLoss && R.forceContextLoss() } R = null; root = null; caja = null },
 };
 window.dispatchEvent(new Event('sbuvisor'));
