@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-10T22:36:53.805Z",
+ "actualizado": "2026-11-10T22:37:19.331Z",
  "contacto": {
   "whatsapp": "59898526226",
   "instagram": "smartbuildinguruguay",
@@ -1606,7 +1606,12 @@
      6
     ]
    },
-   "linea": "casas"
+   "linea": "casas",
+   "mats": {
+    "interior": [
+     "Wood_Birch_Plywood_0"
+    ]
+   }
   },
   {
    "visible": false,
