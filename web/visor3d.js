@@ -43,6 +43,49 @@ function encuadre(k, suave = true) {
   const from = C.position.clone(), t0 = O.target.clone(), t1 = c.clone(); let t = 0;
   const step = () => { t = Math.min(1, t + .04); const e = t * t * (3 - 2 * t); C.position.lerpVectors(from, to, e); O.target.lerpVectors(t0, t1, e); O.update(); if (t < 1) requestAnimationFrame(step) }; step();
 }
+/* ---------- módulos que el cliente agrega (extras con forma) ---------- */
+const FORMAS = {
+  entrepiso: { w: 6, d: 5, tipo: 'entrepiso', res: 1 }, oficina: { w: 3, d: 3, tipo: 'cuarto', res: 1 },
+  'bano-extra': { w: 1.6, d: 2, tipo: 'cuarto' }, 'bano-accesible': { w: 2.2, d: 2.2, tipo: 'cuarto' }, vestuario: { w: 3, d: 2, tipo: 'cuarto', res: 1 },
+  kitchenette: { w: 2, d: .6, tipo: 'mesada', res: 1 }, escritorio: { w: 1.6, d: .7, tipo: 'mesa', res: 1 }, estanteria: { w: 2, d: .4, tipo: 'estante', res: 1 },
+};
+let mods = [], sel = null, onCh = null, piso = null, alto = 3, drag = null;
+const MT = c => new THREE.MeshStandardMaterial({ color: c, roughness: .8 });
+function bx(g, w, h, d, x, y, z, m) { const b = new THREE.Mesh(new THREE.BoxGeometry(Math.max(w, .01), Math.max(h, .01), Math.max(d, .01)), m); b.position.set(x, y + h / 2, z); b.castShadow = b.receiveShadow = true; g.add(b); return b }
+function armar(md) {
+  const g = new THREE.Group(), { w, d } = md, F = FORMAS[md.id];
+  const acero = MT('#2b2d31'), madera = MT('#b08a62'), blanco = MT('#e9e6df'), gris = MT('#c9cdd2');
+  if (F.tipo === 'entrepiso') {
+    const hE = Math.min(2.7, alto - 1.3), n = Math.max(8, Math.round(hE / .18)), run = .26;
+    bx(g, w, .18, d, 0, hE, 0, madera);
+    [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([a, b]) => bx(g, .12, hE, .12, a * (w / 2 - .06), 0, b * (d / 2 - .06), acero));
+    const rail = (x0, z0, x1, z1) => { const L = Math.hypot(x1 - x0, z1 - z0), r = bx(g, x0 === x1 ? .05 : L, .05, x0 === x1 ? L : .05, (x0 + x1) / 2, hE + 1.05, (z0 + z1) / 2, acero);
+      for (let k = 0; k <= Math.ceil(L / 1.2); k++) { const t = k / Math.ceil(L / 1.2); bx(g, .04, 1, .04, x0 + (x1 - x0) * t, hE + .18, z0 + (z1 - z0) * t, acero) } };
+    rail(-w / 2, -d / 2, w / 2, -d / 2); rail(w / 2, -d / 2, w / 2, d / 2); rail(-w / 2 + 1.1, d / 2, w / 2, d / 2);
+    for (let i = 0; i < n; i++) bx(g, 1, hE / n, run, -w / 2 + .5, i * hE / n, d / 2 + (n - i) * run - run / 2, acero);
+  } else if (F.tipo === 'cuarto') {
+    const h = Math.min(2.6, alto - .3), t = .1, pu = Math.min(.9, w - .4);
+    bx(g, w - .02, .02, d - .02, 0, 0, 0, MT('#d9d6cf'));  // piso del cuarto: también sirve para tocarlo y arrastrarlo
+    bx(g, w, h, t, 0, 0, -d / 2 + t / 2, blanco); bx(g, t, h, d, -w / 2 + t / 2, 0, 0, blanco); bx(g, t, h, d, w / 2 - t / 2, 0, 0, blanco);
+    const lado = (w - pu) / 2; bx(g, lado, h, t, -w / 2 + lado / 2, 0, d / 2 - t / 2, blanco); bx(g, lado - .0, h, t, w / 2 - lado / 2 + 0, 0, d / 2 - t / 2, blanco);
+    bx(g, pu, h - 2.05, t, 0, 2.05, d / 2 - t / 2, blanco);
+    if (md.id.startsWith('bano') || md.id === 'vestuario') { bx(g, .4, .4, .6, -w / 2 + .35, 0, -d / 2 + .45, gris); bx(g, .5, .85, .4, w / 2 - .4, 0, -d / 2 + .3, gris) }
+    else bx(g, Math.min(1.4, w - .4), .75, .7, 0, 0, -d / 2 + .5, madera);
+  } else if (F.tipo === 'mesada') { bx(g, w, .86, d, 0, 0, 0, blanco); bx(g, w, .04, d + .02, 0, .86, 0, madera) }
+  else if (F.tipo === 'mesa') { bx(g, w, .04, d, 0, .72, 0, madera); [[-1, -1], [1, -1], [-1, 1], [1, 1]].forEach(([a, b]) => bx(g, .04, .72, .04, a * (w / 2 - .05), 0, b * (d / 2 - .05), acero)) }
+  else { [0, .45, .9, 1.35, 1.8].forEach(y => bx(g, w, .03, d, 0, y, 0, madera)); [-1, 1].forEach(a => bx(g, .03, 1.85, d, a * (w / 2 - .015), 0, 0, acero)) }
+  g.userData.md = md; g.traverse(o => { if (o.isMesh) { o.material = o.material.clone(); o.userData.mod = g } });
+  return g;
+}
+function colocar(g) { const md = g.userData.md; g.position.set(md.x, piso.y, md.z); g.rotation.y = (md.rot || 0) * Math.PI / 2 }
+function limitar(md) {
+  const rw = (md.rot || 0) % 2 ? md.d : md.w, rd = (md.rot || 0) % 2 ? md.w : md.d;
+  md.x = Math.round(Math.min(piso.x1 - rw / 2, Math.max(piso.x0 + rw / 2, md.x)) * 10) / 10;
+  md.z = Math.round(Math.min(piso.z1 - rd / 2, Math.max(piso.z0 + rd / 2, md.z)) * 10) / 10;
+}
+function resaltar() { mods.forEach(g => g.traverse(o => { if (o.isMesh && o.material.emissive) o.material.emissive.set(g === sel ? '#7a4a00' : '#000000') })) }
+function layout() { const L = {}; mods.forEach(g => { const md = g.userData.md; (L[md.id] = L[md.id] || []).push({ x: md.x, z: md.z, w: md.w, d: md.d, rot: md.rot || 0 }) }); return L }
+
 window.SBUvisor = {
   abrir(el, modelo, url) {
     this.cerrar(); el.innerHTML = '<div class="v3msg">Cargando 3D…</div>';
@@ -92,11 +135,25 @@ window.SBUvisor = {
         const d = { el, porton, piv, t: 0, tg: 0, malla: o,
           aplicar() { if (this.porton) { this.piv.scale.y = 1 - .94 * this.t } else this.piv.rotation.y = (enX ? -1 : 1) * this.t * Math.PI * .55 } };
         o.userData.puerta = d; puertas.push(d) });
+      { const pm = partes[GRUPO.pis] && partes[GRUPO.pis][0]; const b = new THREE.Box3().setFromObject(pm || root); piso = { x0: b.min.x + .15, x1: b.max.x - .15, z0: b.min.z + .15, z1: b.max.z - .15, y: pm ? b.max.y : 0 };
+        alto = 3; const em = (capas['Muros exteriores'] || [])[0]; if (em) { const be = new THREE.Box3().setFromObject(em); alto = Math.max(2.5, be.max.y - piso.y) } }
+      const pnl = document.createElement('div'); pnl.className = 'v3sel'; pnl.hidden = true; el.appendChild(pnl); this._sel = pnl;
+      pnl.addEventListener('click', ev => { const b = ev.target.closest('[data-d]'); if (b) this._dim(b.dataset.d) });
       const ray = new THREE.Raycaster(), pt = new THREE.Vector2(); let down = null;
+      const plano = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0), tmp = new THREE.Vector3();
+      const rayDe = ev => { const r = R.domElement.getBoundingClientRect(); pt.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(pt, C) };
+      R.domElement.addEventListener('pointerdown', ev => { if (!mods.length) return; rayDe(ev);
+        const h = ray.intersectObjects(mods, true)[0]; if (!h) return; let g = h.object; while (g && !g.userData.md) g = g.parent;
+        sel = g; resaltar(); this._panel(); O.enabled = false; plano.constant = -piso.y; ray.ray.intersectPlane(plano, tmp);
+        drag = { g, dx: g.userData.md.x - tmp.x, dz: g.userData.md.z - tmp.z, movio: false }; R.domElement.setPointerCapture(ev.pointerId) }, { capture: true });
+      R.domElement.addEventListener('pointermove', ev => { if (!drag) return; rayDe(ev); if (!ray.ray.intersectPlane(plano, tmp)) return;
+        const md = drag.g.userData.md; md.x = tmp.x + drag.dx; md.z = tmp.z + drag.dz; limitar(md); colocar(drag.g); drag.movio = true });
+      const fin = () => { if (!drag) return; const mv = drag.movio; drag = null; O.enabled = true; if (mv && onCh) onCh(layout()) };
+      R.domElement.addEventListener('pointerup', fin); R.domElement.addEventListener('pointercancel', fin);
       const hit = ev => { const r = R.domElement.getBoundingClientRect(); pt.set(((ev.clientX - r.left) / r.width) * 2 - 1, -((ev.clientY - r.top) / r.height) * 2 + 1); ray.setFromCamera(pt, C);
         const h = ray.intersectObjects(puertas.map(d => d.malla), false)[0]; return h && h.object.userData.puerta };
       R.domElement.addEventListener('pointerdown', ev => { down = [ev.clientX, ev.clientY] });
-      R.domElement.addEventListener('pointerup', ev => { if (!down || Math.hypot(ev.clientX - down[0], ev.clientY - down[1]) > 6) return; const d = hit(ev); if (d) { d.tg = d.tg ? 0 : 1; this._pbtn() } });
+      R.domElement.addEventListener('pointerup', ev => { if (sel && !O.enabled) return; if (!down || Math.hypot(ev.clientX - down[0], ev.clientY - down[1]) > 6) return; const d = hit(ev); if (d) { d.tg = d.tg ? 0 : 1; this._pbtn() } });
       R.domElement.addEventListener('pointermove', ev => { if (ev.buttons) return; R.domElement.style.cursor = hit(ev) ? 'pointer' : 'grab' });
       const bar = document.createElement('div'); bar.className = 'v3bar';
       const grp = (t, k, ops) => `<div class="v3g"><span>${t}</span>${ops.map(([v, l]) => `<button type="button" data-${k}="${v}">${l}</button>`).join('')}</div>`;
@@ -104,6 +161,34 @@ window.SBUvisor = {
       bar.addEventListener('click', ev => { const b = ev.target.closest('[data-t],[data-m],[data-p]'); if (!b) return; if (b.dataset.p) { puertas.forEach(d => d.tg = +b.dataset.p); this._pbtn() } else if (b.dataset.t) this.techo(b.dataset.t); else this.muros(b.dataset.m) });
       el.appendChild(bar); this._bar = bar; this._pbtn(); this.techo('ver'); this.muros('ver'); ok(true);
     }, undefined, () => { el.innerHTML = '<div class="v3msg">No se pudo cargar el 3D.</div>'; ok(false) }));
+  },
+  // dibuja los extras con forma y deja moverlos/dimensionarlos. cb(layout) al cambiar.
+  modulos(cfg, D, m, cb) {
+    if (!root || !piso) return; onCh = cb; mods.forEach(g => root.parent.remove(g)); mods = []; const lay = cfg.layout || {}; let cx = piso.x0 + .3, cz = piso.z0 + .3, fila = 0;
+    Object.entries(cfg.extras || {}).forEach(([id, n]) => { const F = FORMAS[id]; if (!F) return;
+      for (let i = 0; i < (+n || 0); i++) { const p = (lay[id] || [])[i] || {};
+        const md = { id, nombre: ((D.extras || []).find(x => x.id === id) || {}).nombre || id, w: p.w || F.w, d: p.d || F.d, rot: p.rot || 0,
+          x: p.x, z: p.z };
+        if (p.x == null) { // acomoda los nuevos uno al lado del otro, contra el fondo
+          if (cx + md.w > piso.x1) { cx = piso.x0 + .3; cz += fila + .5; fila = 0 } md.x = cx + md.w / 2; md.z = cz + md.d / 2; cx += md.w + .5; fila = Math.max(fila, md.d + (id === 'entrepiso' ? 3.6 : 0)) }
+        limitar(md); const g = armar(md); colocar(g); S.add(g); mods.push(g) } });
+    if (sel && !mods.includes(sel)) sel = null; resaltar(); this._panel();
+  },
+  _panel() {
+    if (!this._sel) return; const md = sel && sel.userData.md, F = md && FORMAS[md.id];
+    if (!md) { this._sel.hidden = !mods.length; this._sel.innerHTML = mods.length ? '<small>Tocá un módulo para moverlo o cambiarle la medida</small>' : ''; return }
+    this._sel.hidden = false;
+    this._sel.innerHTML = `<b>${md.nombre}</b>${F.res ? `<div class="v3dim"><span>Ancho</span><button type="button" data-d="w-">−</button><b>${md.w.toFixed(1)} m</b><button type="button" data-d="w+">+</button></div>
+      <div class="v3dim"><span>Largo</span><button type="button" data-d="d-">−</button><b>${md.d.toFixed(1)} m</b><button type="button" data-d="d+">+</button></div><small>${(md.w * md.d).toFixed(1)} m²</small>` : ''}
+      <div class="v3dim"><button type="button" data-d="rot">Girar</button><button type="button" data-d="ok">Listo</button></div><small>Arrastralo para moverlo</small>`;
+  },
+  _dim(a) {
+    if (!sel) return; const md = sel.userData.md;
+    if (a === 'ok') { sel = null; resaltar(); this._panel(); return }
+    if (a === 'rot') md.rot = ((md.rot || 0) + 1) % 4;
+    else { const k = a[0], st = md.id === 'entrepiso' || md.id === 'oficina' ? .5 : .1; md[k] = Math.max(st * 2, Math.round((md[k] + (a[1] === '+' ? st : -st)) * 10) / 10);
+      const mx = k === 'w' ? piso.x1 - piso.x0 : piso.z1 - piso.z0; md[k] = Math.min(md[k], mx) }
+    limitar(md); const i = mods.indexOf(sel), g = armar(md); S.remove(sel); colocar(g); S.add(g); mods[i] = g; sel = g; resaltar(); this._panel(); onCh && onCh(layout());
   },
   aplicar(cfg, D, m) {
     if (!root) return; this._dirty = true; const ext = D.exterior.find(e => e.id === cfg.ext);
@@ -113,7 +198,7 @@ window.SBUvisor = {
     if (!m.config || m.config.includes('int')) { const o = op('interior', cfg.int); pintar(GRUPO.int, o && !o.original ? o : null, 1.6) }
     if (!m.config || m.config.includes('pis')) { const o = op('pisos', cfg.pis); pintar(GRUPO.pis, o && !o.original ? o : null, 1.6) }
   },
-  vista(k) { encuadre(k); this.techo(k === 'int' || k === 'pis' ? 'trans' : 'ver'); if (k === 'ext' || k === 'techo') this.muros('ver') },
+  vista(k) { encuadre(k === 'extra' ? 'int' : k); this.techo(k === 'int' || k === 'pis' || k === 'extra' ? 'trans' : 'ver'); if (k === 'ext' || k === 'techo') this.muros('ver') },
   // techo: 'ver' | 'trans' | 'subir' | 'off' · muros: 'ver' | 'trans' (animado)
   techo(modo) {
     this._techo = modo; const h = caja ? caja.getSize(new THREE.Vector3()).y : 3;
@@ -128,7 +213,8 @@ window.SBUvisor = {
     if (this._bar) this._bar.querySelectorAll('[data-m]').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === modo));
   },
   _scr() { return puertas.map(d => { const b = new THREE.Box3().setFromObject(d.malla), v = b.getCenter(new THREE.Vector3()).project(C), r = R.domElement.getBoundingClientRect(); return [d.el, r.left + (v.x + 1) / 2 * r.width, r.top + (1 - v.y) / 2 * r.height, d.tg] }) },
+  _scrM() { return mods.map(g => { const v = new THREE.Box3().setFromObject(g).getCenter(new THREE.Vector3()).project(C), r = R.domElement.getBoundingClientRect(); return [g.userData.md.id, r.left + (v.x + 1) / 2 * r.width, r.top + (1 - v.y) / 2 * r.height] }) },
   get info() { return Object.fromEntries(Object.entries(partes).map(([k, v]) => [k, v.map(x => x.name)])) },
-  cerrar() { cancelAnimationFrame(raf); puertas = []; Object.assign(ST, { techoOp: 1, techoLift: 0, murosOp: 1 }); Object.assign(TG, ST); if (this._ro) this._ro.disconnect(); if (R) { R.dispose(); R.forceContextLoss && R.forceContextLoss() } R = null; root = null; caja = null },
+  cerrar() { cancelAnimationFrame(raf); puertas = []; mods = []; sel = null; piso = null; drag = null; Object.assign(ST, { techoOp: 1, techoLift: 0, murosOp: 1 }); Object.assign(TG, ST); if (this._ro) this._ro.disconnect(); if (R) { R.dispose(); R.forceContextLoss && R.forceContextLoss() } R = null; root = null; caja = null },
 };
 window.dispatchEvent(new Event('sbuvisor'));
