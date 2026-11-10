@@ -553,10 +553,10 @@ h1,h2,h3{text-transform:none}
 <div class="bar" id="bar"><div class="bt"><small id="bar-m"></small><b class="mono" id="bar-t"></b></div><a class="btn" data-wa="modelo" href="#">La quiero</a></div>
 
 <script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js" defer></script>
-<script src="precio.js?v=42"></script>
-<script src="param.js?v=42"></script>
-<script src="texturas.js?v=42"></script>
-<script src="dibujos.js?v=42"></script>
+<script src="precio.js?v=43"></script>
+<script src="param.js?v=43"></script>
+<script src="texturas.js?v=43"></script>
+<script src="dibujos.js?v=43"></script>
 <script>
 (async function(){
 let D=null;
@@ -736,7 +736,7 @@ const rgb=h=>[1,3,5].map(i=>Math.pow(parseInt(h.substr(i,2),16)/255,2.2));
 let cat='ext';
 /* visor propio (glb) para los modelos sin Sketchfab */
 let glbOn=false;
-const visor=go=>{if(window.SBUvisor)go();else{$('viewer').innerHTML='<div class="v3msg">Cargando 3D…</div>';addEventListener('sbuvisor',go,{once:true});if(!document.getElementById('v3js')){const sc=document.createElement('script');sc.type='module';sc.src='visor3d.js?v=42';sc.id='v3js';document.head.appendChild(sc)}}};
+const visor=go=>{if(window.SBUvisor)go();else{$('viewer').innerHTML='<div class="v3msg">Cargando 3D…</div>';addEventListener('sbuvisor',go,{once:true});if(!document.getElementById('v3js')){const sc=document.createElement('script');sc.type='module';sc.src='visor3d.js?v=43';sc.id='v3js';document.head.appendChild(sc)}}};
 function abrirGlb(m){
   visor(()=>{window.SBUvisor.abrir($('viewer'),m,m.glb).then(ok=>{if(!ok||cur!==m)return;glbOn=true;window.SBUvisor.aplicar(cfg,D,m);modulos3d();TR.ev('abrir_3d',{modelo:m.id,detalle:'visor propio'})})});
 }
@@ -830,7 +830,7 @@ function swatches(){
   }else if(cat==='conf'){
     const SP=window.SBUparam,t=cur.param,base=PB0[cur.id],tot=precio(cur,cfg).tot;
     $('o-sub').textContent='tocá y miralo cambiar';
-    h=SP.grupos(t).map(k=>{const G=SP.grupo(t,k);return `<div class="pgrp"><span class="pgt">${G.t}</span><div class="pops${G.ops.length===4&&k==='tam'?' t4':''}">${G.ops.map(o=>{const on=cur.p[k]===o.id,d=on?0:precio(SP.virtual(base,Object.assign({},cur.p,{[k]:o.id}),null),cfg).tot-tot,
+    h=SP.grupos(t,cur.p).map(k=>{const G=SP.grupo(t,k);return `<div class="pgrp"><span class="pgt">${G.t}</span><div class="pops${G.ops.length===4&&k==='tam'?' t4':''}">${G.ops.map(o=>{const on=cur.p[k]===o.id,d=on?0:precio(SP.virtual(base,Object.assign({},cur.p,{[k]:o.id}),null),cfg).tot-tot,
       tag=on||Math.round(d/100)===0?'':(d>0?'+':'−')+usdK(Math.abs(d)).replace(' mil','k').replace('USD ','');
       return `<button type="button" class="${o.c?'cc':''}" data-po="${k}:${o.id}" aria-pressed="${on}" title="${o.d||''}">${o.c?`<span class="chip" style="background:${o.c}"></span>`:''}<b>${o.n}</b><small>${k==='tam'?o.d:''}${tag?`${k==='tam'?' · ':''}<i>${tag}</i>`:''}</small></button>`}).join('')}</div>${(()=>{const o=G.ops.find(x=>x.id===cur.p[k]);return o&&o.d&&k!=='tam'?`<small class="pdesc">${o.d}</small>`:''})()}</div>`}).join('')+
       `<div class="pgrp"><span class="pgt">Ventanas a medida</span><button type="button" class="vedit" aria-pressed="${!!(window.SBUvisor&&window.SBUvisor.editandoVentanas)}">${window.SBUvisor&&window.SBUvisor.editandoVentanas?'✓ Listo, terminar de editar':'✎ Editar ventanas en el 3D'}</button><small class="pdesc">${Array.isArray(cur.p.vx)?`${cur._P.ventanas.length} ventanas elegidas a mano`:'agregá, mové o sacá ventanas'}</small></div>`;

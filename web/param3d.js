@@ -29,6 +29,17 @@ export function crear(THREE) {
     for (let y = 0; y < 512; y += 16) { g.fillStyle = y % 32 ? 'rgba(255,255,255,.035)' : 'rgba(0,0,0,.035)'; g.fillRect(0, y, 512, 8) }
     g.fillStyle = 'rgba(0,0,0,.35)'; [0, 256].forEach(y => g.fillRect(0, y, 512, 3)); g.fillStyle = 'rgba(255,255,255,.18)'; [3, 259].forEach(y => g.fillRect(0, y, 512, 2));
   });
+  /* Isoroof: chapa trapezoidal (valle ancho, nervio alto), 4 nervios por metro */
+  const trapecio = (col, vert = true) => lienzo('trap' + col + vert, g => {
+    const n = 8, p = 512 / n, L = (x, w, c) => vert ? (g.fillStyle = c, g.fillRect(x, 0, w, 512)) : (g.fillStyle = c, g.fillRect(0, x, 512, w));
+    L(0, 512, col);
+    for (let i = 0; i < n; i++) { const x = i * p;
+      L(x + p * .16, p * .04, mezcla(col, -.05));            // pliegue del valle
+      L(x + p * .55, p * .1, mezcla(col, .09));             // ala que recibe luz
+      L(x + p * .65, p * .2, mezcla(col, .05));             // cresta del nervio
+      L(x + p * .85, p * .1, mezcla(col, -.13));            // ala en sombra
+      L(x + p * .95, p * .02, mezcla(col, -.2)) }
+  });
   const ripio = () => lienzo('ripio', g => {
     g.fillStyle = '#a39d92'; g.fillRect(0, 0, 512, 512); let s = 7; const r = () => (s = (s * 16807) % 2147483647) / 2147483647;
     for (let i = 0; i < 9000; i++) { const v = 120 + r() * 90 | 0; g.fillStyle = `rgb(${v},${v - 6},${v - 14})`; g.fillRect(r() * 512, r() * 512, 2 + r() * 5, 2 + r() * 4) }
@@ -87,8 +98,8 @@ export function crear(THREE) {
     }
 
     /* ---------- muros exteriores, con sus vanos ---------- */
-    const rev = gal ? (() => { const c = (SBP.G.galpon.color.ops.find(o => o.id === p.color) || SBP.G.galpon.color.ops[0]).c;
-      return mat('Cerramiento ' + p.cerr + c, { color: '#ffffff', map: p.cerr === 'panel' ? panel(c) : chapa(c), roughness: p.cerr === 'panel' ? .5 : .45, metalness: .25 }) })() : mat('Revestimiento', { color: '#b98f62' });
+    const rev = gal ? (() => { let c = (SBP.G.galpon.color.ops.find(o => o.id === p.color) || SBP.G.galpon.color.ops[0]).c;
+      if (p.cerr === 'panel') c = '#5b6066'; return mat('Cerramiento ' + p.cerr + c, { color: '#ffffff', map: p.cerr === 'panel' ? trapecio(c) : chapa(c), roughness: p.cerr === 'panel' ? .5 : .45, metalness: .25 }) })() : mat('Revestimiento', { color: '#b98f62' });
     const intM = gal ? mat('Interior galpón ' + p.cerr, { color: p.cerr === 'panel' ? '#eceae4' : '#b7bbbf', map: p.cerr === 'panel' ? null : chapa('#c4c8cc'), metalness: p.cerr === 'panel' ? 0 : .3, side: THREE.DoubleSide })
       : shed ? mat('Interior OSB', { color: '#c8a774', side: THREE.DoubleSide }) : mat('Interior blanco', { color: '#efece6', side: THREE.DoubleSide });
     const lados = [
@@ -141,7 +152,7 @@ export function crear(THREE) {
           const nom = (W >= 3 ? 'Portón ' : 'Puerta ') + (++nd);
           if (W >= 3) { // portón seccional: se enrolla hacia arriba
             const piv = new THREE.Group(); piv.position.set((a + b) / 2, zc - f, zm); ga.add(piv);
-            const col = gal ? (SBP.G.galpon.color.ops.find(o => o.id === p.color) || {}).c || '#2a2c2f' : '#2a2c2f';
+            const col = gal ? (p.cerr === 'panel' ? '#5b6066' : (SBP.G.galpon.color.ops.find(o => o.id === p.color) || {}).c || '#2a2c2f') : '#2a2c2f';
             const pm = mat('Portón ' + col, { color: '#ffffff', map: chapa(mezcla(col, .06), false), metalness: .3, roughness: .5 });
             const pa = bx(piv, W - 2 * f, Hh - f, .05, 0, -(Hh - f), 0, pm);
             bx(ga, W + .3, .35, .4, (a + b) / 2, zc, zm - .25, alu); // cajón del rollo
@@ -173,7 +184,7 @@ export function crear(THREE) {
     });
 
     /* ---------- techo ---------- */
-    const tch = mat('Chapa techo', { color: '#26282b', map: chapa('#d6d6d6', false), metalness: .35, roughness: .5 });
+    const tch = gal && p.cerr === 'panel' ? mat('Isoroof techo', { color: '#ffffff', map: trapecio('#5b6066', false), metalness: .3, roughness: .5 }) : mat('Chapa techo', { color: '#26282b', map: chapa('#d6d6d6', false), metalness: .35, roughness: .5 });
     if (gal) {
       const al = .45, run = w / 2 + e + al, ang = Math.atan2(Hc - H, w / 2), Ls = run / Math.cos(ang), Lz = l + 2 * e + .5;
       [-1, 1].forEach(s => { const g = new THREE.Group(); g.position.set(w / 2, y0 + Hc + .06, l / 2); g.rotation.z = s * -ang; gTec.add(g);

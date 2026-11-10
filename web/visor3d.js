@@ -4,7 +4,7 @@
 import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
-import { crear } from './param3d.js?v=3';
+import { crear } from './param3d.js?v=4';
 
 const PB = crear(THREE);
 let MORPH = null;

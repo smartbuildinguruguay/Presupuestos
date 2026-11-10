@@ -21,14 +21,15 @@
         { id: 'deposito', n: 'Depósito / industria', d: 'nave libre con portón grande' },
         { id: 'locales', n: 'Locales', d: 'frentes vidriados para alquilar' },
         { id: 'taller', n: 'Taller', d: 'portón, banco de trabajo y ventanas altas' },
-        { id: 'mixto', n: 'Mixto', d: 'dos locales al frente y depósito' }] },
-      cerr: { t: 'Cerramiento', ops: [{ id: 'chapa', n: 'Chapa', d: 'acanalada prepintada', f: .45 }, { id: 'panel', n: 'Isopanel', d: 'panel aislado, liso', f: .58 }] },
-      color: { t: 'Color', ops: [{ id: 'negro', n: 'Negro', c: '#2a2c2f' }, { id: 'grafito', n: 'Grafito', c: '#5b6066' }, { id: 'blanco', n: 'Blanco', c: '#e8e8e4' }, { id: 'verde', n: 'Verde inglés', c: '#2f4a3c' }] },
+        { id: 'mixto', n: 'Mixto', d: 'locales al frente y depósito con portón al costado' }] },
+      cerr: { t: 'Cerramiento', ops: [{ id: 'chapa', n: 'Chapa', d: 'acanalada prepintada', f: .45 }, { id: 'panel', n: 'Isoroof', d: 'panel aislado trapezoidal gris grafito, en muros y techo', f: .58 }] },
+      esp: { t: 'Espesor del Isoroof', solo: { cerr: 'panel' }, ops: [{ id: '30', n: '30 mm', d: 'aislación estándar' }, { id: '50', n: '50 mm', d: 'más aislación térmica y acústica', usdM2: 6 }] },
+      color: { t: 'Color', solo: { cerr: 'chapa' }, ops: [{ id: 'negro', n: 'Negro', c: '#2a2c2f' }, { id: 'grafito', n: 'Grafito', c: '#5b6066' }, { id: 'blanco', n: 'Blanco', c: '#e8e8e4' }, { id: 'verde', n: 'Verde inglés', c: '#2f4a3c' }] },
       base: { t: 'Base', ops: [{ id: 'platea', n: 'Con platea', d: 'hormigón alisado' }, { id: 'sin', n: 'Sin platea', d: 'balasto compactado; la platea se hace después', usdM2: -45 }] },
       banos: { t: 'Baños', ops: [{ id: '0', n: 'Sin baño', d: '' }, { id: '1', n: '1 baño', d: 'inodoro, lavatorio y su instalación' }, { id: '2', n: '2 baños', d: 'uno accesible' }] },
     },
   };
-  const DEF = { pod: { tam: 'm', uso: 'oficina', vent: 'corrediza', vidrio: 'dvh' }, galpon: { tam: 'm', uso: 'deposito', cerr: 'chapa', color: 'negro', base: 'platea', banos: '1' } };
+  const DEF = { pod: { tam: 'm', uso: 'oficina', vent: 'corrediza', vidrio: 'dvh' }, galpon: { tam: 'm', uso: 'deposito', cerr: 'chapa', esp: '30', color: 'negro', base: 'platea', banos: '1' } };
   const op = (tipo, k, id) => (G[tipo][k].ops.find(o => o.id === String(id)) || G[tipo][k].ops[0]);
 
   /* ventanas a medida: costo directo por m² de ventana agregada o sacada (aluminio + vidrio + colocación) */
@@ -80,12 +81,12 @@
   function planGal(w, l, p) {
     const H = w >= 12 ? 5 : 4.5, back = 2.4, ventanas = [], puertas = [], muros = [], locales = [], equip = [];
     const nb = +p.banos || 0;
-    const loc = (x0, x1, nom) => { const a = x1 - x0; ventanas.push({ m: 'S', en: x0 + .4, a: Math.max(1, a - 1.9), vidriera: true }); puertas.push({ m: 'S', en: x1 - 1.3, a: 1.1, giro: -1 }); locales.push({ n: nom, x: (x0 + x1) / 2, y: (back + l) / 2, a: +(a * (l - back)).toFixed(0) }) };
+    const loc = (x0, x1, nom) => { const a = x1 - x0; ventanas.push({ m: 'S', en: x0 + .3, a: Math.max(1, a - 1.9), vidriera: true }); puertas.push({ m: 'S', en: x1 - 1.4, a: 1.1, giro: -1 }); locales.push({ n: nom, x: (x0 + x1) / 2, y: (back + l) / 2, a: +(a * (l - back)).toFixed(0) }) };
     if (p.uso === 'locales' || p.uso === 'mixto') {
-      const ancho = p.uso === 'mixto' ? w / 2 : w, n = Math.max(2, Math.round(ancho / 5)), lw = ancho / n;
+      const ancho = p.uso === 'mixto' ? +(w - Math.max(4, w * .4)).toFixed(2) : w, n = Math.max(1, Math.min(Math.round(ancho / 5), Math.floor(ancho / 4))), lw = ancho / n;
       for (let i = 0; i < n; i++) { loc(i * lw, (i + 1) * lw, 'Local ' + (i + 1)); if (i) muros.push([i * lw, back, i * lw, l]) }
       muros.push([0, back, ancho - (ancho >= w - .01 ? nb * 2.2 : 0), back]);
-      if (p.uso === 'mixto') { muros.push([ancho, 0, ancho, l]); puertas.push({ m: 'S', en: ancho + (w - ancho) / 2 - 1.75, a: 3.5, giro: 1 }); locales.push({ n: 'Depósito', x: ancho + (w - ancho) / 2, y: l / 2, a: +((w - ancho) * l).toFixed(0) }) }
+      if (p.uso === 'mixto') { muros.push([ancho, 0, ancho, l]); { const pw = Math.min(3.5, w - ancho - 1); puertas.push({ m: 'S', en: ancho + (w - ancho) / 2 - pw / 2, a: pw, giro: 1 }) } locales.push({ n: 'Depósito', x: ancho + (w - ancho) / 2, y: l / 2, a: +((w - ancho) * l).toFixed(0) }) }
     } else {
       const pw = p.uso === 'taller' ? 3 : Math.min(4.5, w - 3);
       puertas.push({ m: 'S', en: w / 2 - pw / 2, a: pw, giro: 1 }); puertas.push({ m: 'S', en: w - 1.4, a: .9, giro: -1 });
@@ -118,7 +119,7 @@
 
   window.SBUparam = {
     G, DEF,
-    grupos(tipo) { return Object.keys(G[tipo]) },
+    grupos(tipo, p) { return Object.keys(G[tipo]).filter(k => !G[tipo][k].solo || !p || Object.entries(G[tipo][k].solo).every(([a, b]) => p[a] === b)) },
     grupo(tipo, k) { return G[tipo][k] },
     norm(tipo, p) { const q = Object.assign({}, DEF[tipo], p || {}); Object.keys(G[tipo]).forEach(k => { q[k] = op(tipo, k, q[k]).id }); return q },
     /* modelo concreto. dims = {w, l} opcional para las animaciones entre medidas */
@@ -141,11 +142,12 @@
         m.dorm = p.uso === 'dormitorio' || p.uso === 'multi' ? 1 : 0; m.banos = 0;
       } else {
         const ce = op('galpon', 'cerr', p.cerr), ba = op('galpon', 'base', p.base), nb = +p.banos || 0;
-        m.factor = ce.f; m.plazo = m2 <= 100 ? 2.5 : m2 <= 200 ? 3.5 : 5; m.deck = 0; m.etiqueta = 'Galpón ' + T.n; m.config = ['conf', 'techo', 'extra'];
+        m.factor = ce.f; m.plazo = m2 <= 100 ? 2.5 : m2 <= 200 ? 3.5 : 5; m.deck = 0; m.etiqueta = 'Galpón ' + T.n; m.config = p.cerr === 'panel' ? ['conf', 'extra'] : ['conf', 'techo', 'extra'];
+        const es = op('galpon', 'esp', p.esp), env = 2 * (w + l) * P._H + w * l * 1.06; if (p.cerr === 'panel' && es.usdM2) L.push({ id: 'p-esp', t: 'Isoroof 50 mm (en lugar de 30)', det: `${Math.round(env)} m² de panel × USD ${es.usdM2}`, costo: env * es.usdM2 });
         if (ba.usdM2) L.push({ id: 'p-base', t: 'Sin platea (balasto compactado)', det: `${m2} m² × USD ${ba.usdM2}`, costo: m2 * ba.usdM2 });
         const nl = P.ventanas.filter(v => v.vidriera).length; if (nl) L.push({ id: 'p-frentes', t: `Frentes vidriados × ${nl}`, det: `${nl} × USD 1.800`, costo: nl * 1800 });
         if (nb) L.push({ id: 'p-banos', t: `${nb === 1 ? 'Baño' : nb + ' baños (uno accesible)'}`, det: `USD 2.600${nb > 1 ? ' + 3.200 accesible' : ''}`, costo: nb > 1 ? 2600 + 3200 : 2600 });
-        m.datos = [['Medida', T.n + ' m'], ['Superficie', m2 + ' m²'], ['Uso', uso.n], ['Cerramiento', ce.n + ' ' + op('galpon', 'color', p.color).n.toLowerCase()], ['Base', ba.n], ['Baños', String(nb)]];
+        m.datos = [['Medida', T.n + ' m'], ['Superficie', m2 + ' m²'], ['Uso', uso.n], ['Cerramiento', p.cerr === 'panel' ? `Isoroof ${op('galpon', 'esp', p.esp).n} grafito` : ce.n + ' ' + op('galpon', 'color', p.color).n.toLowerCase()], ['Base', ba.n], ['Baños', String(nb)]];
         m.banos = nb; m.dorm = 0; m.locales = nl;
       }
       m.paramLineas = L;
