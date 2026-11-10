@@ -179,7 +179,7 @@
  },
  "modelos": [
   {
-   "visible": true,
+   "visible": false,
    "lugar": "",
    "uid": "",
    "thumb": "",
@@ -625,7 +625,7 @@
    "linea": "casas"
   },
   {
-   "visible": true,
+   "visible": false,
    "lugar": "",
    "uid": "",
    "thumb": "",
@@ -1333,7 +1333,7 @@
    "linea": "casas"
   },
   {
-   "visible": true,
+   "visible": false,
    "lugar": "",
    "uid": "",
    "thumb": "",
@@ -1571,7 +1571,7 @@
    "linea": "casas"
   },
   {
-   "visible": true,
+   "visible": false,
    "lugar": "",
    "uid": "",
    "thumb": "",
@@ -1700,7 +1700,7 @@
    "glb": "3d/pod-oficina.glb"
   },
   {
-   "visible": true,
+   "visible": false,
    "lugar": "",
    "uid": "",
    "thumb": "",
@@ -1805,7 +1805,7 @@
    "glb": "3d/shed-jardin.glb"
   },
   {
-   "visible": true,
+   "visible": false,
    "lugar": "",
    "uid": "",
    "thumb": "",
@@ -1914,6 +1914,79 @@
    ],
    "noIncluye": "No incluye la conexión a saneamiento, pozo u OSE más allá de 15 m.",
    "glb": "3d/pod-bano.glb"
+  },
+  {
+   "visible": true,
+   "id": "pod",
+   "param": "pod",
+   "linea": "pods",
+   "nombre": "Pod",
+   "etiqueta": "Pod",
+   "lugar": "",
+   "uid": "",
+   "thumb": "",
+   "imagen": "",
+   "frase": "Un módulo para el fondo de tu casa: elegí la medida, el uso y las terminaciones, y miralo cambiar en 3D.",
+   "usos": [
+    "vivir",
+    "renta"
+   ],
+   "m2": 12,
+   "deck": 4,
+   "dorm": 0,
+   "banos": 0,
+   "factor": 1.15,
+   "plazo": 1.5,
+   "revOriginal": "pino",
+   "fachadaM2": null,
+   "fachadaMat": [],
+   "incluye": [
+    "Proyecto y dirección de obra",
+    "Pilotes de hormigón o tornillos según el terreno",
+    "Estructura de steel frame galvanizado",
+    "Aislación térmica en muros, piso y techo (salvo el galponcito)",
+    "Aberturas de aluminio, con DVH o vidrio simple",
+    "Instalación eléctrica: tablero, luces LED y tomas",
+    "Revestimiento interior terminado",
+    "Terminación exterior elegida"
+   ],
+   "noIncluye": "No incluye terreno, el cableado desde la casa principal más allá de 15 m ni muebles sueltos. El permiso y la conexión sanitaria se suman como extra."
+  },
+  {
+   "visible": true,
+   "id": "galpon",
+   "param": "galpon",
+   "linea": "comercial",
+   "nombre": "Galpón",
+   "etiqueta": "Galpón",
+   "lugar": "",
+   "uid": "",
+   "thumb": "",
+   "imagen": "",
+   "frase": "Una nave de estructura metálica que se adapta: depósito, taller o locales para alquilar. Elegí medida, cerramiento, base y baños.",
+   "usos": [
+    "renta"
+   ],
+   "m2": 150,
+   "deck": 0,
+   "dorm": 0,
+   "banos": 1,
+   "factor": 0.45,
+   "plazo": 3.5,
+   "revOriginal": "",
+   "fachadaM2": null,
+   "fachadaMat": [],
+   "incluye": [
+    "Proyecto y permiso de construcción ante la Intendencia",
+    "Estructura metálica de pórticos, sin columnas interiores",
+    "Cubierta de chapa con aislación térmica y canalones",
+    "Cerramiento de chapa prepintada o isopanel, a elección",
+    "Platea de hormigón alisado (o balasto compactado, si elegís sin platea)",
+    "Portones, puertas y ventanas según el uso",
+    "Instalación eléctrica: tablero, luminarias LED de nave y tomas",
+    "Baños terminados con su instalación sanitaria, si los elegís"
+   ],
+   "noIncluye": "No incluye terreno, conexiones de UTE, OSE y saneamiento ni habilitaciones (comercial y de Bomberos): se suman como extra."
   }
  ],
  "plantas": {
@@ -5380,7 +5453,8 @@
    "cant": false,
    "para": [
     "galpon-locales",
-    "galpon-deposito"
+    "galpon-deposito",
+    "galpon"
    ],
    "ley": true
   },
@@ -5392,7 +5466,8 @@
    "cant": true,
    "para": [
     "galpon-locales",
-    "galpon-deposito"
+    "galpon-deposito",
+    "galpon"
    ],
    "ley": true
   },
@@ -5404,7 +5479,8 @@
    "cant": false,
    "para": [
     "galpon-locales",
-    "galpon-deposito"
+    "galpon-deposito",
+    "galpon"
    ],
    "ley": true
   },
@@ -5416,7 +5492,8 @@
    "cant": true,
    "para": [
     "galpon-locales",
-    "galpon-deposito"
+    "galpon-deposito",
+    "galpon"
    ],
    "ley": false,
    "m2Base": 9
@@ -5429,7 +5506,8 @@
    "cant": true,
    "para": [
     "galpon-locales",
-    "galpon-deposito"
+    "galpon-deposito",
+    "galpon"
    ],
    "ley": false
   },
@@ -5441,7 +5519,8 @@
    "cant": false,
    "para": [
     "galpon-locales",
-    "galpon-deposito"
+    "galpon-deposito",
+    "galpon"
    ],
    "ley": false
   },
@@ -5454,7 +5533,9 @@
    "para": [
     "galpon-locales",
     "galpon-deposito",
-    "pod-oficina"
+    "pod-oficina",
+    "galpon",
+    "pod"
    ],
    "ley": false
   },
@@ -5466,7 +5547,8 @@
    "cant": true,
    "para": [
     "galpon-locales",
-    "galpon-deposito"
+    "galpon-deposito",
+    "galpon"
    ],
    "ley": false,
    "m2Base": 30
@@ -5479,7 +5561,8 @@
    "cant": false,
    "para": [
     "galpon-locales",
-    "galpon-deposito"
+    "galpon-deposito",
+    "galpon"
    ],
    "ley": false
   },
@@ -5491,7 +5574,8 @@
    "cant": true,
    "para": [
     "galpon-locales",
-    "galpon-deposito"
+    "galpon-deposito",
+    "galpon"
    ],
    "ley": false
   },
@@ -5502,9 +5586,13 @@
    "usd": 2200,
    "cant": false,
    "para": [
-    "galpon-deposito"
+    "galpon-deposito",
+    "galpon"
    ],
-   "ley": false
+   "ley": false,
+   "noUso": [
+    "locales"
+   ]
   },
   {
    "id": "ac-split",
@@ -5514,9 +5602,13 @@
    "cant": false,
    "para": [
     "pod-oficina",
-    "pod-habitable"
+    "pod-habitable",
+    "pod"
    ],
-   "ley": false
+   "ley": false,
+   "noUso": [
+    "shed"
+   ]
   },
   {
    "id": "datos",
@@ -5525,9 +5617,13 @@
    "usd": 250,
    "cant": false,
    "para": [
-    "pod-oficina"
+    "pod-oficina",
+    "pod"
    ],
-   "ley": false
+   "ley": false,
+   "noUso": [
+    "shed"
+   ]
   },
   {
    "id": "escritorio",
@@ -5536,9 +5632,13 @@
    "usd": 600,
    "cant": false,
    "para": [
-    "pod-oficina"
+    "pod-oficina",
+    "pod"
    ],
-   "ley": false
+   "ley": false,
+   "noUso": [
+    "shed"
+   ]
   },
   {
    "id": "termofon",
@@ -5548,9 +5648,13 @@
    "cant": false,
    "para": [
     "pod-habitable",
-    "pod-bano"
+    "pod-bano",
+    "pod"
    ],
-   "ley": false
+   "ley": false,
+   "noUso": [
+    "shed"
+   ]
   },
   {
    "id": "aislacion-shed",
@@ -5559,9 +5663,13 @@
    "usd": 700,
    "cant": false,
    "para": [
-    "shed-jardin"
+    "shed-jardin",
+    "pod"
    ],
-   "ley": false
+   "ley": false,
+   "soloUso": [
+    "shed"
+   ]
   },
   {
    "id": "luz-shed",
@@ -5570,9 +5678,13 @@
    "usd": 450,
    "cant": false,
    "para": [
-    "shed-jardin"
+    "shed-jardin",
+    "pod"
    ],
-   "ley": false
+   "ley": false,
+   "soloUso": [
+    "shed"
+   ]
   },
   {
    "id": "estanteria",
@@ -5581,7 +5693,9 @@
    "usd": 300,
    "cant": false,
    "para": [
-    "shed-jardin"
+    "shed-jardin",
+    "pod",
+    "galpon"
    ],
    "ley": false
   },
@@ -5593,7 +5707,8 @@
    "cant": false,
    "para": [
     "pod-bano",
-    "pod-habitable"
+    "pod-habitable",
+    "pod"
    ],
    "ley": false
   },
@@ -5607,9 +5722,60 @@
     "pod-oficina",
     "pod-habitable",
     "pod-bano",
-    "shed-jardin"
+    "shed-jardin",
+    "pod"
    ],
    "ley": false
+  },
+  {
+   "id": "bano-pod",
+   "nombre": "Bañito integrado",
+   "nota": "Inodoro, lavatorio y ducha en 1,2 × 1,6 m",
+   "usd": 3400,
+   "cant": false,
+   "para": [
+    "pod"
+   ],
+   "ley": false,
+   "noUso": [
+    "shed"
+   ]
+  },
+  {
+   "id": "surf-rack",
+   "nombre": "Rack de surf",
+   "nota": "Soporte exterior de lapacho para 3 tablas",
+   "usd": 280,
+   "cant": false,
+   "para": [
+    "pod"
+   ],
+   "ley": false
+  },
+  {
+   "id": "ducha-exterior",
+   "nombre": "Ducha exterior",
+   "nota": "Piso de lapacho, agua fría y caliente",
+   "usd": 650,
+   "cant": false,
+   "para": [
+    "pod"
+   ],
+   "ley": false
+  },
+  {
+   "id": "deck-extra",
+   "nombre": "Deck ampliado",
+   "nota": "Duplica el deck del frente",
+   "usd": 900,
+   "cant": false,
+   "para": [
+    "pod"
+   ],
+   "ley": false,
+   "noUso": [
+    "shed"
+   ]
   }
  ]
 }

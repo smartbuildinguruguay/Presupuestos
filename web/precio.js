@@ -33,6 +33,8 @@ window.SBUprecio = function (D, m, extId) {
     if (+x.m2Base && lay.length) { const a = lay.reduce((t, q) => t + (+q.w || 0) * (+q.d || 0), 0) + Math.max(0, n - lay.length) * +x.m2Base;
       L.push({ id: 'x-' + id, t: `${x.nombre.replace(/ de \d+ m²/, '')}${n > 1 ? ` × ${n}` : ''} · ${Math.round(a * 10) / 10} m²`, det: `USD ${+x.usd} cada ${x.m2Base} m²`, costo: Math.round(+x.usd * a / +x.m2Base), extra: true }); return }
     L.push({ id: 'x-' + id, t: x.nombre + (n > 1 ? ` × ${n}` : ''), det: `${n} × USD ${+x.usd} costo`, costo: n * (+x.usd || 0), extra: true }) });
+  // líneas propias de los modelos configurables (pod / galpón)
+  (m.paramLineas || []).forEach(l => L.push(Object.assign({}, l)));
   L.forEach(l => { l.venta = rd(l.costo * k) });
   const costo = L.reduce((a, l) => a + l.costo, 0);
   const venta = L.reduce((a, l) => a + l.venta, 0);

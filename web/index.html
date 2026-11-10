@@ -384,7 +384,13 @@ h1,h2,h3{text-transform:none}
 .vwrap{position:relative;border:1.5px solid var(--ink);background:#1d1b18}
 .vwrap .viewer{aspect-ratio:16/9;border-radius:0}
 .vopts{position:absolute;top:12px;right:12px;bottom:12px;width:min(300px,34%);background:rgba(54,58,64,.9);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);border:1px solid rgba(245,244,240,.35);display:flex;flex-direction:column;gap:10px;padding:12px;overflow:auto;z-index:2}
-.otabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px}
+.otabs{display:grid;grid-template-columns:repeat(auto-fill,minmax(60px,1fr));gap:4px}
+.pgrp{display:grid;gap:5px;margin-bottom:4px}.pgt{font:500 .62rem var(--f-m);letter-spacing:.16em;text-transform:uppercase;color:var(--mute)}
+.pops{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:5px}.pops.t4{grid-template-columns:repeat(4,minmax(0,1fr))}
+.vopts .sw .pops button,.sw .pops button{grid-template-columns:minmax(0,1fr);gap:1px;padding:7px 7px;align-content:start}
+.sw .pops button.cc{grid-template-columns:20px minmax(0,1fr);column-gap:7px}.sw .pops .chip{width:20px;height:20px}
+.sw .pops b{font-size:.78rem}.sw .pops small{font-size:.62rem}.sw .pops small i{font-style:normal;color:var(--cu)}
+.pdesc{font:400 .7rem var(--f-b,inherit);color:var(--mute);line-height:1.3}
 .otabs button{background:transparent;border:1px solid rgba(245,244,240,.35);color:var(--ink);font:500 .72rem var(--f-m);letter-spacing:.06em;text-transform:uppercase;padding:8px 2px}
 .otabs button[aria-selected="true"]{background:var(--cu);border-color:var(--cu);color:#22252a}
 .ohead{display:flex;justify-content:space-between;align-items:baseline;gap:8px}
@@ -572,6 +578,7 @@ h1,h2,h3{text-transform:none}
 
 <script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js" defer></script>
 <script src="precio.js"></script>
+<script src="param.js"></script>
 <script src="texturas.js"></script>
 <script src="dibujos.js"></script>
 <script>
@@ -579,6 +586,8 @@ h1,h2,h3{text-transform:none}
 let D=null;
 try{const q=await fetch('datos.json?t='+Date.now(),{cache:'no-store'});if(q.ok)D=await q.json()}catch(e){}
 if(!D){document.body.insertAdjacentHTML('beforeend','<p style="padding:20px">No se pudieron cargar los modelos. Recargá la página.</p>');return}
+/* modelos configurables (Pod y Galpón): la ficha base se convierte en un modelo concreto según lo elegido */
+const PB0={};D.modelos=D.modelos.map(m=>{if(!m.param||!window.SBUparam)return m;PB0[m.id]=m;let sv=null;try{sv=JSON.parse(localStorage.getItem('sbu-cfg-'+m.id))}catch(e){}return window.SBUparam.virtual(m,sv&&sv.p,D)});
 D.modelos.sort((a,b)=>(+b.m2||0)-(+a.m2||0));
 /* líneas: casas (pública) y las que están "pronto" (solo las ve el equipo con ?equipo) */
 const qs0=new URLSearchParams(location.search);
@@ -634,10 +643,11 @@ const desde=m=>precio(m,{ext:m.revOriginal||'original'}).tot;
 
 /* ---------- WhatsApp ---------- */
 let cur=null, cfg={ext:'original'};
+const nomCur=()=>cur.param?`${cur.etiqueta} — ${cur.datos.filter(d=>!/Medida|Superficie/.test(d[0])).map(d=>d[0].toLowerCase()+': '+d[1]).join(', ')}`:cur.nombre;
 const extOf=id=>(id==='original'&&cur&&cur.revOriginal?D.exterior.find(e=>e.id===cur.revOriginal):null)||D.exterior.find(e=>e.id===id)||D.exterior[0];
 function waText(kind){
   if(kind==='modelo'&&cur){const p=precio(cur,cfg);const ext=extOf(cfg.ext);
-    return `Hola! Vi en la web el modelo ${cur.nombre} (${cur.m2} m²) con ${resumen()}. Presupuesto de referencia ${usd(p.tot)}. Me gustaría avanzar. Ref: ${cur.id}-${cfg.ext} · ${TR.vid}`}
+    return `Hola! Vi en la web el modelo ${nomCur()} (${cur.m2} m²) con ${resumen()}. Presupuesto de referencia ${usd(p.tot)}. Me gustaría avanzar. Ref: ${cur.id}-${cfg.ext} · ${TR.vid}`}
   if(String(kind).startsWith('pronto-')){const l=LINEAS.find(x=>'pronto-'+x.id===kind);return `Hola! Vi en la web que se viene ${l?l.nombre:'una línea nueva'}. Me interesa, avisame cuando esté. (${TR.vid})`}
   return `Hola! Vengo de la web de Smart Building y quiero consultar por una casa. (${TR.vid})`;
 }
@@ -648,8 +658,8 @@ try{Object.assign(CQ,ls.get('cq')||{})}catch(e){}
 ['cq-zona','cq-com','cq-nom'].forEach(id=>{const v=ls.get(id);if(v)$(id).value=v});
 function cqMsg(){
   const p=precio(cur,cfg),ext=extOf(cfg.ext),nom=$('cq-nom').value.trim(),zona=$('cq-zona').value.trim(),com=$('cq-com').value.trim();
-  const L=[`Hola! ${nom?'Soy '+nom+'. ':''}Me interesa el modelo *${cur.nombre}* (${cur.m2} m²${+cur.deck?' + '+cur.deck+' m² de deck':''}).`,
-   `Fachada: ${ext.nombre} · Presupuesto de referencia: ${usd(p.tot)}`];
+  const L=[`Hola! ${nom?'Soy '+nom+'. ':''}Me interesa el modelo *${nomCur()}* (${cur.m2} m²${+cur.deck?' + '+cur.deck+' m² de deck':''}).`,
+   `${cur.config&&!cur.config.includes('ext')?'':'Fachada: '+ext.nombre+' · '}Presupuesto de referencia: ${usd(p.tot)}`];
   if(CQ.quiero.length)L.push(`Me gustaría: ${CQ.quiero.join(', ').toLowerCase()}`);
   if(CQ.terreno||zona)L.push(`Terreno: ${[CQ.terreno,zona].filter(Boolean).join(' · ')}`);
   if(CQ.cuando)L.push(`Para empezar: ${CQ.cuando.toLowerCase()}`);
@@ -710,7 +720,7 @@ function fila(m,i){
     <h3>${m.nombre}</h3><p>${m.frase||''}</p>
     <dl class="mr-meta">${datosDe(m).map(([t,v])=>`<div><dt>${t}</dt><dd>${v}</dd></div>`).join('')}</dl>
     ${pl?`<div class="mr-plan" aria-label="Planta de ${m.nombre}">${window.SBUplanta(pl,m)}</div>`:''}
-    <div class="mr-ft"><span>Desde <b>${usdK(desde(m))}</b></span><button type="button" class="btn cu" data-open="${m.id}">${m.uid?'Ficha técnica y 3D →':'Ficha técnica →'}</button></div>
+    <div class="mr-ft"><span>Desde <b>${usdK(desde(m))}</b></span><button type="button" class="btn cu" data-open="${m.id}">${m.param?'Configurar en 3D →':m.uid?'Ficha técnica y 3D →':'Ficha técnica →'}</button></div>
    </div></article>`;
 }
 const lineaOn0=id=>{const l=LINEAS.find(x=>x.id===id);return !l||l.estado==='activa'};
@@ -786,9 +796,9 @@ function setAlbedo(mat,uid,color){const e=1;
     else if(color){delete c.texture;c.color=color}});
 }
 /* terminaciones: categorías, materiales del 3D y vistas de cámara */
-const CATS={ext:{k:'ext',t:'Fachada',tab:'Fachada',lista:null,vista:'fachada'},int:{k:'int',t:'Interior',tab:'Interior',lista:'interior',vista:'interior'},pis:{k:'pis',t:'Pisos',tab:'Pisos',lista:'pisos',vista:'piso'},techo:{k:'techo',t:'Techo',tab:'Techo',lista:'techo',vista:'techo'},extra:{k:'extra',t:'Extras',tab:'Extras',lista:null,vista:null}};
-const exDe=m=>(D.extras||[]).filter(x=>x.activo!==false&&(x.para||[]).includes(m.id));
-const catsOn=()=>Object.values(CATS).filter(C=>(C.k!=='extra'||(cur&&exDe(cur).length))&&(!C.lista||(D[C.lista]&&D[C.lista].activo!==false))&&(!cur||!cur.config||cur.config.includes(C.k)));
+const CATS={conf:{k:'conf',t:'Tu modelo',tab:'Modelo',lista:null,vista:null},ext:{k:'ext',t:'Fachada',tab:'Fachada',lista:null,vista:'fachada'},int:{k:'int',t:'Interior',tab:'Interior',lista:'interior',vista:'interior'},pis:{k:'pis',t:'Pisos',tab:'Pisos',lista:'pisos',vista:'piso'},techo:{k:'techo',t:'Techo',tab:'Techo',lista:'techo',vista:'techo'},extra:{k:'extra',t:'Extras',tab:'Extras',lista:null,vista:null}};
+const exDe=m=>(D.extras||[]).filter(x=>x.activo!==false&&(x.para||[]).includes(m.id)&&(!x.soloUso||(m.p&&x.soloUso.includes(m.p.uso)))&&!(x.noUso&&m.p&&x.noUso.includes(m.p.uso)));
+const catsOn=()=>Object.values(CATS).filter(C=>(C.k!=='conf'||(cur&&cur.param))&&(C.k!=='extra'||(cur&&exDe(cur).length))&&(!C.lista||(D[C.lista]&&D[C.lista].activo!==false))&&(!cur||!cur.config||cur.config.includes(C.k)));
 const matsDe=(m,k)=>{if(k!=='techo'){const tz=matsDe(m,'techo'),L=k==='ext'?(m.fachadaMat||[]):null;if(L)return L.filter(n=>!tz.includes(n));}if(k==='ext')return [];const v=CATS[k].vista,tz=k==='techo'?[]:matsDe(m,'techo'),own=((m.mats||{})[v]||[]).filter(n=>!tz.includes(n));if(own.length||k!=='techo')return own;
   /* partes comunes a todos los modelos (ej. Metal_06_1K = chapa del techo), si el modelo las tiene */
   const base=((D.matsBase||{})[v]||[]).map(x=>x.toLowerCase());return (mats||[]).filter(q=>base.includes(String(q.name).toLowerCase())).map(q=>q.name)};
@@ -797,9 +807,17 @@ const rgb=h=>[1,3,5].map(i=>Math.pow(parseInt(h.substr(i,2),16)/255,2.2));
 let cat='ext';
 /* visor propio (glb) para los modelos sin Sketchfab */
 let glbOn=false;
+const visor=go=>{if(window.SBUvisor)go();else{$('viewer').innerHTML='<div class="v3msg">Cargando 3D…</div>';addEventListener('sbuvisor',go,{once:true});if(!document.getElementById('v3js')){const sc=document.createElement('script');sc.type='module';sc.src='visor3d.js?v=17';sc.id='v3js';document.head.appendChild(sc)}}};
 function abrirGlb(m){
-  const go=()=>{window.SBUvisor.abrir($('viewer'),m,m.glb).then(ok=>{if(!ok||cur!==m)return;glbOn=true;window.SBUvisor.aplicar(cfg,D,m);modulos3d();TR.ev('abrir_3d',{modelo:m.id,detalle:'visor propio'})})};
-  if(window.SBUvisor)go();else{$('viewer').innerHTML='<div class="v3msg">Cargando 3D…</div>';addEventListener('sbuvisor',go,{once:true});if(!document.getElementById('v3js')){const sc=document.createElement('script');sc.type='module';sc.src='visor3d.js?v=16';sc.id='v3js';document.head.appendChild(sc)}}
+  visor(()=>{window.SBUvisor.abrir($('viewer'),m,m.glb).then(ok=>{if(!ok||cur!==m)return;glbOn=true;window.SBUvisor.aplicar(cfg,D,m);modulos3d();TR.ev('abrir_3d',{modelo:m.id,detalle:'visor propio'})})});
+}
+/* Pod y Galpón: el 3D se arma en el navegador y se rehace al cambiar cada opción */
+function abrirParam(m){visor(()=>{if(cur!==m)return;glbOn=true;window.SBUvisor.param($('viewer'),m,cfg,D).then(ok=>{if(ok&&cur===m)modulos3d()})})}
+function setParam(){
+  const m=window.SBUparam.virtual(PB0[cur.id],cfg.p,D),i=M.indexOf(byId[m.id]);if(i>=0)M[i]=m;byId[m.id]=m;cur=m;cfg.p=m.p;
+  const okX=exDe(m).map(x=>x.id);cfg.extras=Object.fromEntries(Object.entries(cfg.extras||{}).filter(([id])=>okX.includes(id)));
+  ls.set('cfg-'+m.id,cfg);$('ficha').innerHTML=fichaHTML(m);swatches();renderPrice();planta(m);catalogo();
+  if(glbOn&&window.SBUvisor)window.SBUvisor.param($('viewer'),m,cfg,D).then(ok=>{if(ok&&cur===m)modulos3d()});
 }
 function modulos3d(){if(glbOn&&cur&&!cur.uid&&window.SBUvisor)window.SBUvisor.modulos(cfg,D,cur,L=>{cfg.layout=L;ls.set('cfg-'+cur.id,cfg);renderPrice()})}
 function applyCat(k){
@@ -874,7 +892,13 @@ function swatches(){
   $('otabs').innerHTML=catsOn().map(C=>`<button type="button" role="tab" data-cat="${C.k}" aria-selected="${cat===C.k}">${C.tab}</button>`).join('');
   $('o-tit').textContent=CATS[cat].t;
   let h='';
-  if(cat==='extra'){
+  if(cat==='conf'){
+    const SP=window.SBUparam,t=cur.param,base=PB0[cur.id],tot=precio(cur,cfg).tot;
+    $('o-sub').textContent='tocá y miralo cambiar';
+    h=SP.grupos(t).map(k=>{const G=SP.grupo(t,k);return `<div class="pgrp"><span class="pgt">${G.t}</span><div class="pops${G.ops.length===4&&k==='tam'?' t4':''}">${G.ops.map(o=>{const on=cur.p[k]===o.id,d=on?0:precio(SP.virtual(base,Object.assign({},cur.p,{[k]:o.id}),null),cfg).tot-tot,
+      tag=on||Math.round(d/100)===0?'':(d>0?'+':'−')+usdK(Math.abs(d)).replace(' mil','k').replace('USD ','');
+      return `<button type="button" class="${o.c?'cc':''}" data-po="${k}:${o.id}" aria-pressed="${on}" title="${o.d||''}">${o.c?`<span class="chip" style="background:${o.c}"></span>`:''}<b>${o.n}</b><small>${k==='tam'?o.d:''}${tag?`${k==='tam'?' · ':''}<i>${tag}</i>`:''}</small></button>`}).join('')}</div>${(()=>{const o=G.ops.find(x=>x.id===cur.p[k]);return o&&o.d&&k!=='tam'?`<small class="pdesc">${o.d}</small>`:''})()}</div>`}).join('');
+  }else if(cat==='extra'){
     const xs=exDe(cur),q=cfg.extras||{},ley=xs.filter(x=>x.ley);
     $('o-sub').textContent='se suman al precio';
     h=(ley.length?`<button type="button" class="xley" data-xley="1"><b>Agregar lo necesario para habilitar</b><small>${ley.map(x=>x.nombre.replace(/ \(.*\)/,'')).join(' · ')}</small></button>`:'')+
@@ -903,7 +927,9 @@ document.getElementById('opts').addEventListener('click',e=>{
     if(xe.dataset.xley){exDe(cur).filter(x=>x.ley).forEach(x=>{q[x.id]=Math.max(+q[x.id]||0,x.cant?(+cur.locales||1):1)})}
     else if(xe.dataset.xq){q[xe.dataset.xq]=Math.max(0,(+q[xe.dataset.xq]||0)+(+xe.dataset.d));if(!q[xe.dataset.xq])delete q[xe.dataset.xq]}
     else{const id=xe.dataset.x;if(q[id])delete q[id];else q[id]=1}
-    ls.set('cfg-'+cur.id,cfg);TR.ev('extra',{modelo:cur.id,detalle:Object.entries(q).map(([k,v])=>k+(v>1?'×'+v:'')).join(', '),valor:precio(cur,cfg).tot});swatches();renderPrice();modulos3d();return}
+    ls.set('cfg-'+cur.id,cfg);TR.ev('extra',{modelo:cur.id,detalle:Object.entries(q).map(([k,v])=>k+(v>1?'×'+v:'')).join(', '),valor:precio(cur,cfg).tot});swatches();renderPrice();if(cur.param&&glbOn&&window.SBUvisor)window.SBUvisor.param($('viewer'),cur,cfg,D);modulos3d();return}
+  const po=e.target.closest('[data-po]');
+  if(po&&cur&&cur.param){const [k,v]=po.dataset.po.split(':');if(cur.p[k]===v)return;cfg.p=Object.assign({},cur.p,{[k]:v});setParam();TR.ev('configurar',{modelo:cur.id,detalle:k+': '+v,valor:precio(cur,cfg).tot});return}
   const b=e.target.closest('[data-o]');if(!b||!cur)return;
   cfg[cat]=b.dataset.o;ls.set('cfg-'+cur.id,cfg);
   TR.ev(cat==='ext'?'revestimiento':'terminacion',{modelo:cur.id,detalle:cat+': '+cfg[cat],valor:precio(cur,cfg).tot});
@@ -917,18 +943,20 @@ function renderPrice(){
    <table>${p.items.map(i=>`<tr><td>${i[0]}</td><td class="n">${i[1]?usd(i[1]):'incluido'}</td></tr>`).join('')}</table>
    <a class="btn" data-wa="modelo" href="#">Lo quiero</a>
    <div class="disc">Precio llave en mano sin terreno. Se ajusta después de visitar el terreno.</div>`;
-  $('bar-m').textContent=`${cur.nombre} · ${extOf(cfg.ext).nombre}`;$('bar-t').textContent=usd(p.tot);
+  $('bar-m').textContent=cur.param?cur.etiqueta+' · '+cur.datos[2][1]:`${cur.nombre} · ${extOf(cfg.ext).nombre}`;$('bar-t').textContent=usd(p.tot);
 }
+const fichaHTML=m=>m.datos&&m.datos.length?m.datos.map(([t,v])=>`<div><small>${t}</small><b class="mono">${v}</b></div>`).join(''):`<div><small>Cubiertos</small><b class="mono">${m.m2}</b> m²</div><div><small>Decks</small><b class="mono">${m.deck||'—'}</b>${m.deck?' m²':''}</div><div><small>Dormitorios</small><b class="mono">${m.dorm}</b></div><div><small>Baños</small><b class="mono">${m.banos}</b></div>`;
 function openModel(id,scroll=true){
   glbOn=false;if(window.SBUvisor)window.SBUvisor.cerrar();
-  const m=byId[id];if(!m)return;TR.ev('ver_modelo',{modelo:id});cur=m;{const sv=ls.get('cfg-'+id)||{};cfg={ext:sv.ext||m.revOriginal||'original',int:sv.int,pis:sv.pis,techo:sv.techo,extras:sv.extras||{},layout:sv.layout||{}};cat=(catsOn()[0]||{k:'ext'}).k;}if(m.revOriginal&&cfg.ext==='original')cfg.ext=m.revOriginal;api=null;loadedUid=null;
+  let m=byId[id];if(!m)return;TR.ev('ver_modelo',{modelo:id});{const sv=ls.get('cfg-'+id)||{};if(m.param){m=window.SBUparam.virtual(PB0[id],sv.p||m.p,D);const i=M.indexOf(byId[id]);if(i>=0)M[i]=m;byId[id]=m}cur=m;cfg={ext:sv.ext||m.revOriginal||'original',int:sv.int,pis:sv.pis,techo:sv.techo,extras:sv.extras||{},layout:sv.layout||{},p:m.p};cat=(catsOn()[0]||{k:'ext'}).k;}if(m.revOriginal&&cfg.ext==='original')cfg.ext=m.revOriginal;api=null;loadedUid=null;
   $('modelo').hidden=false;
   $('d-eb').textContent=[m.lugar,m.usos.map(u=>USOS[u]).join(' · ')].filter(Boolean).join(' — ');
   $('d-nom').textContent=m.nombre;$('d-frase').textContent=m.frase;
   const pen=k=>'';
-  $('ficha').innerHTML=m.datos&&m.datos.length?m.datos.map(([t,v])=>`<div><small>${t}</small><b class="mono">${v}</b></div>`).join(''):`<div><small>Cubiertos</small><b class="mono">${m.m2}</b> m²${pen('m²')}</div><div><small>Decks</small><b class="mono">${m.deck||'—'}</b>${m.deck?' m²':''}</div><div><small>Dormitorios</small><b class="mono">${m.dorm}</b>${pen('dorm')}</div><div><small>Baños</small><b class="mono">${m.banos}</b>${pen('baños')}</div>`;
+  $('ficha').innerHTML=fichaHTML(m);
   $('viewer').innerHTML=`${pic(m)?`<img class="poster" src="${pic(m)}" alt="">`:''}<button type="button" class="play" id="play"><span><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L18.7 8 12 11.7 5.3 8 12 4.3ZM5 9.7l6 3.3v6.7l-6-3.3V9.7Zm8 10V13l6-3.3v6.7l-6 3.3Z"/></svg>Recorrer en 3D</span></button><div class="vs"></div>`;
-  if(!m.uid&&m.glb){$('viewer').innerHTML=`<div class="vdib">${dibujo(m)||''}<button type="button" class="v3go" id="v3go">▶ Ver en 3D</button><span class="v3d">3D preliminar</span></div>`;$('v3go').onclick=()=>abrirGlb(m)}
+  if(m.param){$('viewer').innerHTML='';abrirParam(m)}
+  else if(!m.uid&&m.glb){$('viewer').innerHTML=`<div class="vdib">${dibujo(m)||''}<button type="button" class="v3go" id="v3go">▶ Ver en 3D</button><span class="v3d">3D preliminar</span></div>`;$('v3go').onclick=()=>abrirGlb(m)}
   else if(!m.uid){$('viewer').innerHTML=`<div class="vdib">${dibujo(m)||''}<span class="v3d">3D en preparación</span></div>`}else
   $('play').addEventListener('click',open3D);
   {const el=$('incl');if(el){el.dataset.base=el.dataset.base||el.innerHTML;el.innerHTML=m.incluye&&m.incluye.length?m.incluye.map(x=>`<li>${x}</li>`).join(''):el.dataset.base}
