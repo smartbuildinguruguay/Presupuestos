@@ -22,18 +22,35 @@
         { id: 'locales', n: 'Locales', d: 'frentes vidriados para alquilar' },
         { id: 'taller', n: 'Taller', d: 'portón, banco de trabajo y ventanas altas' },
         { id: 'mixto', n: 'Mixto', d: 'locales al frente y depósito con portón al costado' }] },
+      nloc: { t: 'Cantidad de locales', solo: { uso: ['locales', 'mixto'] }, ops: [{ id: '1', n: '1 local' }, { id: '2', n: '2 locales' }, { id: '3', n: '3 locales' }, { id: '4', n: '4 locales' }, { id: '5', n: '5 locales' }] },
+      lat: { t: 'Entradas por los costados', ops: [{ id: 'no', n: 'Ninguna', d: 'se entra solo por el frente' }, { id: 'puerta', n: 'Puerta en un costado', d: 'puerta de chapa en el lateral derecho', usd: 650 },
+        { id: 'puertas', n: 'Puerta en cada costado', d: 'una puerta en cada lateral', usd: 1300 }, { id: 'porton', n: 'Portón lateral', d: 'portón de 3 m en el lateral derecho, para carga', usd: 2800 }] },
       cerr: { t: 'Cerramiento', ops: [{ id: 'chapa', n: 'Chapa', d: 'acanalada prepintada', f: .45 }, { id: 'panel', n: 'Isoroof', d: 'panel aislado trapezoidal gris grafito, en muros y techo', f: .58 }] },
       esp: { t: 'Espesor del Isoroof', solo: { cerr: 'panel' }, ops: [{ id: '30', n: '30 mm', d: 'aislación estándar' }, { id: '50', n: '50 mm', d: 'más aislación térmica y acústica', usdM2: 6 }] },
       color: { t: 'Color', solo: { cerr: 'chapa' }, ops: [{ id: 'negro', n: 'Negro', c: '#2a2c2f' }, { id: 'grafito', n: 'Grafito', c: '#5b6066' }, { id: 'blanco', n: 'Blanco', c: '#e8e8e4' }, { id: 'verde', n: 'Verde inglés', c: '#2f4a3c' }] },
       base: { t: 'Base', ops: [{ id: 'platea', n: 'Con platea', d: 'hormigón alisado' }, { id: 'sin', n: 'Sin platea', d: 'balasto compactado; la platea se hace después', usdM2: -45 }] },
       banos: { t: 'Baños', ops: [{ id: '0', n: 'Sin baño', d: '' }, { id: '1', n: '1 baño', d: 'inodoro, lavatorio y su instalación' }, { id: '2', n: '2 baños', d: 'uno accesible' }] },
+      hab: { t: 'Habilitación', ops: [{ id: 'no', n: 'Solo la obra', d: 'la habilitación la gestionás aparte' },
+        { id: 'si', n: 'Lista para habilitar', d: 'Bomberos (extintores, luces de emergencia, señalización), gestión ante la Intendencia por local y baño accesible si hay público' }] },
     },
   };
-  const DEF = { pod: { tam: 'm', uso: 'oficina', vent: 'corrediza', vidrio: 'dvh' }, galpon: { tam: 'm', uso: 'deposito', cerr: 'chapa', esp: '30', color: 'negro', base: 'platea', banos: '1' } };
+  const DEF = { pod: { tam: 'm', uso: 'oficina', vent: 'corrediza', vidrio: 'dvh' }, galpon: { tam: 'm', uso: 'deposito', cerr: 'chapa', esp: '30', color: 'negro', base: 'platea', banos: '1', nloc: '2', lat: 'no', hab: 'no' } };
   const op = (tipo, k, id) => (G[tipo][k].ops.find(o => o.id === String(id)) || G[tipo][k].ops[0]);
+  const publico = p => p.uso === 'locales' || p.uso === 'mixto';
+  // ancho que ocupan los locales (en mixto, el depósito se lleva al menos 4 m al costado)
+  const anchoLoc = (w, p) => p.uso === 'mixto' ? +(w - Math.max(4, w * .4)).toFixed(2) : w;
+  // opciones que tienen sentido con lo demás elegido (cada local de 3 m o más; habilitar pide baño, y accesible si hay público)
+  function opsDe(tipo, k, p) {
+    const L = G[tipo][k].ops; if (tipo !== 'galpon' || !p) return L;
+    if (k === 'nloc') { const T = op('galpon', 'tam', p.tam), mx = Math.max(1, Math.floor(anchoLoc(T.w, p) / 3)); return L.filter(o => +o.id <= mx) }
+    if (k === 'banos' && p.hab === 'si') return L.filter(o => +o.id >= (publico(p) ? 2 : 1));
+    return L;
+  }
 
   /* ventanas a medida: costo directo por m² de ventana agregada o sacada (aluminio + vidrio + colocación) */
   const VX_M2 = 280;
+  /* galpón: muros divisorios entre locales (costo por m²) y habilitación (mismos valores que los extras de habilitación) */
+  const DIV_M2 = 35, HAB = { bomberos: 2000, local: 600 };
   const largoPared = (k, w, l) => k === 'S' || k === 'N' ? w : l;
   // acomoda las ventanas elegidas a mano dentro de cada pared (por si cambia la medida)
   function ventanasA(vx, w, l, puertas) {
@@ -81,9 +98,9 @@
   function planGal(w, l, p) {
     const H = w >= 12 ? 5 : 4.5, back = 2.4, ventanas = [], puertas = [], muros = [], locales = [], equip = [];
     const nb = +p.banos || 0;
-    const loc = (x0, x1, nom) => { const a = x1 - x0; ventanas.push({ m: 'S', en: x0 + .3, a: Math.max(1, a - 1.9), vidriera: true }); puertas.push({ m: 'S', en: x1 - 1.4, a: 1.1, giro: -1 }); locales.push({ n: nom, x: (x0 + x1) / 2, y: (back + l) / 2, a: +(a * (l - back)).toFixed(0) }) };
+    const loc = (x0, x1, nom) => { const a = x1 - x0; ventanas.push({ m: 'S', en: x0 + .25, a: Math.max(.8, a - 1.7), vidriera: true }); puertas.push({ m: 'S', en: x1 - 1.25, a: 1, giro: -1 }); locales.push({ n: nom, x: (x0 + x1) / 2, y: (back + l) / 2, a: +(a * (l - back)).toFixed(0) }) };
     if (p.uso === 'locales' || p.uso === 'mixto') {
-      const ancho = p.uso === 'mixto' ? +(w - Math.max(4, w * .4)).toFixed(2) : w, n = Math.max(1, Math.min(Math.round(ancho / 5), Math.floor(ancho / 4))), lw = ancho / n;
+      const ancho = anchoLoc(w, p), n = Math.max(1, Math.min(+p.nloc || 2, Math.floor(ancho / 3))), lw = ancho / n;
       for (let i = 0; i < n; i++) { loc(i * lw, (i + 1) * lw, 'Local ' + (i + 1)); if (i) muros.push([i * lw, back, i * lw, l]) }
       muros.push([0, back, ancho - (ancho >= w - .01 ? nb * 2.2 : 0), back]);
       if (p.uso === 'mixto') { muros.push([ancho, 0, ancho, l]); { const pw = Math.min(3.5, w - ancho - 1); puertas.push({ m: 'S', en: ancho + (w - ancho) / 2 - pw / 2, a: pw, giro: 1 }) } locales.push({ n: 'Depósito', x: ancho + (w - ancho) / 2, y: l / 2, a: +((w - ancho) * l).toFixed(0) }) }
@@ -94,13 +111,19 @@
       locales.push({ n: p.uso === 'taller' ? 'Taller' : 'Nave', x: w / 2, y: l / 2, a: +(w * l).toFixed(0) });
       if (p.uso === 'taller') equip.push({ t: 'mesada', x: .2, y: l / 2 - 2, w: .8, h: 4 });
     }
+    // entradas por los costados (lateral derecho = E, izquierdo = O); se corren las ventanas que pisen
+    const lado = (k, en, a, extra) => { for (let i = ventanas.length - 1; i >= 0; i--) { const v = ventanas[i]; if (v.m === k && Math.abs((v.en + v.a / 2) - en) < (v.a + a) / 2 + .2) ventanas.splice(i, 1) }
+      puertas.push(Object.assign({ m: k, en: en - a / 2, a, giro: 1 }, extra)) };
+    if (p.lat === 'porton') lado('E', l / 2 + .5, 3);
+    else if (p.lat === 'puerta' || p.lat === 'puertas') { lado('E', l - 1.6, .9); if (p.lat === 'puertas') lado('O', l - 1.6, .9) }
     // baños al fondo, contra la esquina noreste
+    const bw = p.uso === 'mixto' ? Math.min(2.2, (w - anchoLoc(w, p)) / Math.max(1, nb)) : 2.2; // en mixto los baños entran en el depósito
     for (let i = 0; i < nb; i++) {
-      const x1 = w - i * 2.2, x0 = x1 - 2.2;
+      const x1 = w - i * bw, x0 = x1 - bw;
       muros.push([x0, 0, x0, back, .1, 2.7], [x0, back, x1, back, .1, 2.7]);
       puertas.push({ m: [x0, back, x1, back], en: .3, a: i === 1 ? .9 : .75, giro: 1 });
-      equip.push({ t: 'inodoro', x: x0 + 1.4, y: .1 }, { t: 'lav', x: x0 + .3, y: .15 });
-      locales.push({ n: i === 1 ? 'Baño accesible' : 'Baño', x: x0 + 1.1, y: back / 2, a: +(2.2 * back).toFixed(1) });
+      equip.push({ t: 'inodoro', x: x0 + bw - .8, y: .1 }, { t: 'lav', x: x0 + .3, y: .15 });
+      locales.push({ n: i === 1 ? 'Baño accesible' : 'Baño', x: x0 + bw / 2, y: back / 2, a: +(bw * back).toFixed(1) });
     }
     return centrar({ ancho: w, prof: l, eExt: .15, eInt: .1, muros, ventanas, puertas, equip, locales, cotasX: [0, w], cotasY: [0, l], _H: H });
   }
@@ -119,9 +142,11 @@
 
   window.SBUparam = {
     G, DEF,
-    grupos(tipo, p) { return Object.keys(G[tipo]).filter(k => !G[tipo][k].solo || !p || Object.entries(G[tipo][k].solo).every(([a, b]) => p[a] === b)) },
-    grupo(tipo, k) { return G[tipo][k] },
-    norm(tipo, p) { const q = Object.assign({}, DEF[tipo], p || {}); Object.keys(G[tipo]).forEach(k => { q[k] = op(tipo, k, q[k]).id }); return q },
+    grupos(tipo, p) { return Object.keys(G[tipo]).filter(k => !G[tipo][k].solo || !p || Object.entries(G[tipo][k].solo).every(([a, b]) => [].concat(b).includes(p[a]))) },
+    grupo(tipo, k, p) { return p ? Object.assign({}, G[tipo][k], { ops: opsDe(tipo, k, p) }) : G[tipo][k] },
+    norm(tipo, p) { const q = Object.assign({}, DEF[tipo], p || {});
+      for (let pasada = 0; pasada < 2; pasada++) Object.keys(G[tipo]).forEach(k => { const L = opsDe(tipo, k, q); q[k] = (L.find(o => o.id === String(q[k])) || (k === 'nloc' ? L[L.length - 1] : L[0])).id });
+      return q },
     /* modelo concreto. dims = {w, l} opcional para las animaciones entre medidas */
     virtual(base, p0, D, dims) {
       const tipo = base.param, p = this.norm(tipo, p0), T = op(tipo, 'tam', p.tam), w = dims ? dims.w : T.w, l = dims ? dims.l : T.l;
@@ -146,8 +171,12 @@
         const es = op('galpon', 'esp', p.esp), env = 2 * (w + l) * P._H + w * l * 1.06; if (p.cerr === 'panel' && es.usdM2) L.push({ id: 'p-esp', t: 'Isoroof 50 mm (en lugar de 30)', det: `${Math.round(env)} m² de panel × USD ${es.usdM2}`, costo: env * es.usdM2 });
         if (ba.usdM2) L.push({ id: 'p-base', t: 'Sin platea (balasto compactado)', det: `${m2} m² × USD ${ba.usdM2}`, costo: m2 * ba.usdM2 });
         const nl = P.ventanas.filter(v => v.vidriera).length; if (nl) L.push({ id: 'p-frentes', t: `Frentes vidriados × ${nl}`, det: `${nl} × USD 1.800`, costo: nl * 1800 });
+        const nLoc = publico(p) ? P.locales.filter(x => /^Local/.test(x.n)).length : 0;
+        if (nLoc > 1) { const back = 2.4, a = (nLoc - 1) * (l - back) * P._H; L.push({ id: 'p-div', t: `Muros divisorios entre locales × ${nLoc - 1}`, det: `${Math.round(a)} m² × USD ${DIV_M2}`, costo: a * DIV_M2 }) }
+        const la = op('galpon', 'lat', p.lat); if (la.usd) L.push({ id: 'p-lat', t: la.n, det: la.d, costo: la.usd });
+        if (p.hab === 'si') { const ng = Math.max(1, nLoc); L.push({ id: 'p-hab', t: 'Habilitación: Bomberos e Intendencia', det: `Bomberos USD ${HAB.bomberos} + gestión ${ng} × USD ${HAB.local}`, costo: HAB.bomberos + ng * HAB.local }) }
         if (nb) L.push({ id: 'p-banos', t: `${nb === 1 ? 'Baño' : nb + ' baños (uno accesible)'}`, det: `USD 2.600${nb > 1 ? ' + 3.200 accesible' : ''}`, costo: nb > 1 ? 2600 + 3200 : 2600 });
-        m.datos = [['Medida', T.n + ' m'], ['Superficie', m2 + ' m²'], ['Uso', uso.n], ['Cerramiento', p.cerr === 'panel' ? `Isoroof ${op('galpon', 'esp', p.esp).n} grafito` : ce.n + ' ' + op('galpon', 'color', p.color).n.toLowerCase()], ['Base', ba.n], ['Baños', String(nb)]];
+        m.datos = [['Medida', T.n + ' m'], ['Superficie', m2 + ' m²'], ['Uso', uso.n], ['Cerramiento', p.cerr === 'panel' ? `Isoroof ${op('galpon', 'esp', p.esp).n} grafito` : ce.n + ' ' + op('galpon', 'color', p.color).n.toLowerCase()], ['Base', ba.n], ['Baños', String(nb)], ...(nLoc ? [['Locales', String(nLoc)]] : []), ['Habilitación', p.hab === 'si' ? 'Incluida' : 'Aparte']];
         m.banos = nb; m.dorm = 0; m.locales = nl;
       }
       m.paramLineas = L;
