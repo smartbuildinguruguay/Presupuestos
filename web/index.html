@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="es">
 <head>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 <script>try{history.scrollRestoration='manual'}catch(e){}</script>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
@@ -145,7 +146,10 @@ input[type=range]{width:100%;accent-color:var(--cu);height:28px}
 .eqnote{border:1px dashed var(--cu);padding:10px 14px;margin:0 0 18px;font-size:.9rem;color:var(--ink2)}
 .eq{color:var(--cu)}
 .mr-ph.dib{display:grid;place-items:center;background:var(--paper)}.mr-ph.dib svg{width:100%;height:100%}
-.vdib{position:absolute;inset:0;display:grid;place-items:center;background:var(--paper)}.vdib svg{width:100%;height:100%}
+.vdib{position:absolute;inset:0;display:grid;place-items:center;background:var(--paper)}
+.v3go{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);background:var(--cu);color:#22252a;border:0;font:700 1rem var(--f-b,inherit);padding:14px 22px;cursor:pointer;box-shadow:0 8px 24px rgba(0,0,0,.3)}
+.v3msg{position:absolute;inset:0;display:grid;place-items:center;color:var(--ink);font:500 .85rem var(--f-m)}
+#viewer canvas{position:absolute;inset:0}.vdib svg{width:100%;height:100%}
 .v3d{position:absolute;left:14px;bottom:14px;background:rgba(40,43,48,.82);color:#fff;font:500 .72rem var(--f-m);letter-spacing:.14em;padding:5px 9px;text-transform:uppercase}
 @media (max-width:820px){.ltabs button{padding:10px 12px 8px;font-size:.92rem}}
 .vopts .sw .xley,.vopts .sw .xley:hover{display:grid;grid-template-columns:minmax(0,1fr);gap:2px;background:none;border:1.5px dashed var(--cu);border-radius:0}
@@ -777,7 +781,14 @@ const matsDe=(m,k)=>{if(k!=='techo'){const tz=matsDe(m,'techo'),L=k==='ext'?(m.f
 const opDe=(k,id)=>{const L=D[CATS[k].lista];return L&&(L.opciones.find(o=>o.id===id)||L.opciones[0])};
 const rgb=h=>[1,3,5].map(i=>Math.pow(parseInt(h.substr(i,2),16)/255,2.2));
 let cat='ext';
+/* visor propio (glb) para los modelos sin Sketchfab */
+let glbOn=false;
+function abrirGlb(m){
+  const go=()=>{window.SBUvisor.abrir($('viewer'),m,m.glb).then(ok=>{if(!ok||cur!==m)return;glbOn=true;window.SBUvisor.aplicar(cfg,D,m);TR.ev('abrir_3d',{modelo:m.id,detalle:'visor propio'})})};
+  if(window.SBUvisor)go();else{$('viewer').innerHTML='<div class="v3msg">Cargando 3D…</div>';addEventListener('sbuvisor',go,{once:true});if(!document.getElementById('v3js')){const sc=document.createElement('script');sc.type='module';sc.src='visor3d.js';sc.id='v3js';document.head.appendChild(sc)}}
+}
 function applyCat(k){
+  if(glbOn&&cur&&!cur.uid&&window.SBUvisor){window.SBUvisor.aplicar(cfg,D,cur);return}
   if(!api||!cur||k==='extra')return;const names=matsDe(cur,k);if(!names.length)return;
   if(k==='ext'){
     const e=extOf(cfg.ext);
@@ -810,6 +821,7 @@ function vistaDe(name){
   return null;
 }
 function goView(k){
+  if(glbOn&&cur&&!cur.uid&&window.SBUvisor&&k!=='extra'){window.SBUvisor.vista(k);return}
   if(!cur||!cur.uid||k==='extra')return;
   const name=CATS[k].vista;
   if(!api){pendView=k;if(!loadedUid||loadedUid!==cur.uid)open3D();return}
@@ -893,6 +905,7 @@ function renderPrice(){
   $('bar-m').textContent=`${cur.nombre} · ${extOf(cfg.ext).nombre}`;$('bar-t').textContent=usd(p.tot);
 }
 function openModel(id,scroll=true){
+  glbOn=false;if(window.SBUvisor)window.SBUvisor.cerrar();
   const m=byId[id];if(!m)return;TR.ev('ver_modelo',{modelo:id});cur=m;{const sv=ls.get('cfg-'+id)||{};cfg={ext:sv.ext||m.revOriginal||'original',int:sv.int,pis:sv.pis,techo:sv.techo,extras:sv.extras||{}};cat=(catsOn()[0]||{k:'ext'}).k;}if(m.revOriginal&&cfg.ext==='original')cfg.ext=m.revOriginal;api=null;loadedUid=null;
   $('modelo').hidden=false;
   $('d-eb').textContent=[m.lugar,m.usos.map(u=>USOS[u]).join(' · ')].filter(Boolean).join(' — ');
@@ -900,7 +913,8 @@ function openModel(id,scroll=true){
   const pen=k=>'';
   $('ficha').innerHTML=m.datos&&m.datos.length?m.datos.map(([t,v])=>`<div><small>${t}</small><b class="mono">${v}</b></div>`).join(''):`<div><small>Cubiertos</small><b class="mono">${m.m2}</b> m²${pen('m²')}</div><div><small>Decks</small><b class="mono">${m.deck||'—'}</b>${m.deck?' m²':''}</div><div><small>Dormitorios</small><b class="mono">${m.dorm}</b>${pen('dorm')}</div><div><small>Baños</small><b class="mono">${m.banos}</b>${pen('baños')}</div>`;
   $('viewer').innerHTML=`${pic(m)?`<img class="poster" src="${pic(m)}" alt="">`:''}<button type="button" class="play" id="play"><span><svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M12 2 3 7v10l9 5 9-5V7l-9-5Zm0 2.3L18.7 8 12 11.7 5.3 8 12 4.3ZM5 9.7l6 3.3v6.7l-6-3.3V9.7Zm8 10V13l6-3.3v6.7l-6 3.3Z"/></svg>Recorrer en 3D</span></button><div class="vs"></div>`;
-  if(!m.uid){$('viewer').innerHTML=`<div class="vdib">${dibujo(m)||''}<span class="v3d">3D en preparación</span></div>`}else
+  if(!m.uid&&m.glb){$('viewer').innerHTML=`<div class="vdib">${dibujo(m)||''}<button type="button" class="v3go" id="v3go">▶ Ver en 3D</button><span class="v3d">3D preliminar</span></div>`;$('v3go').onclick=()=>abrirGlb(m)}
+  else if(!m.uid){$('viewer').innerHTML=`<div class="vdib">${dibujo(m)||''}<span class="v3d">3D en preparación</span></div>`}else
   $('play').addEventListener('click',open3D);
   {const el=$('incl');if(el){el.dataset.base=el.dataset.base||el.innerHTML;el.innerHTML=m.incluye&&m.incluye.length?m.incluye.map(x=>`<li>${x}</li>`).join(''):el.dataset.base}
    const ni=$('noincl');if(ni){ni.dataset.base=ni.dataset.base||ni.textContent;ni.textContent=m.noIncluye||ni.dataset.base}}

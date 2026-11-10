@@ -1294,7 +1294,8 @@
     "Frentes vidriados con puerta y marquesina"
    ],
    "noIncluye": "No incluye terreno, conexiones de UTE, OSE y saneamiento, terminaciones interiores de cada local ni habilitaciones (comercial y de Bomberos): se suman abajo como extra.",
-   "locales": 4
+   "locales": 4,
+   "glb": "3d/galpon-locales.glb"
   },
   {
    "visible": true,
@@ -1420,7 +1421,8 @@
     "Baño y oficina terminados",
     "Portón de 4 × 4,2 m"
    ],
-   "noIncluye": "No incluye terreno, conexiones de UTE, OSE y saneamiento ni habilitaciones (comercial y de Bomberos): se suman como extra."
+   "noIncluye": "No incluye terreno, conexiones de UTE, OSE y saneamiento ni habilitaciones (comercial y de Bomberos): se suman como extra.",
+   "glb": "3d/galpon-deposito.glb"
   },
   {
    "visible": true,
@@ -1548,7 +1550,8 @@
     "Revestimiento interior terminado",
     "Terminación exterior elegida"
    ],
-   "noIncluye": "No incluye terreno, el cableado desde la casa principal más allá de 15 m ni muebles sueltos."
+   "noIncluye": "No incluye terreno, el cableado desde la casa principal más allá de 15 m ni muebles sueltos.",
+   "glb": "3d/pod-oficina.glb"
   },
   {
    "visible": true,
@@ -1685,7 +1688,8 @@
     "Baño y kitchenette terminados",
     "Terminación exterior elegida"
    ],
-   "noIncluye": "No incluye terreno, conexión a saneamiento u OSE más allá de 15 m ni muebles sueltos."
+   "noIncluye": "No incluye terreno, conexión a saneamiento u OSE más allá de 15 m ni muebles sueltos.",
+   "glb": "3d/pod-habitable.glb"
   },
   {
    "visible": true,
@@ -1789,7 +1793,8 @@
     "Puerta doble con cerradura",
     "Estante de trabajo de 2,8 m"
    ],
-   "noIncluye": "No incluye aislación ni instalación eléctrica: se suman como extra."
+   "noIncluye": "No incluye aislación ni instalación eléctrica: se suman como extra.",
+   "glb": "3d/shed-jardin.glb"
   },
   {
    "visible": true,
@@ -1899,7 +1904,8 @@
     "Instalación sanitaria y eléctrica interior",
     "Terminación exterior elegida"
    ],
-   "noIncluye": "No incluye la conexión a saneamiento, pozo u OSE más allá de 15 m."
+   "noIncluye": "No incluye la conexión a saneamiento, pozo u OSE más allá de 15 m.",
+   "glb": "3d/pod-bano.glb"
   }
  ],
  "plantas": {
