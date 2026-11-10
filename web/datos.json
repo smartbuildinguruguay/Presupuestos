@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-10T22:37:27.105Z",
+ "actualizado": "2026-11-10T22:37:42.151Z",
  "contacto": {
   "whatsapp": "59898526226",
   "instagram": "smartbuildinguruguay",
@@ -1613,6 +1613,9 @@
     ],
     "piso": [
      "Polished_Concrete_New"
+    ],
+    "techo": [
+     "__Metal_Corrugated_Shiny_1"
     ]
    }
   },
