@@ -793,7 +793,7 @@ let cat='ext';
 let glbOn=false;
 function abrirGlb(m){
   const go=()=>{window.SBUvisor.abrir($('viewer'),m,m.glb).then(ok=>{if(!ok||cur!==m)return;glbOn=true;window.SBUvisor.aplicar(cfg,D,m);TR.ev('abrir_3d',{modelo:m.id,detalle:'visor propio'})})};
-  if(window.SBUvisor)go();else{$('viewer').innerHTML='<div class="v3msg">Cargando 3D…</div>';addEventListener('sbuvisor',go,{once:true});if(!document.getElementById('v3js')){const sc=document.createElement('script');sc.type='module';sc.src='visor3d.js';sc.id='v3js';document.head.appendChild(sc)}}
+  if(window.SBUvisor)go();else{$('viewer').innerHTML='<div class="v3msg">Cargando 3D…</div>';addEventListener('sbuvisor',go,{once:true});if(!document.getElementById('v3js')){const sc=document.createElement('script');sc.type='module';sc.src='visor3d.js?v=14';sc.id='v3js';document.head.appendChild(sc)}}
 }
 function applyCat(k){
   if(glbOn&&cur&&!cur.uid&&window.SBUvisor){window.SBUvisor.aplicar(cfg,D,cur);return}

@@ -127,6 +127,7 @@ window.SBUvisor = {
     TG.murosOp = modo === 'trans' ? .14 : 1; this._dirty = true;
     if (this._bar) this._bar.querySelectorAll('[data-m]').forEach(b => b.setAttribute('aria-pressed', b.dataset.m === modo));
   },
+  _scr() { return puertas.map(d => { const b = new THREE.Box3().setFromObject(d.malla), v = b.getCenter(new THREE.Vector3()).project(C), r = R.domElement.getBoundingClientRect(); return [d.el, r.left + (v.x + 1) / 2 * r.width, r.top + (1 - v.y) / 2 * r.height, d.tg] }) },
   get info() { return Object.fromEntries(Object.entries(partes).map(([k, v]) => [k, v.map(x => x.name)])) },
   cerrar() { cancelAnimationFrame(raf); puertas = []; Object.assign(ST, { techoOp: 1, techoLift: 0, murosOp: 1 }); Object.assign(TG, ST); if (this._ro) this._ro.disconnect(); if (R) { R.dispose(); R.forceContextLoss && R.forceContextLoss() } R = null; root = null; caja = null },
 };
