@@ -5,10 +5,10 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
 
-let R = null, S, C, O, root, partes = {}, orig = {}, caja, raf = 0, cache = {};
+let R = null, S, C, O, root, partes = {}, capas = {}, orig = {}, caja, raf = 0, cache = {};
 // estado animado: opacidad y elevación del techo, opacidad de muros y aberturas
 const ST = { techoOp: 1, techoLift: 0, murosOp: 1 }, TG = { techoOp: 1, techoLift: 0, murosOp: 1 };
-const GRUPO = { ext: 'Muros exteriores', techo: 'Techo', int: 'Muros interiores', pis: 'Platea y piso', ab: 'Aberturas' };
+const GRUPO = { ext: 'ext', techo: 'techo', int: 'int', pis: 'pis' };
 
 // UV por proyección de caja: cada cara toma el plano según su normal (1 unidad = 1 m)
 function uvCaja(g) {
@@ -64,13 +64,18 @@ window.SBUvisor = {
       if (lift != null) { if (mesh.userData.y0 == null) mesh.userData.y0 = mesh.position.y; mesh.position.y = mesh.userData.y0 + lift } });
     const loop = () => { raf = requestAnimationFrame(loop); let mov = false;
       for (const k in ST) { const d = TG[k] - ST[k]; if (Math.abs(d) > .001) { ST[k] += d * .12; mov = true } else ST[k] = TG[k] }
-      if (root && (mov || this._dirty)) { this._dirty = false; fade(partes[GRUPO.techo], ST.techoOp, ST.techoLift); fade(partes[GRUPO.ext], ST.murosOp); fade(partes['Aberturas'], Math.max(ST.murosOp, .25)) }
+      if (root && (mov || this._dirty)) { this._dirty = false; fade(capas['Techo'], ST.techoOp, ST.techoLift); fade(capas['Muros exteriores'], ST.murosOp); fade(capas['Aberturas'], Math.max(ST.murosOp, .25)) }
       O.update(); R.render(S, C) }; loop();
     return new Promise(ok => new GLTFLoader().load(url, g => {
-      root = g.scene; partes = {}; orig = {};
+      root = g.scene; partes = {}; orig = {}; capas = {};
       root.traverse(o => { if (!o.isMesh) return; o.geometry = uvCaja(o.geometry); o.geometry.computeVertexNormals(); o.castShadow = o.receiveShadow = true;
-        const nm = x => String(x || '').replace(/_/g, ' '); const ns = [nm(o.material && o.material.name)]; for (let q = o; q; q = q.parent) ns.push(nm(q.name)); const key = Object.values(GRUPO).find(k => ns.some(n => n.startsWith(k)));
-        if (key) (partes[key] = partes[key] || []).push(o); orig[o.uuid] = o.material });
+        const nm = x => String(x || '').replace(/_/g, ' '), mn = nm(o.material && o.material.name), anc = []; for (let q = o; q; q = q.parent) anc.push(nm(q.name));
+        const bajo = k => anc.some(n => n.startsWith(k));
+        // grupo para pintar (por material) y capa para transparentar (por categoría)
+        const key = mn === 'Interior blanco' ? GRUPO.int : mn === 'Piso' ? GRUPO.pis : bajo('Techo') ? GRUPO.techo : bajo('Muros exteriores') ? GRUPO.ext : null;
+        if (key) (partes[key] = partes[key] || []).push(o);
+        ['Muros exteriores', 'Techo', 'Aberturas'].forEach(k => { if (bajo(k)) (capas[k] = capas[k] || []).push(o) });
+        orig[o.uuid] = o.material });
       S.add(root); caja = new THREE.Box3().setFromObject(root); encuadre('def', false);
       const bar = document.createElement('div'); bar.className = 'v3bar';
       const grp = (t, k, ops) => `<div class="v3g"><span>${t}</span>${ops.map(([v, l]) => `<button type="button" data-${k}="${v}">${l}</button>`).join('')}</div>`;
@@ -87,7 +92,7 @@ window.SBUvisor = {
     if (!m.config || m.config.includes('int')) { const o = op('interior', cfg.int); pintar(GRUPO.int, o && !o.original ? o : null, 1.6) }
     if (!m.config || m.config.includes('pis')) { const o = op('pisos', cfg.pis); pintar(GRUPO.pis, o && !o.original ? o : null, 1.6) }
   },
-  vista(k) { encuadre(k); this.techo(k === 'int' || k === 'pis' ? 'subir' : 'ver'); if (k === 'ext' || k === 'techo') this.muros('ver') },
+  vista(k) { encuadre(k); this.techo(k === 'int' || k === 'pis' ? 'trans' : 'ver'); if (k === 'ext' || k === 'techo') this.muros('ver') },
   // techo: 'ver' | 'trans' | 'subir' | 'off' · muros: 'ver' | 'trans' (animado)
   techo(modo) {
     this._techo = modo; const h = caja ? caja.getSize(new THREE.Vector3()).y : 3;
