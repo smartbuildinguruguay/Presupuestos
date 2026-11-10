@@ -1,5 +1,5 @@
 {
- "actualizado": "2026-11-10T03:01:43.539Z",
+ "actualizado": "2026-11-10T22:36:53.805Z",
  "contacto": {
   "whatsapp": "59898526226",
   "instagram": "smartbuildinguruguay",
@@ -752,6 +752,42 @@
    "glb": "3d/galpon-deposito.glb"
   },
   {
+   "visible": true,
+   "id": "galpon",
+   "param": "galpon",
+   "linea": "comercial",
+   "nombre": "Galpón",
+   "etiqueta": "Galpón",
+   "lugar": "",
+   "uid": "",
+   "thumb": "",
+   "imagen": "",
+   "frase": "Una nave de estructura metálica que se adapta: depósito, taller o locales para alquilar. Elegí medida, cerramiento, base y baños.",
+   "usos": [
+    "renta"
+   ],
+   "m2": 150,
+   "deck": 0,
+   "dorm": 0,
+   "banos": 1,
+   "factor": 0.45,
+   "plazo": 3.5,
+   "revOriginal": "",
+   "fachadaM2": null,
+   "fachadaMat": [],
+   "incluye": [
+    "Proyecto y permiso de construcción ante la Intendencia",
+    "Estructura metálica de pórticos, sin columnas interiores",
+    "Cubierta de chapa con aislación térmica y canalones",
+    "Cerramiento de chapa prepintada o isopanel, a elección",
+    "Platea de hormigón alisado (o balasto compactado, si elegís sin platea)",
+    "Portones, puertas y ventanas según el uso",
+    "Instalación eléctrica: tablero, luminarias LED de nave y tomas",
+    "Baños terminados con su instalación sanitaria, si los elegís"
+   ],
+   "noIncluye": "No incluye terreno, conexiones de UTE, OSE y saneamiento ni habilitaciones (comercial y de Bomberos): se suman como extra."
+  },
+  {
    "id": "smartrancho",
    "visible": true,
    "nombre": "Barn",
@@ -1489,7 +1525,9 @@
    ],
    "factor": 1,
    "fachadaM2": null,
-   "fachadaMat": [],
+   "fachadaMat": [
+    "__Metal_Corrugated_Shiny_1"
+   ],
    "planta": "smartbnb",
    "pendiente": [
     "material de fachada en el 3D",
@@ -1698,6 +1736,43 @@
    ],
    "noIncluye": "No incluye terreno, el cableado desde la casa principal más allá de 15 m ni muebles sueltos.",
    "glb": "3d/pod-oficina.glb"
+  },
+  {
+   "visible": true,
+   "id": "pod",
+   "param": "pod",
+   "linea": "pods",
+   "nombre": "Pod",
+   "etiqueta": "Pod",
+   "lugar": "",
+   "uid": "",
+   "thumb": "",
+   "imagen": "",
+   "frase": "Un módulo para el fondo de tu casa: elegí la medida, el uso y las terminaciones, y miralo cambiar en 3D.",
+   "usos": [
+    "vivir",
+    "renta"
+   ],
+   "m2": 12,
+   "deck": 4,
+   "dorm": 0,
+   "banos": 0,
+   "factor": 1.15,
+   "plazo": 1.5,
+   "revOriginal": "pino",
+   "fachadaM2": null,
+   "fachadaMat": [],
+   "incluye": [
+    "Proyecto y dirección de obra",
+    "Pilotes de hormigón o tornillos según el terreno",
+    "Estructura de steel frame galvanizado",
+    "Aislación térmica en muros, piso y techo (salvo el galponcito)",
+    "Aberturas de aluminio, con DVH o vidrio simple",
+    "Instalación eléctrica: tablero, luces LED y tomas",
+    "Revestimiento interior terminado",
+    "Terminación exterior elegida"
+   ],
+   "noIncluye": "No incluye terreno, el cableado desde la casa principal más allá de 15 m ni muebles sueltos. El permiso y la conexión sanitaria se suman como extra."
   },
   {
    "visible": false,
@@ -1914,79 +1989,6 @@
    ],
    "noIncluye": "No incluye la conexión a saneamiento, pozo u OSE más allá de 15 m.",
    "glb": "3d/pod-bano.glb"
-  },
-  {
-   "visible": true,
-   "id": "pod",
-   "param": "pod",
-   "linea": "pods",
-   "nombre": "Pod",
-   "etiqueta": "Pod",
-   "lugar": "",
-   "uid": "",
-   "thumb": "",
-   "imagen": "",
-   "frase": "Un módulo para el fondo de tu casa: elegí la medida, el uso y las terminaciones, y miralo cambiar en 3D.",
-   "usos": [
-    "vivir",
-    "renta"
-   ],
-   "m2": 12,
-   "deck": 4,
-   "dorm": 0,
-   "banos": 0,
-   "factor": 1.15,
-   "plazo": 1.5,
-   "revOriginal": "pino",
-   "fachadaM2": null,
-   "fachadaMat": [],
-   "incluye": [
-    "Proyecto y dirección de obra",
-    "Pilotes de hormigón o tornillos según el terreno",
-    "Estructura de steel frame galvanizado",
-    "Aislación térmica en muros, piso y techo (salvo el galponcito)",
-    "Aberturas de aluminio, con DVH o vidrio simple",
-    "Instalación eléctrica: tablero, luces LED y tomas",
-    "Revestimiento interior terminado",
-    "Terminación exterior elegida"
-   ],
-   "noIncluye": "No incluye terreno, el cableado desde la casa principal más allá de 15 m ni muebles sueltos. El permiso y la conexión sanitaria se suman como extra."
-  },
-  {
-   "visible": true,
-   "id": "galpon",
-   "param": "galpon",
-   "linea": "comercial",
-   "nombre": "Galpón",
-   "etiqueta": "Galpón",
-   "lugar": "",
-   "uid": "",
-   "thumb": "",
-   "imagen": "",
-   "frase": "Una nave de estructura metálica que se adapta: depósito, taller o locales para alquilar. Elegí medida, cerramiento, base y baños.",
-   "usos": [
-    "renta"
-   ],
-   "m2": 150,
-   "deck": 0,
-   "dorm": 0,
-   "banos": 1,
-   "factor": 0.45,
-   "plazo": 3.5,
-   "revOriginal": "",
-   "fachadaM2": null,
-   "fachadaMat": [],
-   "incluye": [
-    "Proyecto y permiso de construcción ante la Intendencia",
-    "Estructura metálica de pórticos, sin columnas interiores",
-    "Cubierta de chapa con aislación térmica y canalones",
-    "Cerramiento de chapa prepintada o isopanel, a elección",
-    "Platea de hormigón alisado (o balasto compactado, si elegís sin platea)",
-    "Portones, puertas y ventanas según el uso",
-    "Instalación eléctrica: tablero, luminarias LED de nave y tomas",
-    "Baños terminados con su instalación sanitaria, si los elegís"
-   ],
-   "noIncluye": "No incluye terreno, conexiones de UTE, OSE y saneamiento ni habilitaciones (comercial y de Bomberos): se suman como extra."
   }
  ],
  "plantas": {
