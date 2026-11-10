@@ -5427,21 +5427,21 @@
  "lineas": [
   {
    "id": "casas",
-   "nombre": "Casas",
+   "nombre": "Residencial",
    "estado": "activa",
-   "bajada": "Para vivir, para el fin de semana o para alquilar."
+   "bajada": "Casas para vivir, para el fin de semana o para alquilar. Elegí el modelo y configuralo."
   },
   {
    "id": "comercial",
-   "nombre": "Comercial y galpones",
+   "nombre": "Comercial",
    "estado": "pronto",
-   "bajada": "Locales para alquilar, depósitos y talleres con estructura metálica y la misma estética de nave."
+   "bajada": "Galpones, depósitos, talleres y locales con estructura metálica."
   },
   {
    "id": "pods",
-   "nombre": "Pods de jardín",
+   "nombre": "Pods transportables",
    "estado": "pronto",
-   "bajada": "Un estudio, una oficina o un cuarto de huéspedes en el fondo de tu casa, listo en pocas semanas."
+   "bajada": "Un estudio, una oficina o un cuarto extra para el fondo de tu casa, listo en pocas semanas."
   }
  ],
  "extras": [
