@@ -399,9 +399,23 @@ h1,h2,h3{text-transform:none}
 .vopts .sw{grid-template-columns:minmax(0,1fr)}
 .vopts .sw button{background:rgba(245,244,240,.06);border-color:rgba(245,244,240,.25)}
 .vopts .sw button[aria-pressed="true"]{border-color:var(--cu);background:rgba(255,179,71,.14)}
+.opre{margin-top:auto;position:sticky;bottom:-12px;margin-inline:-12px;margin-bottom:-12px;padding:10px 12px;background:rgba(40,43,48,.97);border-top:1px solid rgba(245,244,240,.3);display:flex;align-items:center;justify-content:space-between;gap:10px}
+.opre small{display:block;font:500 .64rem var(--f-m);color:var(--mute);letter-spacing:.06em;text-transform:uppercase}
+.opre b{font:700 1.35rem var(--f-m)}
+.opre .btn{padding:8px 12px;font-size:.85rem;white-space:nowrap}
+.mas{margin-top:22px;border-top:1px solid var(--line)}
+.mas>summary{cursor:pointer;list-style:none;padding:14px 0;font-weight:700;display:flex;justify-content:space-between}
+.mas>summary::-webkit-details-marker{display:none}
+.mas>summary::after{content:"+";font:500 1.2rem var(--f-m)}
+.mas[open]>summary::after{content:"–"}
+.mas>.plan-wrap{margin-top:6px}
+body.inline #catalogo{padding-bottom:0}
+body.inline #catalogo .lead{visibility:hidden}
+body.inline #modelo{border-top:0;padding-top:24px}
+body.inline #d-back{display:none}
 .vwrap+.d-grid{margin-top:16px;grid-template-columns:minmax(0,1.3fr) minmax(0,1fr)}
 .vwrap+.d-grid .ficha{margin-top:0;align-self:start}
-@media (max-width:760px){.vwrap .viewer{aspect-ratio:4/3}.vopts{position:static;width:auto;background:var(--sheet);backdrop-filter:none;border:0;border-top:1.5px solid var(--ink)}.vwrap+.d-grid{grid-template-columns:minmax(0,1fr)}}
+@media (max-width:760px){.opre{display:none}.vwrap .viewer{aspect-ratio:4/3}.vopts{position:static;width:auto;background:var(--sheet);backdrop-filter:none;border:0;border-top:1.5px solid var(--ink)}.vwrap+.d-grid{grid-template-columns:minmax(0,1fr)}}
 </style>
 </head>
 <body>
@@ -503,12 +517,14 @@ h1,h2,h3{text-transform:none}
       <div class="otabs" id="otabs" role="tablist"></div>
       <div class="ohead"><b id="o-tit"></b><small id="o-sub"></small></div>
       <div class="sw" id="sw"></div>
+      <div class="opre" id="o-pre"></div>
     </aside>
   </div>
   <div class="d-grid">
     <div class="ficha" id="ficha"></div>
     <div class="price" id="price"></div>
   </div>
+  <details class="mas" id="mas" open><summary>Planta, fachada y qué incluye</summary>
   <div class="plan-wrap">
     <div><div class="blk" id="plan-blk"><h3>Planta <small id="plan-esc"></small></h3><div class="plan" id="plan"></div></div><div class="blk" id="fa-blk" hidden style="margin-top:24px"><h3>Fachada <small>dibujada del render</small></h3><div class="plan" id="fa"></div></div><div class="blk" id="cer-blk" hidden><h3>Corte <small>la cercha a la vista</small></h3><div class="plan" id="cer"></div></div></div>
     <div class="blk"><h3>Qué incluye</h3>
@@ -525,6 +541,7 @@ h1,h2,h3{text-transform:none}
       <p class="soon" id="noincl">No incluye terreno, conexiones de UTE y OSE ni muebles sueltos.</p>
     </div>
   </div>
+  </details>
 </div></section>
 
 <figure class="obra">
@@ -577,10 +594,10 @@ h1,h2,h3{text-transform:none}
 <div class="bar" id="bar"><div class="bt"><small id="bar-m"></small><b class="mono" id="bar-t"></b></div><a class="btn" data-wa="modelo" href="#">La quiero</a></div>
 
 <script src="https://static.sketchfab.com/api/sketchfab-viewer-1.12.1.js" defer></script>
-<script src="precio.js"></script>
-<script src="param.js"></script>
-<script src="texturas.js"></script>
-<script src="dibujos.js"></script>
+<script src="precio.js?v=40"></script>
+<script src="param.js?v=40"></script>
+<script src="texturas.js?v=40"></script>
+<script src="dibujos.js?v=40"></script>
 <script>
 (async function(){
 let D=null;
@@ -725,6 +742,9 @@ function fila(m,i){
 }
 const lineaOn0=id=>{const l=LINEAS.find(x=>x.id===id);return !l||l.estado==='activa'};
 let LIN=(()=>{const h=location.hash.slice(1);const m=byId[h];return m?lin(m):'casas'})();
+const soloParam=id=>{if(!lineaOn(id))return null;const ms=M.filter(m=>lin(m)===id);return ms.length===1&&ms[0].param?ms[0]:null};
+function cerrarModelo(){if(window.SBUvisor)window.SBUvisor.cerrar();$('modelo').hidden=true;cur=null;$('bar').classList.remove('on');if(location.hash)history.replaceState(null,'',location.pathname+location.search)}
+function verLinea(){const sp=soloParam(LIN);if(sp){if(!cur||cur.id!==sp.id)openModel(sp.id,false)}else if(cur&&cur.param)cerrarModelo()}
 function catalogo(){
   $('ltabs').innerHTML=LINEAS.map(l=>`<button type="button" role="tab" data-lin="${l.id}" aria-selected="${l.id===LIN}">${l.nombre}${l.estado!=='activa'?`<small>${EQUIPO?'equipo':'pronto'}</small>`:''}</button>`).join('');
   const L=LINEAS.find(l=>l.id===LIN)||LINEAS[0];
@@ -732,9 +752,11 @@ function catalogo(){
     $('grid').innerHTML=`<article class="pronto"><div class="eyebrow">Próximamente</div><h3>${L.nombre}</h3><p>${L.bajada||''}</p>
      <a class="btn cu" data-wa="pronto-${L.id}" href="#">Avisame cuando esté</a></article>`;return}
   const ms=M.filter(m=>lin(m)===L.id);
+  const sp=soloParam(L.id);document.body.classList.toggle('inline',!!sp);
+  if(sp){$('grid').innerHTML=L.estado!=='activa'?`<p class="eqnote">Estás viendo <b>${L.nombre}</b> como equipo: el público ve "Próximamente". Para volver a la vista pública: agregá <span class="mono">?publico</span> al link.</p>`:'';return}
   $('grid').innerHTML=(L.estado!=='activa'?`<p class="eqnote">Estás viendo <b>${L.nombre}</b> como equipo: el público ve "Próximamente". Para volver a la vista pública: agregá <span class="mono">?publico</span> al link.</p>`:'')+ms.map(fila).join('');
 }
-$('ltabs').addEventListener('click',e=>{const b=e.target.closest('[data-lin]');if(!b)return;LIN=b.dataset.lin;TR.ev('seccion',{detalle:'linea '+LIN});catalogo()});
+$('ltabs').addEventListener('click',e=>{const b=e.target.closest('[data-lin]');if(!b)return;LIN=b.dataset.lin;TR.ev('seccion',{detalle:'linea '+LIN});catalogo();verLinea()});
 catalogo();
 $('grid').addEventListener('click',e=>{const b=e.target.closest('[data-ph]');if(!b)return;const r=b.closest('.mrow');r.querySelector('.mr-main').src=b.dataset.ph;r.querySelectorAll('[data-ph]').forEach(x=>x.setAttribute('aria-pressed',x===b))});
 {const hm=byId[D.precio.heroModelo]||MC[0];const ms=MC.map(m=>m.m2);document.querySelector('.hero .facts span b').textContent=`${Math.min(...ms)} a ${Math.max(...ms)} m²`;}
@@ -807,7 +829,7 @@ const rgb=h=>[1,3,5].map(i=>Math.pow(parseInt(h.substr(i,2),16)/255,2.2));
 let cat='ext';
 /* visor propio (glb) para los modelos sin Sketchfab */
 let glbOn=false;
-const visor=go=>{if(window.SBUvisor)go();else{$('viewer').innerHTML='<div class="v3msg">Cargando 3D…</div>';addEventListener('sbuvisor',go,{once:true});if(!document.getElementById('v3js')){const sc=document.createElement('script');sc.type='module';sc.src='visor3d.js?v=17';sc.id='v3js';document.head.appendChild(sc)}}};
+const visor=go=>{if(window.SBUvisor)go();else{$('viewer').innerHTML='<div class="v3msg">Cargando 3D…</div>';addEventListener('sbuvisor',go,{once:true});if(!document.getElementById('v3js')){const sc=document.createElement('script');sc.type='module';sc.src='visor3d.js?v=40';sc.id='v3js';document.head.appendChild(sc)}}};
 function abrirGlb(m){
   visor(()=>{window.SBUvisor.abrir($('viewer'),m,m.glb).then(ok=>{if(!ok||cur!==m)return;glbOn=true;window.SBUvisor.aplicar(cfg,D,m);modulos3d();TR.ev('abrir_3d',{modelo:m.id,detalle:'visor propio'})})});
 }
@@ -943,13 +965,14 @@ function renderPrice(){
    <table>${p.items.map(i=>`<tr><td>${i[0]}</td><td class="n">${i[1]?usd(i[1]):'incluido'}</td></tr>`).join('')}</table>
    <a class="btn" data-wa="modelo" href="#">Lo quiero</a>
    <div class="disc">Precio llave en mano sin terreno. Se ajusta después de visitar el terreno.</div>`;
+  $('o-pre').innerHTML=`<div><small>Precio llave en mano</small><b>${usd(p.tot)}</b></div><a class="btn" data-wa="modelo" href="#">Lo quiero</a>`;
   $('bar-m').textContent=cur.param?cur.etiqueta+' · '+cur.datos[2][1]:`${cur.nombre} · ${extOf(cfg.ext).nombre}`;$('bar-t').textContent=usd(p.tot);
 }
 const fichaHTML=m=>m.datos&&m.datos.length?m.datos.map(([t,v])=>`<div><small>${t}</small><b class="mono">${v}</b></div>`).join(''):`<div><small>Cubiertos</small><b class="mono">${m.m2}</b> m²</div><div><small>Decks</small><b class="mono">${m.deck||'—'}</b>${m.deck?' m²':''}</div><div><small>Dormitorios</small><b class="mono">${m.dorm}</b></div><div><small>Baños</small><b class="mono">${m.banos}</b></div>`;
 function openModel(id,scroll=true){
   glbOn=false;if(window.SBUvisor)window.SBUvisor.cerrar();
   let m=byId[id];if(!m)return;TR.ev('ver_modelo',{modelo:id});{const sv=ls.get('cfg-'+id)||{};if(m.param){m=window.SBUparam.virtual(PB0[id],sv.p||m.p,D);const i=M.indexOf(byId[id]);if(i>=0)M[i]=m;byId[id]=m}cur=m;cfg={ext:sv.ext||m.revOriginal||'original',int:sv.int,pis:sv.pis,techo:sv.techo,extras:sv.extras||{},layout:sv.layout||{},p:m.p};cat=(catsOn()[0]||{k:'ext'}).k;}if(m.revOriginal&&cfg.ext==='original')cfg.ext=m.revOriginal;api=null;loadedUid=null;
-  $('modelo').hidden=false;
+  $('modelo').hidden=false;$('mas').open=!m.param;if(lin(m)!==LIN){LIN=lin(m);catalogo()}
   $('d-eb').textContent=[m.lugar,m.usos.map(u=>USOS[u]).join(' · ')].filter(Boolean).join(' — ');
   $('d-nom').textContent=m.nombre;$('d-frase').textContent=m.frase;
   const pen=k=>'';
@@ -976,6 +999,7 @@ io.observe($('modelo'));
 // al recargar, la página arranca de arriba (catálogo y buscador); un link compartido a un modelo sí lo abre
 {const h=location.hash.slice(1),nav=(performance.getEntriesByType('navigation')[0]||{}).type;
  if(byId[h]&&nav!=='reload'&&nav!=='back_forward')openModel(h,true);else if(byId[h]){history.scrollRestoration='manual';history.replaceState(null,'',location.pathname+location.search);scrollTo(0,0);addEventListener('load',()=>setTimeout(()=>scrollTo(0,0),0))}}
+verLinea();
 window.addEventListener('hashchange',()=>{const k=location.hash.slice(1);if(byId[k]&&(!cur||cur.id!==k))openModel(k)});
 
 })();
