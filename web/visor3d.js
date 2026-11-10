@@ -61,20 +61,31 @@ window.SBUvisor = {
     return new Promise(ok => new GLTFLoader().load(url, g => {
       root = g.scene; partes = {}; orig = {};
       root.traverse(o => { if (!o.isMesh) return; o.geometry = uvCaja(o.geometry); o.geometry.computeVertexNormals(); o.castShadow = o.receiveShadow = true;
-        const nm = x => String(x || '').replace(/_/g, ' '); const ns = [nm(o.name), nm(o.parent && o.parent.name), nm(o.material && o.material.name)]; const key = Object.values(GRUPO).find(k => ns.some(n => n.startsWith(k)));
+        const nm = x => String(x || '').replace(/_/g, ' '); const ns = [nm(o.material && o.material.name)]; for (let q = o; q; q = q.parent) ns.push(nm(q.name)); const key = Object.values(GRUPO).find(k => ns.some(n => n.startsWith(k)));
         if (key) (partes[key] = partes[key] || []).push(o); orig[o.uuid] = o.material });
-      S.add(root); caja = new THREE.Box3().setFromObject(root); encuadre('def', false); ok(true);
+      S.add(root); caja = new THREE.Box3().setFromObject(root); encuadre('def', false);
+      const bar = document.createElement('div'); bar.className = 'v3bar'; bar.innerHTML = '<span>Techo</span>' + [['ver', 'visible'], ['trans', 'transparente'], ['off', 'sacar']].map(([k, t]) => `<button type="button" data-t="${k}" aria-pressed="${k === 'ver'}">${t}</button>`).join('');
+      bar.addEventListener('click', ev => { const b = ev.target.closest('[data-t]'); if (b) this.techo(b.dataset.t) }); el.appendChild(bar); this._bar = bar; this._techo = 'ver'; ok(true);
     }, undefined, () => { el.innerHTML = '<div class="v3msg">No se pudo cargar el 3D.</div>'; ok(false) }));
   },
   aplicar(cfg, D, m) {
     if (!root) return; const ext = D.exterior.find(e => e.id === cfg.ext);
     pintar(GRUPO.ext, ext && ext.tex ? Object.assign({ _ext: 1 }, ext) : null, 2);
     const op = (lista, id) => { const L = D[lista]; return L && L.activo !== false ? (L.opciones.find(o => o.id === id) || L.opciones[0]) : null };
-    if (!m.config || m.config.includes('techo')) pintar(GRUPO.techo, op('techo', cfg.techo), 2);
+    if (!m.config || m.config.includes('techo')) { (partes[GRUPO.techo] || []).forEach(x => { if (x.userData.trans) { x.material = x.userData.op; x.userData.trans = 0 } }); pintar(GRUPO.techo, op('techo', cfg.techo), 2); if (this._techo && this._techo !== 'ver') this.techo(this._techo) }
     if (!m.config || m.config.includes('int')) { const o = op('interior', cfg.int); pintar(GRUPO.int, o && !o.original ? o : null, 1.6) }
     if (!m.config || m.config.includes('pis')) { const o = op('pisos', cfg.pis); pintar(GRUPO.pis, o && !o.original ? o : null, 1.6) }
   },
-  vista(k) { encuadre(k) },
+  vista(k) { encuadre(k); this.techo(k === 'int' || k === 'pis' ? 'trans' : 'ver') },
+  // techo: 'ver' | 'trans' | 'off' — para mirar el interior y los pisos
+  techo(modo) {
+    this._techo = modo; (partes[GRUPO.techo] || []).forEach(mesh => {
+      mesh.visible = modo !== 'off'; const m = mesh.material;
+      if (modo === 'trans') { if (!mesh.userData.trans) { mesh.userData.op = m; const t = m.clone(); t.transparent = true; t.opacity = .18; t.depthWrite = false; mesh.material = t; mesh.userData.trans = 1 } }
+      else if (mesh.userData.trans) { mesh.material = mesh.userData.op; mesh.userData.trans = 0 }
+      mesh.castShadow = modo === 'ver' });
+    if (this._bar) this._bar.querySelectorAll('[data-t]').forEach(b => b.setAttribute('aria-pressed', b.dataset.t === modo));
+  },
   get info() { return Object.fromEntries(Object.entries(partes).map(([k, v]) => [k, v.map(x => x.name)])) },
   cerrar() { cancelAnimationFrame(raf); if (this._ro) this._ro.disconnect(); if (R) { R.dispose(); R.forceContextLoss && R.forceContextLoss() } R = null; root = null; caja = null },
 };
