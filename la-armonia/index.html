@@ -55,7 +55,11 @@ main{position:relative;overflow:hidden}
 .leyenda{position:absolute;left:12px;bottom:12px;background:rgba(40,43,48,.85);padding:8px 10px;font:500 .7rem var(--m);display:grid;gap:3px;max-width:330px}
 .leyenda span{display:flex;align-items:center;gap:6px}.leyenda i{width:16px;height:4px;display:inline-block}
 .lbl{font:600 11px var(--m);color:#fff;background:rgba(30,32,36,.82);padding:2px 5px;white-space:nowrap;pointer-events:none;border-left:2px solid var(--cu)}
-.lbl.h{border-left-color:#7fd1ff}.lbl.r{border-left-color:#ff5fa2;font-size:10px}
+.lbl.h{border-left-color:#7fd1ff}
+.dia{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:rgba(40,43,48,.92);border:1px solid var(--cu);padding:7px 14px 8px;text-align:center;min-width:220px}
+.dia b{display:block;font:800 1.35rem var(--f);color:var(--cu)}.dia span{font:500 .72rem var(--m);color:var(--mute)}
+.dia i{display:block;height:4px;background:rgba(243,241,236,.15);margin-top:6px}.dia i u{display:block;height:100%;background:var(--cu)}
+@media (max-width:820px){.dia{top:auto;bottom:12px;min-width:0}}.lbl.r{border-left-color:#ff5fa2;font-size:10px}
 table{width:100%;border-collapse:collapse;font:500 .74rem var(--m);margin-top:6px}td,th{padding:3px 4px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--mute);font-weight:500}td.n,th.n{text-align:right}
 .ok{color:#8fd694}.mal{color:#ff8a7a}
 @media (max-width:820px){#app{grid-template-columns:1fr;grid-template-rows:58vh auto;height:auto}main{grid-row:1;height:58vh}aside{grid-row:2;border-right:0}#ficha{width:auto;left:12px;top:auto;bottom:12px}.leyenda{display:none}}
@@ -105,6 +109,7 @@ table{width:100%;border-collapse:collapse;font:500 .74rem var(--m);margin-top:6p
   <div class="vistas"><button class="btn" data-v="persp">3D</button><button class="btn" data-v="planta">Planta</button><button class="btn" data-v="frente">Frente</button><button class="btn" data-v="lado">Lateral</button></div>
   <div id="ficha"><button class="x" id="fx">✕</button><h3 id="fT"></h3><dl id="fD"></dl></div>
   <div class="leyenda" id="ley"></div>
+  <div class="dia" id="dia" hidden></div>
 </main>
 </div>
 
@@ -646,6 +651,22 @@ const vis = o => { for (let q = o; q; q = q.parent) if (!q.visible) return false
 function pintar(p, on) { const m = p.mesh.material; m.emissive.set(on ? '#7a4a00' : '#000000') }
 
 /* aplicar estado: capas, edificio, paso, colores, explotado, corte */
+/* cronograma: en qué día de obra va cada panel, según los días por fase de la alternativa (pestaña Costos) */
+function cronograma() {
+  const F = QA[ALT].fases, d = re => (F.find(f => re.test(f[0])) || [0, 0])[1], and = d(/andamio/i), dG = d(/^Galpón/), dE = d(/^Establo/);
+  const t0 = Math.max(.5, and / 2), nG = PANELES.filter(p => p.f.ed === 'galpon').length, nE = PANELES.length - nG;
+  return { t0, dG, dE, and, total: Math.ceil(t0 + dG + dE + and / 2),
+    dia(p) { if (!p) return 0; const i = p.orden - 1, t = p.f.ed === 'galpon' ? t0 + dG * (i / nG) : t0 + dG + dE * ((i - nG) / nE); return Math.floor(t) + 1 } };
+}
+function cartelDia() {
+  const el = $('dia'), K = cronograma(), cur = FLY ? FLY.p : SEQ[PASO - 1];
+  if (!FLY && PASO >= SEQ.length) { el.hidden = !PLAY && !el.dataset.visto; el.innerHTML = `<b>Día ${K.total} de ${K.total}</b><span>cubierta completa${K.and ? ' · desarme de andamios' : ''}</span><i><u style="width:100%"></u></i>`; return K }
+  if (!FLY && PASO === 0) { el.hidden = false; el.dataset.visto = 1; el.innerHTML = `<b>Día 1 de ${K.total}</b><span>descarga de paneles${K.and ? ' y armado de andamios' : ''}</span><i><u style="width:0"></u></i>`; return K }
+  el.dataset.visto = 1;
+  el.hidden = false; const dn = K.dia(cur), que = cur.f.ed === 'galpon' ? 'Galpón' : /N[SN]/.test(cur.f.id) ? 'Establo · núcleo' : /P[OE]/.test(cur.f.id) ? 'Establo · puntas' : 'Establo · galerías';
+  el.innerHTML = `<b>Día ${dn} de ${K.total}</b><span>${ALTS[ALT].n.split(' · ')[0]} · ${que} · panel ${cur.orden}/${SEQ.length}</span><i><u style="width:${Math.round(cur.orden / SEQ.length * 100)}%"></u></i>`;
+  return K;
+}
 function aplicar() {
   const enEd = o => ED === 'ambos' || o === ED;
   CAPAS.forEach(([k]) => G[k].visible = ON[k]);
@@ -661,7 +682,7 @@ function aplicar() {
   const x = +$('expl').value / 100 * 2.5; G.cor.position.y = x; G.pan.position.y = 2 * x; G.per.position.y = 3 * x; G.seg.position.y = 3 * x;
   const t = +$('corte').value / 100, x0 = ED === 'establo' ? OFF.establo[0] - 1 : -1, x1 = ED === 'galpon' ? GAL.L + 1 : OFF.establo[0] + EST.L + 1;
   plano.constant = t >= 1 ? 999 : x0 + (x1 - x0) * t;
-  $('pasoTxt').innerHTML = FLY ? `Subiendo ${FLY.p.orden}/${SEQ.length} · <b>${FLY.p.id}</b><br>${FLY.p.f.n} · ${FLY.p.largo.toFixed(2).replace('.', ',')} m${FLY.p.diag ? ' · corte diagonal' : ''} · ≈ ${Math.round(FLY.p.kg)} kg` : PASO >= SEQ.length ? `Cubierta completa · ${SEQ.length} piezas` : cur ? `Paso ${PASO}/${SEQ.length} · <b>${cur.id}</b><br>${cur.f.n} · ${cur.largo.toFixed(2).replace('.', ',')} m${cur.diag ? ' · corte diagonal' : ''} · ≈ ${Math.round(cur.kg)} kg` : 'Solo estructura y correas';
+  const KD = cartelDia(); $('pasoTxt').innerHTML = FLY ? `<b>Día ${KD.dia(FLY.p)} de ${KD.total}</b> · subiendo ${FLY.p.orden}/${SEQ.length} · <b>${FLY.p.id}</b><br>${FLY.p.f.n} · ${FLY.p.largo.toFixed(2).replace('.', ',')} m${FLY.p.diag ? ' · corte diagonal' : ''} · ≈ ${Math.round(FLY.p.kg)} kg` : PASO >= SEQ.length ? `Cubierta completa · ${SEQ.length} piezas` : cur ? `<b>Día ${KD.dia(cur)} de ${KD.total}</b> · paso ${PASO}/${SEQ.length} · <b>${cur.id}</b><br>${cur.f.n} · ${cur.largo.toFixed(2).replace('.', ',')} m${cur.diag ? ' · corte diagonal' : ''} · ≈ ${Math.round(cur.kg)} kg` : 'Solo estructura y correas';
 }
 
 /* vistas */
@@ -764,7 +785,7 @@ $('costos').addEventListener('click', e => {
   if (e.target.id === 'pc-reset') { Object.keys(PC).forEach(k => PV[k] = PC[k][0]); try { localStorage.removeItem('la-costos') } catch (x) {} costos() } });
 $('costos').addEventListener('input', e => { if (e.target.id !== 'gan-r' && e.target.id !== 'mkt-r') return; const id = e.target.id; if (id === 'mkt-r') PV.mkt = +e.target.value; else PV.margen = +e.target.value; try { localStorage.setItem('la-costos', JSON.stringify(PV)) } catch (x) {} const open = $('costos').querySelector('details').open; costos(); $('costos').querySelector('details').open = open; $(id).focus() });
 $('costos').addEventListener('change', e => { if (e.target.id === 'gan-r' || e.target.id === 'mkt-r') return; const i = e.target; if (i.dataset.pc) { PV[i.dataset.pc] = +i.value || 0; try { localStorage.setItem('la-costos', JSON.stringify(PV)) } catch (x) {} }
-  if (i.dataset.fd) QA[ALT].fases[+i.dataset.fd][1] = +i.value || 0; const open = $('costos').querySelector('details').open; costos(); $('costos').querySelector('details').open = open });
+  if (i.dataset.fd) { QA[ALT].fases[+i.dataset.fd][1] = +i.value || 0; aplicar() } const open = $('costos').querySelector('details').open; costos(); $('costos').querySelector('details').open = open });
 
 altTxt(); fit(); encuadre('persp'); aplicar();
 const reloj = new THREE.Clock();
