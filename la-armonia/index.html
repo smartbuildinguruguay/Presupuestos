@@ -379,21 +379,22 @@ const pc = (ed, x, y, h) => V(x + CER[ed][0], h, y + CER[ed][1]); // punto con c
 /* ---------- perfilería y remates ---------- */
 const PERF = { frontalin: ['#3d8bd4', 'Frontalín 2,15 m (alero, borde bajo)'], gotero: ['#f08a24', 'Gotero frontal superior GFS30 (borde alto)'], lateral: ['#2fa36b', 'Perfil lateral 3,00 m'],
   cumbrera: ['#d83b3b', 'Cumbrera 1,10 m'], limatesa: ['#9b5de5', 'Cumbrera en limatesas'], quiebre: ['#f2d024', 'Quiebre galería–núcleo · sin pieza BECAM (chapa plegada)'], babeta: ['#f2d024', 'Babeta contra hastial · sin pieza BECAM'] };
+const REM = []; let DEP = []; // cada remate se coloca cuando están todos los paneles de las caras de las que depende
 function remate(tipo, pts, f, h = .05) {
   const P3 = pts.map(p => p.isVector3 ? p : f.wp(p, PANEL.esp + h));
   const c = new THREE.CatmullRomCurve3(P3, false, 'catmullrom', 0);
   const o = new THREE.Mesh(new THREE.TubeGeometry(c, P3.length * 8, .06, 6, false), mat(PERF[tipo][0], { roughness: .5 }));
   let L = 0; for (let i = 1; i < P3.length; i++) L += P3[i].distanceTo(P3[i - 1]);
-  o.userData.info = { t: PERF[tipo][1], d: `${L.toFixed(2)} m` }; G.per.add(o); return L;
+  o.userData.info = { t: PERF[tipo][1], d: `${L.toFixed(2)} m · se coloca cuando están los paneles de ${DEP.join(', ')}` }; G.per.add(o); REM.push({ o, tipo, deps: DEP, L, P3 }); return L;
 }
 {
-  const g = cara('G'); remate('frontalin', [[0, GAL.P], [GAL.L, GAL.P]], g); remate('gotero', [[0, 0], [GAL.L, 0]], g); remate('lateral', [[0, 0], [0, GAL.P]], g); remate('lateral', [[GAL.L, 0], [GAL.L, GAL.P]], g);
+  const g = cara('G'); DEP = ['G']; remate('frontalin', [[0, GAL.P], [GAL.L, GAL.P]], g); remate('gotero', [[0, 0], [GAL.L, 0]], g); remate('lateral', [[0, 0], [0, GAL.P]], g); remate('lateral', [[GAL.L, 0], [GAL.L, GAL.P]], g);
   const LS = cara('LS'), LN = cara('LN'), PO = cara('PO'), PE = cara('PE'), NS = cara('NS'), NN = cara('NN'), W = EST.W, Lx = EST.L;
-  remate('frontalin', [[0, 0], [Lx, 0]], LS); remate('frontalin', [[0, W], [Lx, W]], LN); remate('frontalin', [[0, 0], [0, W]], PO); remate('frontalin', [[Lx, 0], [Lx, W]], PE);
-  remate('cumbrera', [[EST.gx, yR], [Lx - EST.gx, yR]], NS);
-  [[[0, 0], [EST.gx, EST.gy], LS], [[Lx, 0], [Lx - EST.gx, EST.gy], LS], [[0, W], [EST.gx, W - EST.gy], LN], [[Lx, W], [Lx - EST.gx, W - EST.gy], LN]].forEach(([a, b, f]) => remate('limatesa', [a, b], f));
-  remate('quiebre', [[EST.gx, EST.gy], [Lx - EST.gx, EST.gy]], NS); remate('quiebre', [[EST.gx, W - EST.gy], [Lx - EST.gx, W - EST.gy]], NN);
-  [EST.gx, Lx - EST.gx].forEach(x => remate('babeta', [NS.wp([x, EST.gy], .08), NS.wp([x, yR], .08), NN.wp([x, W - EST.gy], .08)], null));
+  DEP = ['LS']; remate('frontalin', [[0, 0], [Lx, 0]], LS); DEP = ['LN']; remate('frontalin', [[0, W], [Lx, W]], LN); DEP = ['PO']; remate('frontalin', [[0, 0], [0, W]], PO); DEP = ['PE']; remate('frontalin', [[Lx, 0], [Lx, W]], PE);
+  [[[0, 0], [EST.gx, EST.gy], LS, ['LS', 'PO']], [[Lx, 0], [Lx - EST.gx, EST.gy], LS, ['LS', 'PE']], [[0, W], [EST.gx, W - EST.gy], LN, ['LN', 'PO']], [[Lx, W], [Lx - EST.gx, W - EST.gy], LN, ['LN', 'PE']]].forEach(([a, b, f, d]) => { DEP = d; remate('limatesa', [a, b], f) });
+  DEP = ['NS', 'LS']; remate('quiebre', [[EST.gx, EST.gy], [Lx - EST.gx, EST.gy]], NS); DEP = ['NN', 'LN']; remate('quiebre', [[EST.gx, W - EST.gy], [Lx - EST.gx, W - EST.gy]], NN);
+  DEP = ['NS', 'NN']; remate('cumbrera', [[EST.gx, yR], [Lx - EST.gx, yR]], NS);
+  [EST.gx, Lx - EST.gx].forEach((x, i) => (DEP = ['NS', 'NN', i ? 'PE' : 'PO']) && remate('babeta', [NS.wp([x, EST.gy], .08), NS.wp([x, yR], .08), NN.wp([x, W - EST.gy], .08)], null));
 }
 
 /* ---------- cotas ---------- */
@@ -603,7 +604,7 @@ const ALTS = {
     pro: ['No depende del suelo: el andamio se apoya sobre tacos y bases regulables', 'Galpón con andamio en todo el perímetro: frontalines y remates del borde alto (+5,62) cómodos y seguros', 'El manitou sube todos los paneles y puede mover tramos de andamio ya armados'],
     con: ['La más cara: andamio y manitou más días', 'Se pierden unos 4 días armando, trasladando y desarmando'] },
 };
-const diasTxt = k => { const F = QA[k].fases, d = re => (F.find(f => re.test(f[0])) || [0, 0])[1], and = d(/andamio/i), dD = d(/^Descarga/), dP = d(/^Galpón/) + d(/^Establo/), c = x => String(x).replace('.', ',');
+const diasTxt = k => { const F = QA[k].fases, d = re => (F.find(f => re.test(f[0])) || [0, 0])[1], and = d(/andamio/i), dD = d(/^Descarga/), dP = F.filter(f => /^(Galpón|Establo|Remates)/.test(f[0])).reduce((t, f) => t + f[1], 0), c = x => String(x).replace('.', ',');
   return `≈ ${Math.ceil(dD + and + dP)} días: ${dD === .5 ? 'medio' : c(dD)} de descarga, ${and ? c(and) + ' de andamios y ' : ''}${c(dP)} de paneles` };
 const ACC = { A: new THREE.Group(), B: new THREE.Group(), C: new THREE.Group() }, SEG = { A: new THREE.Group(), B: new THREE.Group(), C: new THREE.Group() }, PER = { A: new THREE.Group(), B: new THREE.Group(), C: new THREE.Group() };
 Object.keys(ACC).forEach(k => { G.acc.add(ACC[k]); G.seg.add(SEG[k]); G.per2.add(PER[k]) });
@@ -622,6 +623,7 @@ const usaMani = (ed, id) => ed !== 'establo' || MANI_EST === 'todos' || /^N[SN]$
     const H = persona(PER[k], home.f.wp(home.p, PANEL.esp), null, rol); let lv = LV[home.f.id] || LV.G;
     H.lv = () => lv; H.ln = new THREE.Line(new THREE.BufferGeometry().setFromPoints([V(0, 0, 0), V(0, 0, 0)]), mLanyard); H.ln.frustumCulled = false; PER[k].add(H.ln);
     let iT = 0; ACT[k].push({ upd(cur, fly, dt) { H.o.visible = H.ln.visible = !cur || cur.f.ed === home.f.ed;
+      if (TAREA && TAREA.k === k && TAREA.tipo === 'remates') { if (TAREA.punto) { H.o.visible = true; H.mover(TAREA.punto.clone().add(V(du * 1.2, .02, 0)), dt, 3) } return }
       if (TAREA && TAREA.k === k && TAREA.punto) { H.o.visible = home.f.ed === 'galpon' || TAREA.tipo !== 'descarga' ? true : H.o.visible; H.ln.visible = false; H.mover(TAREA.punto.clone().add(V(du * 1.5, 0, -1.4 - (iT || (iT = Math.random())) )).setY(0), dt, 3); return } // en la descarga y el armado de andamios trabajan desde el piso
       let tg = home.f.wp(home.p, PANEL.esp), f = home.f;
       let nuc = false; if (cur && sirve.includes(cur.f.id)) { if (apoyo && apoyo[cur.f.id]) { nuc = true; f = apoyo[cur.f.id]; const x = cur.c.x - OFF.establo[0]; tg = f.wp([x + du, f === LS ? EST.gy - .6 : W - EST.gy + .6], PANEL.esp) }
@@ -632,7 +634,7 @@ const usaMani = (ed, id) => ed !== 'establo' || MANI_EST === 'todos' || /^N[SN]$
   const enAndamio = (k, ed, h, sirve, du, rol, ladoDe) => { const R = anillo(ed, 1.25, ladoDe); let s = R.sDe(R.lado(sirve[0]), 3 + du, 3);
     const H = persona(PER[k], R.mundo(s, h).p, null, rol);
     ACT[k].push({ upd(cur, fly, dt) { H.o.visible = !cur || cur.f.ed === ed;
-      if (TAREA && TAREA.k === k && TAREA.punto) { H.o.visible = true; H.mover(TAREA.punto.clone().add(V(0, 0, 1.2)).setY(0), dt, 3); return } // ayuda a armar o trasladar el andamio, desde el piso
+      if (TAREA && TAREA.k === k && TAREA.punto && TAREA.tipo !== 'remates') { H.o.visible = true; H.mover(TAREA.punto.clone().add(V(0, 0, 1.2)).setY(0), dt, 3); return } // ayuda a armar o trasladar el andamio, desde el piso
       if (cur && sirve.includes(cur.f.id)) s = R.acercar(s, R.objetivo(cur, du), suave(dt, 2.5));
       const ids = cur && cur.f.ed === ed ? andamiosPara(cur) : [], arriba = ids.length > 0 && ids.every(id => AND[k][id] && AND[k][id].prog > .999);
       H.mover(R.mundo(s, arriba ? h : 0).p, dt, arriba ? 2 : 6) } }) }; // sin andamio armado queda en el piso; cuando está armado, sube
@@ -678,7 +680,7 @@ const usaMani = (ed, id) => ed !== 'establo' || MANI_EST === 'todos' || /^N[SN]$
   // uno en la tijera: es una sola máquina que pasa del galpón al establo
   const enTijera = (k, tG, tE, LV) => { const H = persona(PER[k], tG.plat(), null, 'en la tijera: recibe el panel, frontalines y remates'); let lv = LV ? LV.nuc : null;
     if (LV) { H.lv = () => lv; H.ln = new THREE.Line(new THREE.BufferGeometry().setFromPoints([V(0, 0, 0), V(0, 0, 0)]), mLanyard); H.ln.frustumCulled = false; PER[k].add(H.ln) }
-    ACT[k].push({ upd(cur, fly, dt) { if (TAREA && TAREA.k === k && TAREA.punto) { if (H.ln) H.ln.visible = false; H.mover(TAREA.punto.clone().add(V(2, 0, 1.5)).setY(0), dt, 3); return }
+    ACT[k].push({ upd(cur, fly, dt) { if (TAREA && TAREA.k === k && TAREA.punto && TAREA.tipo !== 'remates') { if (H.ln) H.ln.visible = false; H.mover(TAREA.punto.clone().add(V(2, 0, 1.5)).setY(0), dt, 3); return }
       const nuc = LV && cur && /^N[SN]$/.test(cur.f.id); if (H.ln) H.ln.visible = nuc;
       if (nuc) { const Lf = cur.f.id === 'NS' ? LS : LN, x = cur.c.x - OFF.establo[0] + 1.6; H.mover(Lf.wp([x, cur.f.id === 'NS' ? EST.gy - 1 : W - EST.gy + 1], PANEL.esp), dt, 3); return } // tijera devuelta: tercero arriba, en la galería
       const t = cur && cur.f.ed === 'establo' ? tE : tG; H.mover(t.plat(), 1, H.o.position.distanceTo(t.plat()) > 8 ? 99 : 8 * dt) } }) };
@@ -687,7 +689,7 @@ const usaMani = (ed, id) => ed !== 'establo' || MANI_EST === 'todos' || /^N[SN]$
     const H = [0, 1].map(i => persona(PER[k], pl('establo', -3 - i * .8, -3.5, 0), null, i ? 'piso: corta en la mesa, alcanza los paneles y mueve el andamio' : 'piso: alcanza los paneles y mueve el andamio'));
     Q.peon = H[1].o.position;
     ACT[k].push({ upd(cur, fly, dt) {
-      if (TAREA && TAREA.k === k && TAREA.punto) { H.forEach((h, i) => h.mover(TAREA.punto.clone().add(V(i ? 1.1 : -1.1, 0, 0)).setY(0), dt, 3)); Q.libre = false; return }
+      if (TAREA && TAREA.k === k && TAREA.punto && TAREA.tipo !== 'remates') { H.forEach((h, i) => h.mover(TAREA.punto.clone().add(V(i ? 1.1 : -1.1, 0, 0)).setY(0), dt, 3)); Q.libre = false; return }
       const pa = fly ? fly.p : cur; if (!pa) return; const conMaq = !!MAQ[k][pa.f.id]; H.forEach(h => h.o.visible = !conMaq); if (conMaq) return;
       const f = pa.f, b = (fly ? fly.pts[0] : ruta(pa).pts[0]).clone().setY(0), al = /^N[SN]$/.test(f.id) ? cara(f.id === 'NS' ? 'LS' : 'LN') : f, sv = V(al.Sv.x, 0, al.Sv.z).normalize(), lat = V(sv.z, 0, -sv.x);
       Q.mesa = b.clone().addScaledVector(sv, -4).addScaledVector(lat, 5); Q.libre = !(fly && fly.seg <= 1);
@@ -774,7 +776,19 @@ function tareaPara(p) {
   const cuerpos = ops.reduce((t, o) => t + o.a.n, 0);
   return { k: ALT, ops, i: 0, t: 0, dur: Math.max(3, cuerpos * T_CUERPO), cuerpos, tipo: !quiere.length ? 'desarme' : hay.length ? 'traslado' : 'armado', punto: null };
 }
+
+/* remates: listos cuando están todos los paneles de sus caras; en la animación se colocan como una tarea propia */
+const ultimo = id => Math.max(...PANELES.filter(p => p.f.id === id).map(p => p.orden));
+const remListo = (r, paso) => r.deps.every(id => ultimo(id) <= paso);
+const remDraw = (r, t) => { const n = r.o.geometry.index ? r.o.geometry.index.count : r.o.geometry.attributes.position.count; r.o.geometry.setDrawRange(0, Math.max(0, Math.floor(n * t / 6) * 6)); r.o.visible = t > 0 };
+function remFijos() { REM.forEach(r => { r.hecho = remListo(r, PASO); remDraw(r, r.hecho ? 1 : 0) }) }
+function remPendientes() { return REM.filter(r => !r.hecho && remListo(r, PASO)) }
+function avanzarRemates(T, dt) { T.t = Math.min(1, T.t + dt * VEL / T.dur); const tot = T.lista.reduce((a, r) => a + r.L, 0); let acc = 0;
+  T.lista.forEach(r => { const a = acc / tot, b = (acc + r.L) / tot, loc = Math.max(0, Math.min(1, (T.t - a) / (b - a))); remDraw(r, loc);
+    if (T.t >= a && T.t < b) { const c = new THREE.CatmullRomCurve3(r.P3); T.punto = c.getPoint(loc); T.que = PERF[r.tipo][1].split(' (')[0] } acc += r.L });
+  if (T.t >= 1) { T.lista.forEach(r => r.hecho = true); TAREA = null; aplicar() } else if ((T.f = (T.f || 0) + 1) % 6 === 0) { cartelDia(); const el = document.getElementById('pasoTxt'); el.innerHTML = el.innerHTML.replace(/colocando [^·]*·/, `colocando ${T.que || ''} ·`) } }
 function avanzarTarea(dt) {
+  if (TAREA.tipo === 'remates') return avanzarRemates(TAREA, dt);
   if (TAREA.tipo === 'descarga') return DESC.avanzar(TAREA, dt);
   const T = TAREA; T.t = Math.min(1, T.t + dt * VEL / T.dur); let acc = 0, x = T.t * T.cuerpos;
   T.ops.forEach(o => { const loc = Math.max(0, Math.min(1, (x - acc) / o.a.n)); o.a.setProg(o.de + (o.a1 - o.de) * loc); if (x >= acc && x < acc + o.a.n) T.punto = o.a.punto(o.de > o.a1 ? 1 - loc : loc); acc += o.a.n });
@@ -790,6 +804,7 @@ function motor(dt) {
   if (TAREA) return avanzarTarea(dt);
   if (FLY) return vuelo(dt);
   if (!PLAY) return;
+  { const pend = remPendientes(); if (pend.length) { TAREA = { tipo: 'remates', k: ALT, lista: pend, t: 0, dur: Math.max(3, pend.reduce((a, r) => a + r.L, 0) * .22), punto: null }; aplicar(); return } } // terminaciones apenas se cierra cada faldón
   const p = SEQ[PASO]; if (!p) { PLAY = false; $('play').textContent = '▶ Reproducir'; aplicar(); return }
   if (PASO === 0 && !DESC_OK) { TAREA = { tipo: 'descarga', k: ALT, t: 0, dur: 26, punto: null }; aplicar(); return } // día 1: llega el camión y se descarga
   TAREA = tareaPara(p); if (TAREA) { aplicar(); return } arrancar(p); aplicar();
@@ -870,7 +885,7 @@ function pintar(p, on) { const m = p.mesh.material; m.emissive.set(on ? '#7a4a00
 /* aplicar estado: capas, edificio, paso, colores, explotado, corte */
 /* cronograma: en qué día de obra va cada panel, según los días por fase de la alternativa (pestaña Costos) */
 function cronograma() {
-  const F = QA[ALT].fases, d = re => (F.find(f => re.test(f[0])) || [0, 0])[1], and = d(/andamio/i), dG = d(/^Galpón/), dE = d(/^Establo/), dD = d(/^Descarga/);
+  const F = QA[ALT].fases, d = re => (F.find(f => re.test(f[0])) || [0, 0])[1], and = d(/andamio/i), dG = d(/^Galpón/) + d(/^Remates galpón/), dE = d(/^Establo/) + d(/^Remates establo/), dD = d(/^Descarga/);
   const t0 = dD + and * .25, nG = PANELES.filter(p => p.f.ed === 'galpon').length, nE = PANELES.length - nG;
   return { t0, dG, dE, and, total: Math.ceil(t0 + dG + dE + and * .75),
     dia(p) { if (!p) return 0; const i = p.orden - 1, t = p.f.ed === 'galpon' ? t0 + dG * (i / nG) : t0 + dG + dE * ((i - nG) / nE); return Math.floor(t) + 1 } };
@@ -878,8 +893,8 @@ function cronograma() {
 function cartelDia() { const K = cartelDia0(); resumen(K); return K }
 function cartelDia0() {
   const el = $('dia'), K = cronograma(), cur = FLY ? FLY.p : SEQ[PASO - 1];
-  if (TAREA) { const dn = PASO === 0 ? 1 : K.dia(SEQ[PASO]); el.hidden = false; el.dataset.visto = 1;
-    el.innerHTML = `<b>Día ${dn} de ${K.total}</b><span>${({ armado: 'armado de andamios', traslado: 'traslado del andamio', desarme: 'desarme del andamio', descarga: 'llega el camión · descarga con manitou' })[TAREA.tipo]} · ${Math.round(TAREA.t * 100)} %</span><i><u style="width:${Math.round(TAREA.t * 100)}%"></u></i>`; return K }
+  if (TAREA) { const dn = PASO === 0 ? 1 : SEQ[PASO] ? K.dia(SEQ[PASO]) : K.total; el.hidden = false; el.dataset.visto = 1;
+    el.innerHTML = `<b>Día ${dn} de ${K.total}</b><span>${({ armado: 'armado de andamios', traslado: 'traslado del andamio', desarme: 'desarme del andamio', descarga: 'llega el camión · descarga con manitou', remates: 'terminaciones y remates' })[TAREA.tipo]} · ${Math.round(TAREA.t * 100)} %</span><i><u style="width:${Math.round(TAREA.t * 100)}%"></u></i>`; return K }
   if (!FLY && PASO >= SEQ.length) { el.hidden = !PLAY && !el.dataset.visto; el.innerHTML = `<b>Día ${K.total} de ${K.total}</b><span>cubierta completa${K.and ? ' · desarme de andamios' : ''}</span><i><u style="width:100%"></u></i>`; return K }
   if (!FLY && PASO === 0) { el.hidden = false; el.dataset.visto = 1; el.innerHTML = `<b>Día 1 de ${K.total}</b><span>descarga de paneles${K.and ? ' y armado de andamios' : ''}</span><i><u style="width:0"></u></i>`; return K }
   el.dataset.visto = 1;
@@ -890,6 +905,7 @@ function cartelDia0() {
 function aplicar() {
   if (!PLAY && !TAREA) andamiosFijos();
   if (!(TAREA && TAREA.tipo === 'descarga')) DESC.fijo();
+  if (!(TAREA && TAREA.tipo === 'remates')) { if (PLAY) REM.forEach(r => remDraw(r, r.hecho ? 1 : 0)); else remFijos() } // reproduciendo, los remates se colocan con su tarea
   const enEd = o => ED === 'ambos' || o === ED;
   CAPAS.forEach(([k]) => G[k].visible = ON[k]);
   Object.keys(ACC).forEach(k => { ACC[k].visible = SEG[k].visible = PER[k].visible = k === ALT });
@@ -905,7 +921,7 @@ function aplicar() {
   const t = +$('corte').value / 100, x0 = ED === 'establo' ? OFF.establo[0] - 1 : -1, x1 = ED === 'galpon' ? GAL.L + 1 : OFF.establo[0] + EST.L + 1;
   plano.constant = t >= 1 ? 999 : x0 + (x1 - x0) * t;
   const quien = p => usaMani(p.f.ed, p.f.id) && MAQ[ALT][p.f.id] ? ' · <b>lo sube el manitou</b>' : ' · <b>se pasa a mano</b> desde el piso';
-  const KD = cartelDia(); $('pasoTxt').innerHTML = TAREA ? `<b>${({ armado: 'Armando andamios', traslado: 'Trasladando el andamio', desarme: 'Desarmando el andamio', descarga: 'Llegó el camión: descarga con manitou y balancín' })[TAREA.tipo]}</b> · ${TAREA.tipo === 'descarga' ? `paquete ${TAREA.paq || '…'} · 1 semirremolque, ${DESC.PAQ.length} paquetes, ≈ 4,5 t` : `${TAREA.cuerpos} cuerpos de 2,57 m`}` : FLY ? `<b>Día ${KD.dia(FLY.p)} de ${KD.total}</b> · subiendo ${FLY.p.orden}/${SEQ.length} · <b>${FLY.p.id}</b><br>${FLY.p.f.n} · ${FLY.p.largo.toFixed(2).replace('.', ',')} m${FLY.p.diag ? ' · corte diagonal' : ''} · ≈ ${Math.round(FLY.p.kg)} kg${quien(FLY.p)}` : PASO >= SEQ.length ? `Cubierta completa · ${SEQ.length} piezas` : cur ? `<b>Día ${KD.dia(cur)} de ${KD.total}</b> · paso ${PASO}/${SEQ.length} · <b>${cur.id}</b><br>${cur.f.n} · ${cur.largo.toFixed(2).replace('.', ',')} m${cur.diag ? ' · corte diagonal' : ''} · ≈ ${Math.round(cur.kg)} kg${quien(cur)}` : 'Solo estructura y correas';
+  const KD = cartelDia(); $('pasoTxt').innerHTML = TAREA ? `<b>${({ armado: 'Armando andamios', traslado: 'Trasladando el andamio', desarme: 'Desarmando el andamio', descarga: 'Llegó el camión: descarga con manitou y balancín', remates: 'Terminaciones' })[TAREA.tipo]}</b> · ${TAREA.tipo === 'remates' ? `colocando ${TAREA.que || '…'} · ${TAREA.lista.map(r => r.tipo).filter((x, i, a) => a.indexOf(x) === i).join(', ')} · ${Math.round(TAREA.lista.reduce((a, r) => a + r.L, 0))} m` : TAREA.tipo === 'descarga' ? `paquete ${TAREA.paq || '…'} · 1 semirremolque, ${DESC.PAQ.length} paquetes, ≈ 4,5 t` : `${TAREA.cuerpos} cuerpos de 2,57 m`}` : FLY ? `<b>Día ${KD.dia(FLY.p)} de ${KD.total}</b> · subiendo ${FLY.p.orden}/${SEQ.length} · <b>${FLY.p.id}</b><br>${FLY.p.f.n} · ${FLY.p.largo.toFixed(2).replace('.', ',')} m${FLY.p.diag ? ' · corte diagonal' : ''} · ≈ ${Math.round(FLY.p.kg)} kg${quien(FLY.p)}` : PASO >= SEQ.length ? `Cubierta completa · ${SEQ.length} piezas` : cur ? `<b>Día ${KD.dia(cur)} de ${KD.total}</b> · paso ${PASO}/${SEQ.length} · <b>${cur.id}</b><br>${cur.f.n} · ${cur.largo.toFixed(2).replace('.', ',')} m${cur.diag ? ' · corte diagonal' : ''} · ≈ ${Math.round(cur.kg)} kg${quien(cur)}` : 'Solo estructura y correas';
 }
 
 /* vistas */
@@ -937,11 +953,11 @@ const PC = {
   flete_pan: [450, 'Flete de paneles Colonia Nicolich → obra USD (supuesto; BMC lo cotiza aparte)'], imprev: [10, 'Imprevistos y lluvia %'], margen: [20, 'Ganancia SBU % sobre el costo'], rc: [300, 'Póliza RC por el montaje USD (supuesto)'], pm2: [0, 'Precio por m² sin IVA (0 = costo real + ganancia)'],
 };
 const QA = { // las tres con la misma cuadrilla de 5: oficial especializado (encargado arriba u operador del manitou), 2 oficiales y 2 peones; 3 en altura
-  A: { fases: [['Descarga de paneles (manitou con balancín)', .5, { oe: 1, of: 2, pe: 2 }, 0], ['Galpón · paneles y remates (manitou y tijera)', 1.5, { oe: 1, of: 2, pe: 2 }, 3], ['Establo · paneles, cortes y remates (tijera, a mano)', 6.5, { oe: 1, of: 2, pe: 2 }, 3]],
-    maq: [['Manitou: descarga y galpón (2 días seguidos)', 'm_mani_d', 2, 1], ['Tijera todo terreno (galpón y establo)', 'm_tij', 8, 1], ['Balancín para paquetes y paneles de más de 6 m', 'balancin', 1, 0]], and: [], arneses: 3, lineas: 4, personas: 5 },
-  C: { fases: [['Descarga de paneles (manitou con balancín)', .5, { oe: 1, of: 2, pe: 2 }, 0], ['Galpón · paneles y remates', 1.5, { oe: 1, of: 2, pe: 2 }, 3], ['Establo · paneles, cortes y remates', 6, { oe: 1, of: 2, pe: 2 }, 3]],
+  A: { fases: [['Descarga de paneles (manitou con balancín)', .5, { oe: 1, of: 2, pe: 2 }, 0], ['Galpón · paneles (manitou y tijera)', 1.25, { oe: 1, of: 2, pe: 2 }, 3], ['Remates galpón · frontalín, gotero y laterales', .5, { oe: 1, of: 2, pe: 2 }, 3], ['Establo · paneles y cortes (tijera, a mano)', 5.5, { oe: 1, of: 2, pe: 2 }, 3], ['Remates establo · frontalines, limatesas, quiebres, cumbrera y babetas', 1.5, { oe: 1, of: 2, pe: 2 }, 3]],
+    maq: [['Manitou: descarga y galpón (2 días seguidos)', 'm_mani_d', 2, 1], ['Tijera todo terreno (galpón y establo, con remates)', 'm_tij', 9, 1], ['Balancín para paquetes y paneles de más de 6 m', 'balancin', 1, 0]], and: [], arneses: 3, lineas: 4, personas: 5 },
+  C: { fases: [['Descarga de paneles (manitou con balancín)', .5, { oe: 1, of: 2, pe: 2 }, 0], ['Galpón · paneles', 1.25, { oe: 1, of: 2, pe: 2 }, 3], ['Remates galpón · frontalín, gotero y laterales', .5, { oe: 1, of: 2, pe: 2 }, 3], ['Establo · paneles y cortes', 5, { oe: 1, of: 2, pe: 2 }, 3], ['Remates establo · frontalines, limatesas, quiebres, cumbrera y babetas', 1.5, { oe: 1, of: 2, pe: 2 }, 3]],
     maq: [['Manitou: descarga, galpón y establo completo', 'm_mani', 8, 1], ['Tijera todo terreno: galpón, galerías y puntas (se devuelve antes del núcleo)', 'm_tij', 5, 1], ['Balancín para paquetes y paneles de más de 6 m', 'balancin', 1, 0]], and: [], arneses: 3, lineas: 4, personas: 5 },
-  B: { fases: [['Descarga de paneles (manitou con balancín)', .5, { oe: 1, of: 2, pe: 2 }, 0], ['Andamios: galpón completo; establo 4 traslados; armado y desarme', 4, { oe: 1, of: 2, pe: 2 }, 0], ['Galpón · paneles y remates', 1.5, { oe: 1, of: 2, pe: 2 }, 3], ['Establo · paneles, cortes y remates', 6, { oe: 1, of: 2, pe: 2 }, 3]],
+  B: { fases: [['Descarga de paneles (manitou con balancín)', .5, { oe: 1, of: 2, pe: 2 }, 0], ['Andamios: galpón completo; establo 4 traslados; armado y desarme', 4, { oe: 1, of: 2, pe: 2 }, 0], ['Galpón · paneles', 1.25, { oe: 1, of: 2, pe: 2 }, 3], ['Remates galpón · frontalín, gotero y laterales', .5, { oe: 1, of: 2, pe: 2 }, 3], ['Establo · paneles y cortes', 5, { oe: 1, of: 2, pe: 2 }, 3], ['Remates establo · frontalines, limatesas, quiebres, cumbrera y babetas', 1.5, { oe: 1, of: 2, pe: 2 }, 3]],
     maq: [['Manitou: descarga, galpón y establo (incluye días de traslado de andamio)', 'm_mani_d', 10, 1], ['Balancín para paquetes y paneles de más de 6 m', 'balancin', 1, 0]], and: [['galpón, toda la vuelta', 140, 1], ['establo, un lado que se traslada', 75, 3]], arneses: 3, lineas: 4, personas: 5 },
 };
 const PV = {}; Object.keys(PC).forEach(k => PV[k] = PC[k][0]); try { Object.assign(PV, JSON.parse(localStorage.getItem('la-costos-2') || '{}')) } catch (e) {}
