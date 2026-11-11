@@ -88,7 +88,7 @@ table{width:100%;border-collapse:collapse;font:500 .74rem var(--m);margin-top:6p
   <h2>Alternativa</h2>
   <div class="seg" id="alt"></div>
   <h2>Manitou en el establo</h2>
-  <div class="seg" id="mani"><button data-m="todos" aria-pressed="true">Todos los paneles</button><button data-m="nucleo">Solo el núcleo</button></div>
+  <div class="seg" id="mani"><button data-m="todos" aria-pressed="false">Todos los paneles</button><button data-m="nucleo" aria-pressed="true">Solo el núcleo</button></div>
   <h2>Paso a paso</h2>
   <div class="row"><button class="btn" id="play">▶ Reproducir</button><button class="btn" id="todo">Ver todo</button><div class="seg" id="vel"><button data-vel="1" aria-pressed="true">1×</button><button data-vel="3">3×</button><button data-vel="10">10×</button></div></div>
   <input type="range" id="paso" min="0" max="1" value="1">
@@ -517,7 +517,7 @@ const ACC = { A: new THREE.Group(), B: new THREE.Group(), C: new THREE.Group() }
 Object.keys(ACC).forEach(k => { G.acc.add(ACC[k]); G.seg.add(SEG[k]); G.per2.add(PER[k]) });
 const AND = { A: {}, B: {}, C: {} }; // andamios por alternativa (para armarlos y moverlos en la animación)
 let TAREA = null;
-let MANI_EST = 'todos'; // manitou en el establo: 'todos' los paneles o 'nucleo' solo
+let MANI_EST = 'nucleo'; // manitou en el establo: 'todos' los paneles o 'nucleo' solo
 const usaMani = (ed, id) => ed !== 'establo' || MANI_EST === 'todos' || /^N[SN]$/.test(id);                     // armado o traslado de andamio en curso
 {
   const g = cara('G'), W = EST.W, Lx = EST.L, NS = cara('NS'), NN = cara('NN'), LS = cara('LS'), LN = cara('LN');
@@ -780,7 +780,7 @@ const PC = {
   comp_of: [441.15, 'Compensaciones oficial/día $ (alim. + ropa + transp. + herram.)'], comp_pe: [397.65, 'Compensaciones peón/día $'], altura: [217.62, 'Suplemento balancín o similar/día $ (en altura)'],
   auc: [53.9, 'BPS construcción: AUC patronal % (71,8 − 17,9 personal)'], caja: [4, 'Caja de Profesionales % (obra de arquitectura)'],
   ic_pat: [12.625, 'BPS Ind. y Comercio patronal % (7,5 + 5 + 0,125)'], ic_bse: [6, 'Póliza BSE accidentes % sobre salarios (supuesto)'], ic_cargas: [19.5, 'Aguinaldo + licencia + salario vacacional %'],
-  m_mani: [300, 'Manipulador telescópico USD/día + IVA (supuesto: pedir cotización)'], m_art: [190, 'Articulada 14–16 m USD/día + IVA (ref. EMAT)'], m_tij: [140, 'Tijera todo terreno 8–10 m USD/día + IVA (ref. EMAT)'], m_flete: [350, 'Flete de cada máquina ida y vuelta USD (supuesto)'],
+  m_mani: [220, 'Manipulador telescópico USD/día + IVA (objetivo a negociar en Maldonado: pedir cotización)'], m_art: [190, 'Articulada 14–16 m USD/día + IVA (ref. EMAT)'], m_tij: [140, 'Tijera todo terreno 8–10 m USD/día + IVA (ref. EMAT)'], m_flete: [350, 'Flete de cada máquina ida y vuelta USD (supuesto)'],
   and_m2sem: [2.5, 'Andamio USD por m² y semana (supuesto)'], and_sem: [2, 'Semanas de andamio'], and_flete: [250, 'Flete de andamio USD (supuesto)'],
   epp_arnes: [110, 'Arnés + doble cola con absorbedor USD c/u (supuesto)'], epp_pers: [35, 'Casco, guantes y calzado USD por persona'], epp_linea: [380, 'Línea de vida temporal USD c/u (supuesto)'], prev: [450, 'Técnico prevencionista: plan + visitas USD (supuesto)'],
   flete_pan: [450, 'Flete de paneles Colonia Nicolich → obra USD (supuesto; BMC lo cotiza aparte)'], imprev: [10, 'Imprevistos y lluvia %'], margen: [20, 'Ganancia SBU % sobre el costo'], rc: [300, 'Póliza RC por el montaje USD (supuesto)'], mkt: [48, 'Precio de mercado: colocación USD/m² + IVA'],
@@ -793,7 +793,7 @@ const QA = {
   C: { fases: [['Galpón · paneles y remates', 1.5, { oe: 1, of: 2, pe: 2 }, 3], ['Establo · paneles, cortes y remates', 6, { oe: 1, of: 2, pe: 2 }, 3], ['Descarga de paneles', 1, { pe: 2 }, 0]],
     maq: [['Manitou: galpón y núcleo (2 períodos)', 'm_mani', 4, 2], ['Tijera todo terreno (una sola, galpón y establo)', 'm_tij', 8, 1]], and_m2: 0, arneses: 4, lineas: 4, personas: 6 },
 };
-const PV = {}; Object.keys(PC).forEach(k => PV[k] = PC[k][0]); try { Object.assign(PV, JSON.parse(localStorage.getItem('la-costos') || '{}')) } catch (e) {}
+const PV = {}; Object.keys(PC).forEach(k => PV[k] = PC[k][0]); try { Object.assign(PV, JSON.parse(localStorage.getItem('la-costos-2') || '{}')) } catch (e) {}
 let REG = 'obra';
 const f0 = n => 'USD ' + Math.round(n).toLocaleString('es-UY');
 function calc(k) {
@@ -856,9 +856,9 @@ function costos() {
 }
 $('costos').addEventListener('click', e => {
   const b = e.target.closest('[data-r],[data-ca]'); if (b) { if (b.dataset.r) REG = b.dataset.r; else { ALT = b.dataset.ca; ordenar(); $('alt').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x.dataset.a === ALT)); altTxt(); aplicar() } costos(); return }
-  if (e.target.id === 'pc-reset') { Object.keys(PC).forEach(k => PV[k] = PC[k][0]); try { localStorage.removeItem('la-costos') } catch (x) {} costos() } });
-$('costos').addEventListener('input', e => { if (e.target.id !== 'gan-r' && e.target.id !== 'mkt-r') return; const id = e.target.id; if (id === 'mkt-r') PV.mkt = +e.target.value; else PV.margen = +e.target.value; try { localStorage.setItem('la-costos', JSON.stringify(PV)) } catch (x) {} const open = $('costos').querySelector('details').open; costos(); $('costos').querySelector('details').open = open; $(id).focus() });
-$('costos').addEventListener('change', e => { if (e.target.id === 'gan-r' || e.target.id === 'mkt-r') return; const i = e.target; if (i.dataset.pc) { PV[i.dataset.pc] = +i.value || 0; try { localStorage.setItem('la-costos', JSON.stringify(PV)) } catch (x) {} }
+  if (e.target.id === 'pc-reset') { Object.keys(PC).forEach(k => PV[k] = PC[k][0]); try { localStorage.removeItem('la-costos-2') } catch (x) {} costos() } });
+$('costos').addEventListener('input', e => { if (e.target.id !== 'gan-r' && e.target.id !== 'mkt-r') return; const id = e.target.id; if (id === 'mkt-r') PV.mkt = +e.target.value; else PV.margen = +e.target.value; try { localStorage.setItem('la-costos-2', JSON.stringify(Object.fromEntries(Object.entries(PV).filter(([k, x]) => PC[k] && x !== PC[k][0])))) } catch (x) {} const open = $('costos').querySelector('details').open; costos(); $('costos').querySelector('details').open = open; $(id).focus() });
+$('costos').addEventListener('change', e => { if (e.target.id === 'gan-r' || e.target.id === 'mkt-r') return; const i = e.target; if (i.dataset.pc) { PV[i.dataset.pc] = +i.value || 0; try { localStorage.setItem('la-costos-2', JSON.stringify(Object.fromEntries(Object.entries(PV).filter(([k, x]) => PC[k] && x !== PC[k][0])))) } catch (x) {} }
   if (i.dataset.fd) { QA[ALT].fases[+i.dataset.fd][1] = +i.value || 0; aplicar() } const open = $('costos').querySelector('details').open; costos(); $('costos').querySelector('details').open = open });
 
 altTxt(); fit(); encuadre('persp'); aplicar();
