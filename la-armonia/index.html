@@ -27,7 +27,7 @@
 .rv-i{padding:8px 0 8px 2px;border-bottom:1px dashed var(--line)}.rv-i.ok .rv-l span{color:var(--mute)}
 .rv-l{display:flex;gap:9px;align-items:flex-start;font-size:.86rem;line-height:1.3;cursor:pointer}.rv-l input{width:20px;height:20px;flex:none;accent-color:var(--cu);margin:0}
 .rv-a{color:#ff6b5b;font-size:.7rem}.rv-v,.rv-n,.rv-add input{display:block;width:100%;box-sizing:border-box;margin:6px 0 0 29px;width:calc(100% - 29px);background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--ink);padding:7px 8px;font:500 .84rem var(--f)}
-.rv-n[hidden]{display:none}.rv-add{display:flex;gap:6px;margin:6px 0}.rv-add input{margin:0;width:auto;flex:1}
+.rv-n[hidden]{display:none}.sin-voz .voz{display:none}.voz.grabando{border-color:#ff4d4d;color:#ff4d4d;animation:lat 1s infinite}@keyframes lat{50%{opacity:.55}}.rv-add{display:flex;gap:6px;margin:6px 0}.rv-add input{margin:0;width:auto;flex:1}
 .rv-b{display:flex;gap:5px;align-items:center;margin:6px 0 0 29px}.btn.sm{padding:4px 8px;font-size:.72rem}.rv-q{margin-left:auto;font:500 .62rem var(--m);color:var(--mute)}
 .rv-fs{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 0 29px}.rv-fs img{width:64px;height:64px;object-fit:cover;border:1px solid var(--line);cursor:pointer}
 #rv-ver{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px}#rv-ver img{max-width:100%;max-height:82vh}#rv-ver div{display:flex;gap:8px}
@@ -1264,18 +1264,18 @@ window.__la = { PANELES, SEQ, CARAS, C, O, G };
       items.forEach(it0 => { const [tp, txt] = it0, ph = tp === 'v' ? it0[2] : '', alerta = tp === 'v' ? it0[3] : it0[2], id = it0.id, x = E.items[id] || {};
         h += `<div class="rv-i${x.ok ? ' ok' : ''}" data-id="${id}"><label class="rv-l"><input type="checkbox" data-k="ok"${x.ok ? ' checked' : ''}><span>${esc(txt)}${alerta ? ' <b class="rv-a" title="sacar foto">●</b>' : ''}</span></label>
           ${tp === 'v' ? `<input class="rv-v" data-k="v" placeholder="${esc(ph || 'anotar')}" value="${esc(x.v)}">` : ''}
-          <div class="rv-b"><button class="btn sm" data-foto="cam">Foto</button><button class="btn sm" data-foto="sub">Subir</button><button class="btn sm" data-nota>${x.n ? 'Nota ✎' : 'Nota'}</button><span class="rv-q">${x.t ? esc(x.q || '') + ' ' + hora(x.t) : ''}</span></div>
+          <div class="rv-b"><button class="btn sm" data-foto="cam">Foto</button><button class="btn sm" data-foto="sub">Subir</button><button class="btn sm" data-nota>${x.n ? 'Nota ✎' : 'Nota'}</button><button class="btn sm voz" data-voz>🎤 Dictar</button><span class="rv-q">${x.t ? esc(x.q || '') + ' ' + hora(x.t) : ''}</span></div>
           <textarea class="rv-n" data-k="n" rows="2" placeholder="nota o duda"${x.n ? '' : ' hidden'}>${esc(x.n)}</textarea>
           <div class="rv-fs">${(x.f || []).map(f => `<img data-f="${f}" alt="foto">`).join('')}</div></div>` });
       h += `</details>` });
     h += `<details class="rv-s" open><summary>Preguntas y pendientes <span class="rv-c" id="rv-pc"></span></summary>
-      <div class="rv-add"><input id="rv-pq" placeholder="Nueva pregunta o cosa para averiguar"><button class="btn" id="rv-padd">Agregar</button></div><div id="rv-pl"></div></details>`;
+      <div class="rv-add"><input id="rv-pq" placeholder="Nueva pregunta o cosa para averiguar"><button class="btn voz" data-voz-q title="Dictar la pregunta">🎤</button><button class="btn" id="rv-padd">Agregar</button></div><div id="rv-pl"></div></details>`;
     $('relevo').innerHTML = h; pregs(); progreso(); miniaturas();
   }
   function pregs() {
     const L = [...E.preg].sort((a, b) => (a.ok - b.ok) || b.c - a.c);
     $('rv-pl').innerHTML = L.length ? L.map(p => `<div class="rv-i${p.ok ? ' ok' : ''}" data-p="${p.id}"><label class="rv-l"><input type="checkbox" data-pk="ok"${p.ok ? ' checked' : ''}><span>${esc(p.txt)}</span></label>
-      <input class="rv-v" data-pk="a" placeholder="respuesta" value="${esc(p.a)}"><div class="rv-b"><span class="rv-q">${esc(p.q || '')} ${hora(p.t)}</span><button class="btn sm" data-pdel>Borrar</button></div></div>`).join('') : '<p class="nota">Todavía no hay preguntas.</p>';
+      <input class="rv-v" data-pk="a" placeholder="respuesta" value="${esc(p.a)}"><div class="rv-b"><button class="btn sm voz" data-voz-p>🎤 Dictar respuesta</button><span class="rv-q">${esc(p.q || '')} ${hora(p.t)}</span><button class="btn sm" data-pdel>Borrar</button></div></div>`).join('') : '<p class="nota">Todavía no hay preguntas.</p>';
     $('rv-pc').textContent = E.preg.length ? `${E.preg.filter(p => p.ok).length}/${E.preg.length}` : '';
   }
   function progreso() {
@@ -1283,6 +1283,19 @@ window.__la = { PANELES, SEQ, CARAS, C, O, G };
     const el = $('rv-prog'); if (el) el.textContent = `${ok}/${tot} tildados`;
   }
   function miniaturas() { document.querySelectorAll('#relevo img[data-f]').forEach(im => { if (!im.src) fotoGet(im.dataset.f).then(f => { if (f) im.src = f.data; else im.remove() }) }) }
+
+  // dictado por voz (Web Speech API): el texto se va agregando al campo mientras se habla
+  const SR = window.SpeechRecognition || window.webkitSpeechRecognition; let VOZ = null;
+  if (!SR) document.body.classList.add('sin-voz');
+  function dictar(el, btn) {
+    if (!SR) { alert('Este navegador no tiene dictado. En el celular usá el micrófono del teclado.'); return }
+    if (VOZ) { const mismo = VOZ.el === el; VOZ.r.stop(); if (mismo) return }
+    const r = new SR(); r.lang = 'es-UY'; r.continuous = true; r.interimResults = true; const base = el.value.trim(); let fin = '';
+    const poner = (extra = '') => { let t = (fin + ' ' + extra).replace(/\s+/g, ' ').trim(); if (!t) return; if (!base) t = t[0].toUpperCase() + t.slice(1); el.value = (base ? base + ' ' : '') + t };
+    r.onresult = e => { let inter = ''; for (let i = e.resultIndex; i < e.results.length; i++) { const tx = e.results[i][0].transcript; if (e.results[i].isFinal) fin += ' ' + tx; else inter += tx } poner(inter); el.dispatchEvent(new Event('input', { bubbles: true })) };
+    r.onerror = e => { if (e.error === 'not-allowed' || e.error === 'service-not-allowed') alert('Hay que permitir el micrófono para dictar') };
+    r.onend = () => { poner(); el.dispatchEvent(new Event('input', { bubbles: true })); el.dispatchEvent(new Event('change', { bubbles: true })); btn.classList.remove('grabando'); btn.textContent = btn.dataset.txt; if (VOZ && VOZ.r === r) VOZ = null };
+    btn.dataset.txt = btn.dataset.txt || btn.textContent; btn.classList.add('grabando'); btn.textContent = '■ Parar'; VOZ = { r, el }; try { r.start() } catch (x) { VOZ = null } }
   // eventos
   let fotoPara = null; const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.multiple = true; inp.hidden = true; document.body.appendChild(inp);
   inp.addEventListener('change', async () => { const id = fotoPara, x = it(id); for (const file of inp.files) { try { const data = await achicar(file), fid = id + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
@@ -1292,6 +1305,9 @@ window.__la = { PANELES, SEQ, CARAS, C, O, G };
     const R = $('relevo'); if (!R || !R.contains(e.target)) { if (e.target.id === 'rv-ver' || e.target.closest('#rv-ver')) { const v = $('rv-ver'); if (e.target.dataset.borrar) { const fid = v.dataset.f, x = it(v.dataset.i); x.f = x.f.filter(f => f !== fid); await fotoDel(fid); tocar(x); v.remove(); const im = document.querySelector(`#relevo img[data-f="${fid}"]`); if (im) im.remove() } else if (e.target === v || e.target.dataset.cerrar) v.remove() } return }
     const fila = e.target.closest('.rv-i[data-id]'), id = fila && fila.dataset.id;
     if (e.target.dataset.foto) { fotoPara = id; if (e.target.dataset.foto === 'cam') inp.setAttribute('capture', 'environment'); else inp.removeAttribute('capture'); inp.click(); return }
+    if (e.target.hasAttribute('data-voz')) { const ta = fila.querySelector('.rv-n'); ta.hidden = false; fila.querySelector('[data-nota]').textContent = 'Nota ✎'; dictar(ta, e.target); return }
+    if (e.target.hasAttribute('data-voz-q')) { dictar($('rv-pq'), e.target); return }
+    if (e.target.hasAttribute('data-voz-p')) { dictar(e.target.closest('[data-p]').querySelector('[data-pk="a"]'), e.target); return }
     if (e.target.hasAttribute('data-nota')) { const ta = fila.querySelector('.rv-n'); ta.hidden = !ta.hidden; if (!ta.hidden) ta.focus(); return }
     if (e.target.matches('img[data-f]')) { const v = document.createElement('div'); v.id = 'rv-ver'; v.dataset.f = e.target.dataset.f; v.dataset.i = id; v.innerHTML = `<img src="${e.target.src}"><div><button class="btn" data-cerrar="1">Cerrar</button><button class="btn" data-borrar="1">Borrar foto</button></div>`; document.body.appendChild(v); return }
     if (e.target.id === 'rv-padd') { const q = $('rv-pq').value.trim(); if (!q) return; E.preg.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), txt: q, a: '', ok: false, c: Date.now(), t: Date.now(), q: E.quien || '' }); $('rv-pq').value = ''; guardar(); pregs(); return }
