@@ -475,7 +475,7 @@ function manitou(k, ed, sirve) {
   const M = { tipo: 'manitou', frente: p => frente(R.objetivo(p)), ed, corte: null };
   sirve.forEach(id => { MAQ[k][id] = M });
   ACT[k].push({ upd(cur, fly, dt) {
-    const mio = cur && sirve.includes(cur.f.id) && usaMani(ed, cur.f.id), aca = cur ? cur.f.ed === ed : ed === 'galpon'; g.visible = aca && (!cur || mio) && !(TAREA && TAREA.tipo === 'descarga'); esl.o.visible = aca; // sin trabajo, el manitou no está en obra (se alquila por períodos)
+    const mio = cur && sirve.includes(cur.f.id) && usaMani(ed, cur.f.id), aca = cur ? cur.f.ed === ed : ed === 'galpon'; g.visible = !!(aca && (!cur || mio) && !(TAREA && TAREA.tipo === "descarga")); esl.o.visible = aca; // sin trabajo, el manitou no está en obra (se alquila por períodos)
     if (mio || (aca && cur && sirve.includes(cur.f.id))) s = R.acercar(s, R.objetivo(cur), suave(dt, fly ? 3.5 : 2));
     const usa = mio && fly && fly.seg <= fly.entrega; tip.lerp(usa ? fly.pos.clone().add(V(0, .55, 0)) : frente(), suave(dt, usa ? 14 : 3)); poner(!usa);
     const m = R.mundo(s), lat = V(m.n.z, 0, -m.n.x), F = frente().setY(0), engancha = usa && fly.seg === 1 && fly.pos.y < 1.9;
@@ -619,7 +619,9 @@ const usaMani = (ed, id) => ed !== 'establo' || MANI_EST === 'todos' || /^N[SN]$
   const techero = (k, home, LV, sirve, du, rol, apoyo) => {
     const H = persona(PER[k], home.f.wp(home.p, PANEL.esp), null, rol); let lv = LV[home.f.id] || LV.G;
     H.lv = () => lv; H.ln = new THREE.Line(new THREE.BufferGeometry().setFromPoints([V(0, 0, 0), V(0, 0, 0)]), mLanyard); H.ln.frustumCulled = false; PER[k].add(H.ln);
-    ACT[k].push({ upd(cur, fly, dt) { H.o.visible = H.ln.visible = !cur || cur.f.ed === home.f.ed; let tg = home.f.wp(home.p, PANEL.esp), f = home.f;
+    let iT = 0; ACT[k].push({ upd(cur, fly, dt) { H.o.visible = H.ln.visible = !cur || cur.f.ed === home.f.ed;
+      if (TAREA && TAREA.k === k && TAREA.punto) { H.o.visible = home.f.ed === 'galpon' || TAREA.tipo !== 'descarga' ? true : H.o.visible; H.ln.visible = false; H.mover(TAREA.punto.clone().add(V(du * 1.5, 0, -1.4 - (iT || (iT = Math.random())) )).setY(0), dt, 3); return } // en la descarga y el armado de andamios trabajan desde el piso
+      let tg = home.f.wp(home.p, PANEL.esp), f = home.f;
       let nuc = false; if (cur && sirve.includes(cur.f.id)) { if (apoyo && apoyo[cur.f.id]) { nuc = true; f = apoyo[cur.f.id]; const x = cur.c.x - OFF.establo[0]; tg = f.wp([x + du, f === LS ? EST.gy - .6 : W - EST.gy + .6], PANEL.esp) }
         else { f = cur.f; const ss = Math.max(.5, Math.min(cur.largo - .5, cur.sc - cur.s0 + (cur.f.id === 'G' ? -2.6 : 0))); tg = f.w(cur.uc + du, cur.s0 + ss, PANEL.esp) } }
       lv = (nuc && LV.nuc) || LV[f.id] || (f.id === 'PO' || f.id === 'PE' ? (tg.z - OFF.establo[1] < W / 2 ? LV.LS : LV.LN) : LV.G); H.mover(tg, dt, 2.5) } });
@@ -627,7 +629,11 @@ const usaMani = (ed, id) => ed !== 'establo' || MANI_EST === 'todos' || /^N[SN]$
   // en el andamio: camina por la plataforma del lado donde se trabaja, frente al panel
   const enAndamio = (k, ed, h, sirve, du, rol, ladoDe) => { const R = anillo(ed, 1.25, ladoDe); let s = R.sDe(R.lado(sirve[0]), 3 + du, 3);
     const H = persona(PER[k], R.mundo(s, h).p, null, rol);
-    ACT[k].push({ upd(cur, fly, dt) { H.o.visible = !cur || cur.f.ed === ed; if (cur && sirve.includes(cur.f.id)) s = R.acercar(s, R.objetivo(cur, du), suave(dt, 2.5)); H.mover(R.mundo(s, h).p, dt, 6) } }) };
+    ACT[k].push({ upd(cur, fly, dt) { H.o.visible = !cur || cur.f.ed === ed;
+      if (TAREA && TAREA.k === k && TAREA.punto) { H.o.visible = true; H.mover(TAREA.punto.clone().add(V(0, 0, 1.2)).setY(0), dt, 3); return } // ayuda a armar o trasladar el andamio, desde el piso
+      if (cur && sirve.includes(cur.f.id)) s = R.acercar(s, R.objetivo(cur, du), suave(dt, 2.5));
+      const ids = cur && cur.f.ed === ed ? andamiosPara(cur) : [], arriba = ids.length > 0 && ids.every(id => AND[k][id] && AND[k][id].prog > .999);
+      H.mover(R.mundo(s, arriba ? h : 0).p, dt, arriba ? 2 : 6) } }) }; // sin andamio armado queda en el piso; cuando está armado, sube
   const sobre = (k, getP, rol, dx = 0) => { const H = persona(PER[k], getP(), null, rol); ACT[k].push({ upd(cur, fly, dt) { H.mover(getP().add(V(dx, 0, 0)), dt, 8) } }) };
   const corte = (k) => { const ed = 'establo', p = pl(ed, Lx / 2, -6, 0), G0 = new THREE.Group(); G0.position.copy(p); PER[k].add(G0); const MQ = PROV[k];
     const mesa = new THREE.Mesh(new THREE.BoxGeometry(6.2, .08, 1.2), mTabla); mesa.position.y = .85; G0.add(mesa);
@@ -670,7 +676,8 @@ const usaMani = (ed, id) => ed !== 'establo' || MANI_EST === 'todos' || /^N[SN]$
   // uno en la tijera: es una sola máquina que pasa del galpón al establo
   const enTijera = (k, tG, tE, LV) => { const H = persona(PER[k], tG.plat(), null, 'en la tijera: recibe el panel, frontalines y remates'); let lv = LV ? LV.nuc : null;
     if (LV) { H.lv = () => lv; H.ln = new THREE.Line(new THREE.BufferGeometry().setFromPoints([V(0, 0, 0), V(0, 0, 0)]), mLanyard); H.ln.frustumCulled = false; PER[k].add(H.ln) }
-    ACT[k].push({ upd(cur, fly, dt) { const nuc = LV && cur && /^N[SN]$/.test(cur.f.id); if (H.ln) H.ln.visible = nuc;
+    ACT[k].push({ upd(cur, fly, dt) { if (TAREA && TAREA.k === k && TAREA.punto) { if (H.ln) H.ln.visible = false; H.mover(TAREA.punto.clone().add(V(2, 0, 1.5)).setY(0), dt, 3); return }
+      const nuc = LV && cur && /^N[SN]$/.test(cur.f.id); if (H.ln) H.ln.visible = nuc;
       if (nuc) { const Lf = cur.f.id === 'NS' ? LS : LN, x = cur.c.x - OFF.establo[0] + 1.6; H.mover(Lf.wp([x, cur.f.id === 'NS' ? EST.gy - 1 : W - EST.gy + 1], PANEL.esp), dt, 3); return } // tijera devuelta: tercero arriba, en la galería
       const t = cur && cur.f.ed === 'establo' ? tE : tG; H.mover(t.plat(), 1, H.o.position.distanceTo(t.plat()) > 8 ? 99 : 8 * dt) } }) };
   // dos en el piso (sin manitou): cortan en la mesa, alcanzan cada panel al del andamio o la tijera y arman y trasladan el andamio
@@ -883,7 +890,7 @@ function aplicar() {
   CAPAS.forEach(([k]) => G[k].visible = ON[k]);
   Object.keys(ACC).forEach(k => { ACC[k].visible = SEG[k].visible = PER[k].visible = k === ALT });
   const cur = FLY ? FLY.p : SEQ[PASO - 1];
-  PANELES.forEach(p => { p.mesh.visible = enEd(p.f.ed) && (p.orden <= PASO || (FLY && p === FLY.p)); const m = p.mesh.material;
+  PANELES.forEach(p => { p.mesh.visible = !!(enEd(p.f.ed) && (p.orden <= PASO || (FLY && p === FLY.p))); const m = p.mesh.material;
     const col = COLOR === 'cara' ? p.f.col : COLOR === 'corte' ? (p.diag ? '#d8742f' : p.ancho < .99 ? '#e8c03a' : '#8f969c') : '#ffffff';
     m.color.set(col); m.map = COLOR === 'real' ? TEX : null; m.needsUpdate = true; m.emissive.set(p === cur && (FLY || PASO < SEQ.length) ? '#8a4b00' : p === sel ? '#7a4a00' : '#000000') });
   // edificio: ocultar lo que no corresponde por posición
@@ -1058,7 +1065,7 @@ const reloj = new THREE.Clock();
   motor(dt); const cur = FLY ? FLY.p : TAREA ? null : (PASO > 0 && PASO < SEQ.length ? SEQ[PASO - 1] : null), fly = FLY ? { pos: FLY.pos, seg: FLY.seg || 1, entrega: FLY.entrega, p: FLY.p, pts: FLY.pts } : null;
   ACT[ALT].forEach(a => a.upd(cur && (ED === 'ambos' || cur.f.ed === ED) ? cur : null, fly, dt));
   camaraAuto(dt); O.update(); R.render(S, C); L2.render(S, C) })();
-window.__la = { PANELES, SEQ, CARAS, C, O };
+window.__la = { PANELES, SEQ, CARAS, C, O, G };
 </script>
 <script>
 /* ================= Relevo técnico en obra (independiente del 3D) =================
