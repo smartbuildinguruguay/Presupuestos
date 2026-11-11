@@ -18,6 +18,9 @@
 .res{margin:10px 0;border:1px solid var(--line);padding:8px 10px;background:rgba(255,255,255,.03)}.res .rh{font:700 .82rem var(--f);margin-bottom:5px}.res .rh span{display:block;font:500 .66rem var(--m);color:var(--mute);margin-top:2px}
 .res dl{display:grid;grid-template-columns:1fr auto;gap:5px 10px;margin:0;align-items:baseline}.res dt{color:var(--mute);font:500 .7rem var(--m)}.res dd{margin:0;font:600 .8rem var(--m);text-align:right;white-space:nowrap}.res dd small{display:block;font-weight:500}.res .g{color:#8fd694}.res small{font:500 .62rem var(--m);color:var(--mute)}.res .bar{height:3px;background:rgba(243,241,236,.15);margin:6px 0 3px}.res .bar u{display:block;height:100%;background:var(--cu)}
 .reco ul{margin:6px 0 0;padding-left:18px;font-size:.78rem;line-height:1.4}.reco li{margin-bottom:5px}.reco a{color:var(--cu)}
+.tabs .ing{display:none}body.ing .tabs .ing{display:inline-block}body.ing .tabs [data-t="montaje"],body.ing .tabs [data-t="costos"],body.ing .tabs [data-t="relevo"]{display:none}body.ing .dia{display:none!important}body.ing .tabs{flex-wrap:wrap}body.ing .tabs button{order:5}body.ing .tabs [data-t="guia"]{order:0}body.ing .tabs [data-t="capas"]{order:1}body.ing .tabs [data-t="geo"]{order:2}body.ing .tabs [data-t="lista"]{order:3}body.ing .tabs [data-t="rema"]{order:4}body.ing .tabs [data-t="piezas"]{order:6}
+.it{width:100%;border-collapse:collapse;font:500 .74rem var(--m);margin:6px 0 10px}.it th{text-align:left;color:var(--mute);font-weight:500;border-bottom:1px solid var(--line);padding:4px 2px}.it td{padding:4px 2px;border-bottom:1px dashed var(--line)}.it td.n,.it th.n{text-align:right}.it tr.cl{cursor:pointer}.it tr.cl:hover td{background:rgba(255,179,71,.12)}.it tr.cara td{color:var(--cu);font-weight:700;border-bottom:1px solid var(--line);padding-top:10px}
+.ingtx{font-size:.83rem;line-height:1.45}.ingtx h3{font:700 .9rem var(--f);margin:14px 0 4px}.ingtx ol,.ingtx ul{padding-left:18px;margin:4px 0}.ingtx li{margin-bottom:5px}.ingtx .k{display:inline-block;border:1px solid var(--line);padding:0 5px;font:600 .72rem var(--m)}
 .rv-top{display:flex;justify-content:space-between;align-items:center;gap:8px;font:500 .75rem var(--m);color:var(--mute)}.rv-top select{background:var(--panel);color:var(--ink);border:1px solid var(--line);padding:4px;font:500 .8rem var(--f)}
 .rv-prog{color:var(--cu)}.rv-acc{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
 .rv-s{border-top:1px solid var(--line);padding:6px 0}.rv-s summary{cursor:pointer;font:700 .9rem var(--f);padding:6px 0}.rv-c{float:right;font:500 .72rem var(--m);color:var(--cu)}
@@ -91,7 +94,7 @@ table{width:100%;border-collapse:collapse;font:500 .74rem var(--m);margin-top:6p
   <h1>La Armonía · cubierta</h1>
   <p class="sub">Hiansa-Panel 5G 30 mm Gris Pizarra · galpón 1 agua y establo (núcleo 2 aguas + galerías 4 aguas) · propuesta BMC v5 del 30/10/2026</p>
 
-  <div class="tabs" id="tabs"><button data-t="capas" aria-selected="true">Capas</button><button data-t="montaje">Montaje</button><button data-t="costos">Costos</button><button data-t="piezas">Piezas</button><button data-t="relevo">Relevo</button></div>
+  <div class="tabs" id="tabs"><button data-t="capas" aria-selected="true">Capas</button><button data-t="montaje">Montaje</button><button data-t="costos">Costos</button><button data-t="piezas">Piezas</button><button data-t="relevo">Relevo</button><button data-t="guia" class="ing">Cómo usar</button><button data-t="geo" class="ing">Geometría</button><button data-t="lista" class="ing">Paneles</button><button data-t="rema" class="ing">Remates</button><button data-t="metodo" class="ing">Montaje</button><button data-t="verif" class="ing">A verificar</button></div>
 
   <section data-p="capas">
   <h2>Qué ver</h2>
@@ -133,6 +136,7 @@ table{width:100%;border-collapse:collapse;font:500 .74rem var(--m);margin-top:6p
   <div class="warn"><b>De dónde sale cada cosa.</b> Paneles y remates: propuesta BMC v5. Pilares, postes, muros, alturas y orientación: láminas de replanteo (cero de obra de cada edificio). Las medias cerchas de la galería y las cerchas del núcleo cada ~0,95 m salen de los cortes. Las secciones de madera y acero y la separación de correas son supuestas: hay que confirmarlas con el cálculo y la tabla de autoportancia de Hiansa. La ubicación entre el galpón y el establo es ilustrativa.</div>
   </section>
   <section data-p="relevo" hidden><div id="relevo"></div></section>
+  <section data-p="guia" hidden></section><section data-p="geo" hidden></section><section data-p="lista" hidden></section><section data-p="rema" hidden></section><section data-p="metodo" hidden></section><section data-p="verif" hidden></section>
 </aside>
 <main>
   <canvas id="c"></canvas>
@@ -873,6 +877,13 @@ function planoPanel(p) {
 }
 function mostrarPlano(p) { const el = $('plano'); if (!p) { el.style.display = 'none'; return } el.innerHTML = planoPanel(p); el.style.display = 'block';
   const f = $('ficha'); if (innerWidth <= 820) { el.style.top = 'auto'; el.style.bottom = (f.offsetHeight + 20) + 'px' } else { el.style.bottom = 'auto'; el.style.top = (f.offsetTop + f.offsetHeight + 8) + 'px' } }
+function abrirPanel(p, enfocar) { if (sel) pintar(sel, false); sel = p; pintar(p, true);
+    $('fT').textContent = `Panel ${p.id}`;
+    $('fD').innerHTML = [['Cara', p.f.n], ['Orden', `${p.orden} de ${SEQ.length}`], ['Largo', p.largo.toFixed(2).replace('.', ',') + ' m'], ['Ancho', p.ancho.toFixed(2).replace('.', ',') + ' m'],
+      ['Corte', p.diag ? 'diagonal (limatesa)' : p.ancho < .99 ? 'longitudinal (tira)' : 'recto'], ['Superficie', p.area.toFixed(2).replace('.', ',') + ' m²'], ['Peso aprox.', Math.round(p.kg) + ' kg'],
+      ['Personas', p.kg > 60 ? '4 a 5, o con máquina' : p.kg > 30 ? '2' : '1 o 2']].map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join('');
+  $('ficha').style.display = 'block'; document.body.classList.add('fic'); mostrarPlano(p);
+  if (enfocar) { const w = p.mesh.localToWorld(p.c.clone()); O.target.copy(w); C.position.copy(w).add(V(6, 7, 9)); O.update() } }
 /* ficha al tocar */
 const ray = new THREE.Raycaster(), pt = new THREE.Vector2(); let down = null;
 cv.addEventListener('pointerdown', e => down = [e.clientX, e.clientY]);
@@ -882,12 +893,8 @@ cv.addEventListener('pointerup', e => {
   const hs = ray.intersectObjects(S.children, true).filter(h => h.object.isMesh && h.object.visible && vis(h.object) && plano.distanceToPoint(h.point) >= 0);
   const h = hs.find(h => h.object.userData.P || h.object.userData.info); if (sel) { pintar(sel, false); sel = null }
   if (!h) { $('ficha').style.display = 'none'; mostrarPlano(null); document.body.classList.remove('fic'); return }
-  const o = h.object; if (o.userData.P) { const p = o.userData.P; sel = p; pintar(p, true);
-    $('fT').textContent = `Panel ${p.id}`;
-    $('fD').innerHTML = [['Cara', p.f.n], ['Orden', `${p.orden} de ${SEQ.length}`], ['Largo', p.largo.toFixed(2).replace('.', ',') + ' m'], ['Ancho', p.ancho.toFixed(2).replace('.', ',') + ' m'],
-      ['Corte', p.diag ? 'diagonal (limatesa)' : p.ancho < .99 ? 'longitudinal (tira)' : 'recto'], ['Superficie', p.area.toFixed(2).replace('.', ',') + ' m²'], ['Peso aprox.', Math.round(p.kg) + ' kg'],
-      ['Personas', p.kg > 60 ? '4 a 5, o con máquina' : p.kg > 30 ? '2' : '1 o 2']].map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join('');
-  } else { $('fT').textContent = o.userData.info.t; $('fD').innerHTML = `<dt></dt><dd style="font-family:var(--f)">${o.userData.info.d}</dd>` }
+  const o = h.object; if (o.userData.P) { abrirPanel(o.userData.P); return }
+  { $('fT').textContent = o.userData.info.t; $('fD').innerHTML = `<dt></dt><dd style="font-family:var(--f)">${o.userData.info.d}</dd>` }
   $('ficha').style.display = 'block'; document.body.classList.add('fic'); mostrarPlano(o.userData.P || null);
 });
 $('fx').onclick = () => { $('ficha').style.display = 'none'; mostrarPlano(null); document.body.classList.remove('fic'); if (sel) { pintar(sel, false); sel = null } };
@@ -1063,6 +1070,56 @@ $('costos').addEventListener('change', e => { if (e.target.id === 'gan-r' || e.t
   if (i.dataset.fd) { QA[ALT].fases[+i.dataset.fd][1] = +i.value || 0; aplicar() } const open = $('costos').querySelector('details').open; costos(); $('costos').querySelector('details').open = open });
 
 altTxt(); fit(); encuadre('persp'); aplicar();
+
+/* ================= visor técnico para el ingeniero (?ingeniero) ================= */
+const ING = /ingeniero/.test(location.search + location.hash);
+if (ING) {
+  document.body.classList.add('ing'); document.title = 'La Armonía · visor técnico de cubierta';
+  document.querySelector('aside h1').textContent = 'La Armonía · visor técnico';
+  ['acc', 'seg', 'per2'].forEach(k => ON[k] = false); document.querySelectorAll('#capas [data-k]').forEach(b => { if (b.dataset.k in ON) b.checked = ON[b.dataset.k] });
+  const c1 = x => String(Math.round(x * 100) / 100).replace('.', ','), pct = f => Math.round(f.m * 100) + ' %';
+  const caras = CARAS.map(f => { const L = PANELES.filter(p => p.f === f); return { f, n: L.length, m2: L.reduce((t, p) => t + p.area, 0), diag: L.filter(p => p.diag).length, tira: L.filter(p => !p.diag && p.ancho < .99).length, lmax: Math.max(...L.map(p => p.largo)) } });
+  const sec = id => document.querySelector(`section[data-p="${id}"]`);
+  sec('guia').innerHTML = `<div class="ingtx"><h2>Cómo usar este visor</h2>
+    <p>Es el modelo 3D de la cubierta de paneles Hiansa 5G 30 mm de La Armonía (galpón y establo), armado desde el replanteo de obra y la propuesta BMC v5. Está todo colocado: paneles, correas, estructura y remates.</p>
+    <h3>Mover el modelo</h3><ul><li><b>Girar:</b> arrastrar con el mouse o un dedo.</li><li><b>Acercar:</b> rueda del mouse o pellizcar.</li><li><b>Desplazar:</b> clic derecho y arrastrar, o dos dedos.</li><li>Arriba a la izquierda: vistas <span class="k">3D</span> <span class="k">Planta</span> <span class="k">Frente</span> <span class="k">Lateral</span>.</li></ul>
+    <h3>Ver el detalle de un panel</h3><ol><li>Tocá cualquier panel en el 3D (o una fila en la pestaña <b>Paneles</b>).</li><li>Arriba a la derecha sale su ficha: cara, largo, ancho, superficie, peso, tipo de corte.</li><li>Debajo sale el <b>plano de corte</b>: el panel que manda BMC, la pieza terminada, cada corte en rojo con su largo, el ángulo y los dos puntos a marcar medidos desde el alero.</li><li>La <span class="k">✕</span> cierra la ficha. Tocando estructura, correas o remates sale su descripción.</li></ol>
+    <h3>Pestañas</h3><ul><li><b>Capas:</b> prender y apagar estructura, correas, paneles, remates, cotas y replanteo; ver un solo edificio; corte longitudinal; vista explotada; colores por cara o por recortes.</li><li><b>Geometría:</b> alturas, pendientes, superficies y correas por cara.</li><li><b>Paneles:</b> las 121 piezas con medidas y cortes.</li><li><b>Remates:</b> metros por pieza y las que no tienen pieza estándar.</li><li><b>Montaje:</b> método y secuencia previstos.</li><li><b>A verificar:</b> lo que necesitamos que confirme el cálculo.</li><li><b>BMC:</b> control de piezas contra la propuesta.</li></ul>
+    <p style="color:var(--mute);font-size:.75rem">Visor completo con animación del montaje y costos: <a href="./" style="color:var(--cu)">abrir</a>.</p></div>`;
+  sec('geo').innerHTML = `<h2>Geometría</h2><div class="ingtx"><p><b>Galpón:</b> 1 agua al 25 %, planta ${c1(GAL.L)} × ${c1(GAL.P)} m, alero bajo +${c1(GAL.z0)} (norte) y borde alto +${c1(GAL.z1)} (sur, portones). Pórticos reticulados de acero.</p>
+    <p><b>Establo:</b> planta ${c1(EST.L)} × ${c1(EST.W)} m. Galerías al 20 % (alero +${c1(EST.zP)}, quiebre +${c1(EST.zN)}), puntas al 25 % y núcleo a 2 aguas al 91 % (cumbrera +${c1(EST.zC)}). Cerchas y medias cerchas de madera tratada.</p></div>
+    <table class="it"><tr><th>Cara</th><th class="n">Pend.</th><th class="n">Pzas</th><th class="n">m²</th><th class="n">Largo máx.</th><th class="n">Diag.</th><th class="n">Tiras</th></tr>${caras.map(c => `<tr><td>${c.f.n}</td><td class="n">${pct(c.f)}</td><td class="n">${c.n}</td><td class="n">${c1(c.m2)}</td><td class="n">${c1(c.lmax)}</td><td class="n">${c.diag}</td><td class="n">${c.tira}</td></tr>`).join('')}
+    <tr><td><b>Total</b></td><td></td><td class="n"><b>${PANELES.length}</b></td><td class="n"><b>${c1(PANELES.reduce((t, p) => t + p.area, 0))}</b></td><td></td><td class="n">${PANELES.filter(p => p.diag).length}</td><td class="n">${PANELES.filter(p => !p.diag && p.ancho < .99).length}</td></tr></table>
+    <div class="ingtx"><h3>Correas (supuestas)</h3><p>Separación aproximada en planta: galpón ≈ 1,35 m, galerías ≈ 1,10 m, puntas ≈ 1,05 m, núcleo ≈ 0,85 m. Secciones y separación reales a confirmar con el cálculo y la tabla de autoportancia de Hiansa para 30 mm.</p>
+    <h3>Panel</h3><p>Hiansa-Panel 5G 30 mm, ancho útil 1.000 mm, ≈ 10,5–11,2 kg/m². Largo máximo de pieza: 8,51 m (galpón).</p></div>`;
+  let lis = '<h2>Paneles</h2><p class="nota">Tocá una fila para verla en el 3D con su plano de corte.</p><table class="it"><tr><th>Pieza</th><th class="n">Largo</th><th class="n">Ancho</th><th class="n">m²</th><th>Corte</th></tr>';
+  CARAS.forEach(f => { lis += `<tr class="cara"><td colspan="5">${f.n} · ${pct(f)}</td></tr>` + PANELES.filter(p => p.f === f).map(p => `<tr class="cl" data-pid="${p.id}"><td>${p.id}</td><td class="n">${c1(p.largo)}</td><td class="n">${c1(p.ancho)}</td><td class="n">${c1(p.area)}</td><td>${p.diag ? 'diagonal' : p.ancho < .99 ? 'tira' : '—'}</td></tr>`).join('') });
+  sec('lista').innerHTML = lis + '</table>';
+  sec('lista').addEventListener('click', e => { const tr = e.target.closest('[data-pid]'); if (tr) abrirPanel(PANELES.find(p => p.id === tr.dataset.pid), true) });
+  const grp = {}; REM.forEach(r => { const g = grp[r.tipo] || (grp[r.tipo] = { n: 0, L: 0 }); g.n++; g.L += r.L });
+  sec('rema').innerHTML = `<h2>Remates</h2><table class="it"><tr><th>Pieza</th><th class="n">Tramos</th><th class="n">Metros</th></tr>${Object.entries(grp).map(([t, g]) => `<tr><td>${PERF[t][1]}</td><td class="n">${g.n}</td><td class="n">${c1(g.L)}</td></tr>`).join('')}<tr><td><b>Total</b></td><td></td><td class="n"><b>${c1(REM.reduce((t, r) => t + r.L, 0))}</b></td></tr></table>
+    <div class="ingtx"><p>Se colocan a medida que se cierra cada faldón: frontalines al terminar cada cara, limatesas cuando están la galería y la punta que unen, quiebres con su núcleo, y cumbrera y babetas al final.</p><p><b>Sin pieza estándar BECAM:</b> el quiebre galería–núcleo y las babetas contra el hastial van en chapa plegada a medida; hay que definir el detalle y pedirlas antes.</p></div>`;
+  sec('metodo').innerHTML = `<h2>Montaje previsto</h2><div class="ingtx"><ol>
+    <li><b>Descarga:</b> 1 semirremolque, 15 paquetes de 9 paneles (≈ 4,5 t), con manitou y balancín (Hiansa lo exige en paquetes de más de 6 m, eslingas cada 4 m como máximo). Acopio sobre tacos, máximo 3 de alto, con pendiente.</li>
+    <li><b>Líneas de vida</b> temporales antes del primer panel de cada edificio: borde alto del galpón; cumbrera y galerías del establo.</li>
+    <li><b>Galpón:</b> paneles de 8,51 m izados con manitou y balancín, de una punta a la otra; frontalín, gotero y laterales al cerrar el faldón.</li>
+    <li><b>Establo:</b> galerías y puntas primero; limatesas al cerrar cada par de caras; núcleo al 91 % desde la galería ya colocada, con escalera de techo y amarrados a la línea de cumbrera; quiebres, cumbrera y babetas al final.</li>
+    <li><b>Fijación (Hiansa):</b> 2 tornillos por panel en cada correa como mínimo, en la cresta, 30 mm de penetración; uno más al centro en alero y cumbrera.</li></ol>
+    <h3>Alternativas de acceso en estudio</h3><ul>${Object.values(ALTS).map(a => `<li><b>${a.n}</b>: ${a.crew}</li>`).join('')}</ul>
+    <h3>Seguridad (Decreto 125/014)</h3><p>Arnés anclado por encima de 2 m; operadores de tijera y manitou capacitados; plan de seguridad por trabajos a más de 5 m (borde alto del galpón +5,62).</p></div>`;
+  sec('verif').innerHTML = `<h2>A verificar con el cálculo</h2><div class="ingtx"><ol>
+    <li><b>Correas:</b> sección, material y separación reales contra la autoportancia de Hiansa 30 mm (galpón ≈ 1,35 m entre correas).</li>
+    <li><b>Fijaciones:</b> tornillo, largo y cantidad por correa en acero (galpón) y en madera tratada (establo); penetración mínima 30 mm.</li>
+    <li><b>Viento:</b> succión en bordes, alero y cumbrera en zona rural expuesta; si hacen falta más tornillos o grapas.</li>
+    <li><b>Núcleo al 91 %:</b> fijación y comportamiento del panel en pendiente fuerte; si la galería admite el tránsito durante el montaje.</li>
+    <li><b>Líneas de vida:</b> puntos de anclaje en la cumbrera del establo y en el borde alto del galpón, y su carga.</li>
+    <li><b>Quiebre y babetas:</b> detalle de chapa plegada y sellado donde no hay pieza estándar.</li>
+    <li><b>Estructura:</b> escuadra, nivel de correas y estado de cerchas antes del montaje; las secciones del modelo son supuestas.</li></ol>
+    <p style="color:var(--mute);font-size:.75rem">Cualquier observación, marcala sobre el modelo: tocá la pieza y mandanos el ID (por ejemplo LS-04).</p></div>`;
+  document.querySelector('#tabs [data-t="piezas"]').textContent = 'BMC';
+  aplicar(); document.querySelector('#tabs [data-t="guia"]').click();
+}
+
 
 
 /* grabación del modo Filmar: el 3D más el cartel del día, compuestos en un canvas que se graba y se descarga al detener */

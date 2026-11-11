@@ -5,6 +5,7 @@ Todo junto en un solo repo, ordenado por obra. Portada: https://smartbuildinguru
 ## La Armonía
 
 - [Montaje de cubierta en 3D](la-armonia/) — galpón y establo con paneles Hiansa 5G 30 mm: estructura, paneles, remates, replanteo, animación del montaje, alternativas y costos. Pestaña **Relevo** para la visita a obra: ticks, fotos, notas y preguntas (se comparte exportando e importando el archivo).
+- [Visor técnico para el ingeniero](la-armonia/ingeniero/) — versión resumida sin animación ni costos: guía de uso, geometría, lista de paneles con plano de corte, remates, método de montaje y puntos a verificar.
 
 ## Casa Sayago
 
