@@ -1,7 +1,7 @@
 // Service worker de la app La Armonía (alcance: /Presupuestos/la-armonia/)
 // Páginas y archivos de la obra: primero la red (para ver siempre lo último del GitHub),
 // si no hay señal se usa la copia guardada. Librerías y fuentes externas: copia guardada primero.
-const V = 'armonia-v1';
+const V = 'armonia-v2';
 const PRE = [
   './',
   './?ingeniero',
