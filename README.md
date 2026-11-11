@@ -4,6 +4,7 @@ Todo junto en un solo repo, ordenado por obra. Portada: https://smartbuildinguru
 
 ## La Armonía
 
+- [App para el celular](la-armonia/app/) — se instala en Android o iPhone desde el navegador; junta el 3D, el visor del ingeniero y la carpeta PDF, muestra las novedades y archivos de `la-armonia/` en GitHub y guarda copia para usar sin señal en obra.
 - [Montaje de cubierta en 3D](la-armonia/) — galpón y establo con paneles Hiansa 5G 30 mm: estructura, paneles, remates, replanteo, animación del montaje, alternativas y costos. Pestaña **Relevo** para la visita a obra: ticks, fotos, notas y preguntas (se comparte exportando e importando el archivo).
 - [Visor técnico para el ingeniero](la-armonia/ingeniero/) — reproduce los tres métodos de montaje con navegador por días y comparación, y permite dejar comentarios en cualquier momento (se mandan por WhatsApp o mail con link a la escena).
 - [Carpeta de obra para imprimir (PDF)](la-armonia/La-Armonia-carpeta-de-obra-cubierta.pdf) — resumen, relevo para lapicera, plantas con cotas acumuladas, tabla de cortes, propuesta BMC y replanteo.

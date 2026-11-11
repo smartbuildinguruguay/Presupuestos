@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<title>La Armonía · SBU</title>
+<meta name="theme-color" content="#2f3237">
+<meta name="description" content="App de obra La Armonía: montaje de cubierta en 3D, relevo, visor técnico, carpeta de obra y novedades del GitHub.">
+<link rel="manifest" href="manifest.webmanifest">
+<link rel="icon" href="icon-192.png">
+<link rel="apple-touch-icon" href="apple-touch-icon.png">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="La Armonía">
+<style>
+:root{--bg:#2f3237;--card:#3a3e44;--ink:#f3f1ec;--mute:#b9bcc1;--cu:#ffb347;--line:rgba(243,241,236,.14);--ok:#8fd694;--f:system-ui,-apple-system,'Segoe UI',Roboto,sans-serif;--m:ui-monospace,'SF Mono',Menlo,monospace}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;background:var(--bg);color:var(--ink);font:15px/1.45 var(--f)}
+body{padding:env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left)}
+main{max-width:640px;margin:0 auto;padding:18px 16px 40px}
+header{display:flex;align-items:center;gap:12px;margin:6px 0 18px}
+header img{width:46px;height:46px;border-radius:11px}
+header h1{font-size:1.25rem;margin:0;line-height:1.15}
+header p{margin:2px 0 0;color:var(--mute);font-size:.8rem}
+#estado{margin-left:auto;font:600 .68rem var(--m);padding:4px 8px;border-radius:99px;border:1px solid var(--line);color:var(--mute);white-space:nowrap}
+#estado.on{color:var(--ok);border-color:rgba(143,214,148,.4)}
+.grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.btn{display:flex;flex-direction:column;gap:4px;padding:14px;background:var(--card);border:1px solid var(--line);border-radius:14px;color:var(--ink);text-decoration:none;font:inherit;text-align:left;cursor:pointer;min-height:96px}
+.btn b{font-size:.98rem}.btn span{color:var(--mute);font-size:.76rem;line-height:1.3}
+.btn.main{grid-column:1/-1;border-color:rgba(255,179,71,.5);background:linear-gradient(135deg,rgba(255,179,71,.16),var(--card))}
+.btn i{font-style:normal;font-size:1.3rem}
+h2{font-size:.78rem;text-transform:uppercase;letter-spacing:.08em;color:var(--mute);margin:26px 0 8px;display:flex;align-items:center;gap:8px}
+h2 button{margin-left:auto;background:none;border:1px solid var(--line);color:var(--cu);font:600 .7rem var(--f);padding:5px 9px;border-radius:8px;cursor:pointer;text-transform:none;letter-spacing:0}
+ul.list{list-style:none;margin:0;padding:0;border:1px solid var(--line);border-radius:12px;overflow:hidden;background:var(--card)}
+ul.list li{padding:11px 13px;border-top:1px solid var(--line);display:flex;gap:10px;align-items:baseline}
+ul.list li:first-child{border-top:0}
+ul.list .d{font:500 .7rem var(--m);color:var(--mute);white-space:nowrap;min-width:74px}
+ul.list .t{flex:1;font-size:.86rem}
+ul.list a{color:var(--ink);text-decoration:none}
+ul.list a.gh{color:var(--mute);font-size:.72rem;white-space:nowrap}
+.nuevo{display:inline-block;background:var(--cu);color:#2f3237;font:700 .6rem var(--m);padding:1px 5px;border-radius:4px;margin-left:6px;vertical-align:1px}
+.sz{font:500 .7rem var(--m);color:var(--mute);white-space:nowrap}
+.nota{color:var(--mute);font-size:.78rem;margin:8px 2px}
+#instalar{display:none;grid-column:1/-1;min-height:0;flex-direction:row;align-items:center;justify-content:center;background:var(--cu);color:#2f3237;border:0;font-weight:700}
+#ios{display:none;margin-top:10px;padding:12px 14px;border:1px dashed rgba(255,179,71,.5);border-radius:12px;font-size:.84rem}
+#ios b{color:var(--cu)}
+footer{margin-top:28px;color:var(--mute);font-size:.74rem;text-align:center}
+footer a{color:var(--cu)}
+/* visor a pantalla completa dentro de la app */
+#vista{position:fixed;inset:0;background:var(--bg);display:none;flex-direction:column;z-index:10}
+#vista.on{display:flex}
+#barra{display:flex;align-items:center;gap:8px;padding:calc(env(safe-area-inset-top) + 6px) 10px 6px;background:#24272b;border-bottom:1px solid var(--line)}
+#barra button,#barra a{background:none;border:1px solid var(--line);color:var(--ink);font:600 .82rem var(--f);padding:7px 11px;border-radius:9px;text-decoration:none;cursor:pointer}
+#barra .tt{flex:1;font-size:.82rem;color:var(--mute);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#marco{flex:1;border:0;width:100%;background:#5c6066}
+</style>
+</head>
+<body>
+<main>
+  <header>
+    <img src="icon-192.png" alt="">
+    <div><h1>La Armonía</h1><p>Santa Isabel · padrón 49902 · cubierta Hiansa 5G 30 mm</p></div>
+    <span id="estado">…</span>
+  </header>
+
+  <div class="grid">
+    <button class="btn main" data-ver="../" data-tt="Montaje de cubierta en 3D"><i>🏗️</i><b>Montaje de cubierta en 3D</b><span>Estructura, paneles, remates, replanteo, animación del montaje, alternativas y costos. Pestaña Relevo para la visita a obra.</span></button>
+    <button class="btn" data-ver="../?ingeniero" data-tt="Visor técnico para el ingeniero"><i>📐</i><b>Visor ingeniero</b><span>Los tres métodos por días y comentarios.</span></button>
+    <a class="btn" href="../La-Armonia-carpeta-de-obra-cubierta.pdf" target="_blank" rel="noopener"><i>📄</i><b>Carpeta de obra</b><span>PDF para imprimir: plantas, cortes, replanteo.</span></a>
+    <a class="btn" href="https://github.com/smartbuildinguruguay/Presupuestos/tree/main/la-armonia" target="_blank" rel="noopener"><i>🐙</i><b>Abrir en GitHub</b><span>Carpeta la-armonia del repo Presupuestos.</span></a>
+    <a class="btn" href="../../" target="_blank" rel="noopener"><i>🗂️</i><b>Todas las obras</b><span>Portada de documentos de SBU.</span></a>
+    <button class="btn" id="instalar">⬇︎ Instalar la app en este celular</button>
+  </div>
+  <div id="ios">Para instalarla en el iPhone: tocá <b>Compartir</b> (el cuadrado con la flecha) y después <b>Agregar a pantalla de inicio</b>. Abrila desde Safari.</div>
+
+  <h2>Novedades en GitHub <button id="refrescar">Actualizar</button></h2>
+  <ul class="list" id="commits"><li><span class="t">Cargando…</span></li></ul>
+  <p class="nota" id="nota-c"></p>
+
+  <h2>Archivos de la obra</h2>
+  <ul class="list" id="archivos"><li><span class="t">Cargando…</span></li></ul>
+
+  <footer>Smart Building Uruguay · <a href="https://wa.me/59898526226">WhatsApp</a> · <a href="mailto:smartbuildinguruguay@gmail.com">mail</a><br>Lo que se sube al GitHub aparece acá solo. Sin señal en obra se usa la última copia guardada.</footer>
+</main>
+
+<div id="vista">
+  <div id="barra"><button id="volver">← Inicio</button><span class="tt" id="vt"></span><a id="afuera" target="_blank" rel="noopener">↗</a></div>
+  <iframe id="marco" title="Visor" allow="fullscreen; web-share; clipboard-write; camera"></iframe>
+</div>
+
+<script>
+const REPO = 'smartbuildinguruguay/Presupuestos', RAMA = 'main', CARPETA = 'la-armonia';
+const API = 'https://api.github.com/repos/' + REPO;
+const PAGES = new URL('../../', location.href).href; // https://smartbuildinguruguay.github.io/Presupuestos/
+const $ = s => document.querySelector(s);
+const guardar = (k, v) => { try { localStorage.setItem(k, JSON.stringify(v)) } catch (e) {} };
+const leer = k => { try { return JSON.parse(localStorage.getItem(k)) } catch (e) { return null } };
+const esc = s => String(s).replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]));
+const fecha = iso => new Date(iso).toLocaleDateString('es-UY', { day: '2-digit', month: '2-digit', year: '2-digit' }) + ' ' + new Date(iso).toLocaleTimeString('es-UY', { hour: '2-digit', minute: '2-digit' });
+const peso = b => b > 1e6 ? (b / 1e6).toFixed(1) + ' MB' : Math.max(1, Math.round(b / 1e3)) + ' kB';
+
+// estado de conexión
+function estado() { const e = $('#estado'); e.textContent = navigator.onLine ? 'en línea' : 'sin señal'; e.className = navigator.onLine ? 'on' : ''; }
+addEventListener('online', estado); addEventListener('offline', estado); estado();
+
+// visor dentro de la app (en iPhone la app instalada no tiene botón atrás)
+function abrir(url, tt) {
+  $('#marco').src = url; $('#vt').textContent = tt; $('#afuera').href = url;
+  $('#vista').classList.add('on'); history.pushState({ v: 1 }, '');
+}
+function cerrar() { $('#vista').classList.remove('on'); $('#marco').src = 'about:blank'; }
+$('#volver').onclick = () => history.state && history.state.v ? history.back() : cerrar();
+addEventListener('popstate', () => { if ($('#vista').classList.contains('on')) cerrar(); });
+document.addEventListener('click', e => { const b = e.target.closest('[data-ver]'); if (b) abrir(b.dataset.ver, b.dataset.tt || ''); });
+
+// novedades (commits que tocan la carpeta de la obra)
+async function commits(forzar) {
+  const ul = $('#commits'), vista = leer('arm-visto');
+  const pintar = (lista, viejo) => {
+    if (!lista || !lista.length) { ul.innerHTML = '<li><span class="t">Sin datos todavía.</span></li>'; return; }
+    const iv = vista ? lista.findIndex(x => x.sha === vista) : -2;
+    ul.innerHTML = lista.map((c, i) => {
+      const n = iv === -1 ? i === 0 : i < iv;
+      return `<li><span class="d">${fecha(c.f)}</span><span class="t">${esc(c.m)}${n ? '<span class="nuevo">NUEVO</span>' : ''}</span><a class="gh" href="https://github.com/${REPO}/commit/${c.sha}" target="_blank" rel="noopener">ver</a></li>`;
+    }).join('');
+    $('#nota-c').textContent = viejo ? 'Mostrando la última copia guardada (' + (navigator.onLine ? 'GitHub no respondió' : 'sin señal') + ').' : '';
+  };
+  const cache = leer('arm-commits');
+  if (cache && !forzar) pintar(cache.l, true);
+  try {
+    const r = await fetch(`${API}/commits?sha=${RAMA}&path=${CARPETA}&per_page=12`, { cache: 'no-store' });
+    if (!r.ok) throw new Error(r.status);
+    const l = (await r.json()).map(c => ({ sha: c.sha, f: c.commit.committer.date, m: c.commit.message.split('\n')[0] }));
+    guardar('arm-commits', { l, t: Date.now() });
+    pintar(l, false);
+    if (l[0]) setTimeout(() => guardar('arm-visto', l[0].sha), 4000);
+    if (cache && cache.l[0] && l[0] && cache.l[0].sha !== l[0].sha && navigator.serviceWorker && navigator.serviceWorker.controller) navigator.serviceWorker.controller.postMessage('actualizar');
+  } catch (e) { if (cache) pintar(cache.l, true); else ul.innerHTML = '<li><span class="t">No se pudo leer GitHub. Probá de nuevo con señal.</span></li>'; }
+}
+
+// archivos de la carpeta (recorre subcarpetas, salvo la de la app)
+async function archivos() {
+  const ul = $('#archivos');
+  const pintar = l => {
+    ul.innerHTML = l.map(a => {
+      const pub = PAGES + a.p.replace(/index\.html$/, '');
+      const html = /\.html?$/.test(a.p);
+      const nombre = a.p.replace(CARPETA + '/', '');
+      const link = html ? `<a href="#" data-ver="${esc(pub)}" data-tt="${esc(nombre)}">${esc(nombre)}</a>` : `<a href="${esc(pub)}" target="_blank" rel="noopener">${esc(nombre)}</a>`;
+      return `<li><span class="t">${link}</span><span class="sz">${peso(a.s)}</span><a class="gh" href="https://github.com/${REPO}/blob/${RAMA}/${a.p}" target="_blank" rel="noopener">GitHub</a></li>`;
+    }).join('') || '<li><span class="t">Carpeta vacía.</span></li>';
+  };
+  const cache = leer('arm-archivos'); if (cache) pintar(cache);
+  try {
+    const out = [];
+    const rec = async ruta => {
+      const r = await fetch(`${API}/contents/${ruta}?ref=${RAMA}`, { cache: 'no-store' });
+      if (!r.ok) throw new Error(r.status);
+      for (const it of await r.json()) {
+        if (it.type === 'dir' && it.path !== CARPETA + '/app') await rec(it.path);
+        else if (it.type === 'file' && it.path !== CARPETA + '/sw.js') out.push({ p: it.path, s: it.size });
+      }
+    };
+    await rec(CARPETA);
+    out.sort((a, b) => a.p.localeCompare(b.p));
+    guardar('arm-archivos', out); pintar(out);
+  } catch (e) { if (!cache) ul.innerHTML = '<li><span class="t">No se pudo leer GitHub. Probá de nuevo con señal.</span></li>'; }
+}
+
+$('#refrescar').onclick = () => { commits(true); archivos(); };
+commits(); archivos();
+addEventListener('visibilitychange', () => { if (!document.hidden && navigator.onLine) commits(); });
+
+// instalación
+let promptInst = null;
+const instalada = matchMedia('(display-mode: standalone)').matches || navigator.standalone;
+addEventListener('beforeinstallprompt', e => { e.preventDefault(); promptInst = e; $('#instalar').style.display = 'flex'; });
+$('#instalar').onclick = async () => { if (!promptInst) return; promptInst.prompt(); await promptInst.userChoice; promptInst = null; $('#instalar').style.display = 'none'; };
+if (!instalada && /iphone|ipad|ipod/i.test(navigator.userAgent)) $('#ios').style.display = 'block';
+
+if ('serviceWorker' in navigator) navigator.serviceWorker.register('../sw.js', { scope: '../' }).catch(() => {});
+</script>
+</body>
+</html>
