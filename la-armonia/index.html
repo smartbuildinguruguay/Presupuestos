@@ -1246,7 +1246,7 @@ const reloj = new THREE.Clock();
   motor(dt); const cur = FLY ? FLY.p : TAREA ? null : (PASO > 0 && PASO < SEQ.length ? SEQ[PASO - 1] : null), fly = FLY ? { pos: FLY.pos, seg: FLY.seg || 1, entrega: FLY.entrega, p: FLY.p, pts: FLY.pts } : null;
   ACT[ALT].forEach(a => a.upd(cur && (ED === 'ambos' || cur.f.ed === ED) ? cur : null, fly, dt));
   camaraAuto(dt); O.update(); R.render(S, C); L2.render(S, C); if (REC) { recFrame(); if ((REC.n = (REC.n || 0) + 1) % 15 === 0) recUI() } })();
-window.__la = { PANELES, SEQ, CARAS, C, O, G };
+window.__la = { PANELES, SEQ, CARAS, C, O, G, BMC, CER, SHIFT, EST, GAL, REM, QA, ALTS, diasTxt, calc };
 </script>
 <script>
 /* ================= Relevo técnico en obra (independiente del 3D) =================
