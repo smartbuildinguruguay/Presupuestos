@@ -2,6 +2,11 @@
 
 Todo junto en un solo repo, ordenado por obra. Portada: https://smartbuildinguruguay.github.io/Presupuestos/
 
+## Juan Carlos García
+
+- [Proyecto de locales 250 m² · Pedragosa Sierra](juan-carlos-garcia/) — padrones 10596/97/98: implantación, planta de 2 a 5 locales, fachadas, estructura, 3D por capas con opciones de panel, rubrado, previsiones por local y rentabilidad.
+- [Presentación Barn, Barn Villa y galpón (PDF)](juan-carlos-garcia/SBU-Propuesta-Juan-Carlos-Garcia.pdf)
+
 ## La Armonía
 
 - [App para el celular](la-armonia/app/) — se instala en Android o iPhone desde el navegador; junta el 3D, el visor del ingeniero y la carpeta PDF, muestra las novedades y archivos de `la-armonia/` en GitHub y guarda copia para usar sin señal en obra.
