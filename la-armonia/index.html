@@ -15,6 +15,8 @@
 .tabs{display:flex;gap:2px;border-bottom:1px solid var(--line);margin:4px -16px 6px;padding:0 16px;position:sticky;top:-16px;background:var(--panel);z-index:2}
 .tabs button{background:none;border:0;border-bottom:2px solid transparent;color:var(--mute);font:600 .82rem var(--f);padding:10px 9px;cursor:pointer}
 .tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--cu)}
+.res{margin:10px 0;border:1px solid var(--line);padding:8px 10px;background:rgba(255,255,255,.03)}.res .rh{font:700 .82rem var(--f);margin-bottom:5px}.res .rh span{display:block;font:500 .66rem var(--m);color:var(--mute);margin-top:2px}
+.res dl{display:grid;grid-template-columns:1fr auto;gap:5px 10px;margin:0;align-items:baseline}.res dt{color:var(--mute);font:500 .7rem var(--m)}.res dd{margin:0;font:600 .8rem var(--m);text-align:right;white-space:nowrap}.res dd small{display:block;font-weight:500}.res .g{color:#8fd694}.res small{font:500 .62rem var(--m);color:var(--mute)}.res .bar{height:3px;background:rgba(243,241,236,.15);margin:6px 0 3px}.res .bar u{display:block;height:100%;background:var(--cu)}
 .cst h3{font:700 .95rem var(--f);margin:14px 0 4px}
 .cst table td.n{white-space:nowrap}.cst tr.sub td{color:var(--mute);font-size:.68rem;border-bottom:0;padding-top:0}
 .cst tr.tot td{font-weight:700;color:var(--ink);border-top:1px solid var(--ink)}
@@ -91,6 +93,7 @@ table{width:100%;border-collapse:collapse;font:500 .74rem var(--m);margin-top:6p
   <div class="row"><button class="btn" id="play">▶ Reproducir</button><button class="btn" id="todo">Ver todo</button><div class="seg" id="vel"><button data-vel="1" aria-pressed="true">1×</button><button data-vel="3">3×</button><button data-vel="10">10×</button></div></div>
   <input type="range" id="paso" min="0" max="1" value="1">
   <div class="paso" id="pasoTxt"></div>
+  <div class="res" id="res"></div>
   <div id="altTxt"></div>
   </section>
 
@@ -735,7 +738,8 @@ function cronograma() {
   return { t0, dG, dE, and, total: Math.ceil(t0 + dG + dE + and / 2),
     dia(p) { if (!p) return 0; const i = p.orden - 1, t = p.f.ed === 'galpon' ? t0 + dG * (i / nG) : t0 + dG + dE * ((i - nG) / nE); return Math.floor(t) + 1 } };
 }
-function cartelDia() {
+function cartelDia() { const K = cartelDia0(); resumen(K); return K }
+function cartelDia0() {
   const el = $('dia'), K = cronograma(), cur = FLY ? FLY.p : SEQ[PASO - 1];
   if (TAREA) { const dn = PASO === 0 ? 1 : K.dia(SEQ[PASO]); el.hidden = false; el.dataset.visto = 1;
     el.innerHTML = `<b>Día ${dn} de ${K.total}</b><span>${({ armado: 'armado de andamios', traslado: 'traslado del andamio', desarme: 'desarme del andamio' })[TAREA.tipo]} · ${Math.round(TAREA.t * 100)} %</span><i><u style="width:${Math.round(TAREA.t * 100)}%"></u></i>`; return K }
@@ -792,7 +796,7 @@ const PC = {
   m_mani: [220, 'Manipulador telescópico USD/día + IVA (objetivo a negociar en Maldonado: pedir cotización)'], m_art: [190, 'Articulada 14–16 m USD/día + IVA (ref. EMAT)'], m_tij: [140, 'Tijera todo terreno 8–10 m USD/día + IVA (ref. EMAT)'], m_flete: [350, 'Flete de cada máquina ida y vuelta USD (supuesto)'],
   and_m2sem: [2.5, 'Andamio USD por m² y semana (supuesto)'], and_sem: [3, 'Semanas de andamio'], and_flete: [250, 'Flete de andamio USD (supuesto)'],
   epp_arnes: [110, 'Arnés + doble cola con absorbedor USD c/u (supuesto)'], epp_pers: [35, 'Casco, guantes y calzado USD por persona'], epp_linea: [380, 'Línea de vida temporal USD c/u (supuesto)'], prev: [450, 'Técnico prevencionista: plan + visitas USD (supuesto)'],
-  flete_pan: [450, 'Flete de paneles Colonia Nicolich → obra USD (supuesto; BMC lo cotiza aparte)'], imprev: [10, 'Imprevistos y lluvia %'], margen: [20, 'Ganancia SBU % sobre el costo'], rc: [300, 'Póliza RC por el montaje USD (supuesto)'], mkt: [48, 'Precio de mercado: colocación USD/m² + IVA'],
+  flete_pan: [450, 'Flete de paneles Colonia Nicolich → obra USD (supuesto; BMC lo cotiza aparte)'], imprev: [10, 'Imprevistos y lluvia %'], margen: [20, 'Ganancia SBU % sobre el costo'], rc: [300, 'Póliza RC por el montaje USD (supuesto)'], pm2: [0, 'Precio por m² sin IVA (0 = costo real + ganancia)'],
 };
 const QA = { // las tres con la misma cuadrilla de 5: oficial especializado (encargado arriba u operador del manitou), 2 oficiales y 2 peones; 3 en altura
   B: { fases: [['Armado, 4 traslados y desarme del andamio', 3, { oe: 1, of: 2, pe: 2 }, 0], ['Galpón · paneles y remates', 2, { oe: 1, of: 2, pe: 2 }, 3], ['Establo · paneles, cortes y remates', 7, { oe: 1, of: 2, pe: 2 }, 3], ['Descarga de paneles', 1, { pe: 2 }, 0]],
@@ -823,6 +827,19 @@ function calc(k) {
   const ganObra = directo * v.margen / 100, ganIC = precio - costoIC;
   return { fases, nom, comp, maq, eq, and, seg, flete, imp, directo, bpsObra, ivaCompras, ganObra, ganIC, totObra: directo + ganObra + bpsObra + ivaCompras, cargasIC, costoIC, precio, ivaV, totIC: precio + ivaV, q };
 }
+const M2 = () => PANELES.reduce((t, p) => t + p.area, 0), fm = n => 'USD ' + (Math.round(n * 10) / 10).toLocaleString('es-UY');
+function cobro(r) { // costo real de la opción y lo que se cobra; la ganancia siempre sin IVA (el IVA de venta no es de SBU)
+  const m2 = M2(), obra = REG === 'obra', costo = obra ? r.directo + r.ivaCompras + r.bpsObra : r.costoIC, auto = obra ? r.totObra : r.precio;
+  const precio = PV.pm2 > 0 ? PV.pm2 * m2 : auto, iva = obra ? 0 : precio * PV.iva / 100;
+  return { m2, obra, costo, precio, iva, total: precio + iva, gan: precio - costo, auto, manual: PV.pm2 > 0 } }
+function resumen(K) { const el = $('res'); if (!el) return; K = K || cronograma(); const r = calc(ALT), c = cobro(r), cur = FLY ? FLY.p : SEQ[PASO - 1];
+  const dia = !FLY && PASO === 0 ? 0 : !FLY && PASO >= SEQ.length ? K.total : K.dia(cur), fr = K.total ? dia / K.total : 0, pc = c.precio ? Math.round(c.gan / c.precio * 100) : 0;
+  el.innerHTML = `<div class="rh">${ALTS[ALT].n}<span>${c.obra ? 'obra en BPS · sin IVA de venta' : 'SBU factura con IVA'}</span></div><dl>
+    <dt>Costo real</dt><dd>${f0(c.costo)}<small>${fm(c.costo / c.m2)}/m²</small></dd>
+    <dt>Se cobra ${c.obra ? '(no lleva IVA)' : 'sin IVA'}${c.manual ? ' · precio fijado por m²' : ''}</dt><dd>${f0(c.precio)}<small>${fm(c.precio / c.m2)}/m²</small></dd>
+    ${c.obra ? '' : `<dt>+ IVA ${PV.iva} % (va a DGI)</dt><dd>${f0(c.iva)}<small>total ${f0(c.total)}</small></dd>`}
+    <dt class="g">Ganancia SBU · sin IVA</dt><dd class="g">${f0(c.gan)}<small>${pc} % del precio</small></dd></dl>
+    <div class="bar"><u style="width:${Math.round(fr * 100)}%"></u></div><small>Día ${dia} de ${K.total}: ≈ ${f0(c.costo * fr)} de costo ya gastado · régimen y precio se cambian en Costos</small>` }
 function costos() {
   const R = { A: calc('A'), B: calc('B'), C: calc('C') }, r = R[ALT], tot = x => REG === 'obra' ? x.totObra : x.totIC, gan = x => REG === 'obra' ? x.ganObra : x.ganIC;
   const fila = (a, b, cls = '') => `<tr class="${cls}"><td>${a}</td><td class="n">${b}</td></tr>`;
@@ -849,10 +866,16 @@ function costos() {
   }
   h += fila('<b>Seguro aparte</b>: póliza RC por el montaje, si la obra no la tiene', f0(PV.rc));
   h += `</table>`;
-  { const m2 = PANELES.reduce((t, p) => t + p.area, 0), pm = m2 * PV.mkt, costo = REG === 'obra' ? r.directo + r.bpsObra + r.ivaCompras : r.costoIC, g = pm - costo;
-    h += `<h3>Si se cobra a precio de mercado</h3><div class="row"><span>USD por m²</span><input type="range" id="mkt-r" min="25" max="80" step="1" value="${PV.mkt}"><b class="mono" style="min-width:44px;text-align:right">${PV.mkt}</b></div><table>`
-      + fila(`Colocación ${Math.round(m2)} m² × USD ${PV.mkt} (+ IVA)`, f0(pm)) + fila(REG === 'obra' ? 'Costo con BPS e IVA de compras' : 'Costo total SBU con aportes', f0(costo))
-      + fila('<b>Ganancia SBU</b>', `${f0(g)} · ${Math.round(g / pm * 100)} %`, 'gan') + `</table><p class="nota">Referencia: techo de isopanel colocado desde USD 99/m² en trabajos simples con material incluido (USD 37–50/m² es el panel); la colocación sola queda en USD 30–50/m², y esta obra es de las difíciles (44 cortes, limatesas, núcleo al 91 %, remates sin pieza, zona rural).</p>` }
+  { const c = cobro(r), cm = c.costo / c.m2, pm = c.precio / c.m2, pc = c.precio ? Math.round(c.gan / c.precio * 100) : 0;
+    h += `<h3>Precio por m² · base: costo real de la opción ${ALTS[ALT].n.split(' · ')[0]}</h3>
+    <div class="row"><span>USD/m² sin IVA</span><input type="range" id="mkt-r" min="${Math.floor(cm)}" max="${Math.ceil(cm * 2.2)}" step="1" value="${Math.round(pm)}"><b class="mono" style="min-width:44px;text-align:right">${Math.round(pm)}</b></div>
+    ${c.manual ? '<button class="btn" id="pm2-auto" style="margin:4px 0">Volver a costo real + ganancia</button>' : ''}<table>`
+      + fila(`Costo real · ${Math.round(c.m2)} m² × ${fm(cm)}/m²`, f0(c.costo)) + `<tr class="sub"><td colspan="2">${c.obra ? 'incluye jornales, máquinas, BPS de obra y el IVA de compras (que en este régimen no se recupera)' : 'incluye aportes de Industria y Comercio; sin IVA: el de compras se descuenta del que facturás'}</td></tr>`
+      + fila(`Precio sin IVA · ${fm(pm)}/m²`, f0(c.precio), 'tot')
+      + (c.obra ? fila('IVA', 'no se factura') + `<tr class="sub"><td colspan="2">si igual hay que facturar con IVA, pasá a "SBU factura con IVA": el IVA va arriba y no es ganancia</td></tr>`
+        : fila(`IVA ${PV.iva} % · ${fm(pm * PV.iva / 100)}/m²`, f0(c.iva)) + `<tr class="sub"><td colspan="2">no es ganancia: se vuelca a DGI (menos el IVA de compras)</td></tr>` + fila(`Total al cliente con IVA · ${fm(pm * (1 + PV.iva / 100))}/m²`, f0(c.total), 'tot big'))
+      + fila('<b>Ganancia SBU · sin IVA</b>, antes de IRAE', `${f0(c.gan)} · ${pc} % del precio`, 'gan')
+      + `</table><p class="nota">Referencia de mercado: colocación sola USD 30–50/m² + IVA; techo de isopanel colocado con material desde USD 99/m². Esta obra es de las difíciles (44 cortes, limatesas, núcleo al 91 %, remates sin pieza, zona rural). El precio que fijes acá se usa también en el resumen de Montaje.</p>` }
   h += `<table style="display:none">
   <p class="nota">${REG === 'obra' ? 'Así se paga si la obra ya está inscripta en BPS: el dueño (o la constructora) aporta por el régimen de construcción y SBU cobra la mano de obra y lo demás.' : 'SBU contrata, aporta por Industria y Comercio con póliza BSE propia y factura todo con IVA.'}
   Para personal que trabaja en obra, BPS suele exigir el régimen de construcción (Ley 14.411) aunque la empresa sea de Industria y Comercio. Confirmalo con tu contadora antes de cotizar.</p>
@@ -861,12 +884,13 @@ function costos() {
     <label for="pc-${k}">${n.replace('(supuesto', '<i>(supuesto').replace(/(supuesto[^)]*)\)/, '$1)</i>')}</label><input id="pc-${k}" data-pc="${k}" type="number" step="any" value="${PV[k]}">`).join('')}
     <div class="gt">Días por fase (${ALTS[ALT].n.split(' · ')[0]})</div>${QA[ALT].fases.map((f, i) => `<label>${f[0]}</label><input data-fd="${i}" type="number" step=".5" value="${f[1]}">`).join('')}
     </div><button class="btn" id="pc-reset" style="margin-top:8px">Volver a los valores originales</button></details>`;
-  $('costos').innerHTML = h;
+  $('costos').innerHTML = h; resumen();
 }
 $('costos').addEventListener('click', e => {
   const b = e.target.closest('[data-r],[data-ca]'); if (b) { if (b.dataset.r) REG = b.dataset.r; else { ALT = b.dataset.ca; ordenar(); $('alt').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x.dataset.a === ALT)); altTxt(); aplicar() } costos(); return }
+  if (e.target.id === 'pm2-auto') { PV.pm2 = 0; try { localStorage.setItem('la-costos-2', JSON.stringify(Object.fromEntries(Object.entries(PV).filter(([k, x]) => PC[k] && x !== PC[k][0])))) } catch (x) {} costos() }
   if (e.target.id === 'pc-reset') { Object.keys(PC).forEach(k => PV[k] = PC[k][0]); try { localStorage.removeItem('la-costos-2') } catch (x) {} costos() } });
-$('costos').addEventListener('input', e => { if (e.target.id !== 'gan-r' && e.target.id !== 'mkt-r') return; const id = e.target.id; if (id === 'mkt-r') PV.mkt = +e.target.value; else PV.margen = +e.target.value; try { localStorage.setItem('la-costos-2', JSON.stringify(Object.fromEntries(Object.entries(PV).filter(([k, x]) => PC[k] && x !== PC[k][0])))) } catch (x) {} const open = $('costos').querySelector('details').open; costos(); $('costos').querySelector('details').open = open; $(id).focus() });
+$('costos').addEventListener('input', e => { if (e.target.id !== 'gan-r' && e.target.id !== 'mkt-r') return; const id = e.target.id; if (id === 'mkt-r') PV.pm2 = +e.target.value; else PV.margen = +e.target.value; try { localStorage.setItem('la-costos-2', JSON.stringify(Object.fromEntries(Object.entries(PV).filter(([k, x]) => PC[k] && x !== PC[k][0])))) } catch (x) {} const open = $('costos').querySelector('details').open; costos(); $('costos').querySelector('details').open = open; $(id).focus() });
 $('costos').addEventListener('change', e => { if (e.target.id === 'gan-r' || e.target.id === 'mkt-r') return; const i = e.target; if (i.dataset.pc) { PV[i.dataset.pc] = +i.value || 0; try { localStorage.setItem('la-costos-2', JSON.stringify(Object.fromEntries(Object.entries(PV).filter(([k, x]) => PC[k] && x !== PC[k][0])))) } catch (x) {} }
   if (i.dataset.fd) { QA[ALT].fases[+i.dataset.fd][1] = +i.value || 0; aplicar() } const open = $('costos').querySelector('details').open; costos(); $('costos').querySelector('details').open = open });
 
