@@ -47,7 +47,7 @@ input[type=range]{width:100%;accent-color:var(--cu)}
 .warn{border-left:3px solid #e8a33d;background:rgba(232,163,61,.1);padding:8px 10px;font-size:.8rem;margin-top:10px}
 main{position:relative;overflow:hidden}
 #c{width:100%;height:100%;display:block;touch-action:none}
-#ficha{position:absolute;right:12px;top:12px;width:280px;background:rgba(40,43,48,.93);border:1px solid var(--cu);padding:12px;font-size:.84rem;display:none}
+#ficha{position:absolute;right:12px;top:12px;width:280px;z-index:6;max-height:calc(100% - 24px);overflow:auto;background:rgba(40,43,48,.93);border:1px solid var(--cu);padding:12px;font-size:.84rem;display:none}
 #ficha h3{margin:0 0 6px;font-size:1rem}#ficha dl{display:grid;grid-template-columns:auto 1fr;gap:3px 10px;margin:0}#ficha dt{color:var(--mute);font:500 .72rem var(--m)}#ficha dd{margin:0;font:500 .8rem var(--m)}
 #ficha .x{position:absolute;right:8px;top:6px;background:none;border:0;color:var(--ink);font-size:1rem;cursor:pointer}
 .vistas{position:absolute;left:12px;top:12px;display:flex;gap:4px;flex-wrap:wrap}
@@ -56,7 +56,7 @@ main{position:relative;overflow:hidden}
 .leyenda span{display:flex;align-items:center;gap:6px}.leyenda i{width:16px;height:4px;display:inline-block}
 .lbl{font:600 11px var(--m);color:#fff;background:rgba(30,32,36,.82);padding:2px 5px;white-space:nowrap;pointer-events:none;border-left:2px solid var(--cu)}
 .lbl.h{border-left-color:#7fd1ff}
-.dia{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:rgba(40,43,48,.92);border:1px solid var(--cu);padding:7px 14px 8px;text-align:center;min-width:220px}
+.fic .dia{display:none}.dia{position:absolute;left:50%;top:12px;transform:translateX(-50%);background:rgba(40,43,48,.92);border:1px solid var(--cu);padding:7px 14px 8px;text-align:center;min-width:220px}
 .dia b{display:block;font:800 1.35rem var(--f);color:var(--cu)}.dia span{font:500 .72rem var(--m);color:var(--mute)}
 .dia i{display:block;height:4px;background:rgba(243,241,236,.15);margin-top:6px}.dia i u{display:block;height:100%;background:var(--cu)}
 @media (max-width:820px){.dia{top:auto;bottom:12px;min-width:0}}.lbl.r{border-left-color:#ff5fa2;font-size:10px}
@@ -443,18 +443,20 @@ function manitou(k, ed, sirve) {
     const P0 = m.p.clone().addScaledVector(m.n, -1.7).setY(2.3); fijar(boom, P0, tip); hor.position.copy(tip).add(V(0, -.25, 0)); hor.scale.y = .1; paq.visible = carga; paq.position.copy(tip).add(V(0, -.45, 0)); paq.rotation.y = car.rotation.y };
   tip.copy(frente()); poner(true);
   // peón de piso: engancha la eslinga al panel junto a la pila y se aleja mientras sube la carga
-  const esl = persona(g, frente(), null, 'peón de piso: engancha la eslinga o cadena del panel, se aparta mientras sube y hace los cortes en la mesa');
+  const esl = persona(PER[k], frente(), null, 'peón de piso: engancha la eslinga o cadena del panel, se aparta mientras sube y hace los cortes en la mesa');
   const linEsl = new THREE.Line(new THREE.BufferGeometry().setFromPoints([V(0, 0, 0), V(0, 0, 0), V(0, 0, 0)]), mCable); linEsl.frustumCulled = false; g.add(linEsl);
   cuerpo.userData.info = { t: 'Manitou (manipulador telescópico)', d: 'da la vuelta por afuera, se para frente a cada panel, lo sube por delante del alero y lo apoya; la cuadrilla lo empuja pendiente arriba. Operador en la cabina y un peón de piso que engancha la eslinga. Sin plataforma para personas' };
   const M = { tipo: 'manitou', frente: p => frente(R.objetivo(p)), ed, corte: null };
   sirve.forEach(id => { MAQ[k][id] = M });
   ACT[k].push({ upd(cur, fly, dt) {
-    const mio = cur && sirve.includes(cur.f.id) && usaMani(ed, cur.f.id); g.visible = cur ? cur.f.ed === ed : ed === 'galpon';
-    if (mio) s = R.acercar(s, R.objetivo(cur), suave(dt, fly ? 3.5 : 2));
+    const mio = cur && sirve.includes(cur.f.id) && usaMani(ed, cur.f.id), aca = cur ? cur.f.ed === ed : ed === 'galpon'; g.visible = aca && (!cur || mio); esl.o.visible = aca; // sin trabajo, el manitou no está en obra (se alquila por períodos)
+    if (mio || (aca && cur && sirve.includes(cur.f.id))) s = R.acercar(s, R.objetivo(cur), suave(dt, fly ? 3.5 : 2));
     const usa = mio && fly && fly.seg <= fly.entrega; tip.lerp(usa ? fly.pos.clone().add(V(0, .55, 0)) : frente(), suave(dt, usa ? 14 : 3)); poner(!usa);
     const m = R.mundo(s), lat = V(m.n.z, 0, -m.n.x), F = frente().setY(0), engancha = usa && fly.seg === 1 && fly.pos.y < 1.9;
     M.mesa = F.clone().addScaledVector(lat, 5.5).addScaledVector(m.n, 1.5); M.libre = !engancha && !(usa && fly.pos.y < 2.5);
-    if (M.corte && M.libre && g.visible) esl.mover(M.corte, dt, 4); // entre panel y panel corta él mismo en la mesa
+    const aMano = aca && !g.visible && fly && fly.p.f.ed === ed && fly.seg <= 1;
+    if (aMano) esl.mover(fly.pts[0].clone().setY(0).addScaledVector(fly.p.f.Sv, -.6), dt, 6); // sin manitou: alcanza el panel desde el piso
+    else if (M.corte && M.libre && aca) esl.mover(M.corte, dt, 4); // entre panel y panel corta él mismo en la mesa
     else esl.mover(F.clone().addScaledVector(lat, engancha ? .75 : 3).addScaledVector(m.n, engancha ? 0 : -.5), dt, engancha ? 6 : 3);
     M.peon = esl.o.position;
     const a = linEsl.geometry.attributes.position, c = paq.visible ? paq.position : tip.clone().add(V(0, -.3, 0)), hook = tip.clone().add(V(0, -.2, 0));
@@ -551,7 +553,7 @@ const usaMani = (ed, id) => ed !== 'establo' || MANI_EST === 'todos' || /^N[SN]$
     const necesita = q => q.diag || q.ancho < .99; let actual = null, t0 = 0;
     ACT[k].push({ upd(cur, fly, dt) {
       const desde = fly ? SEQ.indexOf(fly.p) + 1 : PASO; let q = null; for (let i = desde; i < Math.min(SEQ.length, desde + 4); i++) if (necesita(SEQ[i]) && SEQ[i].f.ed === 'establo') { q = SEQ[i]; break }
-      G0.visible = !cur || cur.f.ed === 'establo'; if (MQ.mesa) G0.position.lerp(MQ.mesa, suave(dt, 1.2));
+      G0.visible = !cur || cur.f.ed === 'establo'; if (MQ.mesa) G0.position.lerp(MQ.mesa, suave(dt, 1.2)); MQ.libre = MQ.libre || !(fly && fly.seg <= 1);
       const on = !!q && (cur || fly) && G0.visible; pan.visible = raya.visible = sierra.visible = on; chis.visible = false;
       if (!on) { MQ.corte = null; actual = null; return }
       if (q !== actual) { actual = q; t0 = 0 }
@@ -706,16 +708,16 @@ cv.addEventListener('pointerup', e => {
   pt.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1); ray.setFromCamera(pt, C);
   const hs = ray.intersectObjects(S.children, true).filter(h => h.object.isMesh && h.object.visible && vis(h.object) && plano.distanceToPoint(h.point) >= 0);
   const h = hs.find(h => h.object.userData.P || h.object.userData.info); if (sel) { pintar(sel, false); sel = null }
-  if (!h) { $('ficha').style.display = 'none'; return }
+  if (!h) { $('ficha').style.display = 'none'; document.body.classList.remove('fic'); return }
   const o = h.object; if (o.userData.P) { const p = o.userData.P; sel = p; pintar(p, true);
     $('fT').textContent = `Panel ${p.id}`;
     $('fD').innerHTML = [['Cara', p.f.n], ['Orden', `${p.orden} de ${SEQ.length}`], ['Largo', p.largo.toFixed(2).replace('.', ',') + ' m'], ['Ancho', p.ancho.toFixed(2).replace('.', ',') + ' m'],
       ['Corte', p.diag ? 'diagonal (limatesa)' : p.ancho < .99 ? 'longitudinal (tira)' : 'recto'], ['Superficie', p.area.toFixed(2).replace('.', ',') + ' m²'], ['Peso aprox.', Math.round(p.kg) + ' kg'],
       ['Personas', p.kg > 60 ? '4 a 5, o con máquina' : p.kg > 30 ? '2' : '1 o 2']].map(([a, b]) => `<dt>${a}</dt><dd>${b}</dd>`).join('');
   } else { $('fT').textContent = o.userData.info.t; $('fD').innerHTML = `<dt></dt><dd style="font-family:var(--f)">${o.userData.info.d}</dd>` }
-  $('ficha').style.display = 'block';
+  $('ficha').style.display = 'block'; document.body.classList.add('fic');
 });
-$('fx').onclick = () => { $('ficha').style.display = 'none'; if (sel) { pintar(sel, false); sel = null } };
+$('fx').onclick = () => { $('ficha').style.display = 'none'; document.body.classList.remove('fic'); if (sel) { pintar(sel, false); sel = null } };
 const vis = o => { for (let q = o; q; q = q.parent) if (!q.visible) return false; return true };
 function pintar(p, on) { const m = p.mesh.material; m.emissive.set(on ? '#7a4a00' : '#000000') }
 
@@ -754,7 +756,8 @@ function aplicar() {
   const x = +$('expl').value / 100 * 2.5; G.cor.position.y = x; G.pan.position.y = 2 * x; G.per.position.y = 3 * x; G.seg.position.y = 3 * x;
   const t = +$('corte').value / 100, x0 = ED === 'establo' ? OFF.establo[0] - 1 : -1, x1 = ED === 'galpon' ? GAL.L + 1 : OFF.establo[0] + EST.L + 1;
   plano.constant = t >= 1 ? 999 : x0 + (x1 - x0) * t;
-  const KD = cartelDia(); $('pasoTxt').innerHTML = TAREA ? `<b>${({ armado: 'Armando andamios', traslado: 'Trasladando el andamio', desarme: 'Desarmando el andamio' })[TAREA.tipo]}</b> · ${TAREA.cuerpos} cuerpos de 2,57 m` : FLY ? `<b>Día ${KD.dia(FLY.p)} de ${KD.total}</b> · subiendo ${FLY.p.orden}/${SEQ.length} · <b>${FLY.p.id}</b><br>${FLY.p.f.n} · ${FLY.p.largo.toFixed(2).replace('.', ',')} m${FLY.p.diag ? ' · corte diagonal' : ''} · ≈ ${Math.round(FLY.p.kg)} kg` : PASO >= SEQ.length ? `Cubierta completa · ${SEQ.length} piezas` : cur ? `<b>Día ${KD.dia(cur)} de ${KD.total}</b> · paso ${PASO}/${SEQ.length} · <b>${cur.id}</b><br>${cur.f.n} · ${cur.largo.toFixed(2).replace('.', ',')} m${cur.diag ? ' · corte diagonal' : ''} · ≈ ${Math.round(cur.kg)} kg` : 'Solo estructura y correas';
+  const quien = p => usaMani(p.f.ed, p.f.id) && MAQ[ALT][p.f.id] ? ' · <b>lo sube el manitou</b>' : ' · <b>se pasa a mano</b> desde el piso';
+  const KD = cartelDia(); $('pasoTxt').innerHTML = TAREA ? `<b>${({ armado: 'Armando andamios', traslado: 'Trasladando el andamio', desarme: 'Desarmando el andamio' })[TAREA.tipo]}</b> · ${TAREA.cuerpos} cuerpos de 2,57 m` : FLY ? `<b>Día ${KD.dia(FLY.p)} de ${KD.total}</b> · subiendo ${FLY.p.orden}/${SEQ.length} · <b>${FLY.p.id}</b><br>${FLY.p.f.n} · ${FLY.p.largo.toFixed(2).replace('.', ',')} m${FLY.p.diag ? ' · corte diagonal' : ''} · ≈ ${Math.round(FLY.p.kg)} kg${quien(FLY.p)}` : PASO >= SEQ.length ? `Cubierta completa · ${SEQ.length} piezas` : cur ? `<b>Día ${KD.dia(cur)} de ${KD.total}</b> · paso ${PASO}/${SEQ.length} · <b>${cur.id}</b><br>${cur.f.n} · ${cur.largo.toFixed(2).replace('.', ',')} m${cur.diag ? ' · corte diagonal' : ''} · ≈ ${Math.round(cur.kg)} kg${quien(cur)}` : 'Solo estructura y correas';
 }
 
 /* vistas */
@@ -864,7 +867,7 @@ $('costos').addEventListener('change', e => { if (e.target.id === 'gan-r' || e.t
 altTxt(); fit(); encuadre('persp'); aplicar();
 const reloj = new THREE.Clock();
 (function loop() { requestAnimationFrame(loop); const dt = Math.min(.1, reloj.getDelta());
-  motor(dt); const cur = FLY ? FLY.p : TAREA ? null : (PASO > 0 && PASO < SEQ.length ? SEQ[PASO - 1] : null), fly = FLY ? { pos: FLY.pos, seg: FLY.seg || 1, entrega: FLY.entrega } : null;
+  motor(dt); const cur = FLY ? FLY.p : TAREA ? null : (PASO > 0 && PASO < SEQ.length ? SEQ[PASO - 1] : null), fly = FLY ? { pos: FLY.pos, seg: FLY.seg || 1, entrega: FLY.entrega, p: FLY.p, pts: FLY.pts } : null;
   ACT[ALT].forEach(a => a.upd(cur && (ED === 'ambos' || cur.f.ed === ED) ? cur : null, fly, dt));
   O.update(); R.render(S, C); L2.render(S, C) })();
 window.__la = { PANELES, SEQ, CARAS, C, O };
