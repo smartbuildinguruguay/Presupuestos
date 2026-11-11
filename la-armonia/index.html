@@ -443,17 +443,20 @@ function manitou(k, ed, sirve) {
     const P0 = m.p.clone().addScaledVector(m.n, -1.7).setY(2.3); fijar(boom, P0, tip); hor.position.copy(tip).add(V(0, -.25, 0)); hor.scale.y = .1; paq.visible = carga; paq.position.copy(tip).add(V(0, -.45, 0)); paq.rotation.y = car.rotation.y };
   tip.copy(frente()); poner(true);
   // peón de piso: engancha la eslinga al panel junto a la pila y se aleja mientras sube la carga
-  const esl = persona(g, frente(), null, 'peón de piso: engancha la eslinga o cadena del panel y se aparta mientras sube');
+  const esl = persona(g, frente(), null, 'peón de piso: engancha la eslinga o cadena del panel, se aparta mientras sube y hace los cortes en la mesa');
   const linEsl = new THREE.Line(new THREE.BufferGeometry().setFromPoints([V(0, 0, 0), V(0, 0, 0), V(0, 0, 0)]), mCable); linEsl.frustumCulled = false; g.add(linEsl);
   cuerpo.userData.info = { t: 'Manitou (manipulador telescópico)', d: 'da la vuelta por afuera, se para frente a cada panel, lo sube por delante del alero y lo apoya; la cuadrilla lo empuja pendiente arriba. Operador en la cabina y un peón de piso que engancha la eslinga. Sin plataforma para personas' };
-  const M = { tipo: 'manitou', frente: p => frente(R.objetivo(p)), ed };
+  const M = { tipo: 'manitou', frente: p => frente(R.objetivo(p)), ed, corte: null };
   sirve.forEach(id => { MAQ[k][id] = M });
   ACT[k].push({ upd(cur, fly, dt) {
     const mio = cur && sirve.includes(cur.f.id) && usaMani(ed, cur.f.id); g.visible = cur ? cur.f.ed === ed : ed === 'galpon';
     if (mio) s = R.acercar(s, R.objetivo(cur), suave(dt, fly ? 3.5 : 2));
     const usa = mio && fly && fly.seg <= fly.entrega; tip.lerp(usa ? fly.pos.clone().add(V(0, .55, 0)) : frente(), suave(dt, usa ? 14 : 3)); poner(!usa);
     const m = R.mundo(s), lat = V(m.n.z, 0, -m.n.x), F = frente().setY(0), engancha = usa && fly.seg === 1 && fly.pos.y < 1.9;
-    esl.mover(F.clone().addScaledVector(lat, engancha ? .75 : 3).addScaledVector(m.n, engancha ? 0 : -.5), dt, engancha ? 6 : 3);
+    M.mesa = F.clone().addScaledVector(lat, 5.5).addScaledVector(m.n, 1.5); M.libre = !engancha && !(usa && fly.pos.y < 2.5);
+    if (M.corte && M.libre && g.visible) esl.mover(M.corte, dt, 4); // entre panel y panel corta él mismo en la mesa
+    else esl.mover(F.clone().addScaledVector(lat, engancha ? .75 : 3).addScaledVector(m.n, engancha ? 0 : -.5), dt, engancha ? 6 : 3);
+    M.peon = esl.o.position;
     const a = linEsl.geometry.attributes.position, c = paq.visible ? paq.position : tip.clone().add(V(0, -.3, 0)), hook = tip.clone().add(V(0, -.2, 0));
     a.setXYZ(0, hook.x, hook.y, hook.z); a.setXYZ(1, c.x - .4, c.y, c.z); a.setXYZ(2, c.x + .4, c.y, c.z); a.needsUpdate = true; linEsl.visible = usa } });
   return M;
@@ -500,13 +503,13 @@ function persona(g, p, lv, rol) {
 }
 
 const ALTS = {
-  A: { n: 'A · Andamio completo y manitou', crew: 'Galpón 6 + Establo 8: operador del manitou, peón de eslinga, 2 en andamio, arriba y 1 en corte', dias: '≈ 7–8 días de paneles',
+  A: { n: 'A · Andamio completo y manitou', crew: 'Galpón 6 + Establo 7: operador del manitou, peón de piso (eslinga y cortes), andamio y arriba', dias: '≈ 7–8 días de paneles',
     pro: ['Andamio en todo el perímetro de los dos edificios: plataforma continua para paneles, frontalines y remates', 'El manitou sube cada panel frente al alero y la cuadrilla lo recibe desde el andamio (se puede dejar solo para galpón y núcleo y pasar a mano los de galería, ≤ 41 kg)', 'Nadie depende de una máquina para estar arriba'],
     con: ['Es el que más andamio usa (≈ 340 m²) y lleva unos 4 días entre armado y desarme', 'Núcleo al 91 %: se coloca desde la galería ya terminada, amarrados a la cumbrera'] },
-  B: { n: 'B · Medio andamio que se mueve y manitou', rec: true, crew: 'Galpón 5 + Establo 7: operador del manitou, peón de eslinga, andamio, arriba y 1 en corte', dias: '≈ 8 días de paneles',
+  B: { n: 'B · Medio andamio que se mueve y manitou', rec: true, crew: 'Galpón 5 + Establo 6: operador del manitou, peón de piso (eslinga y cortes), andamio y arriba', dias: '≈ 8 días de paneles',
     pro: ['Se alquila un solo tramo de andamio (≈ 75 m², el largo de una galería) y se va trasladando', 'Orden pensado para mover poco: galpón (alero norte) → galería sur → punta oeste → galería norte → punta este → desarme → núcleo con el manitou', 'El manitou sube los paneles y el tramo de andamio sirve para recibirlos y hacer frontalines y remates'],
     con: ['Cuatro traslados de andamio de unas horas cada uno, más el desarme antes del núcleo', 'Hay que respetar el orden: si llueve a mitad de un lado, el andamio queda ahí'] },
-  C: { n: 'C · Una tijera y manitou', crew: 'Galpón 5 + Establo 6: operador del manitou, peón de eslinga, 1 en la tijera, 2 arriba y 1 en corte', dias: '≈ 7–8 días de paneles',
+  C: { n: 'C · Una tijera y manitou', crew: '5 en los dos edificios: operador del manitou, peón de piso (eslinga y cortes), 1 en la tijera y 2 arriba', dias: '≈ 7–8 días de paneles',
     pro: ['Sin andamio: nada que armar ni desarmar', 'Una sola tijera que pasa del galpón al establo y se para frente al panel; el manitou sube cada panel y el de la tijera lo recibe con los dos de arriba'],
     con: ['Dos máquinas alquiladas a la vez y suelo firme alrededor (con balastro húmedo se entierran)', 'Para frontalines y remates la tijera es menos cómoda que un andamio corrido'] },
 };
@@ -536,28 +539,30 @@ const usaMani = (ed, id) => ed !== 'establo' || MANI_EST === 'todos' || /^N[SN]$
     const H = persona(PER[k], R.mundo(s, h).p, null, rol);
     ACT[k].push({ upd(cur, fly, dt) { if (cur && sirve.includes(cur.f.id)) s = R.acercar(s, R.objetivo(cur, du), suave(dt, 2.5)); H.mover(R.mundo(s, h).p, dt, 6) } }) };
   const sobre = (k, getP, rol, dx = 0) => { const H = persona(PER[k], getP(), null, rol); ACT[k].push({ upd(cur, fly, dt) { H.mover(getP().add(V(dx, 0, 0)), dt, 8) } }) };
-  const corte = (k) => { const ed = 'establo', p = pl(ed, Lx / 2, W + 4.5, 0), G0 = new THREE.Group(); G0.position.copy(p); PER[k].add(G0);
+  const corte = (k) => { const ed = 'establo', p = pl(ed, Lx / 2, -6, 0), G0 = new THREE.Group(); G0.position.copy(p); PER[k].add(G0); const MQ = MAQ[k].LS;
     const mesa = new THREE.Mesh(new THREE.BoxGeometry(6.2, .08, 1.2), mTabla); mesa.position.y = .85; G0.add(mesa);
     [-2.8, 0, 2.8].forEach(dx => [-.45, .45].forEach(dz => viga(G0, V(dx, 0, dz), V(dx, .85, dz), .07, mTabla)));
-    mesa.userData.info = { t: 'Estación de corte', d: 'caballetes y sierra circular con disco para panel; 44 cortes (plan de corte BMC hoja 06), los diagonales con regla. Se corta el próximo panel mientras se sube el anterior' };
+    mesa.userData.info = { t: 'Estación de corte', d: 'caballetes y sierra circular con disco para panel; 44 cortes (plan de corte BMC hoja 06), los diagonales con regla. La mesa acompaña al manitou y los cortes los hace el peón de piso entre panel y panel' };
     const pan = new THREE.Mesh(new THREE.BoxGeometry(1, .03, 1), mat('#c9ccd0', { metalness: .4, roughness: .45 })); pan.position.y = .905; G0.add(pan);
     const raya = new THREE.Line(new THREE.BufferGeometry().setFromPoints([V(0, 0, 0), V(0, 0, 0)]), new THREE.LineBasicMaterial({ color: '#ff6a00' })); raya.frustumCulled = false; G0.add(raya);
     const sierra = new THREE.Group(); G0.add(sierra); { const cu = new THREE.Mesh(new THREE.BoxGeometry(.32, .14, .22), mat('#2e6fd8')); cu.position.y = .1; sierra.add(cu);
       const d = new THREE.Mesh(new THREE.CylinderGeometry(.11, .11, .01, 20), mat('#b8bcc0', { metalness: .8 })); d.rotation.x = Math.PI / 2; d.position.y = .05; sierra.add(d) }
     const chis = new THREE.Points(new THREE.BufferGeometry().setAttribute('position', new THREE.Float32BufferAttribute(new Float32Array(30 * 3), 3)), new THREE.PointsMaterial({ color: '#ffb347', size: .05 })); chis.frustumCulled = false; G0.add(chis);
-    const H = persona(G0, V(-.5, 0, .95), null, 'cortador: corta en la mesa el próximo panel (diagonales y recortes de ancho)');
     const necesita = q => q.diag || q.ancho < .99; let actual = null, t0 = 0;
     ACT[k].push({ upd(cur, fly, dt) {
       const desde = fly ? SEQ.indexOf(fly.p) + 1 : PASO; let q = null; for (let i = desde; i < Math.min(SEQ.length, desde + 4); i++) if (necesita(SEQ[i]) && SEQ[i].f.ed === 'establo') { q = SEQ[i]; break }
-      const on = !!q && (cur || fly); pan.visible = raya.visible = sierra.visible = on; chis.visible = false;
-      if (!on) { H.mover(V(-.5, 0, .95), dt, 3); actual = null; return }
-      if (q !== actual) { actual = q; t0 = performance.now() }
+      G0.visible = !cur || cur.f.ed === 'establo'; if (MQ.mesa) G0.position.lerp(MQ.mesa, suave(dt, 1.2));
+      const on = !!q && (cur || fly) && G0.visible; pan.visible = raya.visible = sierra.visible = on; chis.visible = false;
+      if (!on) { MQ.corte = null; actual = null; return }
+      if (q !== actual) { actual = q; t0 = 0 }
       const L = Math.min(q.largo, 6), w = 1; pan.scale.set(L, 1, w);
       const a = q.diag ? V(L / 2 - 1.2, .93, -w / 2) : V(-L / 2, .93, -w / 2 + q.ancho), b = q.diag ? V(L / 2, .93, w / 2) : V(L / 2, .93, -w / 2 + q.ancho);
       const ra = raya.geometry.attributes.position; ra.setXYZ(0, a.x, a.y, a.z); ra.setXYZ(1, b.x, b.y, b.z); ra.needsUpdate = true;
-      const T = q.diag ? 2.2 : 3.2, u = Math.min(1, ((performance.now() - t0) / 1000) / T), sp = a.clone().lerp(b, u); sierra.position.copy(sp);
-      if (u < 1) { chis.visible = true; const P = chis.geometry.attributes.position; for (let i = 0; i < 30; i++) { const r = Math.random(); P.setXYZ(i, sp.x - .1 - r * .5, sp.y + Math.random() * .25, sp.z + (Math.random() - .5) * .3) } P.needsUpdate = true }
-      H.mover(V(sp.x - .3, 0, .95), dt, 5) } }) };
+      const T = q.diag ? 2.2 : 3.2, llego = MQ.peon && MQ.libre && MQ.peon.distanceTo(G0.position.clone().add(V(sierra.position.x - .3, 0, .95))) < 1.2;
+      if (llego) t0 += dt * VEL; const u = Math.min(1, t0 / T), sp = a.clone().lerp(b, u); sierra.position.copy(sp);
+      MQ.corte = u < 1 ? G0.position.clone().add(V(sp.x - .3, 0, .95)) : null;
+      if (u < 1 && llego) { chis.visible = true; const P = chis.geometry.attributes.position; for (let i = 0; i < 30; i++) { const r = Math.random(); P.setXYZ(i, sp.x - .1 - r * .5, sp.y + Math.random() * .25, sp.z + (Math.random() - .5) * .3) } P.needsUpdate = true }
+    } }) };
   // armadores: van al cuerpo de andamio que se está armando o desarmando
   const armadores = k => [0, 1].forEach(i => { const home = pl('establo', -3 - i * .8, -3.5, 0), H = persona(PER[k], home, null, 'armado y traslado de andamio');
     ACT[k].push({ upd(cur, fly, dt) { const tg = TAREA && TAREA.k === k && TAREA.punto ? TAREA.punto.clone().add(V(i ? 1.1 : -1.1, 0, 0)).setY(0) : home; H.mover(tg, dt, 3) } }) });
@@ -781,12 +786,12 @@ const PC = {
   flete_pan: [450, 'Flete de paneles Colonia Nicolich → obra USD (supuesto; BMC lo cotiza aparte)'], imprev: [10, 'Imprevistos y lluvia %'], margen: [20, 'Ganancia SBU % sobre el costo'], rc: [300, 'Póliza RC por el montaje USD (supuesto)'], mkt: [48, 'Precio de mercado: colocación USD/m² + IVA'],
 };
 const QA = {
-  A: { fases: [['Armado y desarmado de andamios (toda la vuelta)', 4, { of: 1, pe: 3 }, 0], ['Galpón · paneles y remates', 1.5, { oe: 1, of: 1, pe: 4 }, 2], ['Establo · paneles, cortes y remates', 6, { oe: 1, of: 2, pe: 5 }, 3], ['Descarga de paneles', 1, { pe: 2 }, 0]],
-    maq: [['Manitou: galpón y núcleo (2 períodos)', 'm_mani', 4, 2]], and_m2: 335, arneses: 7, lineas: 4, personas: 9 },
-  B: { fases: [['Armado, 4 traslados y desarme del andamio', 3, { of: 1, pe: 3 }, 0], ['Galpón · paneles y remates', 1.5, { oe: 1, of: 1, pe: 3 }, 2], ['Establo · paneles, cortes y remates', 6.5, { oe: 1, of: 2, pe: 4 }, 3], ['Descarga de paneles', 1, { pe: 2 }, 0]],
-    maq: [['Manitou: galpón y núcleo (2 períodos)', 'm_mani', 4, 2]], and_m2: 75, arneses: 6, lineas: 4, personas: 8 },
-  C: { fases: [['Galpón · paneles y remates', 1.5, { oe: 1, of: 2, pe: 2 }, 3], ['Establo · paneles, cortes y remates', 6, { oe: 1, of: 2, pe: 3 }, 3], ['Descarga de paneles', 1, { pe: 2 }, 0]],
-    maq: [['Manitou: galpón y núcleo (2 períodos)', 'm_mani', 4, 2], ['Tijera todo terreno (una sola, galpón y establo)', 'm_tij', 8, 1]], and_m2: 0, arneses: 4, lineas: 4, personas: 7 },
+  A: { fases: [['Armado y desarmado de andamios (toda la vuelta)', 4, { of: 1, pe: 3 }, 0], ['Galpón · paneles y remates', 1.5, { oe: 1, of: 1, pe: 4 }, 2], ['Establo · paneles, cortes y remates', 6, { oe: 1, of: 2, pe: 4 }, 3], ['Descarga de paneles', 1, { pe: 2 }, 0]],
+    maq: [['Manitou: galpón y núcleo (2 períodos)', 'm_mani', 4, 2]], and_m2: 335, arneses: 7, lineas: 4, personas: 8 },
+  B: { fases: [['Armado, 4 traslados y desarme del andamio', 3, { of: 1, pe: 3 }, 0], ['Galpón · paneles y remates', 1.5, { oe: 1, of: 1, pe: 3 }, 2], ['Establo · paneles, cortes y remates', 6.5, { oe: 1, of: 2, pe: 3 }, 3], ['Descarga de paneles', 1, { pe: 2 }, 0]],
+    maq: [['Manitou: galpón y núcleo (2 períodos)', 'm_mani', 4, 2]], and_m2: 75, arneses: 6, lineas: 4, personas: 7 },
+  C: { fases: [['Galpón · paneles y remates', 1.5, { oe: 1, of: 2, pe: 2 }, 3], ['Establo · paneles, cortes y remates', 6, { oe: 1, of: 2, pe: 2 }, 3], ['Descarga de paneles', 1, { pe: 2 }, 0]],
+    maq: [['Manitou: galpón y núcleo (2 períodos)', 'm_mani', 4, 2], ['Tijera todo terreno (una sola, galpón y establo)', 'm_tij', 8, 1]], and_m2: 0, arneses: 4, lineas: 4, personas: 6 },
 };
 const PV = {}; Object.keys(PC).forEach(k => PV[k] = PC[k][0]); try { Object.assign(PV, JSON.parse(localStorage.getItem('la-costos') || '{}')) } catch (e) {}
 let REG = 'obra';
