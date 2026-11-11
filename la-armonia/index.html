@@ -17,6 +17,17 @@
 .tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--cu)}
 .res{margin:10px 0;border:1px solid var(--line);padding:8px 10px;background:rgba(255,255,255,.03)}.res .rh{font:700 .82rem var(--f);margin-bottom:5px}.res .rh span{display:block;font:500 .66rem var(--m);color:var(--mute);margin-top:2px}
 .res dl{display:grid;grid-template-columns:1fr auto;gap:5px 10px;margin:0;align-items:baseline}.res dt{color:var(--mute);font:500 .7rem var(--m)}.res dd{margin:0;font:600 .8rem var(--m);text-align:right;white-space:nowrap}.res dd small{display:block;font-weight:500}.res .g{color:#8fd694}.res small{font:500 .62rem var(--m);color:var(--mute)}.res .bar{height:3px;background:rgba(243,241,236,.15);margin:6px 0 3px}.res .bar u{display:block;height:100%;background:var(--cu)}
+.rv-top{display:flex;justify-content:space-between;align-items:center;gap:8px;font:500 .75rem var(--m);color:var(--mute)}.rv-top select{background:var(--panel);color:var(--ink);border:1px solid var(--line);padding:4px;font:500 .8rem var(--f)}
+.rv-prog{color:var(--cu)}.rv-acc{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
+.rv-s{border-top:1px solid var(--line);padding:6px 0}.rv-s summary{cursor:pointer;font:700 .9rem var(--f);padding:6px 0}.rv-c{float:right;font:500 .72rem var(--m);color:var(--cu)}
+.rv-i{padding:8px 0 8px 2px;border-bottom:1px dashed var(--line)}.rv-i.ok .rv-l span{color:var(--mute)}
+.rv-l{display:flex;gap:9px;align-items:flex-start;font-size:.86rem;line-height:1.3;cursor:pointer}.rv-l input{width:20px;height:20px;flex:none;accent-color:var(--cu);margin:0}
+.rv-a{color:#ff6b5b;font-size:.7rem}.rv-v,.rv-n,.rv-add input{display:block;width:100%;box-sizing:border-box;margin:6px 0 0 29px;width:calc(100% - 29px);background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--ink);padding:7px 8px;font:500 .84rem var(--f)}
+.rv-n[hidden]{display:none}.rv-add{display:flex;gap:6px;margin:6px 0}.rv-add input{margin:0;width:auto;flex:1}
+.rv-b{display:flex;gap:5px;align-items:center;margin:6px 0 0 29px}.btn.sm{padding:4px 8px;font-size:.72rem}.rv-q{margin-left:auto;font:500 .62rem var(--m);color:var(--mute)}
+.rv-fs{display:flex;flex-wrap:wrap;gap:5px;margin:6px 0 0 29px}.rv-fs img{width:64px;height:64px;object-fit:cover;border:1px solid var(--line);cursor:pointer}
+#rv-ver{position:fixed;inset:0;background:rgba(0,0,0,.88);z-index:50;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;padding:12px}#rv-ver img{max-width:100%;max-height:82vh}#rv-ver div{display:flex;gap:8px}
+@media (max-width:820px){body.rv-on main{display:none}body.rv-on #app{grid-template-rows:auto}}
 .cst h3{font:700 .95rem var(--f);margin:14px 0 4px}
 .cst table td.n{white-space:nowrap}.cst tr.sub td{color:var(--mute);font-size:.68rem;border-bottom:0;padding-top:0}
 .cst tr.tot td{font-weight:700;color:var(--ink);border-top:1px solid var(--ink)}
@@ -73,7 +84,7 @@ table{width:100%;border-collapse:collapse;font:500 .74rem var(--m);margin-top:6p
   <h1>La Armonía · cubierta</h1>
   <p class="sub">Hiansa-Panel 5G 30 mm Gris Pizarra · galpón 1 agua y establo (núcleo 2 aguas + galerías 4 aguas) · propuesta BMC v5 del 30/10/2026</p>
 
-  <div class="tabs" id="tabs"><button data-t="capas" aria-selected="true">Capas</button><button data-t="montaje">Montaje</button><button data-t="costos">Costos</button><button data-t="piezas">Piezas</button></div>
+  <div class="tabs" id="tabs"><button data-t="capas" aria-selected="true">Capas</button><button data-t="montaje">Montaje</button><button data-t="costos">Costos</button><button data-t="piezas">Piezas</button><button data-t="relevo">Relevo</button></div>
 
   <section data-p="capas">
   <h2>Qué ver</h2>
@@ -106,6 +117,7 @@ table{width:100%;border-collapse:collapse;font:500 .74rem var(--m);margin-top:6p
   <div id="piezas"></div>
   <div class="warn"><b>De dónde sale cada cosa.</b> Paneles y remates: propuesta BMC v5. Pilares, postes, muros, alturas y orientación: láminas de replanteo (cero de obra de cada edificio). Las medias cerchas de la galería y las cerchas del núcleo cada ~0,95 m salen de los cortes. Las secciones de madera y acero y la separación de correas son supuestas: hay que confirmarlas con el cálculo y la tabla de autoportancia de Hiansa. La ubicación entre el galpón y el establo es ilustrativa.</div>
   </section>
+  <section data-p="relevo" hidden><div id="relevo"></div></section>
 </aside>
 <main>
   <canvas id="c"></canvas>
@@ -901,6 +913,147 @@ const reloj = new THREE.Clock();
   ACT[ALT].forEach(a => a.upd(cur && (ED === 'ambos' || cur.f.ed === ED) ? cur : null, fly, dt));
   O.update(); R.render(S, C); L2.render(S, C) })();
 window.__la = { PANELES, SEQ, CARAS, C, O };
+</script>
+<script>
+/* ================= Relevo técnico en obra (independiente del 3D) =================
+   Se guarda en este navegador (texto en localStorage, fotos en IndexedDB).
+   Para llenarlo entre dos personas: Exportar → mandar el archivo → el otro lo Importa y se juntan. */
+(() => {
+  const $ = id => document.getElementById(id);
+  const SECC = [
+    ['Datos de la visita', [
+      ['v', 'Hora de llegada', ''], ['v', 'Quién relevó', ''], ['v', 'Contacto en obra (nombre y celular)', ''], ['v', 'Clima hoy', ''],
+      ['v', '¿Llovió los últimos 3 días?', ''], ['v', 'Pronóstico de la semana de montaje', ''],
+      ['c', 'Llevar: cinta de 30 m o distanciómetro, nivel, replanteo y propuesta BMC impresos'],
+      ['f', 'Fotos generales de cada fachada de galpón y establo (8 mínimo)']]],
+    ['Terreno alrededor (decide tijera o andamio)', [
+      ['v', 'Galpón norte (alero bajo +3,56)', 'suelo · desnivel · franja libre m · obstáculos'], ['v', 'Galpón sur (alto, portones)', 'suelo · desnivel · franja libre m · obstáculos'],
+      ['v', 'Galpón este y oeste', 'suelo · desnivel · franja libre m · obstáculos'], ['v', 'Establo sur (galería)', 'suelo · desnivel · franja libre m · obstáculos'],
+      ['v', 'Establo norte (galería)', 'suelo · desnivel · franja libre m · obstáculos'], ['v', 'Establo oeste (punta)', 'suelo · desnivel · franja libre m · obstáculos'],
+      ['v', 'Establo este (punta)', 'suelo · desnivel · franja libre m · obstáculos'],
+      ['c', 'Prueba del pie: ¿se hunde el talón o la camioneta deja huella? (en qué lados)'], ['c', '¿Se encharca con lluvia? ¿Escurre hacia el edificio?'],
+      ['v', 'Distancia entre galpón y establo y si pasa una máquina por el medio', 'm'], ['c', 'Contrapiso, vereda o zanjas abiertas al pie del alero'],
+      ['v', '¿La obra pone balasto o tosca en las franjas? ¿Quién lo paga?', ''], ['v', 'Cables aéreos cerca: distancia al alero y altura', 'm', 1]]],
+    ['Accesos y circulación', [
+      ['v', 'Distancia desde ruta y tipo de camino', 'km'], ['v', 'Ancho de la portera de entrada', 'm'], ['v', 'Ancho mínimo del camino interno', 'm'],
+      ['v', 'Radio para girar un camión con carga de 9 m', 'sí / no, dónde'], ['v', 'Puentes o alcantarillas (¿aguantan un manitou de ≈ 7 t?)', ''],
+      ['v', 'Árboles o ramas bajas en el camino', 'altura libre m'], ['v', 'Dónde descarga el camión (lado, distancia al establo)', ''], ['v', 'Señal de celular en obra', ''],
+      ['c', '¿Entra un camión con lluvia o hay que esperar que seque?', 1], ['c', 'Horarios o restricciones de acceso (animales, gremios, portón con llave)'],
+      ['c', 'Lugar para dejar la tijera o el manitou de noche, cerrado o vigilado']]],
+    ['Estructura existente (contra replanteo)', [
+      ['v', 'Galpón: alero bajo norte', 'plano +3,56 · medido'], ['v', 'Galpón: borde alto sur', 'plano +5,62 · medido'], ['v', 'Galpón: largo y profundidad entre ejes', 'm'],
+      ['v', 'Establo: alero de galería', 'plano +3,05 · medido'], ['v', 'Establo: quiebre galería / núcleo', 'plano +3,84 · medido'], ['v', 'Establo: cumbrera', 'plano +5,62 · medido'],
+      ['v', 'Separación de correas en galería y núcleo', 'm'], ['v', 'Diagonales de escuadra de cada edificio', 'm'],
+      ['c', '¿Está terminada toda la estructura (cerchas, medias cerchas, correas, limatesas)? Si no, ¿para cuándo?', 1],
+      ['c', 'Correas alineadas y a nivel (hilo en 2 o 3 faldones); anotar desvíos de más de 1 cm'], ['v', 'Sección y material real de las correas (para elegir tornillos)', ''],
+      ['c', 'Puntos firmes para anclar línea de vida en cumbrera y en el galpón'], ['c', '¿Las galerías aguantan gente caminando para subir al núcleo?'],
+      ['v', 'Frontalines, babetas y remates: quién los provee', '']]],
+    ['Andamios, máquinas y equipos en obra', [
+      ['v', 'Andamio (m², cuerpos, barandas, zócalos)', '¿hay? · cantidad · ¿lo podemos usar? · ¿se cobra?'], ['v', 'Andamio ya armado al pie de algún alero', 'qué lado'],
+      ['v', 'Tijera o plataforma elevadora', ''], ['v', 'Manitou, retro con uñas o tractor con pala', ''], ['v', 'Escaleras extensibles', 'largo'],
+      ['v', 'Líneas de vida o anclajes ya colocados', ''], ['v', 'Generador o tablero de obra', ''],
+      ['c', 'Si hay andamio: estado, base firme, si lo podemos trasladar', 1], ['c', 'Si hay tractor o retro: quién lo maneja y si puede subir paneles con eslinga']]],
+    ['Acopio, servicios, seguridad y papeles', [
+      ['v', 'Lugar de acopio para 121 paneles (hasta 8,95 m) sobre tacos', 'dónde · a cuántos m'], ['v', 'Lugar para la mesa de corte (6 m) con espacio para girar paneles', ''],
+      ['c', '¿Los paneles ya están en obra? Cantidad, film, golpes o agua adentro', 1], ['c', 'Viento: zona expuesta, hay que atar el acopio'],
+      ['v', 'Luz 220 V a menos de 30 m de la mesa (si no, generador)', ''], ['c', 'Agua, baño y lugar para comer y guardar herramientas'], ['v', 'Dónde se tiran recortes y film', ''],
+      ['c', 'Animales en el campo durante el montaje'], ['c', 'Otros gremios trabajando abajo al mismo tiempo (cercar zona de izaje)'], ['v', 'Centro de salud más cercano y acceso de ambulancia', ''],
+      ['v', '¿Obra inscripta en BPS (Ley 14.411)? Número de obra', ''], ['v', 'Titular o constructora', ''], ['v', 'Póliza RC y BSE que cubra a la cuadrilla', ''],
+      ['v', '¿Piden factura con IVA? ¿A nombre de quién?', ''], ['v', 'Técnico prevencionista: de la obra o nuestro', '']]],
+    ['Cuadrilla, plazos y cliente', [
+      ['v', 'Fecha en que quieren el techo terminado', ''], ['v', '¿Cuándo llegan o llegaron los paneles de BMC?', ''], ['v', '¿Sábados? Horario permitido', ''],
+      ['v', 'Alojamiento o viaje diario', 'km ida'], ['v', '¿Quién descarga el camión de paneles?', ''], ['v', 'Forma de pago y adelanto para alquileres', ''], ['v', '¿Quién aprueba la opción y el precio?', ''],
+      ['c', 'Confirmar cuadrilla: 2 arriba, 1 en andamio o tijera, 2 en el piso'], ['c', '¿Alguien maneja tijera o manitou, o vienen con operador?'],
+      ['c', 'Cotizar: tijera todo terreno, manitou (objetivo USD 220/día), andamio 75 m² × 3 semanas, fletes']]],
+    ['Decisión para el presupuesto final', [
+      ['v', 'Opción elegida (1 medio andamio, 2 tijera, 3 tijera + manitou, o mezcla)', ''], ['v', 'Días de galpón / días de establo', ''],
+      ['v', 'Alquileres cotizados (USD/día y flete)', ''], ['v', 'Equipos de la obra que usamos sin costo', ''], ['v', 'Trabajos extra (balasto, terminar estructura, remates)', ''],
+      ['v', 'Régimen: obra en BPS o SBU factura con IVA', ''], ['v', 'Póliza: la tiene la obra o la sacamos (USD)', ''], ['v', 'Precio por m² a ofrecer (sin IVA)', ''], ['v', 'Observaciones', '']]],
+  ];
+  const slug = t => t.toLowerCase().normalize('NFD').replace(/[̀-ͯ]/g, '').replace(/[^a-z0-9]+/g, '-').slice(0, 48);
+  SECC.forEach(([n, it], si) => it.forEach(x => x.id = si + '-' + slug(x[1])));
+  const KEY = 'la-relevo-v1';
+  let E = { items: {}, preg: [], quien: '' }; try { Object.assign(E, JSON.parse(localStorage.getItem(KEY) || '{}')) } catch (e) {}
+  const guardar = () => { try { localStorage.setItem(KEY, JSON.stringify(E)) } catch (e) {} };
+  const hora = t => t ? new Date(t).toLocaleString('es-UY', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' }) : '';
+  const esc = s => String(s || '').replace(/[&<>"]/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' })[c]);
+  // fotos en IndexedDB
+  let DB = null; const abrir = () => DB ? Promise.resolve(DB) : new Promise((ok, mal) => { const r = indexedDB.open('la-relevo', 1); r.onupgradeneeded = () => r.result.createObjectStore('fotos', { keyPath: 'id' }); r.onsuccess = () => ok(DB = r.result); r.onerror = () => mal(r.error) });
+  const tx = (modo, fn) => abrir().then(db => new Promise((ok, mal) => { const t = db.transaction('fotos', modo), st = t.objectStore('fotos'), r = fn(st); t.oncomplete = () => ok(r && r.result); t.onerror = () => mal(t.error) }));
+  const fotoGet = id => tx('readonly', st => st.get(id)), fotoPut = f => tx('readwrite', st => st.put(f)), fotoDel = id => tx('readwrite', st => st.delete(id)), fotoTodas = () => tx('readonly', st => st.getAll());
+  const achicar = file => new Promise((ok, mal) => { const fr = new FileReader(); fr.onload = () => { const im = new Image(); im.onload = () => { const k = Math.min(1, 1600 / Math.max(im.width, im.height)), c = document.createElement('canvas'); c.width = Math.round(im.width * k); c.height = Math.round(im.height * k); c.getContext('2d').drawImage(im, 0, 0, c.width, c.height); ok(c.toDataURL('image/jpeg', .72)) }; im.onerror = mal; im.src = fr.result }; fr.onerror = mal; fr.readAsDataURL(file) });
+  const it = id => E.items[id] || (E.items[id] = { ok: false, v: '', n: '', f: [], t: 0, q: '' });
+  const tocar = x => { x.t = Date.now(); x.q = E.quien || ''; guardar(); progreso() };
+
+  function render() {
+    const total = SECC.reduce((t, s) => t + s[1].length, 0);
+    let h = `<h2>Relevo técnico en obra</h2>
+    <div class="rv-top"><label>Quién completa <select id="rv-quien"><option value="">elegir…</option>${['Ramiro', 'Matías'].map(q => `<option${E.quien === q ? ' selected' : ''}>${q}</option>`).join('')}</select></label>
+    <span id="rv-prog" class="rv-prog"></span></div>
+    <div class="rv-acc"><button class="btn" id="rv-exp">Exportar (con fotos)</button><button class="btn" id="rv-imp">Importar y juntar</button><button class="btn" id="rv-sha">Mandar resumen</button><input type="file" id="rv-file" accept="application/json,.json" hidden></div>
+    <p class="nota">Se guarda solo en este teléfono o compu. Para llenarlo entre los dos: uno toca <b>Exportar</b> y manda el archivo por WhatsApp; el otro toca <b>Importar y juntar</b>: se suman los ticks, las fotos y las preguntas, y en cada punto queda lo último que se escribió.</p>`;
+    SECC.forEach(([n, items], si) => {
+      h += `<details class="rv-s" ${si < 2 ? 'open' : ''}><summary>${n} <span class="rv-c" data-s="${si}"></span></summary>`;
+      items.forEach(it0 => { const [tp, txt] = it0, ph = tp === 'v' ? it0[2] : '', alerta = tp === 'v' ? it0[3] : it0[2], id = it0.id, x = E.items[id] || {};
+        h += `<div class="rv-i${x.ok ? ' ok' : ''}" data-id="${id}"><label class="rv-l"><input type="checkbox" data-k="ok"${x.ok ? ' checked' : ''}><span>${esc(txt)}${alerta ? ' <b class="rv-a" title="sacar foto">●</b>' : ''}</span></label>
+          ${tp === 'v' ? `<input class="rv-v" data-k="v" placeholder="${esc(ph || 'anotar')}" value="${esc(x.v)}">` : ''}
+          <div class="rv-b"><button class="btn sm" data-foto="cam">Foto</button><button class="btn sm" data-foto="sub">Subir</button><button class="btn sm" data-nota>${x.n ? 'Nota ✎' : 'Nota'}</button><span class="rv-q">${x.t ? esc(x.q || '') + ' ' + hora(x.t) : ''}</span></div>
+          <textarea class="rv-n" data-k="n" rows="2" placeholder="nota o duda"${x.n ? '' : ' hidden'}>${esc(x.n)}</textarea>
+          <div class="rv-fs">${(x.f || []).map(f => `<img data-f="${f}" alt="foto">`).join('')}</div></div>` });
+      h += `</details>` });
+    h += `<details class="rv-s" open><summary>Preguntas y pendientes <span class="rv-c" id="rv-pc"></span></summary>
+      <div class="rv-add"><input id="rv-pq" placeholder="Nueva pregunta o cosa para averiguar"><button class="btn" id="rv-padd">Agregar</button></div><div id="rv-pl"></div></details>`;
+    $('relevo').innerHTML = h; pregs(); progreso(); miniaturas();
+  }
+  function pregs() {
+    const L = [...E.preg].sort((a, b) => (a.ok - b.ok) || b.c - a.c);
+    $('rv-pl').innerHTML = L.length ? L.map(p => `<div class="rv-i${p.ok ? ' ok' : ''}" data-p="${p.id}"><label class="rv-l"><input type="checkbox" data-pk="ok"${p.ok ? ' checked' : ''}><span>${esc(p.txt)}</span></label>
+      <input class="rv-v" data-pk="a" placeholder="respuesta" value="${esc(p.a)}"><div class="rv-b"><span class="rv-q">${esc(p.q || '')} ${hora(p.t)}</span><button class="btn sm" data-pdel>Borrar</button></div></div>`).join('') : '<p class="nota">Todavía no hay preguntas.</p>';
+    $('rv-pc').textContent = E.preg.length ? `${E.preg.filter(p => p.ok).length}/${E.preg.length}` : '';
+  }
+  function progreso() {
+    let tot = 0, ok = 0; SECC.forEach(([n, items], si) => { const k = items.filter(x => (E.items[x.id] || {}).ok).length; tot += items.length; ok += k; const el = document.querySelector(`.rv-c[data-s="${si}"]`); if (el) el.textContent = `${k}/${items.length}` });
+    const el = $('rv-prog'); if (el) el.textContent = `${ok}/${tot} tildados`;
+  }
+  function miniaturas() { document.querySelectorAll('#relevo img[data-f]').forEach(im => { if (!im.src) fotoGet(im.dataset.f).then(f => { if (f) im.src = f.data; else im.remove() }) }) }
+  // eventos
+  let fotoPara = null; const inp = document.createElement('input'); inp.type = 'file'; inp.accept = 'image/*'; inp.multiple = true; inp.hidden = true; document.body.appendChild(inp);
+  inp.addEventListener('change', async () => { const id = fotoPara, x = it(id); for (const file of inp.files) { try { const data = await achicar(file), fid = id + '-' + Date.now().toString(36) + Math.random().toString(36).slice(2, 5);
+      await fotoPut({ id: fid, item: id, data, t: Date.now(), q: E.quien || '' }); (x.f = x.f || []).push(fid) } catch (e) { alert('No se pudo leer la foto') } }
+    inp.value = ''; tocar(x); const box = document.querySelector(`.rv-i[data-id="${id}"] .rv-fs`); if (box) { box.innerHTML = x.f.map(f => `<img data-f="${f}" alt="foto">`).join(''); miniaturas() } });
+  document.addEventListener('click', async e => {
+    const R = $('relevo'); if (!R || !R.contains(e.target)) { if (e.target.id === 'rv-ver' || e.target.closest('#rv-ver')) { const v = $('rv-ver'); if (e.target.dataset.borrar) { const fid = v.dataset.f, x = it(v.dataset.i); x.f = x.f.filter(f => f !== fid); await fotoDel(fid); tocar(x); v.remove(); const im = document.querySelector(`#relevo img[data-f="${fid}"]`); if (im) im.remove() } else if (e.target === v || e.target.dataset.cerrar) v.remove() } return }
+    const fila = e.target.closest('.rv-i[data-id]'), id = fila && fila.dataset.id;
+    if (e.target.dataset.foto) { fotoPara = id; if (e.target.dataset.foto === 'cam') inp.setAttribute('capture', 'environment'); else inp.removeAttribute('capture'); inp.click(); return }
+    if (e.target.hasAttribute('data-nota')) { const ta = fila.querySelector('.rv-n'); ta.hidden = !ta.hidden; if (!ta.hidden) ta.focus(); return }
+    if (e.target.matches('img[data-f]')) { const v = document.createElement('div'); v.id = 'rv-ver'; v.dataset.f = e.target.dataset.f; v.dataset.i = id; v.innerHTML = `<img src="${e.target.src}"><div><button class="btn" data-cerrar="1">Cerrar</button><button class="btn" data-borrar="1">Borrar foto</button></div>`; document.body.appendChild(v); return }
+    if (e.target.id === 'rv-padd') { const q = $('rv-pq').value.trim(); if (!q) return; E.preg.push({ id: Date.now().toString(36) + Math.random().toString(36).slice(2, 5), txt: q, a: '', ok: false, c: Date.now(), t: Date.now(), q: E.quien || '' }); $('rv-pq').value = ''; guardar(); pregs(); return }
+    if (e.target.hasAttribute('data-pdel')) { const pid = e.target.closest('[data-p]').dataset.p; if (!confirm('¿Borrar esta pregunta?')) return; E.preg = E.preg.filter(p => p.id !== pid); (E.borradas = E.borradas || []).push(pid); guardar(); pregs(); return }
+    if (e.target.id === 'rv-exp') { const fotos = await fotoTodas(); const blob = new Blob([JSON.stringify({ tipo: 'relevo-la-armonia', v: 1, exportado: Date.now(), quien: E.quien, estado: E, fotos })], { type: 'application/json' });
+      const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = `relevo-la-armonia-${new Date().toISOString().slice(0, 16).replace(/[T:]/g, '-')}${E.quien ? '-' + slug(E.quien) : ''}.json`; a.click(); setTimeout(() => URL.revokeObjectURL(a.href), 5000); return }
+    if (e.target.id === 'rv-imp') { $('rv-file').click(); return }
+    if (e.target.id === 'rv-sha') { const txt = resumen(); if (navigator.share) { try { await navigator.share({ title: 'Relevo La Armonía', text: txt }) } catch (x) {} } else { try { await navigator.clipboard.writeText(txt); alert('Resumen copiado: pegalo en WhatsApp') } catch (x) { prompt('Copiá el resumen', txt) } } return }
+  });
+  document.addEventListener('change', async e => {
+    if (e.target.id === 'rv-quien') { E.quien = e.target.value; guardar(); return }
+    if (e.target.id === 'rv-file') { const f = e.target.files[0]; if (!f) return; try { const J = JSON.parse(await f.text()); if (J.tipo !== 'relevo-la-armonia') throw 0; await juntar(J); render(); alert('Listo: se juntó con lo de ' + (J.quien || 'el otro archivo')) } catch (x) { alert('Ese archivo no es un relevo de La Armonía') } e.target.value = ''; return }
+    const fila = e.target.closest && e.target.closest('#relevo .rv-i'); if (!fila) return;
+    if (fila.dataset.id && e.target.dataset.k) { const x = it(fila.dataset.id), k = e.target.dataset.k; x[k] = k === 'ok' ? e.target.checked : e.target.value; if (k === 'ok') fila.classList.toggle('ok', e.target.checked); tocar(x); const q = fila.querySelector('.rv-q'); if (q) q.textContent = (x.q || '') + ' ' + hora(x.t); return }
+    if (fila.dataset.p && e.target.dataset.pk) { const p = E.preg.find(p => p.id === fila.dataset.p); if (!p) return; const k = e.target.dataset.pk; p[k] = k === 'ok' ? e.target.checked : e.target.value; p.t = Date.now(); p.q = E.quien || ''; guardar(); if (k === 'ok') pregs() }
+  });
+  document.addEventListener('input', e => { if (e.target.matches && e.target.matches('#relevo .rv-n')) { const fila = e.target.closest('.rv-i'), x = it(fila.dataset.id); x.n = e.target.value; x.t = Date.now(); x.q = E.quien || ''; guardar() } });
+  async function juntar(J) { const O = J.estado || {};
+    Object.entries(O.items || {}).forEach(([id, y]) => { const x = E.items[id]; const fs = [...new Set([...(x && x.f || []), ...(y.f || [])])]; E.items[id] = !x || (y.t || 0) > (x.t || 0) ? { ...y, f: fs } : { ...x, f: fs } });
+    const borr = new Set([...(E.borradas || []), ...(O.borradas || [])]); E.borradas = [...borr];
+    (O.preg || []).forEach(p => { const i = E.preg.findIndex(x => x.id === p.id); if (i < 0) E.preg.push(p); else if ((p.t || 0) > (E.preg[i].t || 0)) E.preg[i] = p }); E.preg = E.preg.filter(p => !borr.has(p.id));
+    const ya = new Set((await fotoTodas()).map(f => f.id)); for (const f of J.fotos || []) if (!ya.has(f.id)) await fotoPut(f); guardar() }
+  function resumen() { let t = `Relevo La Armonía · ${new Date().toLocaleDateString('es-UY')}${E.quien ? ' · ' + E.quien : ''}\n`;
+    SECC.forEach(([n, items]) => { const L = items.map(x => { const y = E.items[x.id] || {}; if (!y.ok && !y.v && !y.n) return ''; return `${y.ok ? '✔' : '·'} ${x[1]}${y.v ? ': ' + y.v : ''}${y.n ? ' (' + y.n + ')' : ''}${(y.f || []).length ? ` [${y.f.length} foto${y.f.length > 1 ? 's' : ''}]` : ''}` }).filter(Boolean); if (L.length) t += `\n*${n}*\n` + L.join('\n') + '\n' });
+    const P = E.preg.filter(p => !p.ok); if (P.length) t += `\n*Preguntas pendientes*\n` + P.map(p => `? ${p.txt}${p.a ? ': ' + p.a : ''}`).join('\n') + '\n'; return t }
+  render();
+  // en el celular, la pestaña Relevo ocupa toda la pantalla (sin el 3D)
+  $('tabs').addEventListener('click', e => { const b = e.target.closest('[data-t]'); if (b) document.body.classList.toggle('rv-on', b.dataset.t === 'relevo') });
+})();
 </script>
 </body>
 </html>
