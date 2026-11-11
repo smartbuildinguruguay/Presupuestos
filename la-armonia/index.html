@@ -87,6 +87,8 @@ table{width:100%;border-collapse:collapse;font:500 .74rem var(--m);margin-top:6p
   <section data-p="montaje" hidden>
   <h2>Alternativa</h2>
   <div class="seg" id="alt"></div>
+  <h2>Manitou en el establo</h2>
+  <div class="seg" id="mani"><button data-m="todos" aria-pressed="true">Todos los paneles</button><button data-m="nucleo">Solo el núcleo</button></div>
   <h2>Paso a paso</h2>
   <div class="row"><button class="btn" id="play">▶ Reproducir</button><button class="btn" id="todo">Ver todo</button><div class="seg" id="vel"><button data-vel="1" aria-pressed="true">1×</button><button data-vel="3">3×</button><button data-vel="10">10×</button></div></div>
   <input type="range" id="paso" min="0" max="1" value="1">
@@ -443,7 +445,7 @@ function manitou(k, ed, sirve) {
   const M = { tipo: 'manitou', frente: p => frente(R.objetivo(p)), ed };
   sirve.forEach(id => { MAQ[k][id] = M });
   ACT[k].push({ upd(cur, fly, dt) {
-    const mio = cur && sirve.includes(cur.f.id); g.visible = cur ? cur.f.ed === ed : ed === 'galpon';
+    const mio = cur && sirve.includes(cur.f.id) && usaMani(ed, cur.f.id); g.visible = cur ? cur.f.ed === ed : ed === 'galpon';
     if (mio) s = R.acercar(s, R.objetivo(cur), suave(dt, fly ? 3.5 : 2));
     const usa = mio && fly && fly.seg <= fly.entrega; tip.lerp(usa ? fly.pos.clone().add(V(0, .55, 0)) : frente(), suave(dt, usa ? 14 : 3)); poner(!usa) } });
   return M;
@@ -491,19 +493,21 @@ function persona(g, p, lv, rol) {
 
 const ALTS = {
   A: { n: 'A · Andamio completo y manitou', crew: 'Galpón 5 + Establo 6 (+1 en corte)', dias: '≈ 7–8 días de paneles',
-    pro: ['Andamio en todo el perímetro de los dos edificios: plataforma continua para paneles, frontalines y remates', 'Manitou solo para los paneles de 8,95 m del galpón y para el núcleo (unos 4 días); los de galería y puntas (≤ 41 kg) se pasan a mano desde el andamio', 'Nadie depende de una máquina para estar arriba'],
+    pro: ['Andamio en todo el perímetro de los dos edificios: plataforma continua para paneles, frontalines y remates', 'El manitou sube cada panel frente al alero y la cuadrilla lo recibe desde el andamio (se puede dejar solo para galpón y núcleo y pasar a mano los de galería, ≤ 41 kg)', 'Nadie depende de una máquina para estar arriba'],
     con: ['Es el que más andamio usa (≈ 340 m²) y lleva unos 4 días entre armado y desarme', 'Núcleo al 91 %: se coloca desde la galería ya terminada, amarrados a la cumbrera'] },
   B: { n: 'B · Medio andamio que se mueve y manitou', rec: true, crew: 'Galpón 4 + Establo 5 (+1 en corte)', dias: '≈ 8 días de paneles',
-    pro: ['Se alquila un solo tramo de andamio (≈ 75 m², el largo de una galería) y se va trasladando', 'Orden pensado para mover poco: galpón (alero norte) → galería sur → punta oeste → galería norte → punta este → desarme → núcleo con el manitou', 'Manitou unos 4 días: galpón y núcleo. Los paneles de galería se pasan a mano desde el tramo de andamio'],
+    pro: ['Se alquila un solo tramo de andamio (≈ 75 m², el largo de una galería) y se va trasladando', 'Orden pensado para mover poco: galpón (alero norte) → galería sur → punta oeste → galería norte → punta este → desarme → núcleo con el manitou', 'El manitou sube los paneles y el tramo de andamio sirve para recibirlos y hacer frontalines y remates'],
     con: ['Cuatro traslados de andamio de unas horas cada uno, más el desarme antes del núcleo', 'Hay que respetar el orden: si llueve a mitad de un lado, el andamio queda ahí'] },
   C: { n: 'C · Tijeras y manitou', crew: 'Galpón 4 + Establo 5 (+1 en corte)', dias: '≈ 7–8 días de paneles',
-    pro: ['Sin andamio: nada que armar ni desarmar', 'Dos tijeras se mueven solas frente al panel; los de galería se pasan a mano a la tijera y el manitou sube solo los del galpón y el núcleo'],
+    pro: ['Sin andamio: nada que armar ni desarmar', 'Dos tijeras se mueven solas frente al panel; el manitou sube cada panel y los de las tijeras lo reciben'],
     con: ['Tres máquinas alquiladas a la vez y suelo firme alrededor (con balastro húmedo se entierran)', 'Para frontalines y remates la tijera es menos cómoda que un andamio corrido'] },
 };
 const ACC = { A: new THREE.Group(), B: new THREE.Group(), C: new THREE.Group() }, SEG = { A: new THREE.Group(), B: new THREE.Group(), C: new THREE.Group() }, PER = { A: new THREE.Group(), B: new THREE.Group(), C: new THREE.Group() };
 Object.keys(ACC).forEach(k => { G.acc.add(ACC[k]); G.seg.add(SEG[k]); G.per2.add(PER[k]) });
 const AND = { A: {}, B: {}, C: {} }; // andamios por alternativa (para armarlos y moverlos en la animación)
-let TAREA = null;                     // armado o traslado de andamio en curso
+let TAREA = null;
+let MANI_EST = 'todos'; // manitou en el establo: 'todos' los paneles o 'nucleo' solo
+const usaMani = (ed, id) => ed !== 'establo' || MANI_EST === 'todos' || /^N[SN]$/.test(id);                     // armado o traslado de andamio en curso
 {
   const g = cara('G'), W = EST.W, Lx = EST.L, NS = cara('NS'), NN = cara('NN'), LS = cara('LS'), LN = cara('LN');
   const lvG = k => lineaVida(SEG[k], [0, 3, 6, 9, 12.32].map(x => g.wp([x, .3], .05)));
@@ -539,7 +543,7 @@ let TAREA = null;                     // armado o traslado de andamio en curso
 
   /* A: andamio completo toda la vuelta + manitou */
   armar('A', ['GN', 'GS', 'GO', 'GE', 'S', 'N', 'O', 'E']);
-  manitou('A', 'galpon', ['G']); manitou('A', 'establo', NUC);
+  manitou('A', 'galpon', ['G']); manitou('A', 'establo', [...EST4, ...NUC]);
   { const P = lvG('A'), E = lvE('A'), LV = { G: P, LS: E.s1, LN: E.s2, NS: E.r, NN: E.r };
     techero('A', { f: g, p: [4.5, 1.4] }, LV, ['G'], -.8, 'tira del panel desde arriba y lo fija'); techero('A', { f: g, p: [5.5, 1.4] }, LV, ['G'], .8, 'guía y fija el panel');
     enAndamio('A', 'galpon', 2.47, ['G'], -1, 'recibe el panel del manitou en el andamio bajo (norte)'); enAndamio('A', 'galpon', 2.47, ['G'], 1, 'empuja el panel pendiente arriba');
@@ -549,7 +553,7 @@ let TAREA = null;                     // armado o traslado de andamio en curso
 
   /* B: un tramo de andamio que se traslada + manitou */
   armar('B', ['GN', 'S', 'N', 'O', 'E']);
-  manitou('B', 'galpon', ['G']); manitou('B', 'establo', NUC);
+  manitou('B', 'galpon', ['G']); manitou('B', 'establo', [...EST4, ...NUC]);
   { const P = lvG('B'), E = lvE('B'), LV = { G: P, LS: E.s1, LN: E.s2, NS: E.r, NN: E.r };
     techero('B', { f: g, p: [10, 1.4] }, LV, ['G'], -.9, 'tira del panel desde arriba'); techero('B', { f: g, p: [9, 1.4] }, LV, ['G'], .9, 'fija el panel');
     enAndamio('B', 'galpon', 2.47, ['G'], 0, 'recibe el panel del manitou en el andamio bajo (norte)');
@@ -558,7 +562,7 @@ let TAREA = null;                     // armado o traslado de andamio en curso
     enAndamio('B', 'establo', 1.97, [...EST4, ...NUC], 0, 'recibe el panel en el tramo de andamio'); armadores('B'); corte('B') }
 
   /* C: tijeras + manitou, sin andamio */
-  manitou('C', 'galpon', ['G']); manitou('C', 'establo', NUC);
+  manitou('C', 'galpon', ['G']); manitou('C', 'establo', [...EST4, ...NUC]);
   const tG = tijeraAnillo('C', 'galpon', 1.8, 4.6, ['G'], 0, () => 'S');
   const tE1 = tijeraAnillo('C', 'establo', 1.7, 2.1, [...EST4, ...NUC], -2.6), tE2 = tijeraAnillo('C', 'establo', 1.7, 2.1, [...EST4, ...NUC], 2.6);
   { const P = lvG('C'), E = lvE('C'), LV = { G: P, LS: E.s1, LN: E.s2, NS: E.r, NN: E.r };
@@ -577,7 +581,7 @@ function ordenar() {
   SEQ.length = 0;
   if (ALT === 'B') ['G', 'LS', 'PO', 'LN', 'PE'].forEach(id => porCara(id).forEach(p => SEQ.push(p))); // pocos traslados del andamio
   else ['G', 'LS', 'LN', 'PO', 'PE'].forEach(id => porCara(id).forEach(p => SEQ.push(p)));
-  { const ns = porCara('NS'), nn = porCara('NN'); ns.forEach((p, i) => { SEQ.push(p); if (nn[i]) SEQ.push(nn[i]) }) }
+  ['NS', 'NN'].forEach(id => porCara(id).forEach(p => SEQ.push(p))); // núcleo: faldón sur entero y después el norte (el manitou da una sola vuelta)
   SEQ.forEach((p, i) => p.orden = i + 1);
 }
 // qué andamios tienen que estar armados para colocar cada panel
@@ -604,7 +608,7 @@ $('paso').max = SEQ.length; $('paso').value = SEQ.length;
 /* reproducción: armado y traslado de andamios, y cada panel por el camino real del manitou y la cuadrilla */
 let PLAY = false, FLY = null, VEL = 1; const DUR = 3.4, T_CUERPO = .6;
 function ruta(p) {
-  const f = p.f, E = p.c.clone(), m = MAQ[ALT][f.id];
+  const f = p.f, E = p.c.clone(), m = usaMani(f.ed, f.id) ? MAQ[ALT][f.id] : null;
   if (f.id === 'NS' || f.id === 'NN') { // núcleo: el manitou lo deja sobre la galería ya colocada, cerca del quiebre; de ahí se sube al núcleo
     const Lf = f.id === 'NS' ? cara('LS') : cara('LN'), x = E.x - OFF.establo[0], D = Lf.wp([x, f.id === 'NS' ? EST.gy - 1.5 : EST.W - EST.gy + 1.5], .45);
     const S0 = m.frente(p), top = D.y + 1.1, sube = E.clone().addScaledVector(f.Sv, -(p.largo + .1)).addScaledVector(f.N, .25);
@@ -635,6 +639,7 @@ const parar = () => { PLAY = false; soltar(); TAREA = null; $('play').textConten
 $('play').onclick = () => { if (PLAY) return parar(); if (PASO >= SEQ.length) { PASO = 0; $('paso').value = 0; andamiosFijos() } PLAY = true; $('play').textContent = '❚❚ Pausa'; aplicar() };
 $('paso').addEventListener('input', e => { PASO = +e.target.value; if (PLAY) parar(); else aplicar() });
 $('todo').onclick = () => { PASO = SEQ.length; $('paso').value = PASO; parar() };
+$('mani').addEventListener('click', e => { const b = e.target.closest('[data-m]'); if (!b) return; MANI_EST = b.dataset.m; $('mani').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)); if (!$('costos').closest('section').hidden) costos() });
 $('vel').addEventListener('click', e => { const b = e.target.closest('[data-vel]'); if (!b) return; VEL = +b.dataset.vel; $('vel').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)) });
 // en cada cuadro: si se reproduce, sigue con la tarea de andamio o con el panel siguiente
 function motor(dt) {
@@ -765,7 +770,9 @@ function calc(k) {
   const fases = q.fases.map(([n, d, cr, alt]) => { const per = Object.values(cr).reduce((a, b) => a + b, 0), nom = d * (Object.entries(cr).reduce((t, [c, x]) => t + x * J[c], 0) + alt * v.altura), comp = d * Object.entries(cr).reduce((t, [c, x]) => t + x * C[c], 0);
     return { n, d, per, nom: nom / tc, comp: comp / tc, det: Object.entries(cr).map(([c, x]) => `${x} ${x > 1 && c === 'pe' ? 'peones' : ({ oe: 'of. esp.', of: 'of.', mo: 'm. of.', pe: 'peón' })[c]}`).join(' + ') } });
   const nom = fases.reduce((t, f) => t + f.nom, 0), comp = fases.reduce((t, f) => t + f.comp, 0);
-  const maq = q.maq.map(([n, key, dias, fl]) => ({ n, dias, fl, usd: dias * v[key] + fl * v.m_flete })), eq = maq.reduce((t, m) => t + m.usd, 0);
+  const dG = (q.fases.find(f => /^Galpón/.test(f[0])) || [0, 0])[1], dE = (q.fases.find(f => /^Establo/.test(f[0])) || [0, 0])[1];
+  const maq = q.maq.map(([n, key, dias, fl]) => { if (key === 'm_mani') { if (MANI_EST === 'todos') { n = 'Manitou: galpón y establo completo'; dias = Math.ceil(dG + dE); fl = 1 } else { n = 'Manitou: galpón y núcleo (2 períodos)'; dias = 4; fl = 2 } }
+    return { n, dias, fl, usd: dias * v[key] + fl * v.m_flete } }), eq = maq.reduce((t, m) => t + m.usd, 0);
   const and = q.and_m2 ? q.and_m2 * v.and_sem * v.and_m2sem + v.and_flete : 0;
   const seg = q.arneses * v.epp_arnes + q.personas * v.epp_pers + q.lineas * v.epp_linea + v.prev;
   const flete = v.flete_pan, base = nom + comp + eq + and + seg + flete, imp = base * v.imprev / 100, directo = base + imp;
@@ -779,7 +786,7 @@ function calc(k) {
 function costos() {
   const R = { A: calc('A'), B: calc('B'), C: calc('C') }, r = R[ALT], tot = x => REG === 'obra' ? x.totObra : x.totIC, gan = x => REG === 'obra' ? x.ganObra : x.ganIC;
   const fila = (a, b, cls = '') => `<tr class="${cls}"><td>${a}</td><td class="n">${b}</td></tr>`;
-  let h = `<h2>Costo de instalación · estimado</h2>
+  let h = `<h2>Costo de instalación · estimado</h2><p class="nota" style="margin-top:0">Manitou en el establo: <b>${MANI_EST === 'todos' ? 'todos los paneles' : 'solo el núcleo'}</b> (se cambia en Montaje)</p>
   <div class="seg" id="reg"><button data-r="obra" aria-pressed="${REG === 'obra'}">Obra registrada en BPS (Ley 14.411)</button><button data-r="ic" aria-pressed="${REG === 'ic'}">SBU factura con IVA (Ind. y Comercio)</button></div>
   <div class="cmp">${['A', 'B', 'C'].map(k => `<button data-ca="${k}" aria-pressed="${k === ALT}">${ALTS[k].n.split(' · ')[0]}${ALTS[k].rec ? ' ★' : ''} · ${ALTS[k].dias.replace('≈ ', '').replace(' de cubierta', '')}<b>${f0(tot(R[k]))}</b><span class="gan">ganancia ${f0(gan(R[k]))}</span></button>`).join('')}</div>
   <div class="row" style="margin-top:10px"><span>Ganancia SBU</span><input type="range" id="gan-r" min="0" max="50" step="1" value="${PV.margen}"><b class="mono" style="min-width:44px;text-align:right">${PV.margen} %</b></div>
