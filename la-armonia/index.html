@@ -18,7 +18,13 @@
 .res{margin:10px 0;border:1px solid var(--line);padding:8px 10px;background:rgba(255,255,255,.03)}.res .rh{font:700 .82rem var(--f);margin-bottom:5px}.res .rh span{display:block;font:500 .66rem var(--m);color:var(--mute);margin-top:2px}
 .res dl{display:grid;grid-template-columns:1fr auto;gap:5px 10px;margin:0;align-items:baseline}.res dt{color:var(--mute);font:500 .7rem var(--m)}.res dd{margin:0;font:600 .8rem var(--m);text-align:right;white-space:nowrap}.res dd small{display:block;font-weight:500}.res .g{color:#8fd694}.res small{font:500 .62rem var(--m);color:var(--mute)}.res .bar{height:3px;background:rgba(243,241,236,.15);margin:6px 0 3px}.res .bar u{display:block;height:100%;background:var(--cu)}
 .reco ul{margin:6px 0 0;padding-left:18px;font-size:.78rem;line-height:1.4}.reco li{margin-bottom:5px}.reco a{color:var(--cu)}
-.tabs .ing{display:none}body.ing .tabs .ing{display:inline-block}body.ing .tabs [data-t="montaje"],body.ing .tabs [data-t="costos"],body.ing .tabs [data-t="relevo"]{display:none}body.ing .dia{display:none!important}body.ing .tabs{flex-wrap:wrap}body.ing .tabs button{order:5}body.ing .tabs [data-t="guia"]{order:0}body.ing .tabs [data-t="capas"]{order:1}body.ing .tabs [data-t="geo"]{order:2}body.ing .tabs [data-t="lista"]{order:3}body.ing .tabs [data-t="rema"]{order:4}body.ing .tabs [data-t="piezas"]{order:6}
+.diasnav{display:flex;flex-wrap:wrap;gap:3px;margin:8px 0 2px}.diasnav button{background:none;border:1px solid var(--line);color:var(--mute);font:600 .7rem var(--m);padding:4px 6px;cursor:pointer;min-width:30px}.diasnav button.hoy{border-color:var(--cu);color:var(--bg);background:var(--cu)}.diasnav span{font:500 .66rem var(--m);color:var(--mute);width:100%}
+#comentar{position:absolute;right:12px;bottom:12px;z-index:7;display:none;background:rgba(40,43,48,.9);border-color:var(--cu);color:var(--cu)}body.ing #comentar{display:block}body.cine #comentar{display:none!important}
+#cbox{position:absolute;right:12px;bottom:56px;width:340px;box-sizing:border-box;z-index:8;background:rgba(40,43,48,.97);border:1px solid var(--cu);padding:10px;display:none}#cbox.on{display:block}#cbox h4{margin:0 0 6px;font:600 .74rem var(--m);color:var(--cu)}#cbox input,#cbox textarea{width:100%;box-sizing:border-box;background:rgba(255,255,255,.06);border:1px solid var(--line);color:var(--ink);font:500 .85rem var(--f);padding:7px;margin-bottom:6px}#cbox .cb{display:flex;gap:6px}
+@media (max-width:820px){#cbox{left:12px;width:auto}}
+.cm{border-bottom:1px dashed var(--line);padding:8px 0;cursor:pointer}.cm:hover{background:rgba(255,179,71,.08)}.cm b{color:var(--cu);font:600 .72rem var(--m)}.cm p{margin:3px 0 0;font-size:.84rem}.cm small{color:var(--mute);font:500 .64rem var(--m)}
+.cmpi{width:100%;border-collapse:collapse;font:500 .72rem var(--m);margin:4px 0 8px}.cmpi td,.cmpi th{border-bottom:1px solid var(--line);padding:4px 3px;text-align:left;vertical-align:top}.cmpi th{color:var(--mute);font-weight:500}.cmpi tr.sel td{color:var(--cu)}
+.tabs .ing{display:none}body.ing .tabs .ing{display:inline-block}body.ing .tabs [data-t="costos"],body.ing .tabs [data-t="relevo"],body.ing .tabs [data-t="rema"],body.ing .tabs [data-t="metodo"],body.ing .tabs [data-t="verif"],body.ing .tabs [data-t="piezas"]{display:none!important}body.ing #res{display:none}#cmpIng{display:none}body.ing #cmpIng{display:block}body.ing .tabs{flex-wrap:wrap}body.ing .tabs button{order:5}body.ing .tabs [data-t="guia"]{order:0}body.ing .tabs [data-t="montaje"]{order:1}body.ing .tabs [data-t="coment"]{order:2}body.ing .tabs [data-t="capas"]{order:3}body.ing .tabs [data-t="lista"]{order:4}body.ing .tabs [data-t="geo"]{order:5}body.ing .tabs [data-t="rema"]{order:4}body.ing .tabs [data-t="piezas"]{order:6}
 .it{width:100%;border-collapse:collapse;font:500 .74rem var(--m);margin:6px 0 10px}.it th{text-align:left;color:var(--mute);font-weight:500;border-bottom:1px solid var(--line);padding:4px 2px}.it td{padding:4px 2px;border-bottom:1px dashed var(--line)}.it td.n,.it th.n{text-align:right}.it tr.cl{cursor:pointer}.it tr.cl:hover td{background:rgba(255,179,71,.12)}.it tr.cara td{color:var(--cu);font-weight:700;border-bottom:1px solid var(--line);padding-top:10px}
 .ingtx{font-size:.83rem;line-height:1.45}.ingtx h3{font:700 .9rem var(--f);margin:14px 0 4px}.ingtx ol,.ingtx ul{padding-left:18px;margin:4px 0}.ingtx li{margin-bottom:5px}.ingtx .k{display:inline-block;border:1px solid var(--line);padding:0 5px;font:600 .72rem var(--m)}
 .rv-top{display:flex;justify-content:space-between;align-items:center;gap:8px;font:500 .75rem var(--m);color:var(--mute)}.rv-top select{background:var(--panel);color:var(--ink);border:1px solid var(--line);padding:4px;font:500 .8rem var(--f)}
@@ -94,7 +100,7 @@ table{width:100%;border-collapse:collapse;font:500 .74rem var(--m);margin-top:6p
   <h1>La Armonía · cubierta</h1>
   <p class="sub">Hiansa-Panel 5G 30 mm Gris Pizarra · galpón 1 agua y establo (núcleo 2 aguas + galerías 4 aguas) · propuesta BMC v5 del 30/10/2026</p>
 
-  <div class="tabs" id="tabs"><button data-t="capas" aria-selected="true">Capas</button><button data-t="montaje">Montaje</button><button data-t="costos">Costos</button><button data-t="piezas">Piezas</button><button data-t="relevo">Relevo</button><button data-t="guia" class="ing">Cómo usar</button><button data-t="geo" class="ing">Geometría</button><button data-t="lista" class="ing">Paneles</button><button data-t="rema" class="ing">Remates</button><button data-t="metodo" class="ing">Montaje</button><button data-t="verif" class="ing">A verificar</button></div>
+  <div class="tabs" id="tabs"><button data-t="capas" aria-selected="true">Capas</button><button data-t="montaje">Montaje</button><button data-t="costos">Costos</button><button data-t="piezas">Piezas</button><button data-t="relevo">Relevo</button><button data-t="guia" class="ing">Cómo usar</button><button data-t="coment" class="ing">Comentarios</button><button data-t="geo" class="ing">Geometría</button><button data-t="lista" class="ing">Paneles</button><button data-t="rema" class="ing">Remates</button><button data-t="metodo" class="ing">Montaje</button><button data-t="verif" class="ing">A verificar</button></div>
 
   <section data-p="capas">
   <h2>Qué ver</h2>
@@ -108,11 +114,13 @@ table{width:100%;border-collapse:collapse;font:500 .74rem var(--m);margin-top:6p
   </section>
 
   <section data-p="montaje" hidden>
+  <div id="cmpIng"></div>
   <h2>Alternativa</h2>
   <div class="seg" id="alt"></div>
   <h2>Paso a paso</h2>
   <div class="row"><button class="btn" id="play">▶ Reproducir</button><button class="btn" id="todo">Ver todo</button><button class="btn" id="cam" aria-pressed="true" title="La cámara acompaña el montaje; si tocás el 3D vuelve al modo manual">Cámara auto</button><button class="btn" id="cine" title="Pantalla completa con cámara automática, desde el día 1">Filmar</button><div class="seg" id="vel"><button data-vel="1" aria-pressed="true">1×</button><button data-vel="3">3×</button><button data-vel="10">10×</button></div></div>
   <input type="range" id="paso" min="0" max="1" value="1">
+  <div class="diasnav" id="diasNav"></div>
   <div class="paso" id="pasoTxt"></div>
   <div class="res" id="res"></div>
   <div id="altTxt"></div>
@@ -136,13 +144,15 @@ table{width:100%;border-collapse:collapse;font:500 .74rem var(--m);margin-top:6p
   <div class="warn"><b>De dónde sale cada cosa.</b> Paneles y remates: propuesta BMC v5. Pilares, postes, muros, alturas y orientación: láminas de replanteo (cero de obra de cada edificio). Las medias cerchas de la galería y las cerchas del núcleo cada ~0,95 m salen de los cortes. Las secciones de madera y acero y la separación de correas son supuestas: hay que confirmarlas con el cálculo y la tabla de autoportancia de Hiansa. La ubicación entre el galpón y el establo es ilustrativa.</div>
   </section>
   <section data-p="relevo" hidden><div id="relevo"></div></section>
-  <section data-p="guia" hidden></section><section data-p="geo" hidden></section><section data-p="lista" hidden></section><section data-p="rema" hidden></section><section data-p="metodo" hidden></section><section data-p="verif" hidden></section>
+  <section data-p="guia" hidden></section><section data-p="coment" hidden></section><section data-p="geo" hidden></section><section data-p="lista" hidden></section><section data-p="rema" hidden></section><section data-p="metodo" hidden></section><section data-p="verif" hidden></section>
 </aside>
 <main>
   <canvas id="c"></canvas>
   <div class="vistas"><button class="btn" data-v="persp">3D</button><button class="btn" data-v="planta">Planta</button><button class="btn" data-v="frente">Frente</button><button class="btn" data-v="lado">Lateral</button></div>
   <div id="ficha"><button class="x" id="fx">✕</button><h3 id="fT"></h3><dl id="fD"></dl></div>
   <div id="plano"></div>
+  <button class="btn" id="comentar">💬 Comentar este momento</button>
+  <div id="cbox"><h4 id="cctx"></h4><input id="cnom" placeholder="Tu nombre"><textarea id="ctx" rows="4" placeholder="Comentario sobre lo que se ve: método, días, seguridad, estructura…"></textarea><div class="cb"><button class="btn voz" id="cvoz">🎤 Dictar</button><span style="flex:1"></span><button class="btn" id="cno">Cancelar</button><button class="btn" id="csi">Guardar</button></div></div>
   <div id="cineCtl"><button class="btn" id="rec">● Grabar</button><button class="btn" id="salirCine">Salir (Esc)</button></div><div id="camAviso">Cámara manual · tocá «Cámara auto» para que vuelva a acompañar</div>
   <div class="dia" id="dia" hidden></div>
 </main>
@@ -909,7 +919,18 @@ function cronograma() {
   return { t0, dG, dE, and, total: Math.ceil(t0 + dG + dE + and * .75),
     dia(p) { if (!p) return 0; const i = p.orden - 1, t = p.f.ed === 'galpon' ? t0 + dG * (i / nG) : t0 + dG + dE * ((i - nG) / nE); return Math.floor(t) + 1 } };
 }
-function cartelDia() { const K = cartelDia0(); resumen(K); return K }
+function cartelDia() { const K = cartelDia0(); resumen(K); diasNav(K); return K }
+/* navegador por días: salta al comienzo de cada día de la opción elegida */
+function diasNav(K) { K = K || cronograma(); const el = $('diasNav'); if (!el) return; const ini = {};
+  SEQ.forEach(p => { const d = K.dia(p); if (!(d in ini)) ini[d] = p.orden - 1 }); ini[1] = 0;
+  const cur = FLY ? FLY.p : SEQ[PASO - 1], hoy = TAREA && PASO === 0 ? 1 : !FLY && PASO >= SEQ.length ? K.total : cur ? K.dia(cur) : 1, key = ALT + K.total + hoy;
+  if (el.dataset.k === key) return; el.dataset.k = key;
+  el.innerHTML = '<span>Ir al día</span>' + Array.from({ length: K.total }, (_, i) => i + 1).map(d => `<button data-dia="${d}" ${d in ini ? '' : 'disabled'} class="${d === hoy ? 'hoy' : ''}">${d}</button>`).join('') + `<button data-dia="fin" title="cubierta terminada">✓</button>`;
+  el.dataset.ini = JSON.stringify(ini) }
+$('diasNav').addEventListener('click', e => { const b = e.target.closest('[data-dia]'); if (!b) return; const ini = JSON.parse($('diasNav').dataset.ini || '{}');
+  const ir = b.dataset.dia === 'fin' ? SEQ.length : b.dataset.dia === '1' ? 0 : ini[b.dataset.dia] + 1; // queda puesto el primer panel de ese día if (ir == null) return; if (PLAY || TAREA || FLY) parar();
+  PASO = ir; $('paso').value = PASO; DESC_OK = PASO > 0; aplicar(); $('diasNav').dataset.k = '' });
+
 function cartelDia0() {
   const el = $('dia'), K = cronograma(), cur = FLY ? FLY.p : SEQ[PASO - 1];
   if (TAREA) { const dn = PASO === 0 ? 1 : SEQ[PASO] ? K.dia(SEQ[PASO]) : K.total; el.hidden = false; el.dataset.visto = 1;
@@ -1071,6 +1092,49 @@ $('costos').addEventListener('change', e => { if (e.target.id === 'gan-r' || e.t
 
 altTxt(); fit(); encuadre('persp'); aplicar();
 
+
+/* ---------- visor del ingeniero: guía, comparación de métodos y comentarios ---------- */
+const GUIA = `<div class="ingtx"><h2>Cómo usar este visor</h2>
+  <p>Cubierta de paneles Hiansa 5G 30 mm de La Armonía (galpón y establo), armada desde el replanteo y la propuesta BMC v5. Acá se pueden reproducir los métodos de montaje que estamos evaluando y dejarnos comentarios.</p>
+  <h3>1 · Ver los métodos</h3><ol><li>Pestaña <b>Montaje</b>: arriba está la comparación de las tres opciones (días, equipos y andamios).</li><li>Elegí la opción (<span class="k">1</span> <span class="k">2</span> <span class="k">3</span>) y tocá <span class="k">▶ Reproducir</span>. Arranca el día 1 con la llegada del camión, sigue con líneas de vida, paneles y remates.</li><li>Con <b>Ir al día</b> saltás al comienzo de cualquier día; la barra sirve para ir panel por panel. Velocidad: <span class="k">1×</span> <span class="k">3×</span> <span class="k">10×</span>.</li><li><b>Cámara auto</b> sigue el trabajo; si tocás el 3D pasa a manual.</li></ol>
+  <h3>2 · Comentar</h3><ol><li>En cualquier momento tocá <span class="k">💬 Comentar este momento</span> (abajo a la derecha). Se pausa y queda guardado en qué opción, día y panel estabas, y desde dónde mirabas.</li><li>Escribilo o dictalo con 🎤 y tocá Guardar.</li><li>En la pestaña <b>Comentarios</b> los ves todos; tocando uno vuelve a esa escena. Desde ahí nos los mandás por WhatsApp o mail: cada uno va con un link que abre el visor en ese mismo momento.</li></ol>
+  <h3>3 · Detalle de piezas</h3><ul><li>Tocá un panel: ficha arriba a la derecha y debajo su plano de corte (cotas, ángulo y puntos a marcar).</li><li><b>Paneles</b> lista las 121 piezas; <b>Geometría</b> resume alturas, pendientes y superficies; <b>Capas</b> prende y apaga cada parte.</li><li>Mover: arrastrar para girar, rueda o pellizco para acercar, clic derecho o dos dedos para desplazar.</li></ul></div>`;
+const CKEY = 'la-coment-v1'; let CM = []; try { CM = JSON.parse(localStorage.getItem(CKEY) || '[]') } catch (e) {}
+const cGuardar = () => { try { localStorage.setItem(CKEY, JSON.stringify(CM)) } catch (e) {} };
+const r1 = v => Math.round(v * 10) / 10;
+function momento() { const K = cronograma(), cur = FLY ? FLY.p : SEQ[PASO - 1] || SEQ[PASO], paso = FLY ? FLY.p.orden - 1 : PASO;
+  const dia = !FLY && PASO >= SEQ.length ? K.total : TAREA && PASO === 0 ? 1 : cur ? K.dia(cur) : 1;
+  const que = TAREA ? ({ descarga: 'descarga', lineas: 'líneas de vida', remates: 'remates', armado: 'armado de andamios', traslado: 'traslado de andamio', desarme: 'desarme de andamio' })[TAREA.tipo] : FLY ? 'colocando ' + FLY.p.id : PASO >= SEQ.length ? 'cubierta terminada' : cur ? 'después de ' + (SEQ[PASO - 1] || {}).id : 'inicio';
+  return { alt: ALT, op: ALTS[ALT].n.split(' · ')[0], dia, total: K.total, paso, que, cam: [C.position.x, C.position.y, C.position.z, O.target.x, O.target.y, O.target.z].map(r1) } }
+const linkDe = m => `${location.origin}${location.pathname}?ingeniero#m=${m.alt}~${m.paso}~${m.cam.join('_')}`;
+function irA(m) { if (PLAY || TAREA || FLY) parar(); if (ALTS[m.alt] && ALT !== m.alt) { ALT = m.alt; ordenar(); $('alt').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x.dataset.a === ALT)); altTxt() }
+  PASO = Math.max(0, Math.min(SEQ.length, m.paso)); $('paso').value = PASO; DESC_OK = PASO > 0; CAMAUTO = false; camBtn();
+  if (m.cam && m.cam.length === 6) { C.position.set(m.cam[0], m.cam[1], m.cam[2]); O.target.set(m.cam[3], m.cam[4], m.cam[5]); O.update() } aplicar() }
+let CNOW = null;
+$('comentar').onclick = () => { if (PLAY) { PLAY = false; $('play').textContent = '▶ Reproducir'; camBtn() } CNOW = momento();
+  $('cctx').textContent = `Opción ${CNOW.op} · día ${CNOW.dia} de ${CNOW.total} · ${CNOW.que}`; $('cnom').value = localStorage.getItem('la-coment-nom') || ''; $('ctx').value = ''; $('cbox').classList.add('on'); setTimeout(() => $('ctx').focus(), 50) };
+$('cno').onclick = () => $('cbox').classList.remove('on');
+$('csi').onclick = () => { const t = $('ctx').value.trim(); if (!t) return; const nom = $('cnom').value.trim(); try { localStorage.setItem('la-coment-nom', nom) } catch (e) {}
+  CM.push({ ...CNOW, txt: t, nom, t: Date.now() }); cGuardar(); $('cbox').classList.remove('on'); listaCom(); const b = document.querySelector('#tabs [data-t="coment"]'); if (b) b.textContent = `Comentarios (${CM.length})` };
+{ const SR = window.SpeechRecognition || window.webkitSpeechRecognition; let rec = null;
+  if (!SR) $('cvoz').style.display = 'none';
+  $('cvoz').onclick = () => { if (rec) { rec.stop(); return } const el = $('ctx'), base = el.value.trim(); let fin = ''; rec = new SR(); rec.lang = 'es-UY'; rec.continuous = true; rec.interimResults = true;
+    rec.onresult = e => { let inter = ''; for (let i = e.resultIndex; i < e.results.length; i++) { const tx = e.results[i][0].transcript; if (e.results[i].isFinal) fin += ' ' + tx; else inter += tx } let t = (fin + ' ' + inter).replace(/\s+/g, ' ').trim(); if (t && !base) t = t[0].toUpperCase() + t.slice(1); el.value = (base ? base + ' ' : '') + t };
+    rec.onend = () => { rec = null; $('cvoz').textContent = '🎤 Dictar'; $('cvoz').classList.remove('grabando') }; $('cvoz').textContent = '■ Parar'; $('cvoz').classList.add('grabando'); try { rec.start() } catch (x) { rec = null } } }
+function textoCom() { return `Comentarios sobre el montaje de cubierta · La Armonía\n\n` + CM.map((c, i) => `${i + 1}. Opción ${c.op} · día ${c.dia} de ${c.total} · ${c.que}${c.nom ? ' · ' + c.nom : ''}\n${c.txt}\nVer: ${linkDe(c)}`).join('\n\n') }
+function listaCom() { const el = document.querySelector('section[data-p="coment"]'); if (!el) return;
+  el.innerHTML = `<h2>Comentarios</h2><p class="nota">Tocá uno para volver a esa escena. Quedan guardados en este navegador hasta que nos los mandes.</p>
+    ${CM.length ? CM.map((c, i) => `<div class="cm" data-ci="${i}"><b>Opción ${c.op} · día ${c.dia} de ${c.total} · ${c.que}</b><p>${c.txt.replace(/[<&]/g, x => ({ '<': '&lt;', '&': '&amp;' })[x])}</p><small>${c.nom ? c.nom + ' · ' : ''}${new Date(c.t).toLocaleString('es-UY', { day: '2-digit', month: '2-digit', hour: '2-digit', minute: '2-digit' })} · <a href="#" data-cdel="${i}" style="color:var(--mute)">borrar</a></small></div>`).join('') : '<p class="nota">Todavía no hay comentarios. Reproducí una opción y tocá «💬 Comentar este momento».</p>'}
+    <div class="seg" style="margin-top:10px"><button class="btn" id="cwa" ${CM.length ? '' : 'disabled'}>Mandar por WhatsApp</button><button class="btn" id="cmail" ${CM.length ? '' : 'disabled'}>Mandar por mail</button><button class="btn" id="ccopy" ${CM.length ? '' : 'disabled'}>Copiar</button></div>` }
+document.addEventListener('click', e => { const sec = e.target.closest('section[data-p="coment"]'); if (!sec) return;
+  const del = e.target.closest('[data-cdel]'); if (del) { e.preventDefault(); if (confirm('¿Borrar este comentario?')) { CM.splice(+del.dataset.cdel, 1); cGuardar(); listaCom() } return }
+  const it = e.target.closest('[data-ci]'); if (it) { irA(CM[+it.dataset.ci]); return }
+  if (e.target.id === 'cwa') window.open('https://wa.me/59898526226?text=' + encodeURIComponent(textoCom()), '_blank');
+  if (e.target.id === 'cmail') location.href = 'mailto:smartbuildinguruguay@gmail.com?subject=' + encodeURIComponent('La Armonía · comentarios sobre el montaje de cubierta') + '&body=' + encodeURIComponent(textoCom());
+  if (e.target.id === 'ccopy') { navigator.clipboard.writeText(textoCom()).then(() => alert('Copiado'), () => prompt('Copiá el texto', textoCom())) } });
+function cmpIng() { $('cmpIng').innerHTML = `<h2>Comparación de métodos</h2><table class="cmpi"><tr><th>Opción</th><th>Días</th><th>Equipos y andamio</th></tr>${Object.keys(ALTS).map(k => { const q = QA[k];
+    const eq = calc(k).maq.filter(m => m.key !== 'balancin').map(m => `${/tij/i.test(m.n) ? 'tijera' : 'manitou'} ${m.dias} d`).join(' + ') + (q.and && q.and.length ? ' + andamio (' + q.and.map(a => a[1] + ' m²').join(' y ') + ')' : '');
+    return `<tr class="${k === ALT ? 'sel' : ''}"><td><b>${ALTS[k].n.split(' · ')[0]}</b> ${ALTS[k].n.split(' · ')[1]}</td><td>${(diasTxt(k).match(/\d+ días/) || [''])[0]}</td><td>${eq}</td></tr>` }).join('')}</table>` }
 /* ================= visor técnico para el ingeniero (?ingeniero) ================= */
 const ING = /ingeniero/.test(location.search + location.hash);
 if (ING) {
@@ -1080,7 +1144,7 @@ if (ING) {
   const c1 = x => String(Math.round(x * 100) / 100).replace('.', ','), pct = f => Math.round(f.m * 100) + ' %';
   const caras = CARAS.map(f => { const L = PANELES.filter(p => p.f === f); return { f, n: L.length, m2: L.reduce((t, p) => t + p.area, 0), diag: L.filter(p => p.diag).length, tira: L.filter(p => !p.diag && p.ancho < .99).length, lmax: Math.max(...L.map(p => p.largo)) } });
   const sec = id => document.querySelector(`section[data-p="${id}"]`);
-  sec('guia').innerHTML = `<div class="ingtx"><h2>Cómo usar este visor</h2>
+  sec('guia').innerHTML = GUIA; if (false) sec('guia').innerHTML = `<div class="ingtx"><h2>Cómo usar este visor</h2>
     <p>Es el modelo 3D de la cubierta de paneles Hiansa 5G 30 mm de La Armonía (galpón y establo), armado desde el replanteo de obra y la propuesta BMC v5. Está todo colocado: paneles, correas, estructura y remates.</p>
     <h3>Mover el modelo</h3><ul><li><b>Girar:</b> arrastrar con el mouse o un dedo.</li><li><b>Acercar:</b> rueda del mouse o pellizcar.</li><li><b>Desplazar:</b> clic derecho y arrastrar, o dos dedos.</li><li>Arriba a la izquierda: vistas <span class="k">3D</span> <span class="k">Planta</span> <span class="k">Frente</span> <span class="k">Lateral</span>.</li></ul>
     <h3>Ver el detalle de un panel</h3><ol><li>Tocá cualquier panel en el 3D (o una fila en la pestaña <b>Paneles</b>).</li><li>Arriba a la derecha sale su ficha: cara, largo, ancho, superficie, peso, tipo de corte.</li><li>Debajo sale el <b>plano de corte</b>: el panel que manda BMC, la pieza terminada, cada corte en rojo con su largo, el ángulo y los dos puntos a marcar medidos desde el alero.</li><li>La <span class="k">✕</span> cierra la ficha. Tocando estructura, correas o remates sale su descripción.</li></ol>
@@ -1116,8 +1180,11 @@ if (ING) {
     <li><b>Quiebre y babetas:</b> detalle de chapa plegada y sellado donde no hay pieza estándar.</li>
     <li><b>Estructura:</b> escuadra, nivel de correas y estado de cerchas antes del montaje; las secciones del modelo son supuestas.</li></ol>
     <p style="color:var(--mute);font-size:.75rem">Cualquier observación, marcala sobre el modelo: tocá la pieza y mandanos el ID (por ejemplo LS-04).</p></div>`;
-  document.querySelector('#tabs [data-t="piezas"]').textContent = 'BMC';
+  document.querySelector('#tabs [data-t="montaje"]').textContent = 'Montaje';
+  listaCom(); cmpIng(); if (CM.length) document.querySelector('#tabs [data-t="coment"]').textContent = `Comentarios (${CM.length})`;
+  $('alt').addEventListener('click', () => setTimeout(cmpIng, 0));
   aplicar(); document.querySelector('#tabs [data-t="guia"]').click();
+  const hm = /#m=([ABC])~(\d+)~([-\d._]+)/.exec(location.hash); if (hm) setTimeout(() => { const cam = hm[3].split('_').map(Number); document.querySelector('#tabs [data-t="montaje"]').click(); irA({ alt: hm[1], paso: +hm[2], cam }) }, 0) // link de un comentario: abre esa escena
 }
 
 
