@@ -17,6 +17,7 @@
 .tabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--cu)}
 .res{margin:10px 0;border:1px solid var(--line);padding:8px 10px;background:rgba(255,255,255,.03)}.res .rh{font:700 .82rem var(--f);margin-bottom:5px}.res .rh span{display:block;font:500 .66rem var(--m);color:var(--mute);margin-top:2px}
 .res dl{display:grid;grid-template-columns:1fr auto;gap:5px 10px;margin:0;align-items:baseline}.res dt{color:var(--mute);font:500 .7rem var(--m)}.res dd{margin:0;font:600 .8rem var(--m);text-align:right;white-space:nowrap}.res dd small{display:block;font-weight:500}.res .g{color:#8fd694}.res small{font:500 .62rem var(--m);color:var(--mute)}.res .bar{height:3px;background:rgba(243,241,236,.15);margin:6px 0 3px}.res .bar u{display:block;height:100%;background:var(--cu)}
+.reco ul{margin:6px 0 0;padding-left:18px;font-size:.78rem;line-height:1.4}.reco li{margin-bottom:5px}.reco a{color:var(--cu)}
 .rv-top{display:flex;justify-content:space-between;align-items:center;gap:8px;font:500 .75rem var(--m);color:var(--mute)}.rv-top select{background:var(--panel);color:var(--ink);border:1px solid var(--line);padding:4px;font:500 .8rem var(--f)}
 .rv-prog{color:var(--cu)}.rv-acc{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0 4px}
 .rv-s{border-top:1px solid var(--line);padding:6px 0}.rv-s summary{cursor:pointer;font:700 .9rem var(--f);padding:6px 0}.rv-c{float:right;font:500 .72rem var(--m);color:var(--cu)}
@@ -106,6 +107,14 @@ table{width:100%;border-collapse:collapse;font:500 .74rem var(--m);margin-top:6p
   <div class="paso" id="pasoTxt"></div>
   <div class="res" id="res"></div>
   <div id="altTxt"></div>
+  <details class="par reco"><summary>Recomendaciones de Hiansa y del Decreto 125/014</summary><ul>
+    <li><b>Descarga:</b> paquetes de más de 6 m solo con balancín, puntos de eslinga cada 4 m como máximo y eslingas de nailon con cantonera. A mano: cada panel se saca sin arrastrarlo y se lleva de canto para que no flexe.</li>
+    <li><b>Acopio:</b> no más de 3 paquetes en altura, nunca apoyados en el suelo, con pendiente de 5 % o más, tapados y ventilados. Colocarlos dentro de los 60 días de fabricados.</li>
+    <li><b>Film:</b> sacarlo apenas se coloca el panel; después de 10 días cuesta y puede dañar la pintura.</li>
+    <li><b>Fijación:</b> 2 tornillos por panel en cada correa como mínimo, en la cresta, con 30 mm de penetración; en alero y cumbrera uno más al centro por el viento. Atornillador con limitador. Se coloca de abajo hacia la cumbrera y al final se barre la viruta.</li>
+    <li><b>Altura:</b> por encima de 2 m, arnés anclado a punto fijo o línea de vida. Quien maneje la tijera o el manitou tiene que estar capacitado. Con trabajos a más de 5 m (el galpón llega a 5,62) la obra necesita plan de seguridad.</li>
+    <li><b>Viento:</b> un panel colgado hace vela; con viento fuerte no se iza, y la tijera se usa dentro del límite de su manual.</li>
+  </ul><p class="nota">Fuentes: <a href="https://pdf.archiexpo.com/pdf/hiansa-panel-sa/guia-para-operaciones-con-panel-sandwich/154229-333823.html" target="_blank" rel="noopener">Hiansa · guía para operaciones con panel sándwich</a> · <a href="https://media.adeo.com/media/4860336/media.pdf" target="_blank" rel="noopener">Hiansa · ficha técnica panel de cubierta (rev. 06, 2023)</a> · <a href="https://www.gub.uy/ministerio-trabajo-seguridad-social/institucional/seguridad-higiene/construccion" target="_blank" rel="noopener">MTSS · seguridad en la construcción</a> · <a href="https://www.impo.com.uy/bases/decretos-reglamento/125-2014" target="_blank" rel="noopener">Decreto 125/014 (IMPO)</a></p></details>
   </section>
 
   <section data-p="costos" hidden>
@@ -477,7 +486,7 @@ function manitou(k, ed, sirve) {
   return M;
 }
 // tijera que se mueve sola alrededor del edificio y se para frente al panel (alternativa C)
-function tijeraAnillo(k, ed, o, h, sirve, du = 0, ladoDe) {
+function tijeraAnillo(k, ed, o, h, sirve, du = 0, ladoDe, sinNucleo = false) {
   const R = anillo(ed, o, ladoDe), g = ACC[k], c = new THREE.Group(); g.add(c);
   const b = new THREE.Mesh(new THREE.BoxGeometry(2.4, .5, 1.15), mMaq); b.position.y = .4; c.add(b);
   const n = Math.max(2, Math.round((h - .9) / .9)), st = (h - .9) / n;
@@ -488,7 +497,7 @@ function tijeraAnillo(k, ed, o, h, sirve, du = 0, ladoDe) {
   b.userData.info = { t: 'Plataforma tijera', d: `trabajo a +${h.toFixed(1).replace('.', ',')} m · se mueve sola frente a cada panel · necesita suelo firme y nivelado` };
   let s = R.sDe(R.lado(sirve[0]), ed === 'galpon' ? GAL.L / 2 : EST.L / 2 + du, ed === 'galpon' ? GAL.P / 2 : EST.W / 2);
   const poner = () => { const m = R.mundo(s); c.position.copy(m.p); c.rotation.y = Math.atan2(m.n.x, m.n.z) }; poner();
-  ACT[k].push({ upd(cur, fly, dt) { c.visible = cur ? cur.f.ed === ed : ed === 'galpon'; if (cur && sirve.includes(cur.f.id)) s = R.acercar(s, R.objetivo(cur, du), suave(dt, 2.5)); poner() } });
+  ACT[k].push({ upd(cur, fly, dt) { c.visible = cur ? cur.f.ed === ed && !(sinNucleo && /^N[SN]$/.test(cur.f.id)) : ed === 'galpon'; if (cur && sirve.includes(cur.f.id)) s = R.acercar(s, R.objetivo(cur, du), suave(dt, 2.5)); poner() } });
   return { vis: () => c.visible, plat: () => c.position.clone().setY(h + .06) };
 }
 // línea de vida con postes
@@ -518,15 +527,15 @@ function persona(g, p, lv, rol) {
 }
 
 const ALTS = {
-  B: { n: '1 · Medio andamio, todo a mano', crew: '5 personas: 2 arriba, 1 en el andamio y 2 en el piso que cortan y alcanzan los paneles (los mismos arman y trasladan el andamio)', dias: '≈ 9 días de paneles + 3 de andamio',
+  B: { n: '1 · Medio andamio, todo a mano', crew: '5 personas: 2 arriba, 1 en el andamio y 2 en el piso que cortan y alcanzan los paneles (los mismos arman y trasladan el andamio)', dias: '≈ 13 días: 1 de descarga, 3 de andamio y 9 de paneles',
     pro: ['Sin máquinas: un solo tramo de andamio de ≈ 75 m² que se va trasladando', 'Orden para mover poco el andamio: galpón (alero norte) → galería y núcleo sur → punta oeste → galería y núcleo norte → punta este', 'Los mismos cinco arman, trasladan y desarman el andamio'],
-    con: ['Los paneles del galpón miden 8,95 m y pesan ≈ 94 kg: los alcanzan los dos del piso al del andamio y los de arriba tiran', 'Los del núcleo se suben a mano por encima de la galería ya colocada', 'La más lenta: unos 3 días se van en armar, trasladar y desarmar'] },
-  A: { n: '2 · Tijera todo alrededor, a mano', crew: '5 personas: 2 arriba, 1 en la tijera y 2 en el piso que cortan y alcanzan los paneles', dias: '≈ 8–9 días de paneles',
+    con: ['Los paneles del galpón miden hasta 8,95 m y ≈ 94 kg: se llevan de canto (Hiansa pide no flexarlos), los alcanzan los dos del piso al del andamio y los de arriba tiran', 'La descarga es a mano, panel por panel (≈ 1 día los cinco): los paquetes de más de 6 m no se levantan enteros sin balancín', 'Los del núcleo se suben a mano por encima de la galería ya colocada', 'La más lenta: unos 3 días se van en armar, trasladar y desarmar'] },
+  A: { n: '2 · Tijera todo alrededor, a mano', crew: '5 personas: 2 arriba, 1 en la tijera y 2 en el piso que cortan y alcanzan los paneles', dias: '≈ 10 días: 1 de descarga y 8–9 de paneles',
     pro: ['Sin andamio: una sola tijera que se mueve sola frente a cada tramo', 'No se pierden días armando ni trasladando andamio', 'Una sola máquina alquilada'],
-    con: ['La tijera necesita suelo firme y nivelado alrededor (con lluvia se entierra)', 'Los paneles del galpón (8,95 m, ≈ 94 kg) se alcanzan a mano hasta la tijera y se apoyan en el alero', 'Para frontalines y remates es menos cómoda que un andamio corrido'] },
-  C: { n: '3 · Tijera y manitou', crew: '5 personas: operador del manitou, 1 en el piso que corta y engancha la eslinga, 1 en la tijera y 2 arriba', dias: '≈ 7–8 días de paneles',
-    pro: ['El manitou sube cada panel frente al alero: nadie carga peso para arriba', 'La más rápida y la más cómoda para los 13 paneles largos del galpón', 'La tijera queda para recibir el panel, frontalines y remates'],
-    con: ['Dos máquinas alquiladas durante toda la colocación', 'Suelo firme alrededor para las dos máquinas', 'La más cara en alquileres'] },
+    con: ['La tijera necesita suelo firme y nivelado alrededor (con lluvia se entierra)', 'Los paneles del galpón (8,95 m, ≈ 94 kg) se alcanzan a mano hasta la tijera, de canto, y se apoyan en el alero', 'La descarga es a mano, panel por panel (≈ 1 día los cinco)', 'Para frontalines y remates es menos cómoda que un andamio corrido'] },
+  C: { n: '3 · Tijera y manitou', crew: '5 personas: operador del manitou, 1 en el piso que corta y engancha la eslinga, 1 en la tijera y 2 arriba', dias: '≈ 8 días: medio de descarga y 7–8 de paneles',
+    pro: ['El manitou descarga los paquetes con balancín en medio día y sube cada panel frente al alero: nadie carga peso para arriba', 'La más rápida y la más cómoda para los 13 paneles largos del galpón', 'La tijera recibe el panel y hace frontalines y remates; en el núcleo ya no sirve (no llega a la cumbrera por encima de la galería), así que se devuelve antes y el de la tijera sube como tercero a la galería'],
+    con: ['Dos máquinas alquiladas (la tijera unos 5 días, el manitou 8)', 'Hace falta un balancín y eslingas de nailon con cantoneras para no marcar el panel', 'Suelo firme alrededor para las dos máquinas', 'La más cara en alquileres'] },
 };
 const ACC = { A: new THREE.Group(), B: new THREE.Group(), C: new THREE.Group() }, SEG = { A: new THREE.Group(), B: new THREE.Group(), C: new THREE.Group() }, PER = { A: new THREE.Group(), B: new THREE.Group(), C: new THREE.Group() };
 Object.keys(ACC).forEach(k => { G.acc.add(ACC[k]); G.seg.add(SEG[k]); G.per2.add(PER[k]) });
@@ -593,8 +602,11 @@ const usaMani = (ed, id) => ed !== 'establo' || MANI_EST === 'todos' || /^N[SN]$
   const dosArriba = (k, LV) => { techero(k, { f: g, p: [10, 1.4] }, LV, ['G'], -.9, 'arriba: tira del panel y lo fija'); techero(k, { f: g, p: [9, 1.4] }, LV, ['G'], .9, 'arriba: guía y fija el panel');
     techero(k, { f: LS, p: [8, 1.6] }, LV, [...EST4, ...NUC], -.8, 'arriba: galería, puntas y núcleo', { NS: LS, NN: LN }); techero(k, { f: LS, p: [9.1, 1.6] }, LV, [...EST4, ...NUC], .8, 'arriba: galería, puntas y núcleo', { NS: LS, NN: LN }) };
   // uno en la tijera: es una sola máquina que pasa del galpón al establo
-  const enTijera = (k, tG, tE) => { const H = persona(PER[k], tG.plat(), null, 'en la tijera: recibe el panel, frontalines y remates');
-    ACT[k].push({ upd(cur) { const t = cur && cur.f.ed === 'establo' ? tE : tG; H.mover(t.plat(), 1, 99) } }) };
+  const enTijera = (k, tG, tE, LV) => { const H = persona(PER[k], tG.plat(), null, 'en la tijera: recibe el panel, frontalines y remates'); let lv = LV ? LV.nuc : null;
+    if (LV) { H.lv = () => lv; H.ln = new THREE.Line(new THREE.BufferGeometry().setFromPoints([V(0, 0, 0), V(0, 0, 0)]), mLanyard); H.ln.frustumCulled = false; PER[k].add(H.ln) }
+    ACT[k].push({ upd(cur, fly, dt) { const nuc = LV && cur && /^N[SN]$/.test(cur.f.id); if (H.ln) H.ln.visible = nuc;
+      if (nuc) { const Lf = cur.f.id === 'NS' ? LS : LN, x = cur.c.x - OFF.establo[0] + 1.6; H.mover(Lf.wp([x, cur.f.id === 'NS' ? EST.gy - 1 : W - EST.gy + 1], PANEL.esp), dt, 3); return } // tijera devuelta: tercero arriba, en la galería
+      const t = cur && cur.f.ed === 'establo' ? tE : tG; H.mover(t.plat(), 1, H.o.position.distanceTo(t.plat()) > 8 ? 99 : 8 * dt) } }) };
   // dos en el piso (sin manitou): cortan en la mesa, alcanzan cada panel al del andamio o la tijera y arman y trasladan el andamio
   const piso = k => { const Q = { corte: null, libre: true, mesa: null };
     const H = [0, 1].map(i => persona(PER[k], pl('establo', -3 - i * .8, -3.5, 0), null, i ? 'piso: corta en la mesa, alcanza los paneles y mueve el andamio' : 'piso: alcanza los paneles y mueve el andamio'));
@@ -622,8 +634,8 @@ const usaMani = (ed, id) => ed !== 'establo' || MANI_EST === 'todos' || /^N[SN]$
 
   /* 3 (clave C): tijera y manitou */
   manitou('C', 'galpon', ['G']); manitou('C', 'establo', [...EST4, ...NUC]);
-  { const tG = tijeraAnillo('C', 'galpon', 1.8, 4.6, ['G'], 0, () => 'S'), tE = tijeraAnillo('C', 'establo', 1.7, 2.1, [...EST4, ...NUC], -2.8);
-    const LV = LVde('C'); dosArriba('C', LV); enTijera('C', tG, tE); PROV.C = MAQ.C.LS; corte('C') }
+  { const tG = tijeraAnillo('C', 'galpon', 1.8, 4.6, ['G'], 0, () => 'S'), tE = tijeraAnillo('C', 'establo', 1.7, 2.1, EST4, -2.8, undefined, true);
+    const LV = LVde('C'); dosArriba('C', LV); enTijera('C', tG, tE, LV); PROV.C = MAQ.C.LS; corte('C') }
 }
 
 /* ================= orden de montaje (depende de la alternativa) ================= */
@@ -745,9 +757,9 @@ function pintar(p, on) { const m = p.mesh.material; m.emissive.set(on ? '#7a4a00
 /* aplicar estado: capas, edificio, paso, colores, explotado, corte */
 /* cronograma: en qué día de obra va cada panel, según los días por fase de la alternativa (pestaña Costos) */
 function cronograma() {
-  const F = QA[ALT].fases, d = re => (F.find(f => re.test(f[0])) || [0, 0])[1], and = d(/andamio/i), dG = d(/^Galpón/), dE = d(/^Establo/);
-  const t0 = Math.max(.5, and / 2), nG = PANELES.filter(p => p.f.ed === 'galpon').length, nE = PANELES.length - nG;
-  return { t0, dG, dE, and, total: Math.ceil(t0 + dG + dE + and / 2),
+  const F = QA[ALT].fases, d = re => (F.find(f => re.test(f[0])) || [0, 0])[1], and = d(/andamio/i), dG = d(/^Galpón/), dE = d(/^Establo/), dD = d(/^Descarga/);
+  const t0 = dD + and * .25, nG = PANELES.filter(p => p.f.ed === 'galpon').length, nE = PANELES.length - nG;
+  return { t0, dG, dE, and, total: Math.ceil(t0 + dG + dE + and * .75),
     dia(p) { if (!p) return 0; const i = p.orden - 1, t = p.f.ed === 'galpon' ? t0 + dG * (i / nG) : t0 + dG + dE * ((i - nG) / nE); return Math.floor(t) + 1 } };
 }
 function cartelDia() { const K = cartelDia0(); resumen(K); return K }
@@ -805,18 +817,18 @@ const PC = {
   comp_of: [441.15, 'Compensaciones oficial/día $ (alim. + ropa + transp. + herram.)'], comp_pe: [397.65, 'Compensaciones peón/día $'], altura: [217.62, 'Suplemento balancín o similar/día $ (en altura)'],
   auc: [53.9, 'BPS construcción: AUC patronal % (71,8 − 17,9 personal)'], caja: [4, 'Caja de Profesionales % (obra de arquitectura)'],
   ic_pat: [12.625, 'BPS Ind. y Comercio patronal % (7,5 + 5 + 0,125)'], ic_bse: [6, 'Póliza BSE accidentes % sobre salarios (supuesto)'], ic_cargas: [19.5, 'Aguinaldo + licencia + salario vacacional %'],
-  m_mani: [220, 'Manipulador telescópico USD/día + IVA (objetivo a negociar en Maldonado: pedir cotización)'], m_art: [190, 'Articulada 14–16 m USD/día + IVA (ref. EMAT)'], m_tij: [140, 'Tijera todo terreno 8–10 m USD/día + IVA (ref. EMAT)'], m_flete: [350, 'Flete de cada máquina ida y vuelta USD (supuesto)'],
+  m_mani: [220, 'Manipulador telescópico USD/día + IVA (objetivo a negociar en Maldonado: pedir cotización)'], m_art: [190, 'Articulada 14–16 m USD/día + IVA (ref. EMAT)'], m_tij: [140, 'Tijera todo terreno 8–10 m USD/día + IVA (ref. EMAT)'], m_flete: [350, 'Flete de cada máquina ida y vuelta USD (supuesto)'], balancin: [150, 'Balancín de izaje para paneles largos USD (supuesto)'],
   and_m2sem: [2.5, 'Andamio USD por m² y semana (supuesto)'], and_sem: [3, 'Semanas de andamio'], and_flete: [250, 'Flete de andamio USD (supuesto)'],
   epp_arnes: [110, 'Arnés + doble cola con absorbedor USD c/u (supuesto)'], epp_pers: [35, 'Casco, guantes y calzado USD por persona'], epp_linea: [380, 'Línea de vida temporal USD c/u (supuesto)'], prev: [450, 'Técnico prevencionista: plan + visitas USD (supuesto)'],
   flete_pan: [450, 'Flete de paneles Colonia Nicolich → obra USD (supuesto; BMC lo cotiza aparte)'], imprev: [10, 'Imprevistos y lluvia %'], margen: [20, 'Ganancia SBU % sobre el costo'], rc: [300, 'Póliza RC por el montaje USD (supuesto)'], pm2: [0, 'Precio por m² sin IVA (0 = costo real + ganancia)'],
 };
 const QA = { // las tres con la misma cuadrilla de 5: oficial especializado (encargado arriba u operador del manitou), 2 oficiales y 2 peones; 3 en altura
-  B: { fases: [['Armado, 4 traslados y desarme del andamio', 3, { oe: 1, of: 2, pe: 2 }, 0], ['Galpón · paneles y remates', 2, { oe: 1, of: 2, pe: 2 }, 3], ['Establo · paneles, cortes y remates', 7, { oe: 1, of: 2, pe: 2 }, 3], ['Descarga de paneles', 1, { pe: 2 }, 0]],
+  B: { fases: [['Armado, 4 traslados y desarme del andamio', 3, { oe: 1, of: 2, pe: 2 }, 0], ['Galpón · paneles y remates', 2, { oe: 1, of: 2, pe: 2 }, 3], ['Establo · paneles, cortes y remates', 7, { oe: 1, of: 2, pe: 2 }, 3], ['Descarga de paneles (a mano, de canto)', 1, { oe: 1, of: 2, pe: 2 }, 0]],
     maq: [], and_m2: 75, arneses: 3, lineas: 4, personas: 5 },
-  A: { fases: [['Galpón · paneles y remates', 2, { oe: 1, of: 2, pe: 2 }, 3], ['Establo · paneles, cortes y remates', 6.5, { oe: 1, of: 2, pe: 2 }, 3], ['Descarga de paneles', 1, { pe: 2 }, 0]],
+  A: { fases: [['Galpón · paneles y remates', 2, { oe: 1, of: 2, pe: 2 }, 3], ['Establo · paneles, cortes y remates', 6.5, { oe: 1, of: 2, pe: 2 }, 3], ['Descarga de paneles (a mano, de canto)', 1, { oe: 1, of: 2, pe: 2 }, 0]],
     maq: [['Tijera todo terreno (una sola, da la vuelta)', 'm_tij', 9, 1]], and_m2: 0, arneses: 3, lineas: 4, personas: 5 },
-  C: { fases: [['Galpón · paneles y remates', 1.5, { oe: 1, of: 2, pe: 2 }, 3], ['Establo · paneles, cortes y remates', 6, { oe: 1, of: 2, pe: 2 }, 3], ['Descarga de paneles', 1, { pe: 2 }, 0]],
-    maq: [['Manitou: galpón y establo completo', 'm_mani', 8, 1], ['Tijera todo terreno (una sola, galpón y establo)', 'm_tij', 8, 1]], and_m2: 0, arneses: 3, lineas: 4, personas: 5 },
+  C: { fases: [['Galpón · paneles y remates', 1.5, { oe: 1, of: 2, pe: 2 }, 3], ['Establo · paneles, cortes y remates', 6, { oe: 1, of: 2, pe: 2 }, 3], ['Descarga de paneles (manitou con balancín)', .5, { oe: 1, of: 2, pe: 2 }, 0]],
+    maq: [['Manitou: descarga, galpón y establo completo', 'm_mani', 8, 1], ['Tijera todo terreno: galpón, galerías y puntas (se devuelve antes del núcleo)', 'm_tij', 5, 1], ['Balancín para paquetes de más de 6 m', 'balancin', 1, 0]], and_m2: 0, arneses: 3, lineas: 4, personas: 5 },
 };
 const PV = {}; Object.keys(PC).forEach(k => PV[k] = PC[k][0]); try { Object.assign(PV, JSON.parse(localStorage.getItem('la-costos-2') || '{}')) } catch (e) {}
 let REG = 'obra';
@@ -827,8 +839,9 @@ function calc(k) {
     return { n, d, per, nom: nom / tc, comp: comp / tc, det: Object.entries(cr).map(([c, x]) => `${x} ${x > 1 && c === 'pe' ? 'peones' : ({ oe: 'of. esp.', of: 'of.', mo: 'm. of.', pe: 'peón' })[c]}`).join(' + ') } });
   const nom = fases.reduce((t, f) => t + f.nom, 0), comp = fases.reduce((t, f) => t + f.comp, 0);
   const dG = (q.fases.find(f => /^Galpón/.test(f[0])) || [0, 0])[1], dE = (q.fases.find(f => /^Establo/.test(f[0])) || [0, 0])[1];
-  const maq = q.maq.map(([n, key, dias, fl]) => { if (key === 'm_mani') { if (MANI_EST === 'todos') { n = 'Manitou: galpón y establo completo'; dias = Math.ceil(dG + dE); fl = 1 } else { n = 'Manitou: galpón y núcleo (2 períodos)'; dias = 4; fl = 2 } }
-    return { n, dias, fl, usd: dias * v[key] + fl * v.m_flete } }), eq = maq.reduce((t, m) => t + m.usd, 0);
+  const dD = (q.fases.find(f => /^Descarga/.test(f[0])) || [0, 0])[1];
+  const maq = q.maq.map(([n, key, dias, fl]) => { if (key === 'm_mani') { if (MANI_EST === 'todos') { dias = Math.ceil(dD + dG + dE); fl = 1 } else { n = 'Manitou: galpón y núcleo (2 períodos)'; dias = 4; fl = 2 } }
+    return { n, key, dias, fl, usd: dias * v[key] + fl * v.m_flete } }), eq = maq.reduce((t, m) => t + m.usd, 0);
   const and = q.and_m2 ? q.and_m2 * v.and_sem * v.and_m2sem + v.and_flete : 0;
   const seg = q.arneses * v.epp_arnes + q.personas * v.epp_pers + q.lineas * v.epp_linea + v.prev;
   const flete = v.flete_pan, base = nom + comp + eq + and + seg + flete, imp = base * v.imprev / 100, directo = base + imp;
@@ -857,12 +870,12 @@ function costos() {
   const fila = (a, b, cls = '') => `<tr class="${cls}"><td>${a}</td><td class="n">${b}</td></tr>`;
   let h = `<h2>Costo de instalación · estimado</h2>
   <div class="seg" id="reg"><button data-r="obra" aria-pressed="${REG === 'obra'}">Obra registrada en BPS (Ley 14.411)</button><button data-r="ic" aria-pressed="${REG === 'ic'}">SBU factura con IVA (Ind. y Comercio)</button></div>
-  <div class="cmp">${Object.keys(ALTS).map(k => `<button data-ca="${k}" aria-pressed="${k === ALT}">${ALTS[k].n.split(' · ')[0]}${ALTS[k].rec ? ' ★' : ''} · ${ALTS[k].dias.replace('≈ ', '').replace(' de cubierta', '')}<b>${f0(tot(R[k]))}</b><span class="gan">ganancia ${f0(gan(R[k]))}</span></button>`).join('')}</div>
+  <div class="cmp">${Object.keys(ALTS).map(k => `<button data-ca="${k}" aria-pressed="${k === ALT}">${ALTS[k].n.split(' · ')[0]}${ALTS[k].rec ? ' ★' : ''} · ${(ALTS[k].dias.match(/\d+ días/) || [''])[0]}<b>${f0(tot(R[k]))}</b><span class="gan">ganancia ${f0(gan(R[k]))}</span></button>`).join('')}</div>
   <div class="row" style="margin-top:10px"><span>Ganancia SBU</span><input type="range" id="gan-r" min="0" max="50" step="1" value="${PV.margen}"><b class="mono" style="min-width:44px;text-align:right">${PV.margen} %</b></div>
   <div class="cst"><h3>${ALTS[ALT].n}</h3><table>`;
   h += fila('<b>Mano de obra</b> (jornales y compensaciones, sin cargas)', '');
   r.fases.forEach(f => { h += fila(`${f.n}`, f0(f.nom + f.comp)) + `<tr class="sub"><td colspan="2">${String(f.d).replace('.', ',')} día${f.d === 1 ? '' : 's'} × ${f.det}</td></tr>` });
-  if (r.maq.length) { h += fila('<b>Máquinas</b> (alquiler + flete, + IVA)', ''); r.maq.forEach(m => { h += fila(m.n, f0(m.usd)) + `<tr class="sub"><td colspan="2">${m.dias} días-máquina · ${m.fl} flete${m.fl > 1 ? 's' : ''}</td></tr>` }) }
+  if (r.maq.length) { h += fila('<b>Máquinas</b> (alquiler + flete, + IVA)', ''); r.maq.forEach(m => { h += fila(m.n, f0(m.usd)) + `<tr class="sub"><td colspan="2">${m.key === 'balancin' ? 'Hiansa lo exige para izar paquetes de más de 6 m, con puntos de eslinga cada 4 m como máximo; alquilar o fabricar' : `${String(m.dias).replace('.', ',')} días-máquina · ${m.fl} flete${m.fl > 1 ? 's' : ''}`}</td></tr>` }) }
   if (r.and) h += fila(`Andamios (${r.q.and_m2} m² × ${PV.and_sem} semanas + flete)`, f0(r.and));
   h += fila(`Seguridad: ${r.q.arneses} arneses, ${r.q.lineas} líneas de vida, EPP, prevencionista`, f0(r.seg));
   h += fila('Flete de paneles (sin descarga)', f0(r.flete)) + fila(`Imprevistos ${PV.imprev} %`, f0(r.imp)) + fila('Costo directo', f0(r.directo), 'tot');
@@ -937,7 +950,7 @@ window.__la = { PANELES, SEQ, CARAS, C, O };
     ['Accesos y circulación', [
       ['v', 'Distancia desde ruta y tipo de camino', 'km'], ['v', 'Ancho de la portera de entrada', 'm'], ['v', 'Ancho mínimo del camino interno', 'm'],
       ['v', 'Radio para girar un camión con carga de 9 m', 'sí / no, dónde'], ['v', 'Puentes o alcantarillas (¿aguantan un manitou de ≈ 7 t?)', ''],
-      ['v', 'Árboles o ramas bajas en el camino', 'altura libre m'], ['v', 'Dónde descarga el camión (lado, distancia al establo)', ''], ['v', 'Señal de celular en obra', ''],
+      ['v', 'Árboles o ramas bajas en el camino', 'altura libre m'], ['v', 'Dónde descarga el camión (lado, distancia al establo)', ''], ['v', '¿El camión de BMC trae hidrogrúa? Cantidad de paquetes y largo', ''], ['v', 'Señal de celular en obra', ''],
       ['c', '¿Entra un camión con lluvia o hay que esperar que seque?', 1], ['c', 'Horarios o restricciones de acceso (animales, gremios, portón con llave)'],
       ['c', 'Lugar para dejar la tijera o el manitou de noche, cerrado o vigilado']]],
     ['Estructura existente (contra replanteo)', [
@@ -955,7 +968,7 @@ window.__la = { PANELES, SEQ, CARAS, C, O };
       ['c', 'Si hay andamio: estado, base firme, si lo podemos trasladar', 1], ['c', 'Si hay tractor o retro: quién lo maneja y si puede subir paneles con eslinga']]],
     ['Acopio, servicios, seguridad y papeles', [
       ['v', 'Lugar de acopio para 121 paneles (hasta 8,95 m) sobre tacos', 'dónde · a cuántos m'], ['v', 'Lugar para la mesa de corte (6 m) con espacio para girar paneles', ''],
-      ['c', '¿Los paneles ya están en obra? Cantidad, film, golpes o agua adentro', 1], ['c', 'Viento: zona expuesta, hay que atar el acopio'],
+      ['c', '¿Los paneles ya están en obra? Cantidad, film, golpes o agua adentro', 1], ['c', 'Viento: zona expuesta, hay que atar el acopio'], ['c', 'Acopio: máx. 3 paquetes en altura, sobre tacos, pendiente de 5 % o más, tapado'],
       ['v', 'Luz 220 V a menos de 30 m de la mesa (si no, generador)', ''], ['c', 'Agua, baño y lugar para comer y guardar herramientas'], ['v', 'Dónde se tiran recortes y film', ''],
       ['c', 'Animales en el campo durante el montaje'], ['c', 'Otros gremios trabajando abajo al mismo tiempo (cercar zona de izaje)'], ['v', 'Centro de salud más cercano y acceso de ambulancia', ''],
       ['v', '¿Obra inscripta en BPS (Ley 14.411)? Número de obra', ''], ['v', 'Titular o constructora', ''], ['v', 'Póliza RC y BSE que cubra a la cuadrilla', ''],
