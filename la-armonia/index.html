@@ -66,6 +66,10 @@ main{position:relative;overflow:hidden}
 #plano{position:absolute;right:12px;width:340px;box-sizing:border-box;z-index:6;max-height:60%;overflow:auto;background:#f4f2ec;color:#1d1f22;border:1px solid var(--cu);padding:10px 12px;display:none;font:500 .74rem var(--m)}
 #plano h4{margin:0 0 4px;font:700 .85rem var(--f);color:#1d1f22}#plano svg{display:block;width:100%;height:auto;background:#fff;border:1px solid #c9c6bd}#plano table{width:100%;border-collapse:collapse;margin-top:6px}#plano td{padding:2px 0;border-bottom:1px solid #dcd9d0}#plano td.n{text-align:right;white-space:nowrap}#plano .rj{color:#c0392b;font-weight:700}#plano p{margin:6px 0 0;font-size:.68rem;color:#55585d;line-height:1.35}
 #ficha .x{position:absolute;right:8px;top:6px;background:none;border:0;color:var(--ink);font-size:1rem;cursor:pointer}
+#cam[aria-pressed="true"]{border-color:var(--cu);color:var(--cu)}
+body.cine aside{display:none}body.cine .lbl{display:none!important}body.cine #app{grid-template-columns:minmax(0,1fr)}body.cine .vistas,body.cine #ficha,body.cine #plano{display:none!important}
+#salirCine{position:absolute;left:12px;bottom:12px;display:none;z-index:7;opacity:.55}body.cine #salirCine{display:block}#salirCine:hover{opacity:1}
+#camAviso{position:absolute;right:12px;bottom:12px;font:500 .7rem var(--m);background:rgba(40,43,48,.85);padding:5px 8px;border:1px solid var(--line);display:none;z-index:7}
 .vistas{position:absolute;left:12px;top:12px;display:flex;gap:4px;flex-wrap:wrap}
 .vistas button{background:rgba(40,43,48,.85)}
 .leyenda{position:absolute;left:12px;bottom:12px;background:rgba(40,43,48,.85);padding:8px 10px;font:500 .7rem var(--m);display:grid;gap:3px;max-width:330px}
@@ -104,7 +108,7 @@ table{width:100%;border-collapse:collapse;font:500 .74rem var(--m);margin-top:6p
   <h2>Alternativa</h2>
   <div class="seg" id="alt"></div>
   <h2>Paso a paso</h2>
-  <div class="row"><button class="btn" id="play">▶ Reproducir</button><button class="btn" id="todo">Ver todo</button><div class="seg" id="vel"><button data-vel="1" aria-pressed="true">1×</button><button data-vel="3">3×</button><button data-vel="10">10×</button></div></div>
+  <div class="row"><button class="btn" id="play">▶ Reproducir</button><button class="btn" id="todo">Ver todo</button><button class="btn" id="cam" aria-pressed="true" title="La cámara acompaña el montaje; si tocás el 3D vuelve al modo manual">Cámara auto</button><button class="btn" id="cine" title="Pantalla completa con cámara automática, desde el día 1">Filmar</button><div class="seg" id="vel"><button data-vel="1" aria-pressed="true">1×</button><button data-vel="3">3×</button><button data-vel="10">10×</button></div></div>
   <input type="range" id="paso" min="0" max="1" value="1">
   <div class="paso" id="pasoTxt"></div>
   <div class="res" id="res"></div>
@@ -135,6 +139,7 @@ table{width:100%;border-collapse:collapse;font:500 .74rem var(--m);margin-top:6p
   <div class="vistas"><button class="btn" data-v="persp">3D</button><button class="btn" data-v="planta">Planta</button><button class="btn" data-v="frente">Frente</button><button class="btn" data-v="lado">Lateral</button></div>
   <div id="ficha"><button class="x" id="fx">✕</button><h3 id="fT"></h3><dl id="fD"></dl></div>
   <div id="plano"></div>
+  <button class="btn" id="salirCine">Salir de filmar (Esc)</button><div id="camAviso">Cámara manual · tocá «Cámara auto» para que vuelva a acompañar</div>
   <div class="dia" id="dia" hidden></div>
 </main>
 </div>
@@ -764,8 +769,8 @@ function avanzarTarea(dt) {
   T.ops.forEach(o => { const loc = Math.max(0, Math.min(1, (x - acc) / o.a.n)); o.a.setProg(o.de + (o.a1 - o.de) * loc); if (x >= acc && x < acc + o.a.n) T.punto = o.a.punto(o.de > o.a1 ? 1 - loc : loc); acc += o.a.n });
   if (T.t >= 1) { TAREA = null; aplicar() } else if ((T.f = (T.f || 0) + 1) % 6 === 0) cartelDia()
 }
-const parar = () => { PLAY = false; soltar(); TAREA = null; $('play').textContent = '▶ Reproducir'; aplicar() };
-$('play').onclick = () => { if (PLAY) return parar(); if (PASO >= SEQ.length) { PASO = 0; $('paso').value = 0; DESC_OK = false; andamiosFijos() } PLAY = true; $('play').textContent = '❚❚ Pausa'; aplicar() };
+const parar = () => { PLAY = false; soltar(); TAREA = null; $('play').textContent = '▶ Reproducir'; aplicar(); camBtn() };
+$('play').onclick = () => { if (PLAY) return parar(); if (PASO >= SEQ.length) { PASO = 0; $('paso').value = 0; DESC_OK = false; andamiosFijos() } PLAY = true; AZ = null; $('play').textContent = '❚❚ Pausa'; aplicar(); camBtn() };
 $('paso').addEventListener('input', e => { PASO = +e.target.value; DESC_OK = PASO > 0; if (PLAY) parar(); else aplicar() });
 $('todo').onclick = () => { PASO = SEQ.length; $('paso').value = PASO; parar() };
 $('vel').addEventListener('click', e => { const b = e.target.closest('[data-vel]'); if (!b) return; VEL = +b.dataset.vel; $('vel').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x === b)) });
@@ -1018,11 +1023,41 @@ $('costos').addEventListener('change', e => { if (e.target.id === 'gan-r' || e.t
   if (i.dataset.fd) { QA[ALT].fases[+i.dataset.fd][1] = +i.value || 0; aplicar() } const open = $('costos').querySelector('details').open; costos(); $('costos').querySelector('details').open = open });
 
 altTxt(); fit(); encuadre('persp'); aplicar();
+
+/* cámara automática: acompaña lo que pasa (camión, andamio o panel) con un paneo suave; si el usuario toca el 3D, se apaga */
+let CAMAUTO = true, AZ = null, tCam = 0;
+const camBtn = () => { $('cam').setAttribute('aria-pressed', CAMAUTO); $('camAviso').style.display = !CAMAUTO && (PLAY || TAREA || FLY) ? 'block' : 'none' };
+const centroEd = ed => MUNDO.localToWorld(ed === 'galpon' ? pl('galpon', GAL.L / 2, GAL.P / 2, 0) : pl('establo', EST.L / 2, EST.W / 2, 0));
+function camaraAuto(dt) {
+  if (!CAMAUTO || !(PLAY || TAREA || FLY)) return; tCam += dt;
+  let foco = null, ed = 'establo', R0 = 15, el = .6;
+  if (TAREA && TAREA.tipo === 'descarga') { foco = TAREA.punto ? TAREA.punto.clone() : pl('establo', 2, EST.W + 14, 0); R0 = 34; el = .55 }
+  else if (TAREA) { foco = TAREA.punto ? TAREA.punto.clone().setY(1.5) : null; R0 = 24; el = .65 }
+  else if (FLY) { foco = FLY.pos.clone(); ed = FLY.p.f.ed; R0 = ed === 'galpon' ? 22 : /^N/.test(FLY.p.f.id) ? 17 : 15; el = /^N/.test(FLY.p.f.id) ? .75 : .6 }
+  else { const p = SEQ[PASO] || SEQ[PASO - 1]; if (p) { foco = p.c.clone(); ed = p.f.ed } }
+  if (!foco) return;
+  const fw = MUNDO.localToWorld(foco), cen = centroEd(ed); if (TAREA) cen.copy(fw).add(V(0, 0, 1));
+  const goal = Math.atan2(fw.x - cen.x, fw.z - cen.z) + Math.sin(tCam * .12) * .45; // desde afuera del edificio, con un paneo lento
+  if (AZ === null) AZ = Math.atan2(C.position.x - O.target.x, C.position.z - O.target.z);
+  let d = goal - AZ; d = Math.atan2(Math.sin(d), Math.cos(d)); AZ += d * (1 - Math.exp(-dt * .5));
+  O.target.lerp(fw, 1 - Math.exp(-dt * 1.4));
+  const P = O.target.clone().add(V(Math.sin(AZ) * Math.cos(el) * R0, Math.sin(el) * R0, Math.cos(AZ) * Math.cos(el) * R0));
+  C.position.lerp(P, 1 - Math.exp(-dt * 1.1));
+}
+O.addEventListener('start', () => { if (CAMAUTO && (PLAY || TAREA || FLY)) { CAMAUTO = false; camBtn() } });
+$('cam').onclick = () => { CAMAUTO = !CAMAUTO; AZ = null; camBtn() };
+const cine = on => { document.body.classList.toggle('cine', on); setTimeout(fit, 30); setTimeout(fit, 320);
+  if (on) { try { document.documentElement.requestFullscreen && document.documentElement.requestFullscreen().catch(() => {}) } catch (e) {}
+    CAMAUTO = true; AZ = null; camBtn(); if (!PLAY) { PASO = 0; $('paso').value = 0; DESC_OK = false; andamiosFijos(); PLAY = true; $('play').textContent = '❚❚ Pausa'; aplicar() } }
+  else if (document.fullscreenElement) document.exitFullscreen().catch(() => {}) };
+$('cine').onclick = () => cine(true); $('salirCine').onclick = () => cine(false);
+addEventListener('keydown', e => { if (e.key === 'Escape' && document.body.classList.contains('cine')) cine(false) });
+document.addEventListener('fullscreenchange', () => { if (!document.fullscreenElement && document.body.classList.contains('cine')) cine(false); setTimeout(fit, 50) });
 const reloj = new THREE.Clock();
 (function loop() { requestAnimationFrame(loop); const dt = Math.min(.1, reloj.getDelta());
   motor(dt); const cur = FLY ? FLY.p : TAREA ? null : (PASO > 0 && PASO < SEQ.length ? SEQ[PASO - 1] : null), fly = FLY ? { pos: FLY.pos, seg: FLY.seg || 1, entrega: FLY.entrega, p: FLY.p, pts: FLY.pts } : null;
   ACT[ALT].forEach(a => a.upd(cur && (ED === 'ambos' || cur.f.ed === ED) ? cur : null, fly, dt));
-  O.update(); R.render(S, C); L2.render(S, C) })();
+  camaraAuto(dt); O.update(); R.render(S, C); L2.render(S, C) })();
 window.__la = { PANELES, SEQ, CARAS, C, O };
 </script>
 <script>
