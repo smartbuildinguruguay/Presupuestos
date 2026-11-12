@@ -24,7 +24,7 @@ h2{font-size:1.25rem;margin:0 0 4px}h3{font-size:1rem;margin:18px 0 6px}.sub{col
 table{border-collapse:collapse;width:100%;font-size:.86rem}th,td{padding:5px 7px;border-bottom:1px solid var(--ln);text-align:left;vertical-align:top}th{font-size:.74rem;text-transform:uppercase;letter-spacing:.04em;color:var(--mut)}
 td.n,th.n{text-align:right;white-space:nowrap;font-variant-numeric:tabular-nums}tr.cat td{background:#f1ebe1;font-weight:700}tr.tt td{font-weight:700;border-top:2px solid var(--ink)}
 tr.best td{background:#e5f1e2}.note{font-size:.82rem;color:var(--mut)}.pill{display:inline-block;border-radius:99px;padding:1px 8px;font-size:.74rem;font-weight:700;background:#efe6d9;color:#7a4a22}
-.ok{color:var(--ok)}.warn{background:#fff6e5;border:1px solid #f0d49b;border-radius:8px;padding:9px 12px;font-size:.86rem;margin:10px 0}
+.ok{color:var(--ok)}.bad{color:#c0392b}.warn{background:#fff6e5;border:1px solid #f0d49b;border-radius:8px;padding:9px 12px;font-size:.86rem;margin:10px 0}
 .k{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;margin:8px 0 14px}.k div{background:var(--pn);border:1px solid var(--ln);border-radius:9px;padding:9px 11px}.k b{display:block;font-size:1.15rem}.k span{font-size:.76rem;color:var(--mut)}
 #v3{position:relative;height:min(72vh,700px);background:#cfd9de;border-radius:10px;overflow:hidden;border:1px solid var(--ln)}
 #v3 canvas{display:block}#lay{position:absolute;left:10px;top:10px;background:rgba(255,253,249,.94);border:1px solid var(--ln);border-radius:9px;padding:9px 11px;font-size:.8rem;max-width:230px}
@@ -36,7 +36,7 @@ tr.best td{background:#e5f1e2}.note{font-size:.82rem;color:var(--mut)}.pill{disp
 #anim{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(38,35,31,.92);color:#fff;border-radius:9px;padding:8px 12px;font-size:.8rem;display:grid;grid-template-columns:auto auto auto 1fr auto;gap:6px 10px;align-items:center;width:min(96%,820px);z-index:3}#anim[hidden],#etapa[hidden]{display:none!important}#anim button{border:1px solid #555;background:#3a3631;color:#fff;border-radius:6px;padding:4px 10px;font:700 .8rem system-ui;cursor:pointer}#anim label{display:flex;gap:4px;align-items:center}#anRg{width:100%}#anTx{grid-column:1/-1;line-height:1.35}#anTx b{display:block;color:#ffb347}#anTx span{color:#d9d0c3;font-size:.78rem}#txEt{grid-column:1/-1;line-height:1.35}#txEt b{display:block}#txEt span{color:var(--mut);font-size:.78rem}#lay label.fut{opacity:.4}#tip{position:absolute;pointer-events:none;background:#26231f;color:#fff;padding:5px 8px;border-radius:6px;font-size:.78rem;display:none;max-width:260px}
 #vistas{position:absolute;left:50%;transform:translateX(-50%);top:10px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-width:calc(100% - 520px);z-index:4}#vistas .vl{display:none;position:absolute;top:34px;left:50%;transform:translateX(-50%);background:rgba(255,253,249,.97);border:1px solid var(--ln);border-radius:9px;padding:6px;flex-direction:column;gap:3px;min-width:190px;box-shadow:0 6px 18px rgba(0,0,0,.18)}#vistas.open .vl{display:flex}#vistas .vl button{text-align:left}#vistas .vb{background:#26231f!important;color:#fff!important;border-color:#26231f!important}
 #anDia{position:absolute;left:50%;transform:translateX(-50%);top:48px;background:rgba(38,35,31,.9);color:#fff;border-radius:10px;padding:6px 16px;text-align:center;z-index:3;pointer-events:none}#anDia b{display:block;font-size:1.25rem;color:#f2b705}#anDia span{font-size:.76rem}#anDia[hidden]{display:none!important}
-#anDias{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:3px;align-items:center;font-size:.72rem}#anDias button{padding:2px 7px!important;font-size:.72rem!important;min-width:26px}#anDias button.hoy{background:#f2b705!important;color:#26231f!important;border-color:#f2b705!important}#vistas button{border:1px solid var(--ln);background:rgba(255,253,249,.95);border-radius:6px;padding:5px 9px;font:600 .76rem system-ui;cursor:pointer}#vistas button.on{background:var(--acc);color:#fff;border-color:var(--acc)}#vistas .fs{background:#26231f;color:#fff;border-color:#26231f}
+#anDias{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:3px;align-items:center;font-size:.72rem}#anDias button{padding:2px 7px!important;font-size:.72rem!important;min-width:26px}#anDias .lic{background:#f7d9c4;color:#b5622a;border-radius:4px;padding:1px 6px;font-weight:700}#anDias button.hoy{background:#f2b705!important;color:#26231f!important;border-color:#f2b705!important}#vistas button{border:1px solid var(--ln);background:rgba(255,253,249,.95);border-radius:6px;padding:5px 9px;font:600 .76rem system-ui;cursor:pointer}#vistas button.on{background:var(--acc);color:#fff;border-color:var(--acc)}#vistas .fs{background:#26231f;color:#fff;border-color:#26231f}
 #pad[hidden]{display:none!important}#lay.min label{display:none}#lay b{cursor:pointer}#lay b:after{content:' ▾';color:var(--mut)}#lay.min b:after{content:' ▸'}
 #pad{position:absolute;right:12px;bottom:12px;z-index:3;display:flex;flex-direction:column;align-items:flex-end;gap:6px}#pad .ph{background:rgba(38,35,31,.85);color:#fff;border-radius:7px;padding:6px 9px;font-size:.74rem;max-width:260px}#pad .pk{display:flex;flex-direction:column;align-items:center;gap:3px}#pad .pk div{display:flex;gap:3px}#pad button{width:42px;height:38px;border-radius:8px;border:1px solid var(--ln);background:rgba(255,253,249,.95);font-size:1rem;cursor:pointer;touch-action:none}
 #v3:fullscreen{height:100vh;border-radius:0;border:0}#v3:fullscreen #lay{max-height:calc(100vh - 160px);overflow:auto}
@@ -197,6 +197,15 @@ tr.win td{background:#e5f1e2;font-weight:600}.tag2{display:inline-block;font-siz
  <div class="card"><h3 style="margin-top:0">Qué queda hecho y qué completa cada inquilino</h3><div id="tModo"></div></div>
 </section>
 
+<section class="pg" id="p-crono">
+ <h2>Cronograma, pagos y avances</h2>
+ <p class="sub">La obra por etapas con fechas reales: lunes a viernes, sin feriados ni licencias de la construcción. La etapa 1 (suelo, fundación, previsiones y platinas) se hace este año con inicio anticipado de obra; se retoma el 11 de enero y se entrega a mediados de abril. Cada etapa se puede ver en la animación del 3D, con su fecha.</p>
+ <div class="k" id="kCro"></div>
+ <div class="card"><div class="bar" style="position:static;border:0;padding:0 0 8px"><label>Inicio de obra <input type="date" id="crIni"></label><span class="note">El movimiento de suelos depende de la opción de suelo de arriba. Las barras son días hábiles; en naranja, las licencias.</span></div><div id="crGantt" style="overflow-x:auto"></div></div>
+ <div class="card"><h3 style="margin-top:0">Etapas</h3><div id="crEt"></div></div>
+ <div class="card"><h3 style="margin-top:0">Pagos por avance de obra</h3><div id="crPag"></div></div>
+ <div class="card"><h3 style="margin-top:0">Supuestos y riesgos del plazo</h3><div id="crRie"></div></div>
+</section>
 <section class="pg" id="p-rent">
  <h2>Rentabilidad: cuántos locales conviene</h2>
  <p class="sub">Más locales chicos se alquilan más caros por m², pero cuestan más (divisorios, baños, medidores, habilitaciones) y tienen más rotación. La tabla compara 2 a 5 locales con los mismos supuestos; los valores se cambian acá abajo.</p>
@@ -451,7 +460,7 @@ function rubrado(st = S) {
   const venta = rd(costo * K);
   // gestión (precios de venta, como en la propuesta)
   const G = [
-    ['Proyecto y permiso de construcción', rd(Math.max(2500, venta * .045))],
+    ['Proyecto ejecutivo y permisos (Arq. Pablo Alcoba): arquitectura sobre el anteproyecto de la arquitecta del cliente, planos de sanitaria, eléctrica y estructura, permiso con inicio anticipado y trámites en la Intendencia, OSE y UTE', rd(Math.max(2500, venta * .045))],
     ['Ingeniero: cálculo estructural, memoria, planos y firma; revisión de planos de taller y 2 visitas de control', 2800],
     ['Agrimensor: replanteo, niveles y mensura final', 1200],
     ['Registro de obra en BPS', 700],
@@ -465,7 +474,7 @@ function rubrado(st = S) {
 const ivaK = () => S.iva ? 1.22 : 1;
 
 /* ================= UI ================= */
-const GRP = [['Proyecto', [['p-proy', 'Resumen']]],
+const GRP = [['Proyecto', [['p-proy', 'Resumen'], ['p-crono', 'Cronograma, pagos y avances']]],
   ['Dibujos y 3D', [['p-3d', '3D y montaje animado'], ['p-impl', 'Implantación'], ['p-planta', 'Planta'], ['p-fach', 'Fachadas'], ['p-est', 'Estructura'], ['p-env', 'Paneles'], ['p-loc', 'Locales e instalaciones']]],
   ['Costos', [['p-rub', 'Rubrado'], ['p-sub', 'Subcontratos o SBU'], ['p-aud', 'Auditoría y mercado'], ['p-rent', 'Rentabilidad']]],
   ['Cotizaciones', [['p-mat', 'Rubros: materiales y subcontratos'], ['p-prov', 'Proveedores y respuestas'], ['p-ped', 'Estructura metálica']]]];
@@ -1860,14 +1869,14 @@ const v3 = (() => {
   let UNITS = [], AN = null, maq = null;
   const CAM = (() => { const v = ((6 * 10.6 + 2 * 25.6) * .3 * .6 + 12 * 1.2 * 1.2 * .45) * 1.05, p = 266 * .15 * 1.05; return { v: Math.ceil(v / 7), p: Math.ceil(p / 7), mv: v, mp: p }; })();
   function hacerUnidades() {
-    UNITS = []; const keys = Object.keys(ANIM_ST); let d0 = 0;
+    UNITS = []; const keys = Object.keys(ANIM_ST); let d0 = 0; const PL = plan(); UNITS.plan = PL;
     keys.forEach(k => { const g = groups[k]; if (!g) return; const us = []; let cur = null;
       g.children.forEach(m => { if (!m.isMesh) return; m.userData.p0 = m.position.clone(); const c = new THREE.Box3().setFromObject(m).getCenter(new THREE.Vector3());
         if (cur && cur.info === m.userData.info && cur.c.distanceTo(c) < .7 || cur && !m.userData.info) cur.ms.push(m); else { cur = { k, info: m.userData.info || '', c, ms: [m] }; us.push(cur); } });
       const [tipo, dias, tarea, espera] = ANIM_ST[k], nCam = k === 'fHv' ? CAM.v : k === 'fHp' ? CAM.p : 0;
-      us.forEach((u, i) => { u.tipo = tipo; u.tarea = tarea; u.dia = d0 + Math.floor(i / us.length * dias) + 1; u.box = new THREE.Box3(); u.ms.forEach(m => { const bb = new THREE.Box3().setFromObject(m); u.box.union(bb); m.userData.h = bb.max.y - bb.min.y; }); u.c = u.box.getCenter(new THREE.Vector3()); if (nCam) { u.nCam = nCam; u.cam = Math.min(nCam, Math.floor(i / us.length * nCam) + 1); } });
+      const pt = PL.by[k]; us.forEach((u, i) => { u.tipo = tipo; u.tarea = tarea; u.dia = pt ? pt.d0 + Math.floor(i / us.length * pt.d) : d0 + Math.floor(i / us.length * dias) + 1; u.etapa = pt ? pt.e : 0; u.box = new THREE.Box3(); u.ms.forEach(m => { const bb = new THREE.Box3().setFromObject(m); u.box.union(bb); m.userData.h = bb.max.y - bb.min.y; }); u.c = u.box.getCenter(new THREE.Vector3()); if (nCam) { u.nCam = nCam; u.cam = Math.min(nCam, Math.floor(i / us.length * nCam) + 1); } });
       d0 += dias + (espera || 0); UNITS.push(...us); });
-    UNITS.total = d0;
+    UNITS.total = PL.total;
   }
   const persona = col => { const g = new THREE.Group(), add = (geo, mat, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; g.add(m); return m; };
     add(new THREE.BoxGeometry(.34, .8, .2), M(0x3b3b3b), 0, .4, 0); add(new THREE.BoxGeometry(.44, .6, .26), M(col), 0, 1.1, 0); add(new THREE.SphereGeometry(.12, 12, 8), M(0xd9a07a), 0, 1.55, 0); add(new THREE.CylinderGeometry(.15, .16, .08, 12), M(0xffd23f), 0, 1.67, 0); return g; };
@@ -1983,7 +1992,8 @@ const v3 = (() => {
     else { AN = null; if (maq) [maq.mani, maq.tij, maq.suelo].forEach(o => o.visible = false); verHasta(1e9); $('anim').hidden = true; $('etapa').hidden = false; $('anDia').hidden = true; $('hud').hidden = false; if (maq) { maq.sold.visible = maq.cab.visible = maq.chis.visible = maq.brazo.visible = maq.torcha.visible = maq.chispas.visible = false; maq.luz.intensity = 0; const f = maq.fund; [f.retro, f.bomba, f.pl1, f.pl2, f.pl3, f.mang, f.mixer, f.h2, f.h3].forEach(o => o.visible = false); } ['fRep', 'fExc', 'fArm', 'fPn', 'fHv', 'fTos', 'fMal', 'fHp'].forEach(k => groups[k] && (groups[k].visible = false)); applyVis(); }
   }
   function diasNav() { const ini = {}; UNITS.forEach((u, i) => { if (!(u.dia in ini)) ini[u.dia] = i; });
-    $('anDias').innerHTML = '<span>Ir al día</span>' + Array.from({ length: UNITS.total }, (_, i) => i + 1).map(d => `<button data-dia="${d}" data-i="${ini[d] ?? ''}" ${d in ini ? '' : 'disabled'}>${d}</button>`).join('') + `<button data-dia="fin" data-i="${UNITS.length}">✓</button>`;
+    const PL = UNITS.plan, fe = []; { let x = new Date(PL.by.fRep.s); while (fe.length < UNITS.total) { if (habil(x)) fe.push(new Date(x)); x = addD(x, 1); } } UNITS.fe = fe;
+    $('anDias').innerHTML = '<span>Ir al día</span>' + Array.from({ length: UNITS.total }, (_, i) => i + 1).map(d => { const f = fe[d - 1], pr = fe[d - 2], sep = pr && (f - pr) / 864e5 > 3 ? `<span class="lic">${f.getMonth() === 0 ? 'licencia' : f.getMonth() === 1 ? 'Carnaval' : 'Turismo'}</span>` : ''; return sep + `<button data-dia="${d}" data-i="${ini[d] ?? ''}" ${d in ini ? '' : 'disabled'} title="${fFe(f, true)}">${d}</button>`; }).join('') + `<button data-dia="fin" data-i="${UNITS.length}" title="entrega ${fFe(PL.fin, true)}">✓</button>`;
     $('anDias').onclick = e => { const b = e.target.closest('[data-dia]'); if (!b || !AN) return; AN.i = +b.dataset.i; AN.t = 0; verHasta(AN.i); groups.ext.visible = AN.i >= UNITS.length; }; }
   function tickAnim(dt) {
     if (!AN || !UNITS.length) return; const U = UNITS[Math.min(AN.i, UNITS.length - 1)];
@@ -2006,7 +2016,7 @@ const v3 = (() => {
     const V = UNITS[Math.min(AN.i, UNITS.length - 1)], q = QUIEN[V.k], prop = q && PROPIO[q], quien = !q ? 'aluminiero' : prop ? 'SBU con cuadrilla propia' : PAQ[q].quien;
     $('anTx').innerHTML = AN.i >= UNITS.length ? `<b>Día ${UNITS.total} de ${UNITS.total} · obra gruesa, envolvente e instalaciones terminadas</b><span>${UNITS.length} piezas · quedan exteriores y terminaciones</span>` : `<b>Día ${V.dia} de ${UNITS.total} · ${V.tarea}</b><span>${V.info || ''} · pieza ${AN.i + 1}/${UNITS.length} · ${V.tipo === 'grua' ? 'la sube el manitou con operario; dos en la tijera la reciben y fijan' : V.tipo === 'tij' ? 'dos operarios desde la tijera de 8 m' : V.tipo === 'horm' ? `camión ${V.cam} de ${V.nCam} (7 m³ c/u, ${f1(V.k === 'fHv' ? CAM.mv : CAM.mp)} m³ en total) · bomba con pluma · regla y vibrador` : V.tipo === 'exc' ? 'retroexcavadora chica con operario y dos peones' : V.tipo === 'baja' ? 'se arma en el piso y se baja a la zanja sobre separadores' : V.k === 'iSan' ? 'con ayudante, desde escalera y tijera' : V.k === 'iEle' ? 'con ayudante, desde la tijera para lo del techo' : V.k === 'div' ? 'cuadrilla de steel frame' : 'cuadrilla de fundaciones'} · ${quien}</span>`;
     $('anRg').value = AN.i; $('anPl').textContent = AN.run ? '❚❚' : '▶';
-    { const fin = AN.i >= UNITS.length, d = fin ? UNITS.total : V.dia, key = d + '|' + fin; if ($('anDia').dataset.k !== key) { $('anDia').dataset.k = key; $('anDia').innerHTML = `<b>Día ${d} de ${UNITS.total}</b><span>${fin ? 'obra gruesa, envolvente e instalaciones terminadas' : V.tarea}</span>`; $('anDias').querySelectorAll('[data-dia]').forEach(b => b.classList.toggle('hoy', fin ? b.dataset.dia === 'fin' : +b.dataset.dia === d)); } }
+    { const fin = AN.i >= UNITS.length, d = fin ? UNITS.total : V.dia, key = d + '|' + fin; if ($('anDia').dataset.k !== key) { $('anDia').dataset.k = key; $('anDia').innerHTML = `<b>Día ${fin ? UNITS.total : d} de ${UNITS.total} · ${fFe(fin ? UNITS.plan.fin : UNITS.fe[d - 1], true)}</b><span>${fin ? 'entrega: quedan exteriores, conexiones y habilitaciones' : ETAPAS[V.etapa][0] + ' · ' + V.tarea}</span>`; $('anDias').querySelectorAll('[data-dia]').forEach(b => b.classList.toggle('hoy', fin ? b.dataset.dia === 'fin' : +b.dataset.dia === d)); } }
   }
 
   function tick() { const dt = Math.min(.05, clock.getDelta()); tickAnim(dt);
@@ -2309,11 +2319,131 @@ const v3 = (() => {
     (function loop() { requestAnimationFrame(loop); tick(); ren.render(sc, cam); })();
   }
   function resize() { if (!ren) return; const el = $('v3'); ren.setSize(el.clientWidth, el.clientHeight); cam.aspect = el.clientWidth / el.clientHeight; cam.updateProjectionMatrix(); }
-  return { start, rebuild: () => { if (started) { if (AN) animar(false); build(); hud(); } }, ir, ST };
+  function animIr(k) { start(); if (!AN) animar(true); const i = k === 'fin' ? UNITS.length : Math.max(0, UNITS.findIndex(u => u.k === k)); AN.i = i; AN.t = 0; AN.run = true; verHasta(i); groups.ext.visible = i >= UNITS.length; }
+  return { start, animIr, rebuild: () => { if (started) { if (AN) animar(false); build(); hud(); } }, ir, ST };
 })();
 
+/* ================= CRONOGRAMA, PAGOS Y AVANCES =================
+   Calendario de obra real: lunes a viernes, sin feriados ni licencias de la construcción 2026/2027
+   (23/12/2026–9/1/2027 y 22–27/3/2027, IGTSS). Lo usan la pestaña de cronograma y la animación. */
+const LIC = [['2026-12-23', '2027-01-09', 'Licencia de la construcción, 1.er período'], ['2027-03-22', '2027-03-27', 'Licencia de la construcción, 2.º período (Turismo)']];
+const FER = ['2026-12-25', '2027-01-01', '2027-01-06', '2027-02-08', '2027-02-09', '2027-05-01'];
+const CR = { ini: '2026-12-07', meta: '2027-04-16', firma: '2026-11-20' };
+const dS = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`, D0 = s => new Date(s + 'T12:00:00');
+const addD = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
+const habil = d => { const s = dS(d), w = d.getDay(); return w > 0 && w < 6 && !FER.includes(s) && !LIC.some(([a, b]) => s >= a && s <= b); };
+const sigHab = d => { let x = new Date(d); while (!habil(x)) x = addD(x, 1); return x; };
+const masHab = (d, n) => { let x = sigHab(d); for (let i = 1; i < n; i++) x = sigHab(addD(x, 1)); return x; };
+const fFe = (d, y) => d.toLocaleDateString('es-UY', { weekday: 'short', day: 'numeric', month: 'short', ...(y ? { year: 'numeric' } : {}) });
+const fCo = d => d.toLocaleDateString('es-UY', { day: 'numeric', month: 'short' });
+const SUELO_D = { S0: 2, S1: 3, S2: 4, S3: 5, S4: 7 };
+const ETAPAS = [['Proyecto, permisos e inicio anticipado', '#6c655c', 'Pablo Alcoba dibuja y presenta; el ingeniero calcula la fundación primero para poder arrancar con inicio anticipado.'],
+  ['Etapa 1 · Suelo, fundación, previsiones y platinas', '#8b5a2b', 'Lo que se hace este año: movimiento de suelos, vigas de fundación, todo lo que va bajo la platea, pernos y platinas de las 12 columnas y la platea llaneada. Cura durante la licencia.'],
+  ['Etapa 2 · Estructura metálica', '#b5622a', 'Al volver de la licencia: pórticos, arriostramiento, correas, largueros y bastidores de fachada. El taller fabrica desde diciembre.'],
+  ['Etapa 3 · Envolvente y fachada', '#2f6f86', 'Techo de panel y canalón, muros, vidrieras y portal, faja, visera, brise y cenefa: el edificio queda cerrado.'],
+  ['Etapa 4 · Divisorios, instalaciones y terminaciones', '#2a8a5a', 'Adentro, en paralelo con la fachada: divisorios, baños, sanitaria y eléctrica interior, pintura, cerámica, artefactos y luminarias.'],
+  ['Etapa 5 · Exteriores, conexiones y entrega', '#6d4c8f', 'Plaza, estacionamiento y vereda; conexiones de UTE y OSE; inspección de Bomberos, final de obra y entrega.']];
+function plan(st = S) {
+  const T = [], by = {}, add = (k, e, n, d, o = {}) => { const t = { k, e, n, d, ...o }; T.push(t); by[k] = t; return t; };
+  add('ante', 0, 'Llega el anteproyecto de la arquitecta', 1, { fijo: '2026-11-17', hito: true });
+  add('suel', 0, 'Estudio de suelos: 2 sondeos SPT e informe', 8, { fijo: '2026-11-18' });
+  add('pej', 0, 'Pablo Alcoba + ingeniero: implantación, fundación, sanitaria bajo platea y cálculo de fundación', 8, { fijo: '2026-11-18' });
+  add('firma', 0, 'Firma del contrato con Juan Carlos', 1, { fijo: CR.firma, hito: true });
+  add('bps', 0, 'Registro de obra en BPS y permiso con pedido de inicio anticipado en la Intendencia', 2, { fijo: '2026-11-30' });
+  add('tal', 0, 'Encargo de la estructura al taller (planos de taller y fabricación)', 1, { fijo: '2026-12-01', hito: true });
+  add('exc', 0, 'Límite para pedir excepción a la IGTSS si hay que trabajar en la licencia', 1, { fijo: '2026-12-04', hito: true });
+  add('ia', 0, 'Inicio anticipado autorizado (a confirmar)', 1, { fijo: '2026-12-04', hito: true });
+  add('pc', 0, 'Resto del proyecto ejecutivo y permiso completo: arquitectura, estructura, sanitaria, eléctrica, Bomberos', 25, { fijo: '2026-12-01' });
+  add('ped', 0, 'Pedido de paneles y vidrieras (llegan en enero)', 1, { fijo: '2026-12-14', hito: true });
+  add('fRep', 1, 'Obrador, cerco y replanteo de ejes', 1, { ini: 1 });
+  add('suelo', 1, 'Movimiento de suelos: ' + (SUELO[st.suelo] || SUELO.S0).n.toLowerCase(), SUELO_D[st.suelo] || 2, { fs: 'fRep' });
+  add('fExc', 1, 'Excavación de zanjas y pozos de nudos', 2, { fs: 'suelo' });
+  add('fArm', 1, 'Armaduras de vigas y nudos: se arman en el piso y se bajan', 2, { ss: 'fExc', lag: 1 });
+  add('fPn', 1, 'Pernos y platinas con plantilla en las 12 columnas', 1, { fs: 'fArm' });
+  add('inst', 1, 'Previsiones bajo platea: sanitaria, agua, caños eléctricos y tierra', 1, { ss: 'fPn' });
+  add('fHv', 1, 'Hormigonado de vigas y nudos con bomba', 1, { fs: 'fPn' });
+  add('fTos', 1, 'Relleno de tosca compactada', 2, { fs: 'fHv' });
+  add('fMal', 1, 'Nylon, separadores y malla doble', 1, { fs: 'fTos' });
+  add('fHp', 1, 'Hormigonado de platea con bomba y llaneado (cura 7 días)', 1, { fs: 'fMal', espera: 7 });
+  add('est', 2, 'Montaje de pórticos', 3, { fs: 'fHp' }); add('cru', 2, 'Arriostramiento', 1, { fs: 'est' }); add('cor', 2, 'Correas, tensores y tornapuntas', 2, { fs: 'cru' }); add('lar', 2, 'Largueros y montantes de pretil', 2, { fs: 'cor' }); add('bas', 2, 'Parantes y bastidores de fachada', 3, { fs: 'lar' });
+  add('techo', 3, 'Techo de panel y canalón', 5, { fs: 'bas' }); add('muro', 3, 'Muros de panel', 7, { ss: 'techo', lag: 3 }); add('vid', 3, 'Vidrieras y portal', 5, { ss: 'muro', lag: 4 }); add('faja', 3, 'Faja, visera y brise', 4, { ss: 'vid', lag: 3 }); add('cen', 3, 'Cenefa negra', 2, { fs: 'faja' });
+  add('div', 4, 'Divisorios y cerramientos de baño', 4, { fs: 'techo' }); add('iSan', 4, 'Sanitaria interior', 3, { ss: 'div', lag: 2 }); add('iEle', 4, 'Eléctrica e iluminación', 4, { ss: 'iSan', lag: 1 }); add('ter', 4, 'Terminaciones: masillado y pintura, cerámica de baños, artefactos, luminarias y tableros', 12, { fs: 'iEle' });
+  add('ext', 5, 'Exteriores: plaza, estacionamiento, vereda y canteros', 8, { fs: 'cen' }); add('con', 5, 'Conexiones de UTE y OSE, pruebas y limpieza final', 5, { fs: ['ter', 'ext'] }); add('mar', 5, 'Margen por lluvia, atrasos de proveedores y trámites', 10, { fs: 'con', margen: true }); add('hab', 5, 'Inspección de Bomberos, final de obra y entrega', 4, { fs: 'mar' });
+  T.forEach(t => { let s;
+    if (t.fijo) { s = D0(t.fijo); t.s = s; t.f = t.d > 1 ? masHab(s, t.d) : s; return; }
+    if (t.ini) s = D0(CR.ini); else if (t.ss) s = masHab(by[t.ss].s, 1 + (t.lag || 0)); else s = [].concat(t.fs).reduce((a, k) => { const p = by[k], x = addD(p.f, 1 + (p.espera || 0)); return x > a ? x : a; }, new Date(0));
+    t.s = sigHab(s); t.f = masHab(t.s, t.d); });
+  const o0 = by.fRep.s, idx = d => { let n = 0, x = new Date(o0); while (x <= d) { if (habil(x)) n++; x = addD(x, 1); } return n; };
+  T.forEach(t => { if (t.e > 0) { t.d0 = idx(t.s); t.d1 = idx(t.f); } });
+  const E = ETAPAS.map((x, i) => { const ts = T.filter(t => t.e === i); return { i, n: x[0], c: x[1], q: x[2], s: new Date(Math.min(...ts.map(t => t.s))), f: new Date(Math.max(...ts.map(t => t.f))), ts }; });
+  return { T, by, E, idx, total: by.hab.d1, fin: by.hab.f, antes: by.fHp.f < D0(LIC[0][0]) };
+}
+/* pagos: el cliente paga por hito; SBU paga materiales y subcontratos según avance y acopios */
+function pagos(st = S) {
+  const P = plan(st), r = rubrado(st), k = ivaK(), B = P.by; let cn = 0; const IT = [];
+  r.R.forEach(x => { if (x.cat) cn = parseInt(x.cat); else IT.push({ ...x, cn }); });
+  const fE = i => P.E[i].f, mid = i => new Date((P.E[i].s.getTime() + P.E[i].f.getTime()) / 2);
+  const et = x => /Previsión universal|^Colector|^Cámaras|^Pluviales|^Conexión a saneamiento|^Cámara separadora/.test(x.t) ? 1 : x.cn <= 2 ? 1 : x.cn === 3 ? 2 : x.cn <= 5 ? 3 : x.cn <= 10 ? 4 : x.cn === 11 ? 5 : 0;
+  const G = []; IT.forEach(x => { const e = et(x);
+    if (x.cn === 3) { G.push([B.tal.s, x.c * .5]); G.push([fE(2), x.c * .5]); }
+    else if (x.pq === 'panmat' || x.pq === 'alu') { G.push([B.ped.s, x.c * .5]); G.push([x.pq === 'alu' ? B.vid.f : B.techo.s, x.c * .5]); }
+    else if (e === 0) [1, 2, 3, 4, 5].forEach(i => G.push([mid(i), x.c / 5]));
+    else G.push([fE(e), x.c]); });
+  const v = r.venta, g = r.gest;
+  const H = [['Firma del contrato', B.firma.s, .25, .5, 'anticipo: proyecto, cálculo, estudio de suelos, acopio de la estructura y de la fundación'],
+    ['Inicio de obra con inicio anticipado', B.fRep.s, .15, 0, 'obrador, movimiento de suelos y fundación'],
+    ['Platea, previsiones y platinas terminadas', B.fHp.f, .15, 0, 'antes de la licencia; cubre el acopio de paneles y vidrieras'],
+    ['Estructura metálica montada', fE(2), .15, .3, 'y permiso de construcción completo presentado'],
+    ['Edificio cerrado: techo, muros y vidrieras', B.vid.f > B.muro.f ? B.vid.f : B.muro.f, .15, 0, 'envolvente terminada'],
+    ['Instalaciones y terminaciones', B.ter.f, .1, 0, 'divisorios, baños, sanitaria, eléctrica, pintura'],
+    ['Entrega con habilitaciones', B.hab.f, .05, .2, 'final de obra, Bomberos y conexiones']];
+  const hit = H.map(h => ({ n: h[0], d: h[1], po: h[2], pg: h[3], q: h[4], usd: (v * h[2] + g * h[3]) * k }));
+  let acC = 0, acP = 0; hit.forEach(h => { acP += h.usd; acC = G.filter(([d]) => d <= h.d).reduce((t, x) => t + x[1], 0) * k; h.acP = acP; h.acC = acC; });
+  return { P, hit, r, k, G };
+}
+function renderCrono() {
+  const el = $('crGantt'); if (!el) return; const P = plan(), { hit, r, k } = pagos(), lbl = S.iva ? 'con IVA' : 'sin IVA';
+  $('crIni').value = CR.ini;
+  const meta = D0(CR.meta), ok = P.fin <= meta;
+  $('kCro').innerHTML = [[fCo(P.by.fRep.s), 'inicio de obra (inicio anticipado)'], [fCo(P.by.fHp.f), P.antes ? 'platea y platinas, antes de la licencia ✔' : 'platea: NO llega antes de la licencia'], [fCo(P.by.est.s), 'arranca el montaje de la estructura'], [fCo(P.fin), ok ? 'entrega (meta: mediados de abril) ✔' : 'entrega: se pasa de la meta'], [P.total + ' días', 'hábiles de obra']].map(([a, b]) => `<div><b>${a}</b><span>${b}</span></div>`).join('');
+  // gantt en svg
+  const d0 = D0('2026-11-16'), d1 = D0('2027-04-25'), nd = Math.round((d1 - d0) / 864e5), px = 5.4, LW = 330, RH = 17, rows = [];
+  P.E.forEach(E => { rows.push({ et: E }); E.ts.forEach(t => rows.push({ t })); });
+  const H = 34 + rows.length * RH + 10, W = LW + nd * px + 10, X = d => LW + (d - d0) / 864e5 * px;
+  let s = `<rect width="${W}" height="${H}" fill="#fff"/>`;
+  for (let i = 0; i < nd; i++) { const d = addD(d0, i), w = d.getDay(); if (w === 0 || w === 6) s += `<rect x="${X(d)}" y="30" width="${px}" height="${H - 30}" fill="#f4f2ee"/>`; if (d.getDate() === 1 || i === 0) s += `<text x="${X(d) + 2}" y="12" font-size="10" font-weight="700" ${FT}>${d.toLocaleDateString('es-UY', { month: 'short', year: 'numeric' })}</text><line x1="${X(d)}" y1="2" x2="${X(d)}" y2="${H}" stroke="#ccc"/>`; if (w === 1) s += `<text x="${X(d) + 1}" y="26" font-size="8" fill="#888" ${FT}>${d.getDate()}</text>`; }
+  LIC.forEach(([a, b, n]) => { const x0 = X(D0(a)), x1 = X(addD(D0(b), 1)); s += `<rect x="${x0}" y="30" width="${x1 - x0}" height="${H - 30}" fill="#f7d9c4" opacity=".75"/><text x="${(x0 + x1) / 2}" y="${H - 6}" text-anchor="middle" font-size="8.5" font-weight="700" fill="#b5622a" ${FT}>licencia</text>`; });
+  FER.forEach(f => { const d = D0(f); if (d > d0 && d < d1 && !LIC.some(([a, b]) => f >= a && f <= b)) s += `<rect x="${X(d)}" y="30" width="${px}" height="${H - 30}" fill="#e8e3da"/>`; });
+  const xm = X(meta); s += `<line x1="${xm}" y1="30" x2="${xm}" y2="${H}" stroke="#c0392b" stroke-dasharray="4 3"/><text x="${xm + 3}" y="40" font-size="9" fill="#c0392b" font-weight="700" ${FT}>meta 16/4</text>`;
+  const xh = X(D0('2026-11-12')); s += `<line x1="${xh}" y1="30" x2="${xh}" y2="${H}" stroke="#2f6f86"/><text x="${xh + 3}" y="40" font-size="9" fill="#2f6f86" ${FT}>hoy</text>`;
+  rows.forEach((R, i) => { const y = 34 + i * RH;
+    if (R.et) { s += `<rect x="0" y="${y}" width="${W}" height="${RH}" fill="${R.et.c}" opacity=".1"/><text x="6" y="${y + 12}" font-size="10.5" font-weight="800" fill="${R.et.c}" ${FT}>${R.et.n}</text><rect x="${X(R.et.s)}" y="${y + 6}" width="${Math.max(3, X(addD(R.et.f, 1)) - X(R.et.s))}" height="5" fill="${R.et.c}" opacity=".5"/>`; return; }
+    const t = R.t, c = ETAPAS[t.e][1]; s += `<text x="14" y="${y + 12}" font-size="9.5" fill="#333" ${FT}>${t.n.length > 58 ? t.n.slice(0, 56) + '…' : t.n}</text>`;
+    if (t.hito) s += `<path d="M${X(t.s) + px / 2} ${y + 3}l5 6l-5 6l-5 -6z" fill="${c}"/><text x="${X(t.s) + 9}" y="${y + 12}" font-size="8.5" fill="#666" ${FT}>${fCo(t.s)}</text>`;
+    else { for (let d = new Date(t.s); d <= t.f; d = addD(d, 1)) if (habil(d)) s += `<rect x="${X(d) + .4}" y="${y + 3}" width="${px - .8}" height="${RH - 6}" fill="${c}" rx="1" ${t.margen ? 'opacity=".3"' : ''}/>`;
+      if (t.espera) s += `<rect x="${X(addD(t.f, 1))}" y="${y + 7}" width="${t.espera * px}" height="${RH - 14}" fill="${c}" opacity=".3"/>`;
+      s += `<text x="${X(addD(t.f, 1)) + 3 + (t.espera || 0) * px}" y="${y + 12}" font-size="8.5" fill="#666" ${FT}>${fCo(t.s)}${t.d > 1 ? '–' + fCo(t.f) : ''}</text>`; } });
+  el.innerHTML = `<svg viewBox="0 0 ${W} ${H}" style="width:${W}px;max-width:none;display:block">${s}</svg>`;
+  // etapas
+  const C = r.costo; let ac = 0; const cE = [0, 0, 0, 0, 0, 0]; { let cn = 0; r.R.forEach(x => { if (x.cat) { cn = parseInt(x.cat); return; } const e = /Previsión universal|^Colector|^Cámaras|^Pluviales|^Conexión a saneamiento|^Cámara separadora/.test(x.t) || cn <= 2 ? 1 : cn === 3 ? 2 : cn <= 5 ? 3 : cn <= 10 ? 4 : cn === 11 ? 5 : 0; if (e) cE[e] += x.c; else for (let i = 1; i <= 5; i++) cE[i] += x.c / 5; }); }
+  const ANI = { 1: 'fRep', 2: 'est', 3: 'techo', 4: 'div', 5: 'fin' };
+  $('crEt').innerHTML = `<table><tr><th>Etapa</th><th>Fechas</th><th class="n">Días hábiles</th><th>Qué incluye</th><th class="n">Avance de obra</th><th></th></tr>${P.E.map(E => { if (E.i) ac += cE[E.i]; const dh = E.i ? P.idx(E.f) - P.idx(E.s) + 1 : '—';
+    return `<tr><td><b style="color:${E.c}">${E.n}</b></td><td>${fCo(E.s)} → ${fCo(E.f)}</td><td class="n">${dh}</td><td class="note">${E.q}</td><td class="n">${E.i ? Math.round(ac / C * 100) + ' %' : '—'}</td><td>${E.i ? `<button class="btn2" data-anim="${ANI[E.i]}">▶ en la animación</button>` : ''}</td></tr>`; }).join('')}</table>`;
+  // pagos
+  $('crPag').innerHTML = `<table><tr><th>#</th><th>Hito</th><th>Fecha estimada</th><th class="n">% obra</th><th class="n">% gestión</th><th class="n">Pago ${lbl}</th><th class="n">Acumulado cobrado</th><th class="n">Acumulado gastado por SBU</th><th class="n">Caja</th></tr>${hit.map((h, i) => `<tr><td>${i + 1}</td><td><b>${h.n}</b><br><span class="note">${h.q}</span></td><td>${fFe(h.d, true)}</td><td class="n">${Math.round(h.po * 100)} %</td><td class="n">${h.pg ? Math.round(h.pg * 100) + ' %' : '—'}</td><td class="n"><b>${u$(h.usd)}</b></td><td class="n">${u$(h.acP)}</td><td class="n">${u$(h.acC)}</td><td class="n ${h.acP >= h.acC ? 'ok' : 'bad'}">${h.acP >= h.acC ? '+' : '−'}${u$(Math.abs(h.acP - h.acC))}</td></tr>`).join('')}<tr class="tt"><td></td><td colspan="4">Total obra + gestión ${lbl}</td><td class="n">${u$(hit.reduce((t, h) => t + h.usd, 0))}</td><td colspan="3"></td></tr></table>
+  <p class="note">Aparte, los <b>aportes BPS de la obra (${u$(r.bps)})</b> los paga Juan Carlos al costo, mes a mes, según los jornales que se declaren: unos ${u$(r.bps / 5)} por mes de obra. "Gastado por SBU" es el costo directo con el momento real de pago: la estructura y los paneles se pagan mitad al encargar y mitad al recibir. La columna Caja muestra que con estos hitos SBU nunca pone plata propia.</p>`;
+  $('crRie').innerHTML = `<ul class="c">
+   <li><b>Inicio anticipado.</b> La Intendencia de Maldonado lo permite: se pide junto con el permiso y lleva la constancia de inscripción de la obra en BPS. Para presentar la primera semana de diciembre, el estudio de suelos y el cálculo de fundación tienen que estar a fin de noviembre.</li>
+   <li><b>La platea antes de la licencia</b> sale justo con suelo firme. Con sustitución de 0,60 a 1,00 m se agregan 1 a 3 días: o se arranca antes, o se pide excepción a la IGTSS para trabajar los primeros días de la licencia (vence el 4 de diciembre). Lo dice el estudio de suelos: cambiá la opción de suelo arriba y el cronograma se recalcula.</li>
+   <li><b>Taller y paneles.</b> La estructura se encarga el 1 de diciembre y los paneles y vidrieras a mediados de diciembre, para tenerlos al volver de la licencia. Los talleres y BMC también paran del 23/12 al 9/1.</li>
+   <li><b>Carnaval y Turismo.</b> Contamos sin trabajar el 8 y 9 de febrero y la semana del 22 al 27 de marzo (segundo período de licencia).</li><li><b>Margen.</b> Hay 10 días hábiles de reserva por lluvia, atrasos de proveedores o trámites antes de la inspección final: con el plan base la entrega queda en ${fFe(P.fin, true)}, antes de la meta del 16 de abril.</li>
+   <li><b>Lo que puede atrasar la entrega:</b> la habilitación de Bomberos y las conexiones de UTE y OSE, que no dependen de nosotros. Conviene pedirlas en marzo, con la obra cerrada.</li></ul>`;
+}
+document.addEventListener('change', e => { if (e.target.id === 'crIni' && e.target.value) { CR.ini = e.target.value; renderCrono(); v3.rebuild(); } });
+document.addEventListener('click', e => { const b = e.target.closest('[data-anim]'); if (b) { show('p-3d'); setTimeout(() => v3.animIr(b.dataset.anim), 400); } });
+
 /* ================= ACTUALIZAR ================= */
-function upd() { setPend(); renderTablas(); renderSub(); dPed(); renderMat(); dImpl(); dRep(); dPlanta(); dFach(); dEst(); dInst(); renderRent(); renderAud(); renderSuelo(); renderProv(); v3.rebuild(); }
+function upd() { setPend(); renderTablas(); renderSub(); dPed(); renderMat(); dImpl(); dRep(); dPlanta(); dFach(); dEst(); dInst(); renderRent(); renderAud(); renderSuelo(); renderProv(); renderCrono(); v3.rebuild(); }
 upd();
 if (/pedido/.test(location.search)) document.body.classList.add('pedido');
 { const mm = /matdoc=(\w+)/.exec(location.search); if (mm) { document.body.classList.add('pmat'); MATDOC = mm[1]; renderMat(); } }
