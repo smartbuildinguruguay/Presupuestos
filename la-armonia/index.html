@@ -458,8 +458,8 @@ function andamio(g, ed, a, b, h, txt) {
 // barra de largo 1 que se estira entre dos puntos: sirve para brazos que se mueven
 function barra(g, w, m, d = w) { const o = new THREE.Mesh(new THREE.BoxGeometry(w, 1, d), m); o.castShadow = true; g.add(o); return o }
 function fijar(o, a, b) { const v = new THREE.Vector3().subVectors(b, a), L = Math.max(.01, v.length()); o.position.copy(a).addScaledVector(v, .5); o.quaternion.setFromUnitVectors(Y, v.normalize()); o.scale.y = L }
-const ACT = { A: [], B: [], C: [] }; // actores por alternativa: { upd(cur, fly, dt) }
-const MAQ = { A: {}, B: {}, C: {} };  // qué máquina sube cada cara: { G: {tipo, pie} }
+const ACT = { A: [], B: [], C: [], D: [] }; // actores por alternativa: { upd(cur, fly, dt) }
+const MAQ = { A: {}, B: {}, C: {}, D: {} };  // qué máquina sube cada cara: { G: {tipo, pie} }
 const suave = (dt, k = 4) => 1 - Math.exp(-dt * k);
 
 // anillo alrededor de un edificio (coordenadas del techo): de qué lado se trabaja cada cara y por dónde se mueven máquinas y gente
@@ -508,6 +508,30 @@ function manitou(k, ed, sirve) {
     M.peon = esl.o.position;
     const a = linEsl.geometry.attributes.position, c = paq.visible ? paq.position : tip.clone().add(V(0, -.3, 0)), hook = tip.clone().add(V(0, -.2, 0));
     a.setXYZ(0, hook.x, hook.y, hook.z); a.setXYZ(1, c.x - .4, c.y, c.z); a.setXYZ(2, c.x + .4, c.y, c.z); a.needsUpdate = true; linEsl.visible = usa } });
+  return M;
+}
+// camión con hidrogrúa (opción 4): estaciona al norte del galpón, apoya los gatos y sube cada panel de 8,51 m con balancín directo al techo
+function hidrogrua(k, ed, sirve) {
+  const g = new THREE.Group(); ACC[k].add(g); const base = pl(ed, GAL.L / 2, GAL.P + 6.2, 0), tr = new THREE.Group(); tr.position.copy(base); g.add(tr);
+  const caja = (w, h, d, m, x, y, z) => { const o = new THREE.Mesh(new THREE.BoxGeometry(w, h, d), m); o.position.set(x, y, z); o.castShadow = true; tr.add(o); return o };
+  const mCam = mat('#d64933', { roughness: .5 }), cab = caja(2.0, 2.3, 2.4, mCam, 4.6, 1.75, 0); caja(1.9, .9, 2.42, mat('#9fc4d6', { transparent: true, opacity: .45 }), 4.7, 2.35, 0);
+  const chas = caja(9.2, .35, 2.3, mMaqG, .4, .85, 0), plat = caja(6.4, .18, 2.45, mat('#5a5f66'), -.6, 1.12, 0);
+  [-2.6, -1.2, 4.6].forEach(x => [-1, 1].forEach(z => { const r = new THREE.Mesh(new THREE.CylinderGeometry(.5, .5, .4, 16), mMaqG); r.rotation.x = Math.PI / 2; r.position.set(x, .5, z * 1.05); tr.add(r) }));
+  [[3.2, -1.9], [3.2, 1.9], [-3.6, -1.9], [-3.6, 1.9]].forEach(([x, z]) => { viga(tr, V(x, .9, z * .6), V(x, .9, z), .12, mMaq); viga(tr, V(x, .9, z), V(x, 0, z), .1, mMaq); caja(.5, .06, .5, mTabla, x, .03, z) });
+  const pila = caja(5.6, .7, 1.1, mat('#7d848b', { metalness: .35 }), -.9, 1.56, 0);
+  const col = caja(.5, 1.6, .5, mMaq, 3.0, 2.0, 0); const P0 = () => tr.position.clone().add(V(3.0, 2.9, 0));
+  const b1 = barra(g, .32, mMaq), b2 = barra(g, .26, mMaq), hook = new THREE.Line(new THREE.BufferGeometry().setFromPoints([V(0, 0, 0), V(0, 0, 0)]), mCable); hook.frustumCulled = false; g.add(hook);
+  const bal = barra(g, .07, mMaqG); const tip = P0().add(V(-3, 2.5, 0)), rest = P0().add(V(-3.5, 2.2, 0));
+  cab.userData.info = chas.userData.info = { t: 'Camión con hidrogrúa', d: 'estaciona al norte del galpón, apoya los gatos y sube cada panel de 8,51 m con balancín directo al techo; los dos de arriba lo reciben y el del andamio del alero lo guía. Operador de la grúa incluido en el alquiler por hora' };
+  const peon = persona(PER[k], base.clone().add(V(-1, 1.3, 0)), null, 'en el camión: engancha el balancín a cada panel de la pila');
+  const M = { tipo: 'grua', ed, frente: () => tr.position.clone().add(V(-.9, 2.1, 0)) }; sirve.forEach(id => { MAQ[k][id] = M });
+  ACT[k].push({ upd(cur, fly, dt) {
+    const aca = cur ? cur.f.ed === ed : ed === 'galpon'; g.visible = peon.o.visible = aca;
+    const usa = fly && fly.p.f.ed === ed && sirve.includes(fly.p.f.id) && fly.seg <= fly.entrega; tip.lerp(usa ? fly.pos.clone().add(V(0, 1.2, 0)) : rest, suave(dt, usa ? 14 : 3));
+    const a = P0(), mid = a.clone().lerp(tip, .45); mid.y = Math.max(a.y, tip.y) + 1.6; fijar(b1, a, mid); fijar(b2, mid, tip);
+    const hp = hook.geometry.attributes.position; hp.setXYZ(0, tip.x, tip.y, tip.z); hp.setXYZ(1, tip.x, tip.y - 1.1, tip.z); hp.needsUpdate = true;
+    bal.visible = usa; if (usa) { const c = fly.pos.clone().add(V(0, .12, 0)), dir = fly.p.f.Sv.clone().setY(0).normalize(); fijar(bal, c.clone().addScaledVector(dir, -2), c.clone().addScaledVector(dir, 2)) }
+    pila.scale.y = Math.max(.15, 1 - (cur && cur.f.ed === ed ? cur.orden / 20 : 0)); peon.mover(base.clone().add(V(-1 + (usa && fly.seg === 1 ? 0 : 1.5), 1.3, 0)), dt, 4) } });
   return M;
 }
 // tijera que se mueve sola alrededor del edificio y se para frente al panel (alternativa C)
@@ -623,12 +647,16 @@ const ALTS = {
   B: { n: '3 · Manitou y andamios (si el suelo no deja pasar la tijera)', crew: '5 personas: operador del manitou, 1 en el piso (eslinga y cortes), 1 en el andamio y 2 arriba; los cinco arman y trasladan el andamio',
     pro: ['No depende del suelo: el andamio se apoya sobre tacos y bases regulables', 'Galpón con andamio en todo el perímetro: frontalines y remates del borde alto (+5,62) cómodos y seguros', 'El manitou sube todos los paneles y puede mover tramos de andamio ya armados'],
     con: ['La más cara: andamio y manitou más días', 'Se pierden unos 4 días armando, trasladando y desarmando'] },
+  D: { n: '4 · Andamio propio: galpón con camión grúa, establo a mano', crew: 'Galpón: 4 personas (2 arriba, 1 en el andamio del alero norte y 1 en el camión enganchando el balancín) más el operador de la grúa. Establo: 2 abajo cortando y pasando, 1 en el andamio y 1 o 2 arriba',
+    pro: ['Sin alquiler de andamio: se usan los 10 cuerpos propios (5 en el alero norte del galpón; 10 en cada lado del establo, que se trasladan)', 'Los paneles de 8,51 m del galpón los sube la grúa del camión directo al techo, con balancín: nadie los carga', 'Galpón y establo se pueden cotizar y hacer en días distintos', 'El flete de los paneles ya viene en su precio y los arneses son propios'],
+    con: ['En el establo todo a mano: más días y más esfuerzo en el núcleo al 91 %', 'El camión grúa necesita lugar firme al norte del galpón para estacionar y apoyar los gatos', 'Se pierden unos días armando y trasladando el andamio en el establo'] },
 };
-const diasTxt = k => { const F = QA[k].fases, d = re => (F.find(f => re.test(f[0])) || [0, 0])[1], and = d(/andamio/i), dD = d(/^Descarga/), dP = F.filter(f => /^(Galpón|Establo|Remates|Líneas)/.test(f[0])).reduce((t, f) => t + f[1], 0), c = x => String(x).replace('.', ',');
+const diasTxt = k => { const F = QA[k].fases, d = re => F.filter(f => re.test(f[0])).reduce((t, f) => t + f[1], 0), and = F.filter(f => /andamio/i.test(f[0]) && !/^(Galpón|Establo|Remates|Líneas)/.test(f[0])).reduce((t, f) => t + f[1], 0), dD = d(/^Descarga/), dP = F.filter(f => /^(Galpón|Establo|Remates|Líneas)/.test(f[0])).reduce((t, f) => t + f[1], 0), c = x => String(x).replace('.', ',');
+  if (k === 'D') { const G = F.filter(f => f[4] === 'galpon').reduce((t, f) => t + f[1], 0), E = F.filter(f => f[4] === 'establo').reduce((t, f) => t + f[1], 0); return `≈ ${Math.ceil(G + E)} días: galpón ${c(G)} (con camión grúa) y establo ${c(E)} (a mano), en días distintos` }
   return `≈ ${Math.ceil(dD + and + dP)} días: ${dD === .5 ? 'medio' : c(dD)} de descarga, ${and ? c(and) + ' de andamios y ' : ''}${c(dP)} de paneles` };
-const ACC = { A: new THREE.Group(), B: new THREE.Group(), C: new THREE.Group() }, SEG = { A: new THREE.Group(), B: new THREE.Group(), C: new THREE.Group() }, PER = { A: new THREE.Group(), B: new THREE.Group(), C: new THREE.Group() };
+const ACC = { A: new THREE.Group(), B: new THREE.Group(), C: new THREE.Group(), D: new THREE.Group() }, SEG = { A: new THREE.Group(), B: new THREE.Group(), C: new THREE.Group(), D: new THREE.Group() }, PER = { A: new THREE.Group(), B: new THREE.Group(), C: new THREE.Group(), D: new THREE.Group() };
 Object.keys(ACC).forEach(k => { G.acc.add(ACC[k]); G.seg.add(SEG[k]); G.per2.add(PER[k]) });
-const AND = { A: {}, B: {}, C: {} }; const VIDA = { A: {}, B: {}, C: {} }; // líneas de vida por alternativa y edificio // andamios por alternativa (para armarlos y moverlos en la animación)
+const AND = { A: {}, B: {}, C: {}, D: {} }; const VIDA = { A: {}, B: {}, C: {}, D: {} }; // líneas de vida por alternativa y edificio // andamios por alternativa (para armarlos y moverlos en la animación)
 let TAREA = null;
 const MANI_EST = 'todos'; // manitou en el establo: 'todos' los paneles o 'nucleo' solo
 const usaMani = (ed, id) => ed !== 'establo' || MANI_EST === 'todos' || /^N[SN]$/.test(id);                     // armado o traslado de andamio en curso
@@ -736,6 +764,14 @@ const usaMani = (ed, id) => ed !== 'establo' || MANI_EST === 'todos' || /^N[SN]$
     enAndamio('B', 'galpon', 2.47, ['G'], 0, 'en el andamio (alero bajo, norte): recibe el panel del manitou');
     enAndamio('B', 'establo', 1.97, [...EST4, ...NUC], 0, 'en el andamio: recibe el panel del manitou, frontalines y remates');
     PROV.B = MAQ.B.LS; corte('B') }
+
+  /* 4 (clave D): andamio propio (10 cuerpos); galpón con camión grúa; establo a mano: 2 abajo cortando y pasando, 1 en el andamio y arriba */
+  armar('D', ['GN', 'S', 'N', 'O', 'E']);
+  hidrogrua('D', 'galpon', ['G']);
+  { const LV = LVde('D'); dosArriba('D', LV);
+    enAndamio('D', 'galpon', 2.47, ['G'], 0, 'en el andamio propio (alero norte): guía el panel que baja la grúa, frontalín y gotero');
+    enAndamio('D', 'establo', 1.97, [...EST4, ...NUC], 0, 'en el andamio propio: recibe el panel que le pasan desde el piso y lo sube a los de arriba');
+    PROV.D = piso('D'); corte('D') }
 }
 
 /* ================= orden de montaje (depende de la alternativa) ================= */
@@ -745,12 +781,13 @@ const porCara = id => { const L = PANELES.filter(p => p.f.id === id); return id 
 function ordenar() {
   SEQ.length = 0;
   // con andamio: cada núcleo se hace con el andamio de su galería (4 traslados); con tijera, el núcleo al final, un faldón entero y después el otro
-  (ALT === 'B' ? ['G', 'LS', 'NS', 'PO', 'LN', 'NN', 'PE'] : ['G', 'LS', 'LN', 'PO', 'PE', 'NS', 'NN']).forEach(id => porCara(id).forEach(p => SEQ.push(p)));
+  (ALT === 'B' || ALT === 'D' ? ['G', 'LS', 'NS', 'PO', 'LN', 'NN', 'PE'] : ['G', 'LS', 'LN', 'PO', 'PE', 'NS', 'NN']).forEach(id => porCara(id).forEach(p => SEQ.push(p)));
   SEQ.forEach((p, i) => p.orden = i + 1);
 }
 // qué andamios tienen que estar armados para colocar cada panel
 function andamiosPara(p) {
   if (ALT === 'B') return p ? (p.f.id === 'G' ? ['GN', 'GS', 'GO', 'GE'] : [({ LS: 'S', NS: 'S', PO: 'O', LN: 'N', NN: 'N', PE: 'E' })[p.f.id]]) : [];
+  if (ALT === 'D') return p ? (p.f.id === 'G' ? ['GN'] : [({ LS: 'S', NS: 'S', PO: 'O', LN: 'N', NN: 'N', PE: 'E' })[p.f.id]]) : [];
   return [];
 }
 
@@ -837,7 +874,7 @@ function motor(dt) {
   if (!PLAY) return;
   { const pend = remPendientes(); if (pend.length) { TAREA = { tipo: 'remates', k: ALT, lista: pend, t: 0, dur: Math.max(3, pend.reduce((a, r) => a + r.L, 0) * .22), punto: null }; aplicar(); return } } // terminaciones apenas se cierra cada faldón
   const p = SEQ[PASO]; if (!p) { PLAY = false; $('play').textContent = '▶ Reproducir'; aplicar(); if (REC) setTimeout(guardarVideo, 2500); return }
-  if (PASO === 0 && !DESC_OK) { TAREA = { tipo: 'descarga', k: ALT, t: 0, dur: 26, punto: null }; aplicar(); return } // día 1: llega el camión y se descarga
+  if (PASO === 0 && !DESC_OK && ALT !== 'D') { TAREA = { tipo: 'descarga', k: ALT, t: 0, dur: 26, punto: null }; aplicar(); return } // día 1: llega el camión y se descarga
   if (!VOK[p.f.ed]) { TAREA = { tipo: 'lineas', k: ALT, ed: p.f.ed, t: 0, dur: p.f.ed === 'galpon' ? 4 : 7, punto: null }; aplicar(); return } // antes del primer panel de cada edificio
   TAREA = tareaPara(p); if (TAREA) { aplicar(); return } arrancar(p); aplicar();
 }
@@ -920,7 +957,12 @@ function pintar(p, on) { const m = p.mesh.material; m.emissive.set(on ? '#7a4a00
 /* aplicar estado: capas, edificio, paso, colores, explotado, corte */
 /* cronograma: en qué día de obra va cada panel, según los días por fase de la alternativa (pestaña Costos) */
 function cronograma() {
-  const F = QA[ALT].fases, d = re => (F.find(f => re.test(f[0])) || [0, 0])[1], and = d(/andamio/i), dG = d(/^Galpón/) + d(/^Remates galpón/) + d(/^Líneas de vida galpón/), dE = d(/^Establo/) + d(/^Remates establo/) + d(/^Líneas de vida establo/), dD = d(/^Descarga/);
+  if (ALT === 'D') { const F = QA.D.fases, sd = (tag, re) => F.filter(f => f[4] === tag && (!re || re.test(f[0]))).reduce((t, f) => t + f[1], 0);
+    const gT = sd('galpon'), g0 = sd('galpon', /^Andamio/) * .5 + sd('galpon', /^Líneas/), gP = sd('galpon', /^Galpón/), e0d = Math.ceil(gT), eT = sd('establo'), e0 = e0d + sd('establo', /^Descarga/) + sd('establo', /^Andamio/) * .3 + sd('establo', /^Líneas/), eP = sd('establo', /^Establo/);
+    const nG = PANELES.filter(p => p.f.ed === 'galpon').length, nE = PANELES.length - nG;
+    return { t0: g0, dG: gP, dE: eP, and: 0, total: Math.ceil(e0d + eT), sep: e0d,
+      dia(p) { if (!p) return 0; const i = p.orden - 1, t = p.f.ed === 'galpon' ? g0 + gP * (i / nG) : e0 + eP * ((i - nG) / nE); return Math.floor(t) + 1 } } }
+  const F = QA[ALT].fases, d = re => F.filter(f => re.test(f[0])).reduce((t, f) => t + f[1], 0), and = d(/andamio/i), dG = d(/^Galpón/) + d(/^Remates galpón/) + d(/^Líneas de vida galpón/), dE = d(/^Establo/) + d(/^Remates establo/) + d(/^Líneas de vida establo/), dD = d(/^Descarga/);
   const t0 = dD + and * .25, nG = PANELES.filter(p => p.f.ed === 'galpon').length, nE = PANELES.length - nG;
   return { t0, dG, dE, and, total: Math.ceil(t0 + dG + dE + and * .75),
     dia(p) { if (!p) return 0; const i = p.orden - 1, t = p.f.ed === 'galpon' ? t0 + dG * (i / nG) : t0 + dG + dE * ((i - nG) / nE); return Math.floor(t) + 1 } };
@@ -967,7 +1009,7 @@ function aplicar() {
   const x = +$('expl').value / 100 * 2.5; G.cor.position.y = x; G.pan.position.y = 2 * x; G.per.position.y = 3 * x; G.seg.position.y = 3 * x;
   const t = +$('corte').value / 100, x0 = ED === 'establo' ? OFF.establo[0] - 1 : -1, x1 = ED === 'galpon' ? GAL.L + 1 : OFF.establo[0] + EST.L + 1;
   plano.constant = t >= 1 ? 999 : x0 + (x1 - x0) * t;
-  const quien = p => usaMani(p.f.ed, p.f.id) && MAQ[ALT][p.f.id] ? ' · <b>lo sube el manitou</b>' : ' · <b>se pasa a mano</b> desde el piso';
+  const quien = p => ALT === 'D' ? (p.f.ed === 'galpon' ? ' · <b>lo sube el camión grúa</b> directo al techo' : ' · <b>a mano</b>: lo cortan abajo, lo pasan al del andamio y lo reciben arriba') : usaMani(p.f.ed, p.f.id) && MAQ[ALT][p.f.id] ? ' · <b>lo sube el manitou</b>' : ' · <b>se pasa a mano</b> desde el piso';
   const KD = cartelDia(); $('pasoTxt').innerHTML = TAREA ? `<b>${({ armado: 'Armando andamios', traslado: 'Trasladando el andamio', desarme: 'Desarmando el andamio', descarga: 'Llegó el camión: descarga con manitou y balancín', remates: 'Terminaciones', lineas: 'Líneas de vida' })[TAREA.tipo]}</b> · ${TAREA.tipo === 'lineas' ? `${TAREA.ed === 'galpon' ? 'galpón: 1 línea en el borde alto' : 'establo: cumbrera y las dos galerías'} · postes atornillados a la estructura y cable con tensor, antes del primer panel` : TAREA.tipo === 'remates' ? `colocando ${TAREA.que || '…'} · ${TAREA.lista.map(r => r.tipo).filter((x, i, a) => a.indexOf(x) === i).join(', ')} · ${Math.round(TAREA.lista.reduce((a, r) => a + r.L, 0))} m` : TAREA.tipo === 'descarga' ? `paquete ${TAREA.paq || '…'} · 1 semirremolque, ${DESC.PAQ.length} paquetes, ≈ 4,5 t` : `${TAREA.cuerpos} cuerpos de 2,57 m`}` : FLY ? `<b>Día ${KD.dia(FLY.p)} de ${KD.total}</b> · subiendo ${FLY.p.orden}/${SEQ.length} · <b>${FLY.p.id}</b><br>${FLY.p.f.n} · ${FLY.p.largo.toFixed(2).replace('.', ',')} m${FLY.p.diag ? ' · corte diagonal' : ''} · ≈ ${Math.round(FLY.p.kg)} kg${quien(FLY.p)}` : PASO >= SEQ.length ? `Cubierta completa · ${SEQ.length} piezas` : cur ? `<b>Día ${KD.dia(cur)} de ${KD.total}</b> · paso ${PASO}/${SEQ.length} · <b>${cur.id}</b><br>${cur.f.n} · ${cur.largo.toFixed(2).replace('.', ',')} m${cur.diag ? ' · corte diagonal' : ''} · ≈ ${Math.round(cur.kg)} kg${quien(cur)}` : 'Solo estructura y correas';
 }
 
@@ -997,7 +1039,7 @@ const PC = {
   m_mani: [220, 'Manipulador telescópico USD/día + IVA (objetivo a negociar en Maldonado: pedir cotización)'], m_art: [190, 'Articulada 14–16 m USD/día + IVA (ref. EMAT)'], m_tij: [140, 'Tijera todo terreno 8–10 m USD/día + IVA (ref. EMAT)'], m_flete: [350, 'Flete de cada máquina ida y vuelta USD (supuesto)'], balancin: [150, 'Balancín de izaje para paneles largos USD (supuesto)'],
   and_m2sem: [2.5, 'Andamio USD por m² y semana (supuesto)'], and_flete: [250, 'Flete de andamio USD (supuesto)'],
   epp_arnes: [110, 'Arnés + doble cola con absorbedor USD c/u (supuesto)'], epp_pers: [35, 'Casco, guantes y calzado USD por persona'], epp_linea: [380, 'Línea de vida temporal USD c/u (supuesto)'], prev: [450, 'Técnico prevencionista: plan + visitas USD (supuesto)'],
-  flete_pan: [450, 'Flete de paneles Colonia Nicolich → obra USD (supuesto; BMC lo cotiza aparte)'], imprev: [10, 'Imprevistos y lluvia %'], margen: [20, 'Ganancia SBU % sobre el costo'], rc: [300, 'Póliza RC por el montaje USD (supuesto)'], pm2: [0, 'Precio por m² sin IVA (0 = costo real + ganancia)'],
+  flete_pan: [0, 'Flete de paneles USD (ya incluido en el precio de los paneles)'], m_hidro: [110, 'Camión con hidrogrúa y operador USD/hora (supuesto: pedir cotización)'], arn_prop: [2, 'Arneses propios (juegos): solo se compran los que falten'], and_prop: [120, 'Andamio propio (10 cuerpos): traslado a la obra por edificio USD'], est_arriba: [2, 'Opción 4, establo: personas arriba del techo (1 o 2)'], imprev: [10, 'Imprevistos y lluvia %'], margen: [20, 'Ganancia SBU % sobre el costo'], rc: [300, 'Póliza RC por el montaje USD (supuesto)'], pm2: [0, 'Precio por m² sin IVA (0 = costo real + ganancia)'],
 };
 const QA = { // las tres con la misma cuadrilla de 5: oficial especializado (encargado arriba u operador del manitou), 2 oficiales y 2 peones; 3 en altura
   A: { fases: [['Descarga de paneles (manitou con balancín)', .5, { oe: 1, of: 2, pe: 2 }, 0], ['Líneas de vida galpón · postes y cable', .25, { oe: 1, of: 2, pe: 2 }, 3], ['Galpón · paneles (manitou y tijera)', 1.25, { oe: 1, of: 2, pe: 2 }, 3], ['Remates galpón · frontalín, gotero y laterales', .5, { oe: 1, of: 2, pe: 2 }, 3], ['Líneas de vida establo · cumbrera y galerías, y retiro de todas al final', .5, { oe: 1, of: 2, pe: 2 }, 3], ['Establo · paneles y cortes (tijera, a mano)', 5.5, { oe: 1, of: 2, pe: 2 }, 3], ['Remates establo · frontalines, limatesas, quiebres, cumbrera y babetas', 1.5, { oe: 1, of: 2, pe: 2 }, 3]],
@@ -1008,26 +1050,34 @@ const QA = { // las tres con la misma cuadrilla de 5: oficial especializado (enc
     maq: [['Manitou: descarga, galpón y establo (incluye días de traslado de andamio)', 'm_mani_d', 11, 1], ['Balancín para paquetes y paneles de más de 6 m', 'balancin', 1, 0]], and: [['galpón, toda la vuelta', 140, 1], ['establo, un lado que se traslada', 75, 3]], arneses: 3, lineas: 4, personas: 5 },
 };
 const PV = {}; Object.keys(PC).forEach(k => PV[k] = PC[k][0]); try { Object.assign(PV, JSON.parse(localStorage.getItem('la-costos-2') || '{}')) } catch (e) {}
+// opción 4: fases con edificio (5º elemento) para cotizar galpón y establo por separado
+function armarD() { const a = Math.max(1, Math.min(2, Math.round(PV.est_arriba || 2))), cG = { oe: 1, of: 2, pe: 1 }, cE = { oe: 1, of: a, pe: 2 };
+  QA.D = { fases: [['Andamio galpón (propio, 5 cuerpos en el alero norte): armado y desarme', .5, cG, 0, 'galpon'], ['Líneas de vida galpón · postes y cable', .25, cG, 2, 'galpon'], ['Galpón · paneles con camión grúa y balancín', 1, cG, 3, 'galpon'], ['Remates galpón · frontalín, gotero y laterales', .5, cG, 3, 'galpon'],
+    ['Descarga a mano de los paneles del establo al acopio', .5, cE, 0, 'establo'], ['Andamio establo (propio, 10 cuerpos): armado, 3 traslados y desarme', 2, cE, 0, 'establo'], ['Líneas de vida establo · cumbrera y galerías, y retiro de todas al final', .5, cE, a + 1, 'establo'], [`Establo · paneles y cortes a mano (2 abajo, 1 en el andamio, ${a} arriba)`, a === 2 ? 6 : 7.5, cE, a + 1, 'establo'], ['Remates establo · frontalines, limatesas, quiebres, cumbrera y babetas', a === 2 ? 1.5 : 2, cE, a + 1, 'establo']],
+    maq: [['Camión con hidrogrúa y operador: sube los paneles del galpón al techo (horas, con traslado)', 'm_hidro', 5, 0, 'galpon'], ['Balancín para los paneles de 8,51 m', 'balancin', 1, 0, 'galpon']], and: [], andProp: true, arneses: Math.max(2, a), lineas: 4, lineasEd: { galpon: 1, establo: 3 }, personas: a + 3 }; }
+armarD();
 let REG = 'obra';
 const f0 = n => 'USD ' + Math.round(n).toLocaleString('es-UY');
-function calc(k) {
+const M2ed = ed => PANELES.filter(p => !ed || p.f.ed === ed).reduce((t, p) => t + p.area, 0);
+function calc(k, ed) {
   const q = QA[k], v = PV, tc = v.tc, J = { oe: v.j_oe, of: v.j_of, mo: v.j_mo, pe: v.j_pe }, C = { oe: v.comp_of, of: v.comp_of, mo: v.comp_of, pe: v.comp_pe };
-  const fases = q.fases.map(([n, d, cr, alt]) => { const per = Object.values(cr).reduce((a, b) => a + b, 0), nom = d * (Object.entries(cr).reduce((t, [c, x]) => t + x * J[c], 0) + alt * v.altura), comp = d * Object.entries(cr).reduce((t, [c, x]) => t + x * C[c], 0);
+  const pr = ed ? M2ed(ed) / M2ed() : 1, w = (tag, name) => !ed ? 1 : tag ? (tag === ed ? 1 : 0) : /galp/i.test(name) ? (ed === 'galpon' ? 1 : 0) : /establo/i.test(name) ? (ed === 'establo' ? 1 : 0) : pr;
+  const fases = q.fases.map(([n, d0, cr, alt, tag]) => [n, d0 * w(tag, n), cr, alt]).filter(f => f[1] > 0).map(([n, d, cr, alt]) => { const per = Object.values(cr).reduce((a, b) => a + b, 0), nom = d * (Object.entries(cr).reduce((t, [c, x]) => t + x * J[c], 0) + alt * v.altura), comp = d * Object.entries(cr).reduce((t, [c, x]) => t + x * C[c], 0);
     return { n, d, per, nom: nom / tc, comp: comp / tc, det: Object.entries(cr).map(([c, x]) => `${x} ${x > 1 && c === 'pe' ? 'peones' : ({ oe: 'of. esp.', of: 'of.', mo: 'm. of.', pe: 'peón' })[c]}`).join(' + ') } });
   const nom = fases.reduce((t, f) => t + f.nom, 0), comp = fases.reduce((t, f) => t + f.comp, 0);
-  const dG = (q.fases.find(f => /^Galpón/.test(f[0])) || [0, 0])[1], dE = (q.fases.find(f => /^Establo/.test(f[0])) || [0, 0])[1];
-  const dD = (q.fases.find(f => /^Descarga/.test(f[0])) || [0, 0])[1], dV = q.fases.filter(f => /^Líneas/.test(f[0])).reduce((t, f) => t + f[1], 0);
-  const maq = q.maq.map(([n, key, dias, fl]) => { if (key === 'm_mani') { if (MANI_EST === 'todos') { dias = Math.ceil(dD + dV + dG + dE); fl = 1 } else { n = 'Manitou: galpón y núcleo (2 períodos)'; dias = 4; fl = 2 } }
-    return { n, key, dias, fl, usd: dias * v[key === 'm_mani_d' ? 'm_mani' : key] + fl * v.m_flete } }), eq = maq.reduce((t, m) => t + m.usd, 0);
-  const and = q.and && q.and.length ? q.and.reduce((t, [, m2, sem]) => t + m2 * sem * v.and_m2sem, 0) + v.and_flete * q.and.length : 0;
-  const seg = q.arneses * v.epp_arnes + q.personas * v.epp_pers + q.lineas * v.epp_linea + v.prev;
-  const flete = v.flete_pan, base = nom + comp + eq + and + seg + flete, imp = base * v.imprev / 100, directo = base + imp;
+  const sum = re => q.fases.filter(f => re.test(f[0])).reduce((t, f) => t + f[1], 0), dG = sum(/^Galpón/), dE = sum(/^Establo/), dD = sum(/^Descarga/), dV = sum(/^Líneas/);
+  const maq = q.maq.map(([n, key, dias, fl, tag]) => { if (key === 'm_mani') { if (MANI_EST === 'todos') { dias = Math.ceil(dD + dV + dG + dE); fl = 1 } else { n = 'Manitou: galpón y núcleo (2 períodos)'; dias = 4; fl = 2 } }
+    const ww = w(tag, n); return { n, key, dias, fl, usd: (dias * v[key === 'm_mani_d' ? 'm_mani' : key] + fl * v.m_flete) * ww, ww } }).filter(m => m.ww > 0), eq = maq.reduce((t, m) => t + m.usd, 0);
+  const and = q.andProp ? v.and_prop * (ed ? 1 : 2) : q.and && q.and.length ? q.and.reduce((t, [n, m2, sem, tag]) => t + m2 * sem * v.and_m2sem * w(tag, n), 0) + v.and_flete * q.and.reduce((t, [n, , , tag]) => t + w(tag, n), 0) : 0;
+  const arnB = Math.max(0, q.arneses - (v.arn_prop || 0)), lin = q.lineasEd && ed ? q.lineasEd[ed] : q.lineas;
+  const seg = arnB * v.epp_arnes * (ed ? pr : 1) + q.personas * v.epp_pers * (ed ? pr : 1) + lin * v.epp_linea + v.prev * (ed ? pr : 1);
+  const flete = v.flete_pan * (ed ? pr : 1), base = nom + comp + eq + and + seg + flete, imp = base * v.imprev / 100, directo = base + imp;
   const compras = (eq + and + seg + flete) * (1 + v.imprev / 100); // lo que se paga con IVA a terceros
   const bpsObra = nom * (v.auc + v.caja) / 100, ivaCompras = compras * v.iva / 100;
   const cargasIC = nom * ((1 + v.ic_cargas / 100) * (1 + (v.ic_pat + v.ic_bse) / 100) - 1);
   const costoIC = directo + cargasIC, precio = costoIC * (1 + v.margen / 100), ivaV = precio * v.iva / 100;
-  const ganObra = directo * v.margen / 100, ganIC = precio - costoIC;
-  return { fases, nom, comp, maq, eq, and, seg, flete, imp, directo, bpsObra, ivaCompras, ganObra, ganIC, totObra: directo + ganObra + bpsObra + ivaCompras, cargasIC, costoIC, precio, ivaV, totIC: precio + ivaV, q };
+  const ganObra = directo * v.margen / 100, ganIC = precio - costoIC, dias = fases.reduce((t, f) => t + f.d, 0);
+  return { fases, nom, comp, maq, eq, and, seg, flete, imp, directo, bpsObra, ivaCompras, ganObra, ganIC, totObra: directo + ganObra + bpsObra + ivaCompras, cargasIC, costoIC, precio, ivaV, totIC: precio + ivaV, q, arnB, dias, m2: M2ed(ed) };
 }
 const M2 = () => PANELES.reduce((t, p) => t + p.area, 0), fm = n => 'USD ' + (Math.round(n * 10) / 10).toLocaleString('es-UY');
 function cobro(r) { // costo real de la opción y lo que se cobra; la ganancia siempre sin IVA (el IVA de venta no es de SBU)
@@ -1043,7 +1093,7 @@ function resumen(K) { const el = $('res'); if (!el) return; K = K || cronograma(
     <dt class="g">Ganancia SBU · sin IVA</dt><dd class="g">${f0(c.gan)}<small>${pc} % del precio</small></dd></dl>
     <div class="bar"><u style="width:${Math.round(fr * 100)}%"></u></div><small>Día ${dia} de ${K.total}: ≈ ${f0(c.costo * fr)} de costo ya gastado · régimen y precio se cambian en Costos</small>` }
 function costos() {
-  const R = { A: calc('A'), B: calc('B'), C: calc('C') }, r = R[ALT], tot = x => REG === 'obra' ? x.totObra : x.totIC, gan = x => REG === 'obra' ? x.ganObra : x.ganIC;
+  const R = { A: calc('A'), B: calc('B'), C: calc('C'), D: calc('D') }, r = R[ALT], tot = x => REG === 'obra' ? x.totObra : x.totIC, gan = x => REG === 'obra' ? x.ganObra : x.ganIC;
   const fila = (a, b, cls = '') => `<tr class="${cls}"><td>${a}</td><td class="n">${b}</td></tr>`;
   let h = `<h2>Costo de instalación · estimado</h2>
   <div class="seg" id="reg"><button data-r="obra" aria-pressed="${REG === 'obra'}">Obra registrada en BPS (Ley 14.411)</button><button data-r="ic" aria-pressed="${REG === 'ic'}">SBU factura con IVA (Ind. y Comercio)</button></div>
@@ -1052,10 +1102,11 @@ function costos() {
   <div class="cst"><h3>${ALTS[ALT].n}</h3><table>`;
   h += fila('<b>Mano de obra</b> (jornales y compensaciones, sin cargas)', '');
   r.fases.forEach(f => { h += fila(`${f.n}`, f0(f.nom + f.comp)) + `<tr class="sub"><td colspan="2">${String(f.d).replace('.', ',')} día${f.d === 1 ? '' : 's'} × ${f.det}</td></tr>` });
-  if (r.maq.length) { h += fila('<b>Máquinas</b> (alquiler + flete, + IVA)', ''); r.maq.forEach(m => { h += fila(m.n, f0(m.usd)) + `<tr class="sub"><td colspan="2">${m.key === 'balancin' ? 'Hiansa lo exige para izar paquetes de más de 6 m, con puntos de eslinga cada 4 m como máximo; alquilar o fabricar' : `${String(m.dias).replace('.', ',')} día${m.dias === 1 ? '' : 's'}-máquina · ${m.fl} flete${m.fl > 1 ? 's' : ''}`}</td></tr>` }) }
-  if (r.and) h += fila('Andamios (alquiler + flete)', f0(r.and)) + `<tr class="sub"><td colspan="2">${r.q.and.map(([n, m2, sem]) => `${n}: ${m2} m² × ${sem} semana${sem > 1 ? 's' : ''}`).join(' · ')}</td></tr>`;
-  h += fila(`Seguridad: ${r.q.arneses} arneses, ${r.q.lineas} líneas de vida, EPP, prevencionista`, f0(r.seg));
-  h += fila(`Flete de paneles: 1 semirremolque de 13,6 m (${DESC.PAQ.length} paquetes, ≈ 4,5 t)`, f0(r.flete)) + `<tr class="sub"><td colspan="2">si BMC manda camión de caja corta son 2 viajes; llega el día 1 a primera hora</td></tr>` + fila(`Imprevistos ${PV.imprev} %`, f0(r.imp)) + fila('Costo directo', f0(r.directo), 'tot');
+  if (r.maq.length) { h += fila('<b>Máquinas</b> (alquiler + flete, + IVA)', ''); r.maq.forEach(m => { h += fila(m.n, f0(m.usd)) + `<tr class="sub"><td colspan="2">${m.key === 'balancin' ? 'Hiansa lo exige para izar paquetes de más de 6 m, con puntos de eslinga cada 4 m como máximo; alquilar o fabricar' : m.key === 'm_hidro' ? `${String(m.dias).replace('.', ',')} horas con operador · se suben los paneles del galpón directo del camión al techo` : `${String(m.dias).replace('.', ',')} día${m.dias === 1 ? '' : 's'}-máquina · ${m.fl} flete${m.fl > 1 ? 's' : ''}`}</td></tr>` }) }
+  if (r.and && r.q.andProp) h += fila('Andamio propio: 10 cuerpos (traslado a cada edificio)', f0(r.and));
+  else if (r.and) h += fila('Andamios (alquiler + flete)', f0(r.and)) + `<tr class="sub"><td colspan="2">${r.q.and.map(([n, m2, sem]) => `${n}: ${m2} m² × ${sem} semana${sem > 1 ? 's' : ''}`).join(' · ')}</td></tr>`;
+  h += fila(`Seguridad: ${r.q.arneses} arneses (${r.arnB ? 'se compran ' + r.arnB + ', ' : ''}${PV.arn_prop} propios), ${r.q.lineas} líneas de vida, EPP, prevencionista`, f0(r.seg));
+  h += (r.flete ? fila(`Flete de paneles: 1 semirremolque de 13,6 m (${DESC.PAQ.length} paquetes, ≈ 4,5 t)`, f0(r.flete)) : fila('Flete de paneles', 'incluido en el precio de los paneles')) + fila(`Imprevistos ${PV.imprev} %`, f0(r.imp)) + fila('Costo directo', f0(r.directo), 'tot');
   if (REG === 'obra') {
     h += fila(`<b>Ganancia SBU</b> ${PV.margen} %`, f0(r.ganObra), 'gan') + fila('Precio SBU (lo que cobran ustedes)', f0(r.directo + r.ganObra), 'tot');
     h += fila(`IVA de alquileres y compras (no se recupera)`, f0(r.ivaCompras));
@@ -1078,6 +1129,14 @@ function costos() {
         : fila(`IVA ${PV.iva} % · ${fm(pm * PV.iva / 100)}/m²`, f0(c.iva)) + `<tr class="sub"><td colspan="2">no es ganancia: se vuelca a DGI (menos el IVA de compras)</td></tr>` + fila(`Total al cliente con IVA · ${fm(pm * (1 + PV.iva / 100))}/m²`, f0(c.total), 'tot big'))
       + fila('<b>Ganancia SBU · sin IVA</b>, antes de IRAE', `${f0(c.gan)} · ${pc} % del precio`, 'gan')
       + `</table><p class="nota">Referencia de mercado: colocación sola USD 30–50/m² + IVA; techo de isopanel colocado con material desde USD 99/m². Esta obra es de las difíciles (44 cortes, limatesas, núcleo al 91 %, remates sin pieza, zona rural). El precio que fijes acá se usa también en el resumen de Montaje.</p>` }
+  { const g = calc(ALT, 'galpon'), e = calc(ALT, 'establo'), t = r, T = x => REG === 'obra' ? x.totObra : x.totIC, Gn = x => REG === 'obra' ? x.ganObra : x.ganIC;
+    const fila2 = (a, fn, cls = '') => `<tr class="${cls}"><td>${a}</td><td class="n">${fn(g)}</td><td class="n">${fn(e)}</td><td class="n">${fn(t)}</td></tr>`;
+    const dd = x => String(Math.round((x.dias != null ? x.dias : x.fases.reduce((a, f) => a + f.d, 0)) * 4) / 4).replace('.', ',') + ' días';
+    h += `<div class="cst"><h3>Cotización por edificio · ${ALTS[ALT].n.split(' · ')[0]}</h3><p class="nota" style="margin:0 0 6px">Galpón y establo por separado, porque se hacen en días distintos. Lo que es de los dos (prevencionista, EPP, flete) se reparte por m² de cubierta.${ALT === 'D' ? ` Establo con <b>${Math.round(PV.est_arriba)} arriba</b>: <button class="btn" data-arr="1">1 arriba</button> <button class="btn" data-arr="2">2 arriba</button>` : ''}</p><table>
+      <tr><td></td><td class="n"><b>Galpón</b></td><td class="n"><b>Establo</b></td><td class="n"><b>Total</b></td></tr>`
+      + fila2('Cubierta', x => Math.round(x.m2) + ' m²') + fila2('Días de trabajo', dd) + fila2('Mano de obra', x => f0(x.nom + x.comp)) + fila2('Máquinas', x => f0(x.eq)) + fila2(ALT === 'D' ? 'Andamio propio (traslado)' : 'Andamios', x => f0(x.and)) + fila2('Seguridad (arneses que faltan, líneas, EPP, prevencionista)', x => f0(x.seg)) + fila2('Flete de paneles', x => x.flete ? f0(x.flete) : 'incluido') + fila2(`Imprevistos ${PV.imprev} %`, x => f0(x.imp)) + fila2('Costo directo', x => f0(x.directo), 'tot')
+      + fila2(`<b>Ganancia SBU</b> ${PV.margen} %`, x => f0(Gn(x)), 'gan') + (REG === 'obra' ? fila2('BPS aparte (obra)', x => f0(x.bpsObra)) + fila2('IVA de compras', x => f0(x.ivaCompras)) : fila2('IVA', x => f0(x.ivaV)))
+      + fila2(REG === 'obra' ? 'Total al cliente' : 'Total con IVA', x => f0(T(x)), 'tot big') + fila2('Por m²', x => fm(T(x) / x.m2)) + `</table>${ALT === 'D' ? `<p class="nota">Arneses: hacen falta ${t.q.arneses} y hay ${PV.arn_prop} propios → se compran ${t.arnB}. Andamio: 10 cuerpos propios (5 en el galpón, 10 por lado en el establo). Camión grúa: ${QA.D.maq[0][2]} horas a USD ${PV.m_hidro}/h (pedir cotización; si el camión de BMC trae grúa, se usa esa).</p>` : ''}</div>`; }
   h += `<table style="display:none">
   <p class="nota">${REG === 'obra' ? 'Así se paga si la obra ya está inscripta en BPS: el dueño (o la constructora) aporta por el régimen de construcción y SBU cobra la mano de obra y lo demás.' : 'SBU contrata, aporta por Industria y Comercio con póliza BSE propia y factura todo con IVA.'}
   Para personal que trabaja en obra, BPS suele exigir el régimen de construcción (Ley 14.411) aunque la empresa sea de Industria y Comercio. Confirmalo con tu contadora antes de cotizar.</p>
@@ -1093,7 +1152,8 @@ $('costos').addEventListener('click', e => {
   if (e.target.id === 'pm2-auto') { PV.pm2 = 0; try { localStorage.setItem('la-costos-2', JSON.stringify(Object.fromEntries(Object.entries(PV).filter(([k, x]) => PC[k] && x !== PC[k][0])))) } catch (x) {} costos() }
   if (e.target.id === 'pc-reset') { Object.keys(PC).forEach(k => PV[k] = PC[k][0]); try { localStorage.removeItem('la-costos-2') } catch (x) {} costos() } });
 $('costos').addEventListener('input', e => { if (e.target.id !== 'gan-r' && e.target.id !== 'mkt-r') return; const id = e.target.id; if (id === 'mkt-r') PV.pm2 = +e.target.value; else PV.margen = +e.target.value; try { localStorage.setItem('la-costos-2', JSON.stringify(Object.fromEntries(Object.entries(PV).filter(([k, x]) => PC[k] && x !== PC[k][0])))) } catch (x) {} const open = $('costos').querySelector('details').open; costos(); $('costos').querySelector('details').open = open; $(id).focus() });
-$('costos').addEventListener('change', e => { if (e.target.id === 'gan-r' || e.target.id === 'mkt-r') return; const i = e.target; if (i.dataset.pc) { PV[i.dataset.pc] = +i.value || 0; try { localStorage.setItem('la-costos-2', JSON.stringify(Object.fromEntries(Object.entries(PV).filter(([k, x]) => PC[k] && x !== PC[k][0])))) } catch (x) {} }
+$('costos').addEventListener('click', e => { const b = e.target.closest('[data-arr]'); if (!b) return; PV.est_arriba = +b.dataset.arr; try { localStorage.setItem('la-costos-2', JSON.stringify(Object.fromEntries(Object.entries(PV).filter(([k, x]) => PC[k] && x !== PC[k][0])))) } catch (x) {} armarD(); aplicar(); const op = $('costos').querySelector('details').open; costos(); $('costos').querySelector('details').open = op });
+$('costos').addEventListener('change', e => { if (e.target.id === 'gan-r' || e.target.id === 'mkt-r') return; const i = e.target; if (i.dataset.pc) { PV[i.dataset.pc] = +i.value || 0; if (i.dataset.pc === 'est_arriba') armarD(); try { localStorage.setItem('la-costos-2', JSON.stringify(Object.fromEntries(Object.entries(PV).filter(([k, x]) => PC[k] && x !== PC[k][0])))) } catch (x) {} }
   if (i.dataset.fd) { QA[ALT].fases[+i.dataset.fd][1] = +i.value || 0; aplicar() } const open = $('costos').querySelector('details').open; costos(); $('costos').querySelector('details').open = open });
 
 altTxt(); fit(); encuadre('persp'); aplicar();
@@ -1139,7 +1199,7 @@ document.addEventListener('click', e => { const sec = e.target.closest('section[
   if (e.target.id === 'cmail') location.href = 'mailto:smartbuildinguruguay@gmail.com?subject=' + encodeURIComponent('La Armonía · comentarios sobre el montaje de cubierta') + '&body=' + encodeURIComponent(textoCom());
   if (e.target.id === 'ccopy') { navigator.clipboard.writeText(textoCom()).then(() => alert('Copiado'), () => prompt('Copiá el texto', textoCom())) } });
 function cmpIng() { $('cmpIng').innerHTML = `<h2>Comparación de métodos</h2><table class="cmpi"><tr><th>Opción</th><th>Días</th><th>Equipos y andamio</th></tr>${Object.keys(ALTS).map(k => { const q = QA[k];
-    const eq = calc(k).maq.filter(m => m.key !== 'balancin').map(m => `${/tij/i.test(m.n) ? 'tijera' : 'manitou'} ${m.dias} d`).join(' + ') + (q.and && q.and.length ? ' + andamio (' + q.and.map(a => a[1] + ' m²').join(' y ') + ')' : '');
+    const eq = calc(k).maq.filter(m => m.key !== 'balancin').map(m => m.key === 'm_hidro' ? `camión grúa ${m.dias} h` : `${/tij/i.test(m.n) ? 'tijera' : 'manitou'} ${m.dias} d`).join(' + ') + (q.and && q.and.length ? ' + andamio (' + q.and.map(a => a[1] + ' m²').join(' y ') + ')' : '');
     return `<tr class="${k === ALT ? 'sel' : ''}"><td><b>${ALTS[k].n.split(' · ')[0]}</b> ${ALTS[k].n.split(' · ')[1]}</td><td>${(diasTxt(k).match(/\d+ días/) || [''])[0]}</td><td>${eq}</td></tr>` }).join('')}</table>` }
 /* ================= visor técnico para el ingeniero (?ingeniero) ================= */
 const ING = /ingeniero/.test(location.search + location.hash);
@@ -1252,7 +1312,7 @@ const reloj = new THREE.Clock();
   motor(dt); const cur = FLY ? FLY.p : TAREA ? null : (PASO > 0 && PASO < SEQ.length ? SEQ[PASO - 1] : null), fly = FLY ? { pos: FLY.pos, seg: FLY.seg || 1, entrega: FLY.entrega, p: FLY.p, pts: FLY.pts } : null;
   ACT[ALT].forEach(a => a.upd(cur && (ED === 'ambos' || cur.f.ed === ED) ? cur : null, fly, dt));
   camaraAuto(dt); O.update(); R.render(S, C); L2.render(S, C); if (REC) { recFrame(); if ((REC.n = (REC.n || 0) + 1) % 15 === 0) recUI() } })();
-window.__la = { PANELES, SEQ, CARAS, C, O, G, BMC, CER, SHIFT, EST, GAL, REM, QA, ALTS, diasTxt, calc };
+window.__la = { PANELES, SEQ, CARAS, C, O, G, BMC, CER, SHIFT, EST, GAL, REM, QA, ALTS, diasTxt, calc, PV, armarD };
 
 /* ================= Chat con Claude: estudiar y afinar costos y métodos =================
    Funciona dentro de claude.ai (página publicada en la cuenta de SBU): usa la cuenta de quien la abre.
@@ -1268,7 +1328,7 @@ window.__la = { PANELES, SEQ, CARAS, C, O, G, BMC, CER, SHIFT, EST, GAL, REM, QA
 
   /* ---------- estado que ve Claude ---------- */
   function estado() {
-    const alts = {}; ['A', 'C', 'B'].forEach(k => { const x = calc(k), q = QA[k];
+    const alts = {}; ['A', 'C', 'B', 'D'].forEach(k => { const x = calc(k), q = QA[k];
       alts[k] = { opcion: ALTS[k].n, cuadrilla: ALTS[k].crew, dias: diasTxt(k),
         fases: q.fases.map((f, i) => ({ i, fase: f[0], dias: f[1], cuadrilla: f[2], en_altura: f[3], costo_usd: Math.round(x.fases[i].nom + x.fases[i].comp) })),
         maquinas: x.maq.map((m, i) => ({ i, maquina: m.n, clave_precio: m.key === 'm_mani_d' ? 'm_mani' : m.key, dias: m.dias, fletes: m.fl, usd: Math.round(m.usd), nota: m.key === 'm_mani' ? 'días calculados solos: descarga + líneas + galpón + establo' : undefined })),
@@ -1361,7 +1421,7 @@ window.__la = { PANELES, SEQ, CARAS, C, O, G, BMC, CER, SHIFT, EST, GAL, REM, QA
   function pintarCambios() { const l = el('chLog'); if (!l) return; l.innerHTML = EST.log.length ? EST.log.slice().reverse().slice(0, 12).map(c => `<li>${c.desc}</li>`).join('') : '<li class="nota">Sin cambios: valores de fábrica o los guardados.</li>'; el('chUndo').disabled = !EST.log.length }
 
   const SYS = `Sos el asistente de costeo de Smart Building Uruguay (SBU) dentro del visor 3D de la obra La Armonía. Hablás con Ramiro Portugau, director de obra, en español rioplatense, directo y breve.
-Qué hay: tres métodos para montar la cubierta de paneles Hiansa (opción A = "1", C = "2", B = "3"), cada uno con fases (días, cuadrilla oe=oficial especializado, of=oficial, mo=medio oficial, pe=peón, y cuántos trabajan en altura), máquinas, andamios, seguridad, flete e imprevistos; parámetros de jornales del laudo de construcción, BPS, IVA, tipo de cambio y precios de alquiler (los marcados "supuesto" hay que cotizarlos). Dos regímenes: obra registrada en BPS (sin IVA de venta, BPS aparte, IVA de compras no se recupera) o SBU factura con IVA (cargas de Industria y Comercio, IVA arriba). La ganancia de SBU siempre se habla sin IVA.
+Qué hay: cuatro métodos para montar la cubierta de paneles Hiansa (opción A = "1", C = "2", B = "3", D = "4": andamio propio, galpón con camión grúa y establo a mano), cada uno con fases (días, cuadrilla oe=oficial especializado, of=oficial, mo=medio oficial, pe=peón, y cuántos trabajan en altura), máquinas, andamios, seguridad, flete e imprevistos; parámetros de jornales del laudo de construcción, BPS, IVA, tipo de cambio y precios de alquiler (los marcados "supuesto" hay que cotizarlos). Dos regímenes: obra registrada en BPS (sin IVA de venta, BPS aparte, IVA de compras no se recupera) o SBU factura con IVA (cargas de Industria y Comercio, IVA arriba). La ganancia de SBU siempre se habla sin IVA.
 Cómo trabajar:
 - Basate en el estado que viene con cada mensaje; citá números concretos (USD, días, USD/m²).
 - Si te piden cambiar algo, o proponés algo y te dicen que sí, usá las herramientas para aplicarlo; después decí en una línea qué cambió y el nuevo total. Si solo preguntan "qué pasaría si", podés aplicar el cambio, informar y ofrecer deshacer (el usuario tiene un botón Deshacer).
@@ -1370,10 +1430,10 @@ Cómo trabajar:
   const TOOLS = [
     { name: 'leer_estado', description: 'Lee el estado actual completo (parámetros, fases, máquinas y totales de las tres opciones). Usalo después de varios cambios.', inputSchema: { type: 'object', properties: {} }, execute: () => estado() },
     { name: 'cambiar_parametro', description: 'Cambia un parámetro de costos por su clave (ej. m_mani, m_tij, j_of, margen, imprev, tc, and_m2sem, pm2). pm2 > 0 fija el precio por m² sin IVA; 0 vuelve a costo + ganancia.', inputSchema: { type: 'object', properties: { clave: { type: 'string' }, valor: { type: 'number' } }, required: ['clave', 'valor'] }, execute: x => H.cambiar_parametro(x) },
-    { name: 'cambiar_fase', description: 'Cambia una fase de una opción (A, B o C) por índice: días, cuadrilla {oe,of,mo,pe} y/o cuántos en altura. Recalcula días totales y la animación.', inputSchema: { type: 'object', properties: { opcion: { type: 'string', enum: ['A', 'B', 'C'] }, indice: { type: 'integer' }, dias: { type: 'number' }, cuadrilla: { type: 'object', properties: { oe: { type: 'number' }, of: { type: 'number' }, mo: { type: 'number' }, pe: { type: 'number' } } }, en_altura: { type: 'number' } }, required: ['opcion', 'indice'] }, execute: x => H.cambiar_fase(x) },
-    { name: 'cambiar_maquina', description: 'Cambia días-máquina o fletes de una máquina de una opción por índice. El manitou de la opción C calcula sus días solo.', inputSchema: { type: 'object', properties: { opcion: { type: 'string', enum: ['A', 'B', 'C'] }, indice: { type: 'integer' }, dias: { type: 'number' }, fletes: { type: 'number' } }, required: ['opcion', 'indice'] }, execute: x => H.cambiar_maquina(x) },
-    { name: 'cambiar_andamio', description: 'Cambia m² o semanas de un tramo de andamio de una opción.', inputSchema: { type: 'object', properties: { opcion: { type: 'string', enum: ['A', 'B', 'C'] }, indice: { type: 'integer' }, m2: { type: 'number' }, semanas: { type: 'number' } }, required: ['opcion', 'indice'] }, execute: x => H.cambiar_andamio(x) },
-    { name: 'elegir', description: 'Cambia la opción que se muestra (A, B, C) y/o el régimen (obra | iva).', inputSchema: { type: 'object', properties: { opcion: { type: 'string', enum: ['A', 'B', 'C'] }, regimen: { type: 'string', enum: ['obra', 'iva'] } } }, execute: x => H.elegir(x) },
+    { name: 'cambiar_fase', description: 'Cambia una fase de una opción (A, B, C o D) por índice: días, cuadrilla {oe,of,mo,pe} y/o cuántos en altura. Recalcula días totales y la animación.', inputSchema: { type: 'object', properties: { opcion: { type: 'string', enum: ['A', 'B', 'C', 'D'] }, indice: { type: 'integer' }, dias: { type: 'number' }, cuadrilla: { type: 'object', properties: { oe: { type: 'number' }, of: { type: 'number' }, mo: { type: 'number' }, pe: { type: 'number' } } }, en_altura: { type: 'number' } }, required: ['opcion', 'indice'] }, execute: x => H.cambiar_fase(x) },
+    { name: 'cambiar_maquina', description: 'Cambia días-máquina o fletes de una máquina de una opción por índice. El manitou de la opción C calcula sus días solo.', inputSchema: { type: 'object', properties: { opcion: { type: 'string', enum: ['A', 'B', 'C', 'D'] }, indice: { type: 'integer' }, dias: { type: 'number' }, fletes: { type: 'number' } }, required: ['opcion', 'indice'] }, execute: x => H.cambiar_maquina(x) },
+    { name: 'cambiar_andamio', description: 'Cambia m² o semanas de un tramo de andamio de una opción.', inputSchema: { type: 'object', properties: { opcion: { type: 'string', enum: ['A', 'B', 'C', 'D'] }, indice: { type: 'integer' }, m2: { type: 'number' }, semanas: { type: 'number' } }, required: ['opcion', 'indice'] }, execute: x => H.cambiar_andamio(x) },
+    { name: 'elegir', description: 'Cambia la opción que se muestra (A, B, C, D) y/o el régimen (obra | iva).', inputSchema: { type: 'object', properties: { opcion: { type: 'string', enum: ['A', 'B', 'C', 'D'] }, regimen: { type: 'string', enum: ['obra', 'iva'] } } }, execute: x => H.elegir(x) },
   ];
 
   async function enviar(txt) {
