@@ -6,16 +6,16 @@ async def route(r):
   if m: await r.fulfill(path=T+m.group(1),content_type='application/javascript')
   else: await r.abort()
 JS=r"""()=>{
- const g=id=>{const e=document.getElementById(id); const c=e.cloneNode(true); c.removeAttribute('id'); c.removeAttribute('class'); return c.outerHTML;};
+ const g=id=>{const e=document.getElementById(id); const c=e.cloneNode(true); c.removeAttribute('id'); c.removeAttribute('class'); c.removeAttribute('style'); return c.outerHTML.replace(/id="([^"]+)"/g,'id="k-$1"').replace(/url\(#([^)]+)\)/g,'url(#k-$1)').replace(/href="#([^"]+)"/g,'href="#k-$1"');};
  const lg=id=>{const c=document.getElementById(id).closest('.card'); return [...c.querySelectorAll('.lg')].map(x=>x.outerHTML).join('');};
  const sub=document.querySelector('#p-fach .sub').textContent;
  const hoy=new Date().toLocaleDateString('es-UY',{day:'numeric',month:'long',year:'numeric'});
- const cab=(n,t)=>`<div class="cab"><div><span class="lo">SMART BUILDING URUGUAY</span><b>${t}</b></div><div class="r">Locales comerciales · Avda. Pedragosa Sierra · Padrón 10596<br>Para Arq. Pablo Alcoba · ${hoy} · lámina ${n}/9</div></div>`;
+ const cab=(n,t)=>`<div class="cab"><div><span class="lo">SMART BUILDING URUGUAY</span><b>${t}</b></div><div class="r">Locales comerciales · Avda. Pedragosa Sierra · Padrón 10596<br>Para Arq. Pablo Alcoba · ${hoy} · lámina ${n}/10</div></div>`;
  const pie=`<div class="pie">SBU · Ramiro Portugau, director de obra · 098 526 226 · smartbuildinguruguay@gmail.com · Ing. Ricardo Portugau, cálculo de estructura · Anteproyecto de base: arquitecta del cliente. Esquemas de SBU para el proyecto ejecutivo; medidas a verificar.</div>`;
  const P=[];
  P.push(`<div class="pg tit"><img src="img/render.jpg"><div class="tx"><span class="lo">SMART BUILDING URUGUAY</span><h1>Locales comerciales<br>Avda. Pedragosa Sierra</h1><p>Padrón 10596 · Punta del Este, Maldonado</p><p class="d">Material de base para el proyecto ejecutivo y el permiso de construcción<br><b>Para: Arq. Pablo Alcoba</b> · ${hoy}</p>
   <table><tr><td>Programa</td><td>${__jcg.S.n} locales comerciales en cáscara + baño, planta de 25 × 10 m (250 m²), sin columnas interiores</td></tr><tr><td>Estructura</td><td>Pórticos metálicos cada 5 m, platea H30 con vigas de fundación (cálculo: Ing. Ricardo Portugau)</td></tr><tr><td>Envolvente</td><td>Muros de panel EPS, techo de panel PIR, vidriera continua a la plaza, faja, brise de madera y cenefa negra</td></tr><tr><td>Obra</td><td>SBU · Ramiro Portugau, director de obra</td></tr></table>
-  <h3>Láminas</h3><ol><li>Implantación: planta completa con el terreno</li><li>Planta de arquitectura</li><li>Sanitaria: planta general</li><li>Sanitaria: local tipo</li><li>Eléctrica: planta general</li><li>Eléctrica: local tipo</li><li>Fachada norte (a la plaza)</li><li>Fachada este (a la avenida) y corte</li><li>Render del anteproyecto (del cliente)</li></ol></div></div>`);
+  <h3>Láminas</h3><ol><li>Implantación: planta completa con el terreno</li><li>Planta de arquitectura</li><li>Sanitaria: planta general</li><li>Sanitaria: local tipo</li><li>Eléctrica: planta general</li><li>Eléctrica: local tipo</li><li>Fachada norte (a la plaza)</li><li>Fachada este (a la avenida) y corte</li><li>Detalle del frente: cenefa, brise símil madera y faja</li><li>Render del anteproyecto (del cliente)</li></ol></div></div>`);
  P.push(`<div class="pg">${cab(1,'Implantación: planta completa con el terreno')}<div class="dw">${g('svImpl')}</div>${pie}</div>`);
  P.push(`<div class="pg">${cab(2,'Planta de arquitectura')}<div class="dw">${g('svPlanta')}</div>${pie}</div>`);
  P.push(`<div class="pg">${cab(3,'Sanitaria: planta general')}<div class="dw">${g('svSan')}</div>${lg('svSan')}<p class="nt">PPS: pileta de patio sifonada abierta. PPT: pileta de patio tapada. CI: cámara de inspección, una por local sobre el colector. Colector a −0,60 en la CI 1 y −0,97 en la conexión.</p>${pie}</div>`);
@@ -24,7 +24,8 @@ JS=r"""()=>{
  P.push(`<div class="pg">${cab(6,'Eléctrica: local tipo')}<div class="dw">${g('svEleL')}</div>${lg('svEle')}<p class="nt">Medición monofásica por local en el gabinete de UTE del frente (hasta 9,2 kW), alimentación enterrada a cada tablero, servicios comunes en tablero aparte.</p>${pie}</div>`);
  P.push(`<div class="pg">${cab(7,'Fachada norte (a la plaza)')}<div class="dw">${g('svFN')}</div><p class="nt">${sub}</p>${pie}</div>`);
  P.push(`<div class="pg">${cab(8,'Fachada este (a la avenida) y corte')}<div class="g2"><div class="dw">${g('svFE')}</div><div class="dw">${g('svCorte')}</div></div><p class="nt">${sub}</p>${pie}</div>`);
- P.push(`<div class="pg">${cab(9,'Render del anteproyecto (enviado por el cliente)')}<div class="dw ren"><img src="img/render.jpg"></div>${pie}</div>`);
+ P.push(`<div class="pg">${cab(9,'Detalle del frente norte: cenefa, brise y faja')}<div class="dw">${g('svDetN')}</div><p class="nt">${sub}</p>${pie}</div>`);
+ P.push(`<div class="pg">${cab(10,'Render del anteproyecto (enviado por el cliente)')}<div class="dw ren"><img src="img/render.jpg"></div>${pie}</div>`);
  document.head.insertAdjacentHTML('beforeend',`<style>@page{size:420mm 297mm;margin:0}
  body>*:not(#doc){display:none!important} body{margin:0;background:#fff}
  #doc .pg{width:420mm;height:297mm;padding:10mm 12mm 8mm;box-sizing:border-box;display:flex;flex-direction:column;page-break-after:always;overflow:hidden}#doc .pg:last-child{page-break-after:auto;font-family:Inter,Arial,sans-serif;color:#222}
