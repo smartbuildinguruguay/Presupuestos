@@ -43,6 +43,7 @@ tr.best td{background:#e5f1e2}.note{font-size:.82rem;color:var(--mut)}.pill{disp
 ul.c{margin:6px 0;padding-left:18px}ul.c li{margin:3px 0}
 .foot{color:var(--mut);font-size:.8rem;border-top:1px solid var(--ln);margin-top:24px;padding-top:10px}
 @media print{header .tabs,.bar,#lay,#etapa{display:none}section.pg{display:block!important;page-break-after:always}}
+body.pmat header,body.pmat .bar,body.pmat .foot,body.pmat .noprint{display:none}body.pmat main{max-width:none;padding:0}body.pmat section.pg{display:none!important}body.pmat #p-mat{display:block!important}
 body.pedido header,body.pedido .bar,body.pedido .foot,body.pedido .noprint{display:none}body.pedido main{max-width:none;padding:0}body.pedido section.pg{display:none!important}body.pedido #p-ped{display:block!important}
 .pedbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px}.btn2{display:inline-block;border:1px solid var(--ln);background:#fff;color:var(--ink);border-radius:7px;padding:7px 12px;font:600 .84rem system-ui;cursor:pointer;text-decoration:none}.btn2:hover{border-color:var(--acc)}.btn2.pri{background:var(--acc);color:#fff;border-color:var(--acc)}
 .pedtabs{display:flex;gap:4px;border-bottom:2px solid var(--ln);margin:0 0 12px}.pedtabs button{border:0;background:none;padding:8px 14px;font:600 .88rem system-ui;color:var(--mut);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}.pedtabs button.on{color:var(--ink);border-color:var(--acc)}
@@ -52,7 +53,7 @@ tr.win td{background:#e5f1e2;font-weight:600}.tag2{display:inline-block;font-siz
 .hoja{background:#fff;border:1px solid var(--ln);border-radius:8px;padding:14mm 13mm;margin:0 auto 14px;max-width:210mm;font-size:9.5pt;line-height:1.4;color:#1d1b18}
 .hoja h1{font-size:15pt;margin:0 0 2mm}.hoja h2{font-size:11.5pt;margin:5mm 0 2mm;border-bottom:1.5px solid #1d1b18;padding-bottom:1mm}.hoja h3{font-size:10pt;margin:3mm 0 1mm}
 .hoja table{font-size:8.3pt}.hoja th,.hoja td{padding:1.6px 4px;line-height:1.25}.hoja td .note{font-size:7.4pt}.hoja .meta{display:flex;justify-content:space-between;gap:10px;color:#6c655c;font-size:8.5pt;border-bottom:1px solid #ccc;padding-bottom:2mm;margin-bottom:3mm}
-.hoja .fill td{height:7mm}.hoja .pie{margin-top:4mm;color:#6c655c;font-size:7.8pt;border-top:1px solid #ccc;padding-top:1.5mm;display:flex;justify-content:space-between}
+.hoja .fill td{height:7mm}.hoja .fill2 td{height:5.2mm;padding-top:1px;padding-bottom:1px}.hoja .pie{margin-top:4mm;color:#6c655c;font-size:7.8pt;border-top:1px solid #ccc;padding-top:1.5mm;display:flex;justify-content:space-between}
 .hoja svg{width:100%;height:auto;display:block;border:1px solid #ddd;border-radius:4px;margin:1mm 0}
 @media print{.noprint,#resp{display:none!important}@page{size:A4;margin:0}body{background:#fff}.hoja{border:0;border-radius:0;margin:0;max-width:none;width:210mm;min-height:297mm;page-break-after:always}}
 </style></head><body>
@@ -160,6 +161,14 @@ tr.win td{background:#e5f1e2;font-weight:600}.tag2{display:inline-block;font-siz
  <div class="pedtabs"><button data-pv="doc" class="on">Documento</button><button data-pv="resp">Respuestas de proveedores <span id="nResp"></span></button></div></div>
  <div id="ped"></div>
  <div id="resp" class="noprint" hidden></div>
+</section>
+
+<section class="pg" id="p-mat">
+ <div class="noprint"><h2>Cotizar materiales</h2>
+ <p class="sub">Pedidos de cotización listos para mandar, con cantidades sacadas del proyecto (cambian con locales, envolvente y entrega). El de paneles va con despiece panel por panel, accesorios, fijaciones y alternativas para BMC o Kingspan Bromyros.</p>
+ <div class="pedtabs" id="matTabs"></div>
+ <div class="pedbar"><a class="btn2 pri" id="matDl" download>⬇ Descargar PDF</a><a class="btn2" id="matOp" target="_blank" rel="noopener">Abrir PDF</a><button class="btn2" id="matPrint">Imprimir</button><span class="note">El PDF descargable se generó con 4 locales, envolvente B y entrega equipada; si cambiás algo arriba, imprimí desde acá (Ctrl + P) para que salga actualizado.</span></div></div>
+ <div id="matDoc"></div>
 </section>
 
 <section class="pg" id="p-loc">
@@ -403,7 +412,7 @@ function rubrado(st = S) {
 const ivaK = () => S.iva ? 1.22 : 1;
 
 /* ================= UI ================= */
-const TABS = [['p-proy', 'Proyecto'], ['p-impl', 'Implantación'], ['p-planta', 'Planta'], ['p-fach', 'Fachadas'], ['p-est', 'Estructura'], ['p-3d', '3D'], ['p-env', 'Paneles'], ['p-rub', 'Rubrado'], ['p-sub', 'Subcontratos'], ['p-ped', 'Cotizar estructura'], ['p-loc', 'Locales e instalaciones'], ['p-rent', 'Rentabilidad']];
+const TABS = [['p-proy', 'Proyecto'], ['p-impl', 'Implantación'], ['p-planta', 'Planta'], ['p-fach', 'Fachadas'], ['p-est', 'Estructura'], ['p-3d', '3D'], ['p-env', 'Paneles'], ['p-rub', 'Rubrado'], ['p-sub', 'Subcontratos'], ['p-ped', 'Cotizar estructura'], ['p-mat', 'Cotizar materiales'], ['p-loc', 'Locales e instalaciones'], ['p-rent', 'Rentabilidad']];
 const $ = id => document.getElementById(id);
 $('tabs').innerHTML = TABS.map(([id, t]) => `<button data-p="${id}">${t}</button>`).join('');
 function show(id) { document.querySelectorAll('.pg').forEach(p => p.classList.toggle('on', p.id === id)); document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.p === id)); history.replaceState(null, '', '#' + id.slice(2)); if (id === 'p-3d') v3.start(); }
@@ -946,10 +955,89 @@ document.addEventListener('click', async e => {
   if (b.id === 'rpImp') { $('rpBox').hidden = false; return; }
   if (b.id === 'rpOk') { try { const a = JSON.parse($('rpTxt').value); if (Array.isArray(a)) { PROV = a; guardarProv(); renderResp() } } catch (x) { $('rpMsg').textContent = 'No se pudo leer el respaldo.' } return; }
   if (b.id === 'rpRes') { const kg = piezas(S.env).reduce((t, p) => t + p.kg, 0); const txt = 'Comparativo estructura metálica · Locales Pedragosa Sierra (' + Math.round(kg).toLocaleString('es-UY') + ' kg)\n' + PROV.map((p, i) => { const t = totProv(p); return `• ${p.nom || 'Proveedor ' + (i + 1)}: ${t ? u$(t) + ' sin IVA · ' + f2(t / kg) + ' USD/kg' : 'sin precio'}${p.fab ? ' · fabricación ' + p.fab : ''}${p.mon ? ' · montaje ' + p.mon + ' días' : ''}${p.prot === 'galv' ? ' · galvanizado' : ''} · ${p.est || ''}` }).join('\n'); try { await navigator.clipboard.writeText(txt); $('rpMsg').textContent = 'Comparativo copiado.' } catch (x) { $('rpBox').hidden = false; $('rpTxt').value = txt } return; }
-  if (b.id === 'pedPrint') { window.print(); return; }
+  if (b.id === 'pedPrint' || b.id === 'matPrint') { window.print(); return; }
   if (b.id === 'pedWa') { const url = location.href.split('#')[0].replace(/[^/]*$/, '') + 'SBU-Pedido-cotizacion-estructura-Pedragosa.pdf'; const txt = `Hola, ¿cómo andás? Te paso un pedido de cotización de estructura metálica para un edificio de locales en Punta del Este (Avda. Pedragosa Sierra): 6 pórticos de 10 m de luz, unos ${Math.round(piezas(S.env).reduce((t, p) => t + p.kg, 0) / 100) * 100} kg, fabricada, pintada para ambiente marino y montada. Adentro está la planilla de piezas, los croquis y un formulario para que coticemos todos igual: ${url}\nGracias. Ramiro Portugau · Smart Building Uruguay · 098 526 226`; try { await navigator.clipboard.writeText(txt); $('pedMsg').textContent = 'Mensaje copiado: pegalo en WhatsApp o en un mail.' } catch (x) { $('pedMsg').textContent = txt } return; }
 });
 document.addEventListener('input', e => { const c = e.target.closest('.prov[data-i]'); if (!c) return; const p = PROV[+c.dataset.i]; if (e.target.dataset.f) p[e.target.dataset.f] = e.target.value; if (e.target.dataset.r) p.r[e.target.dataset.r] = e.target.value; guardarProv(); clearTimeout(window.__rpT); window.__rpT = setTimeout(() => { const foc = document.activeElement, sel = foc && foc.dataset ? [foc.dataset.f, foc.dataset.r] : null; const ci = +c.dataset.i; if (EST_OVR && EST_OVR.i === ci) { EST_OVR.t = totProv(p); EST_OVR.nom = p.nom || EST_OVR.nom; guardarProv(); upd(); } renderResp(); if (sel) { const q = document.querySelector(`.prov[data-i="${ci}"] [data-${sel[0] ? 'f' : 'r'}="${sel[0] || sel[1]}"]`); if (q) { q.focus(); const v = q.value; if (q.setSelectionRange && q.type !== 'date') q.setSelectionRange(v.length, v.length) } } }, 700); });
+
+/* ================= COTIZAR MATERIALES (paneles BMC, hormigón y hierro, sanitaria, eléctrica) ================= */
+const DOCS_MAT = [['paneles', 'Paneles y accesorios · BMC / Kingspan Bromyros'], ['hormigon', 'Hormigón, hierro y tosca'], ['sanitaria', 'Materiales de sanitaria'], ['electrica', 'Materiales de eléctrica']];
+let MATDOC = 'paneles';
+function despiece() {
+  const E = ENV[S.env], aR = E.roof.trap ? 1.0 : 1.0, aW = 1.10, hW = B.hPar - B.npt, lR = Math.ceil(10.6 / Math.cos(Math.atan(E.roof.pend)) * 100) / 100;
+  const L = [], add = (m, desc, prod, n, largo, ancho, nota = '') => L.push({ m, desc, prod, n, largo, ancho, m2: n * largo * ancho, nota });
+  add('T1–T' + Math.ceil(25.6 / aR), 'Techo, paneles de sur a norte (en el sentido de la pendiente)', E.roof.nom, Math.ceil(25.6 / aR), lR, aR, `pendiente ${Math.round(E.roof.pend * 100)} %, sin empalmes`);
+  add('MS1–MS' + Math.ceil(25.8 / aW), 'Muro sur, verticales de platea a +6,00', E.wall.nom, Math.ceil(25.8 / aW), f2n(hW), aW);
+  add('MO1–MO' + Math.ceil(10.8 / aW), 'Muro oeste, verticales', E.wall.nom, Math.ceil(10.8 / aW), f2n(hW), aW);
+  add('MN1–MN' + Math.ceil(24.6 / aW), 'Franja alta norte (de +3,00 a +6,00, detrás del brise y la cenefa)', E.wall.nom, Math.ceil(24.6 / aW), 3.0, aW);
+  add('ME1–ME' + Math.ceil(10.6 / aW), 'Franja alta del frente a la avenida (de +3,00 a +6,00)', E.wall.nom, Math.ceil(10.6 / aW), 3.0, aW);
+  add('ME0', 'Frente, tramo junto a la esquina sur (de platea a +6,00)', E.wall.nom, 1, f2n(hW), aW);
+  const cs = correas(S.env).length, nT = L[0].n, nW = L.slice(1).reduce((t, x) => t + x.n, 0);
+  const A = [
+    ['Canalón interno (techo al sur), chapa prepintada desarrollo 1.000 mm', 'ml', 26.0], ['Babeta / cupertina de pretil, desarrollo 400 mm', 'ml', 73], ['Babeta techo contra muro (norte, este y oeste)', 'ml', 47],
+    ['Cierre de cabeza y gotero del panel de techo', 'ml', 26], ['Esquinero exterior de muro', 'ml', 4 * 6], ['Esquinero interior', 'ml', 2 * 6], ['Perfil U de arranque (zócalo) con sellador', 'ml', 25.8 + 10.8 + 1.1],
+    ['Remates de vanos: dinteles y jambas de vidrieras y puertas de servicio', 'ml', 20 + 9.3 + 14 + 4 * 3.2], ['Tapajuntas / cierre superior de muro bajo cenefa', 'ml', 36],
+    [`Tornillos autoperforantes de techo con arandela de neopreno (${nT} paneles × ${cs} correas × 3)`, 'u', Math.ceil(nT * cs * 3 * 1.1)], [`Tornillos de muro con arandela (${nW} paneles × 2 por larguero)`, 'u', Math.ceil(nW * 4 * 2 * 1.1)],
+    ['Remaches y tornillos de costura de remates', 'u', 900], ['Sellador de poliuretano (cartucho 300 ml)', 'u', 48], ['Cinta butílica (rollo 15 m)', 'u', 12], ['Espuma de cierre / burletes', 'ml', 60],
+  ];
+  return { L, A, m2T: L[0].m2, m2W: L.slice(1).reduce((t, x) => t + x.m2, 0) };
+}
+const f2n = x => Math.round(x * 100) / 100;
+function cantidades() {
+  const n = S.n, eq = S.modo === 'equipado', L = locales(n);
+  const hPlatea = 266 * .15, hVig = (6 * 10.6 + 2 * 25.6) * .3 * .6, hNud = 12 * 1.2 * 1.2 * .45;
+  return {
+    horm: [['Hormigón elaborado H30, asentamiento 10 cm, con bomba (platea + vigas de fundación + nudos, +5 %)', 'm³', Math.ceil((hPlatea + hVig + hNud) * 1.05)], ['Servicio de bomba (2 bombeos: vigas y platea)', 'u', 2], ['Malla electrosoldada Ø6 c/15 × 15, panel 2,40 × 6,00 (platea, doble capa, con solapes)', 'u', Math.ceil(266 * 2 * 1.12 / 14.4)], ['Hierro Ø16 ADN 500 (vigas de fundación, 8 barras por viga, con empalmes)', 'kg', Math.round(115 * 8 * 1.1 * 1.58)], ['Hierro Ø8 (estribos c/15 de vigas)', 'kg', Math.round(115 / .15 * 1.7 * .395)], ['Hierro Ø10 (refuerzo de nudos bajo columnas)', 'kg', 12 * 40], ['Alambre de atar', 'kg', 60], ['Separadores / galletas para recubrimiento 3 y 4 cm', 'u', 1200], ['Nylon 200 µ', 'm²', 320], ['Tosca para relleno compactado (30 cm + esponjamiento)', 'm³', Math.ceil(285 * .3 * 1.3)], ['Pedregullo para patio de servicio', 'm³', 12], ['Hormigón elaborado H25 para estacionamiento 12 cm', 'm³', Math.ceil(240 * .12 * 1.05)], ['Malla Ø4,2 c/15 para estacionamiento', 'u', Math.ceil(240 * 1.1 / 14.4)]],
+    san: [['Caño PVC Ø110 cloacal (colector, ramales y previsiones)', 'ml', 34 + 5 * 4 + 6], ['Caño PVC Ø63', 'ml', 18], ['Caño PVC Ø40 (piletas y desagües de aire)', 'ml', 8 * n + 10], ['Codos, ramales y piletas de patio Ø110 / Ø63 / Ø40 (juego por punto)', 'gl', 5 + n], ['Cámara de inspección 60 × 60 con tapa', 'u', 4], ['Cámara separadora de grasas prefabricada', 'u', 1], ['Tapones Ø110 y Ø40 para previsiones sin usar', 'u', 2 * (5 - n + 1)], ['Caño PVC Ø110 pluvial (bajadas y enterrado a cuneta)', 'ml', 3 * 5 + 40], ['Embudos / bocas de desagüe de canalón', 'u', 3], ['Caño PPR Ø32 (alimentación general)', 'ml', 36], ['Caño PPR Ø25 (a cada local)', 'ml', 12 * n + 10], ['Llaves de paso Ø25 y Ø32', 'u', n + 2], ['Medidor de agua general (lo instala OSE) + submedidores por local', 'u', n], ...(eq ? [['Inodoro accesible con depósito', 'u', n], ['Lavatorio accesible sin pie con grifería monocomando', 'u', n], ['Barras de accesibilidad (fija y rebatible)', 'juego', n], ['Pileta de acero inoxidable con grifería (kitchenette)', 'u', n], ['Extractor de baño', 'u', n], ['Revestimiento cerámico para baños', 'm²', Math.ceil(n * 12)]] : [])],
+    ele: [['Gabinete de medidores UTE para ' + n + ' medidores + general', 'u', 1], ['Caño PVC rígido Ø40 enterrado (alimentación a cada local)', 'ml', L.reduce((t, l) => t + (35 - l.b) + 8, 0)], ['Cable subterráneo 2 × 10 mm² (o 4 × 10 si es trifásico)', 'ml', Math.round(L.reduce((t, l) => t + (35 - l.b) + 10, 0) * 1.1)], ['Jabalinas de puesta a tierra 1,5 m + cable 16 mm²', 'u', 3], ['Tablero de servicios comunes con diferencial', 'u', 1], ['Proyectores LED 50 W para plaza y estacionamiento', 'u', 8], ['Columna / brazo para proyector', 'u', 4], ['Alimentación de cartelería en la faja (caño y cable)', 'ml', 30], ...(eq ? [['Tablero de local con llave general, diferencial y 6 circuitos', 'u', n], ['Paneles LED 60 × 60 o lineales 40 W', 'u', Math.ceil(250 / 6)], ['Tomacorrientes dobles y llaves', 'u', 8 * n], ['Cable 2,5 mm² y 4 mm² (circuitos de locales)', 'ml', 120 * n], ['Caño y caja para preinstalación de aire', 'juego', n]] : [['Tablero de obra por local', 'u', n]])],
+  };
+}
+function renderMat() {
+  const el = $('matDoc'); if (!el) return;
+  $('matTabs').innerHTML = DOCS_MAT.map(([k, t]) => `<button data-md="${k}" class="${k === MATDOC ? 'on' : ''}">${t}</button>`).join('');
+  $('matDl').href = `SBU-Cotizar-${MATDOC}-Pedragosa.pdf`; $('matOp').href = $('matDl').href;
+  const hoy = new Date().toLocaleDateString('es-UY'), E = ENV[S.env];
+  const pie = (d, n) => `<div class="pie"><span>Smart Building Uruguay · Ramiro Portugau, director de obra · 098 526 226 · smartbuildinguruguay@gmail.com</span><span>${d} · ${n}</span></div>`;
+  const cab = t => `<div class="meta"><span><b>SBU · Pedido de cotización</b> · ${t} · Locales comerciales Avda. Pedragosa Sierra, padrón 10596, Punta del Este</span><span>${hoy}</span></div>`;
+  const form = filas => `<table class="fill fill2"><tr><th>#</th><th>Material</th><th>Unidad</th><th class="n">Cantidad</th><th class="n">Precio unitario USD</th><th class="n">Total USD</th></tr>${filas.map((f, i) => `<tr><td>${i + 1}</td><td>${f[0]}</td><td>${f[1]}</td><td class="n">${Number(f[2]).toLocaleString('es-UY')}</td><td></td><td></td></tr>`).join('')}<tr class="tt"><td></td><td colspan="4">Total sin IVA</td><td></td></tr><tr><td></td><td colspan="4">IVA</td><td></td></tr><tr class="tt"><td></td><td colspan="4">Total con IVA</td><td></td></tr></table>`;
+  const datos = `<p>Empresa: ____________________________ RUT: ______________ Contacto: ______________________ Tel.: ______________</p>`;
+  const cond = extra => `<table style="margin-top:3mm" class="fill fill2"><tr><td style="width:45%">Plazo de entrega en obra</td><td></td></tr><tr><td>Flete a Punta del Este (incluido / aparte)</td><td></td></tr><tr><td>Precio para los padrones 10597 y 10598 (misma lista)</td><td></td></tr><tr><td>Forma de pago y validez</td><td></td></tr>${extra || ''}<tr><td>Observaciones / alternativas</td><td></td></tr></table><h3>Condiciones</h3><ul class="c"><li>Cantidades estimadas por SBU sobre el proyecto: verificar y avisar si falta algo. Cotizar precio unitario para ajustar.</li><li>Entrega en obra: Avda. Pedragosa Sierra, Punta del Este (frente al Centro de Convenciones). Descarga a cargo de SBU salvo que se indique.</li><li>La obra se repite en dos padrones más: indicar si hay precio por volumen.</li><li>Enviar a smartbuildinguruguay@gmail.com o por WhatsApp al 098 526 226.</li></ul>`;
+  let h = '';
+  if (MATDOC === 'paneles') {
+    const D = despiece(), t = 'Paneles y accesorios';
+    h += `<div class="hoja">${cab(t)}<h1>Paneles sándwich y accesorios · pedido de cotización</h1>
+    <p>Edificio de locales de una planta, 25,00 × 10,00 m, estructura metálica con correas C200 cada ${f2(10 / (correas(S.env).length - 1))} m y largueros C160/C120. Todo el cerramiento en paneles Kingspan Bromyros. Se pide cotización de paneles cortados a medida, accesorios y fijaciones, puestos en obra.</p>
+    <h2>1 · Paneles</h2><table><tr><th>Uso</th><th>Producto</th><th>Colores</th><th class="n">m²</th></tr>
+     <tr><td>Techo</td><td><b>${E.roof.nom}</b></td><td>${E.roof.pir ? 'exterior gris grafito' : 'exterior gris claro'} · interior blanco</td><td class="n">${f1(D.m2T)}</td></tr>
+     <tr><td>Muros</td><td><b>${E.wall.nom}</b></td><td>${E.wall.pir ? 'grafito' : 'blanco'} / interior blanco</td><td class="n">${f1(D.m2W)}</td></tr></table>
+    <p class="note">Ancho útil tomado: techo 1,00 m; muro 1,10 m (confirmar según el producto). Largos a medida según la planilla. Con film protector.</p>
+    <h2>2 · Alternativas a cotizar aparte</h2><ul class="c"><li>Techo en <b>Isoroof 3G PIR 80 mm trapezoidal, grafito</b> (pendiente 7 %) en lugar del engrafado.</li><li>Techo en <b>Isodec EPS 100 mm</b> (más económico).</li><li>Muros en <b>panel liso PIR 80 mm (Isowall o similar), grafito</b>, por comportamiento al fuego.</li><li>Núcleo EPS con retardante de llama y certificado para la habilitación de Bomberos.</li></ul>
+    <h2>3 · Lo que se pide además</h2><ul class="c"><li>Asistencia técnica de montaje y detalles de remates de Kingspan Bromyros.</li><li>Fichas técnicas y certificado de comportamiento al fuego de cada producto.</li><li>Plazo de fabricación y si entregan por etapas (techo primero, muros después).</li></ul><h2>4 · Croquis de despiece</h2><svg id="mk1"></svg>${pie(t, '1/3')}</div>`;
+    h += `<div class="hoja">${cab(t)}<h2 style="margin-top:0">5 · Planilla de paneles (marcas del croquis)</h2><table><tr><th>Marca</th><th>Dónde</th><th>Producto</th><th class="n">Cant.</th><th class="n">Largo m</th><th class="n">Ancho útil</th><th class="n">m²</th></tr>${D.L.map(x => `<tr><td><b>${x.m}</b></td><td>${x.desc}${x.nota ? `<div class="note">${x.nota}</div>` : ''}</td><td>${x.prod}</td><td class="n">${x.n}</td><td class="n">${f2(x.largo)}</td><td class="n">${f2(x.ancho)}</td><td class="n">${f1(x.m2)}</td></tr>`).join('')}<tr class="tt"><td colspan="3">Total</td><td class="n">${D.L.reduce((a, x) => a + x.n, 0)}</td><td colspan="2"></td><td class="n">${f1(D.m2T + D.m2W)}</td></tr></table>
+    <h2>6 · Accesorios y fijaciones</h2><table><tr><th>#</th><th>Pieza</th><th>Unidad</th><th class="n">Cantidad</th></tr>${D.A.map((a, i) => `<tr><td>${i + 1}</td><td>${a[0]}</td><td>${a[1]}</td><td class="n">${Math.round(a[2]).toLocaleString('es-UY')}</td></tr>`).join('')}</table><p class="note">Remates en chapa prepintada del color del panel; los de la fachada norte y del frente quedan detrás de la cenefa negra.</p>
+    ${pie(t, '2/3')}</div>`;
+    h += `<div class="hoja">${cab(t)}<h2 style="margin-top:0">7 · Formulario de cotización (completar)</h2>${datos}${form([[E.roof.nom + ' (techo, a medida)', 'm²', Math.round(D.m2T)], [E.wall.nom + ' (muros, a medida)', 'm²', Math.round(D.m2W)], ...D.A.map(a => [a[0], a[1], Math.round(a[2])]), ['Alternativa: Isoroof 3G PIR 80 mm trapezoidal grafito (techo)', 'm²', Math.round(D.m2T)], ['Alternativa: panel liso PIR 80 mm grafito (muros)', 'm²', Math.round(D.m2W)]])}${cond('<tr><td>Precio por m² según largo (si cambia)</td><td></td></tr>')}${pie(t, '3/3')}</div>`;
+  } else {
+    const C = cantidades(), M = { hormigon: ['Hormigón, hierro y tosca', 'hormigonera y barraca', C.horm, 'Platea H30 de 15 cm con malla doble, 8 vigas de fundación 30 × 60 (115 ml) con nudos bajo columnas, relleno de tosca compactada y estacionamiento en hormigón. Ambiente marino: hormigón H30 con cemento adecuado y recubrimientos de 3 y 4 cm.'], sanitaria: ['Materiales de sanitaria', 'barraca o sanitaria', C.san, `Colector cloacal por el pasaje sur con cámaras, previsiones universales cada 5 m (5 puntos), pluviales a cuneta, agua con medidor general y submedidores por local${S.modo === 'equipado' ? ' y baño accesible y kitchenette en cada local' : ''}. ${S.n} locales.`], electrica: ['Materiales de eléctrica', 'casa de electricidad', C.ele, `Gabinete de medidores UTE en el frente (uno por local), alimentación enterrada a cada local, puesta a tierra, iluminación exterior y cartelería${S.modo === 'equipado' ? ', y tablero, iluminación LED y tomas en cada local' : ''}. ${S.n} locales.`] }[MATDOC];
+    h += `<div class="hoja">${cab(M[0])}<h1>${M[0]} · pedido de cotización</h1><p>${M[3]} Pedido a ${M[1]}.</p><h2>Lista de materiales y formulario</h2>${datos}${form(M[2])}${cond()}${pie(M[0], '1/1')}</div>`;
+  }
+  el.innerHTML = h;
+  if (MATDOC === 'paneles') dMatCroquis();
+}
+function dMatCroquis() {
+  const D = despiece(), W = 32, H = 16.6, sc = 30, t = T(1.2, 1.2, sc, H); let s = '';
+  const lab = (x, y, txt, fs = 9, col = '#24211d', anc = 'middle') => TX(t, x, y, txt, `font-size="${fs * 1.35}" font-weight="700" fill="${col}" ${FT}`, anc);
+  // techo en planta (arriba)
+  const y0 = 4.6, nT = D.L[0].n; s += lab(0, y0 + 11.2, 'TECHO (planta) · paneles de sur a norte', 10, '#24211d', 'start');
+  for (let i = 0; i < nT; i++) { s += R_(t, i * 25.6 / nT, y0, (i + 1) * 25.6 / nT, y0 + 10.6, `fill="${i % 2 ? '#e8ebee' : '#dfe3e6'}" stroke="#999" stroke-width=".6"`); if (i % 3 === 0 || i === nT - 1) s += lab((i + .5) * 25.6 / nT, y0 + 5.3, 'T' + (i + 1), 7, '#555'); }
+  s += lab(26.2, y0 + 5.3, `${f2(D.L[0].largo)} m`, 8, '#b5622a', 'start') + lab(12.8, y0 - .5, 'canalón interno (sur) ↓', 8, '#2f6f86');
+  // muros en elevación (abajo): sur y oeste
+  const yb = 0; s += lab(0, yb + 3.6, 'MURO SUR (desde el pasaje) · MS', 9, '#24211d', 'start');
+  const nS = D.L[1].n; for (let i = 0; i < nS; i++) { s += R_(t, i * 25.8 / nS, yb, (i + 1) * 25.8 / nS, yb + 3.0, `fill="${i % 2 ? '#f4f4f2' : '#eceae4'}" stroke="#999" stroke-width=".6"`); if (i % 4 === 0) s += lab((i + .5) * 25.8 / nS, yb + 1.4, 'MS' + (i + 1), 7, '#555'); }
+  s += lab(26.2, yb + 1.5, `${f2(D.L[1].largo)} m`, 8, '#b5622a', 'start') + lab(12.9, yb - .6, 'escala vertical reducida a la mitad · MO, MN y ME igual criterio (ver planilla)', 7.5, '#777');
+  SV($('mk1'), W, H, s, sc);
+}
+document.addEventListener('click', e => { const b = e.target.closest('[data-md]'); if (b) { MATDOC = b.dataset.md; renderMat(); } });
 
 function renderRent() {
   const k = ivaK(), base = +$('inAlq').value || 0, vac = (+$('inVac').value || 0) / 100, gas = (+$('inGas').value || 0) / 100, ter = +$('inTer').value || 0;
@@ -1282,9 +1370,10 @@ const v3 = (() => {
 })();
 
 /* ================= ACTUALIZAR ================= */
-function upd() { setPend(); renderTablas(); renderSub(); dPed(); dImpl(); dRep(); dPlanta(); dFach(); dEst(); dInst(); renderRent(); v3.rebuild(); }
+function upd() { setPend(); renderTablas(); renderSub(); dPed(); renderMat(); dImpl(); dRep(); dPlanta(); dFach(); dEst(); dInst(); renderRent(); v3.rebuild(); }
 upd();
 if (/pedido/.test(location.search)) document.body.classList.add('pedido');
+{ const mm = /matdoc=(\w+)/.exec(location.search); if (mm) { document.body.classList.add('pmat'); MATDOC = mm[1]; renderMat(); } }
 const h0 = location.hash.slice(1); show(TABS.find(t => t[0] === 'p-' + h0) ? 'p-' + h0 : 'p-proy');
 window.__jcg = { S, rubrado, acero, piezas, locales, correas, upd, show, PROPIO };
 </script>
