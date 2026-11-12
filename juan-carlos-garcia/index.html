@@ -36,6 +36,13 @@ tr.best td{background:#e5f1e2}.note{font-size:.82rem;color:var(--mut)}.pill{disp
 ul.c{margin:6px 0;padding-left:18px}ul.c li{margin:3px 0}
 .foot{color:var(--mut);font-size:.8rem;border-top:1px solid var(--ln);margin-top:24px;padding-top:10px}
 @media print{header .tabs,.bar,#lay,#etapa{display:none}section.pg{display:block!important;page-break-after:always}}
+body.pedido header,body.pedido .bar,body.pedido .foot,body.pedido .noprint{display:none}body.pedido main{max-width:none;padding:0}body.pedido section.pg{display:none!important}body.pedido #p-ped{display:block!important}
+.hoja{background:#fff;border:1px solid var(--ln);border-radius:8px;padding:14mm 13mm;margin:0 auto 14px;max-width:210mm;font-size:9.5pt;line-height:1.4;color:#1d1b18}
+.hoja h1{font-size:15pt;margin:0 0 2mm}.hoja h2{font-size:11.5pt;margin:5mm 0 2mm;border-bottom:1.5px solid #1d1b18;padding-bottom:1mm}.hoja h3{font-size:10pt;margin:3mm 0 1mm}
+.hoja table{font-size:8.3pt}.hoja th,.hoja td{padding:1.6px 4px;line-height:1.25}.hoja td .note{font-size:7.4pt}.hoja .meta{display:flex;justify-content:space-between;gap:10px;color:#6c655c;font-size:8.5pt;border-bottom:1px solid #ccc;padding-bottom:2mm;margin-bottom:3mm}
+.hoja .fill td{height:7mm}.hoja .pie{margin-top:4mm;color:#6c655c;font-size:7.8pt;border-top:1px solid #ccc;padding-top:1.5mm;display:flex;justify-content:space-between}
+.hoja svg{width:100%;height:auto;display:block;border:1px solid #ddd;border-radius:4px;margin:1mm 0}
+@media print{@page{size:A4;margin:0}body{background:#fff}.hoja{border:0;border-radius:0;margin:0;max-width:none;width:210mm;min-height:297mm;page-break-after:always}}
 </style></head><body>
 <header><h1>Locales comerciales · Avda. Pedragosa Sierra</h1>
 <p>Juan Carlos García · padrones 10596 · 10597 · 10598, Punta del Este, Maldonado · proyecto tipo de 250 m² sobre el 10596, replicable en los otros dos · Smart Building Uruguay</p>
@@ -92,8 +99,10 @@ ul.c{margin:6px 0;padding-left:18px}ul.c li{margin:3px 0}
 <section class="pg" id="p-est">
  <h2>Plano estructural</h2>
  <p class="sub">Predimensionado para presupuestar: lo verifica y firma el ingeniero con el cálculo final (viento de costa, suelo). Seis pórticos de alma llena, correas de techo según el panel elegido, largueros en muros y cruces de arriostramiento.</p>
- <div class="card"><h3 style="margin-top:0">Fundación: platea y previsiones</h3><svg class="dw" id="svFund"></svg></div><div class="card"><h3 style="margin-top:0">Estructura de techo</h3><svg class="dw" id="svTecho"></svg></div>
- <div class="g2"><div class="card"><h3 style="margin-top:0">Pórtico tipo (ejes 2 a 5)</h3><svg class="dw" id="svPort"></svg></div><div class="card"><h3 style="margin-top:0">Planilla de acero</h3><div id="tAcero"></div></div></div>
+ <div class="card"><h3 style="margin-top:0">Fundación: platea, vigas de fundación y previsiones</h3><svg class="dw" id="svFund"></svg></div><div class="card"><h3 style="margin-top:0">Estructura de techo</h3><svg class="dw" id="svTecho"></svg></div>
+ <div class="g2"><div class="card"><h3 style="margin-top:0">Pórtico tipo (ejes 1 a 6)</h3><svg class="dw" id="svPort"></svg></div><div class="card"><h3 style="margin-top:0">Planilla de piezas (marcas del croquis)</h3><div id="tAcero"></div></div></div>
+ <div class="card"><h3 style="margin-top:0">Verificación: ¿era un divague?</h3><p class="note" style="margin-top:0">Modelo de pórtico por rigidez (Python), cargas de viento UNIT 50-84 y combinaciones 1,2D+1,6L, 1,2D+1,6W y 0,9D+1,6W. Uso = solicitación / resistencia (100 % es el límite). La deriva con vidrieras conviene por debajo de h/300.</p><div id="tVerif"></div></div>
+ <div class="card"><h3 style="margin-top:0">Suelo y fundación</h3><div id="tSuelo"></div></div>
  <div class="card"><h3 style="margin-top:0">Criterios</h3><ul class="c" id="crit"></ul></div>
 </section>
 
@@ -117,6 +126,25 @@ ul.c{margin:6px 0;padding-left:18px}ul.c li{margin:3px 0}
  <div class="card"><div id="tRub"></div></div>
  <div class="card"><h3 style="margin-top:0">Gestión, permisos y habilitaciones</h3><div id="tGest"></div></div>
  <div class="card"><h3 style="margin-top:0">Plazo estimado</h3><div id="tPlazo"></div></div>
+</section>
+
+<section class="pg" id="p-sub">
+ <h2>Costos de obra y subcontratos</h2>
+ <p class="sub">Cada rubro va a un paquete: lo que se subcontrata, lo que se compra directo y lo que puede hacer SBU con cuadrilla propia. El precio al cliente no cambia; lo que cambia es el costo real y la ganancia de SBU. Si lo hace SBU, se paga el material y la mano de obra propia (≈ 75 % de lo que cobra un subcontratista por la misma tarea, porque no se pagan sus gastos ni su ganancia).</p>
+ <div class="card"><b>Lo hace SBU:</b> <span id="chkProp"></span></div>
+ <div class="k" id="kSub"></div>
+ <div class="card"><div id="tSub"></div></div>
+ <div class="card"><h3 style="margin-top:0">Ojo con hacerlo propio</h3><ul class="c">
+  <li>La mano de obra propia va con BPS de obra (aporte unificado sobre jornales) y seguro del BSE: está incluida en el costo de la cuadrilla (≈ USD 392 por día, 1 oficial especializado, 1 oficial y 2 peones con aportes).</li>
+  <li>Sanitaria y eléctrica necesitan firma de técnico habilitado para OSE, UTE y la habilitación de Bomberos: si las hace SBU, igual hay que contratar la firma (instalador autorizado UTE, sanitario para OSE).</li>
+  <li>Montaje de paneles: con cuadrilla propia hace falta el manitou o la grúa los días de techo; ya está en el rubrado de estructura. Kingspan Bromyros da asistencia técnica de montaje.</li>
+  <li>Lo que se hace propio saca días de la cuadrilla de otras obras: mirá la columna de días.</li></ul></div>
+</section>
+
+<section class="pg" id="p-ped">
+ <div class="noprint"><h2>Pedido de cotización · estructura metálica</h2>
+ <p class="sub">Documento para mandar a talleres: alcance, materiales, protección, planilla de piezas con marcas, croquis y formulario para que coticen todos igual. <a href="SBU-Pedido-cotizacion-estructura-Pedragosa.pdf" target="_blank" rel="noopener">Descargar el PDF</a> · se imprime igual desde el navegador (Ctrl + P).</p></div>
+ <div id="ped"></div>
 </section>
 
 <section class="pg" id="p-loc">
@@ -174,28 +202,60 @@ function locales(n) {
   out.forEach(l => l.num = n - l.i);
   return out;
 }
-function correas(env) { const luz = ENV[env].roof.luz, k = Math.ceil(B.A / luz); const out = []; for (let j = 0; j <= k; j++) out.push(j * B.A / k); return out; }
+function correas(env) { const luz = Math.min(ENV[env].roof.luz, 2.0), k = Math.ceil(B.A / luz);  // máx. 2,0 m: lo pide la succión de viento sobre la correa (verificación)
+  const out = []; for (let j = 0; j <= k; j++) out.push(j * B.A / k); return out; }
 const setPend = () => { B.hN = B.hS + ENV[S.env].roof.pend * B.A; };
 const hRoof = v => B.hS + (B.hN - B.hS) * v / B.A;  // altura inferior de viga en v
 
-/* ---------- acero ---------- */
+/* ---------- acero: planilla de piezas con marcas (sirve para el pedido de cotización) ---------- */
+// Verificación (Python, rigidez 2D): viento UNIT 50-84 Vk 43,9 m/s → q ≈ 1,0 kN/m² a 6 m; D 0,35 + L 0,5 kN/m²; combinaciones 1,2D+1,6L, 1,2D+1,6W, 0,9D+1,6W, cpi +0,2/−0,3
+const VERIF = [
+  ['Columnas IPE 270, base articulada (predimensionado anterior)', '125 %', 'h/78 (55 mm)', 'No verifica: se descarta'],
+  ['Columnas IPE 330, base articulada', '97 %', 'h/110 (39 mm)', 'Resiste pero se mueve demasiado para las vidrieras'],
+  ['Columnas IPE 270, base empotrada', '79 %', 'h/400 (11 mm)', 'Verifica; la línea norte queda débil en sentido longitudinal'],
+  ['Columnas HEA 240, base empotrada + vigas IPE 300 (adoptado)', '63 %', 'h/495 (9 mm)', 'Verifica en los dos sentidos sin cruces en la vidriera'],
+];
+const VERIF2 = [
+  ['Correas C160×60×20×2,5 cada 2,5 m (anterior)', '128 %', 'No verifica'], ['Correas C200×70×25×2,5 continuas cada ≤ 2,0 m + tensores a media luz (adoptado)', '67 %', 'Verifica'],
+  ['Largueros C120 en 5 m (anterior)', '201 %', 'No verifica'], ['Largueros sur C160×60×20×2,5 en 5 m (adoptado)', '96 %', 'Justo: el ingeniero puede pasar a C200'],
+  ['Parantes tubo 100×100×3,2 (anterior)', '117–145 %', 'No verifica'], ['Parantes tubo 120×120×4 (adoptado)', '65–81 %', 'Verifica, con voladizo de 1,7 m de pretil'],
+  ['Viga carrera norte IPE 200 (anterior)', '—', 'Trabaja de costado: no sirve'], ['Viga carrera norte tubo 200×100×6,3 eje fuerte horizontal (adoptado)', '58 %', 'Es la viga de viento de la vidriera'],
+  ['Cruces Ø16 (anterior)', '195 %', 'No verifica'], ['Cruces Ø24 con tensor (adoptado)', '87 %', 'Verifica'],
+  ['Columnas norte HEA 240 en sentido longitudinal (voladizo, eje débil)', '28 %', 'Deriva 15 mm: reemplaza las cruces que no entran en la vidriera'],
+];
+function piezas(env) {
+  const E = ENV[env], hN = B.hS + E.roof.pend * B.A, nC = correas(env).length, P = [];
+  const add = (m, pos, perfil, kgm, n, L, grupo, nota = '') => P.push({ m, pos, perfil, kgm, n, L, kg: kgm * n * L, grupo, nota });
+  add('C1A–C6A', 'Columnas línea A (sur), base empotrada', 'HEA 240', 60.3, 6, B.hS - B.npt, 'lam', 'placa base PB + cartela de nudo');
+  add('C1B–C6B', 'Columnas línea B (norte), base empotrada', 'HEA 240', 60.3, 6, hN - B.npt, 'lam', 'eje débil toma el viento longitudinal');
+  add('V1–V6', 'Vigas de pórtico (rafters)', 'IPE 300', 42.2, 6, 10.4, 'lam', `pendiente ${Math.round(E.roof.pend * 100)} %, nudo rígido con cartela`);
+  add('VCN', 'Viga carrera norte = viga de viento de la vidriera', 'Tubo 200×100×6,3', 28.4, 5, 5.0, 'tub', 'eje fuerte horizontal, 5 tramos entre columnas');
+  add('VCS', 'Viga carrera sur', 'IPE 160', 15.8, 5, 5.0, 'lam');
+  add('CO', `Correas de techo · ${nC} líneas`, 'C 200×70×25×2,5 galv.', 7.5, nC, 25.6 * 1.05, 'gal', 'continuas con solape de 0,6 m sobre pórticos');
+  add('TC', 'Tensores de correas a media luz', 'Redondo Ø10 roscado', 0.62, 5 * (nC - 1), 2.0, 'acc');
+  add('LS', 'Largueros muro sur', 'C 160×60×20×2,5 galv.', 6.1, 4, 25.6, 'gal', 'a +1,5 / +3,0 / +4,5 / +5,9');
+  add('LO', 'Largueros muro oeste', 'C 120×50×15×2 galv.', 4.0, 4, 10.6, 'gal', 'luces de 2,5 m entre parantes PO');
+  add('BN', 'Bastidores de faja, brise y cenefa · norte', 'C 100×50×15×2 galv.', 3.6, 6, 25.6, 'gal', 'a +3,0 / 3,55 / 4,3 / 4,95 / 5,5 / 5,95');
+  add('BE', 'Bastidores · frente este', 'C 100×50×15×2 galv.', 3.6, 6, 10.6, 'gal');
+  add('PN1–PN11', 'Parantes fachada norte (cada 2,5 m)', 'Tubo 120×120×4', 14.6, 11, 6.0 - B.npt, 'tub', 'de platea a +6,00, apoyo en VCN');
+  add('PE1–PE4', 'Parantes frente este', 'Tubo 120×120×4', 14.6, 4, 6.0 - B.npt, 'tub');
+  add('PO1–PO3', 'Parantes muro oeste (frontón)', 'Tubo 120×120×4', 14.6, 3, 6.0 - B.npt, 'tub');
+  add('PI1–PI2', 'Pilastras de esquina (donde baja la cenefa)', 'Tubo 150×150×5', 22.3, 2, 6.0 - B.npt, 'tub');
+  add('MP', 'Montantes de pretil sur', 'Tubo 50×50×2', 2.9, 11, 6.0 - B.hS, 'tub');
+  add('CR', 'Cruces: techo (paños 1-2 y 5-6), muro sur y muro oeste', 'Redondo Ø24 + tensor', 3.55, 1, 4 * 11.2 + 4 * 6.4 + 4 * 6.4, 'acc');
+  add('TP', 'Tornapuntas de ala inferior de vigas (succión)', 'L 50×5', 3.77, 24, 0.9, 'acc');
+  add('PB', 'Placas base 400×450×25 con 4 rigidizadores', 'chapa 25 mm', 43, 12, 1, 'acc', '4 agujeros para pernos Ø24');
+  add('CA', 'Cartelas y chapas de nudo de pórtico', 'chapa 12–16 mm', 22, 12, 1, 'acc');
+  add('CL', 'Clips de correa y largueros', 'chapa 6 mm', 1.5, 6 * nC + 30, 1, 'acc');
+  const sub = P.reduce((t, p) => t + p.kg, 0);
+  P.push({ m: '—', pos: 'Bulonería, soldadura y varios (4 %)', perfil: '—', kgm: 0, n: 0, L: 0, kg: sub * .04, grupo: 'acc' });
+  P.push({ m: 'PA', pos: 'Pernos de anclaje Ø24 L 650 galvanizados, doble tuerca y arandela, con plantilla (se entregan antes del hormigonado)', perfil: 'Ø24 8.8', kgm: 0, n: 48, L: 0, kg: 0, grupo: 'perno' });
+  return P;
+}
 function acero(env) {
-  const nC = correas(env).length, P = [];
-  const add = (pos, perfil, kgm, n, L) => P.push({ pos, perfil, kgm, n, L, kg: kgm * n * L });
-  add('Columnas de pórtico (ejes 1 a 6)', 'IPE 270', 36.1, 12, B.hS + ENV[env].roof.pend * B.A / 2);
-  add('Vigas de pórtico', 'IPE 300', 42.2, 6, 10.4);
-  add('Viga carrera norte (rígida, sobre vidriera)', 'IPE 200', 22.4, 1, 25);
-  add('Viga carrera sur', 'IPE 160', 15.8, 1, 25);
-  add('Correas de techo · ' + nC + ' líneas', 'C 160×60×20×2,5', 6.4, nC, 25.6);
-  add('Largueros de muro y pretil (sur, oeste, este)', 'C 120×50×15×2', 4.6, 1, 25 * 4 + 10 * 4 + 10 * 4);
-  add('Parantes de fachada vidriada', 'Tubo 100×100×3,2', 9.4, 15, 3.6);
-  add('Bastidor de faja, brise y cenefa (norte y este)', 'C 100×50×15×2', 3.9, 4, 30);
-  add('Pilastra de esquina y marco del portal', 'Tubo 100×100×3,2', 9.4, 4, 6.0);
-  add('Montantes de pretil y cenefa', 'Tubo 50×50×2', 2.9, 48, 1.7);
-  add('Cruces de arriostramiento (techo y muro sur)', 'Redondo Ø16 + tensor', 1.58, 1, 4 * 11.2 + 4 * 6.4);
-  const sub = P.reduce((s, p) => s + p.kg, 0);
-  P.push({ pos: 'Placas, cartelas, bulones (8 %)', perfil: '—', kgm: 0, n: 0, L: 0, kg: sub * .08 });
-  return { P, kg: P.reduce((s, p) => s + p.kg, 0) };
+  const P = piezas(env).map(p => ({ ...p, pos: (p.m !== '—' ? p.m + ' · ' : '') + p.pos }));
+  const kgG = P.filter(p => p.grupo === 'gal').reduce((t, p) => t + p.kg, 0);
+  return { P, kg: P.reduce((t, p) => t + p.kg, 0), kgG };
 }
 
 /* ---------- superficies de envolvente ---------- */
@@ -207,44 +267,69 @@ const SUP = (() => {
   return { vid, muro, techo, brise, faja, cenefa, visor, marco };
 })();
 
+/* ---------- paquetes de obra: subcontrato o SBU con cuadrilla propia ---------- */
+// mat = parte de materiales del precio; si lo hace SBU, la mano de obra cuesta ~75 % de lo que cobra un subcontratista (sin su gastos y ganancia)
+const PAQ = {
+  sbu: { n: 'SBU · dirección, obrador e incendio', mat: .6, sub: false, fijo: true },
+  suelos: { n: 'Estudio de suelos', mat: 1, sub: true, fijo: true, quien: 'laboratorio geotécnico' },
+  horm: { n: 'Movimiento de suelo y hormigón', mat: .55, sub: true, quien: 'empresa de hormigón / fundaciones' },
+  est: { n: 'Estructura metálica', mat: .55, sub: true, quien: 'taller metalúrgico (fabrica, pinta y monta)', doc: true },
+  panmat: { n: 'Paneles (material)', mat: 1, sub: false, fijo: true, quien: 'compra directa a Kingspan Bromyros' },
+  panel: { n: 'Montaje de paneles y zinguería', mat: .25, sub: true, quien: 'colocador de paneles', propio: true },
+  alu: { n: 'Aberturas de aluminio', mat: .7, sub: true, quien: 'aluminiero' },
+  herr: { n: 'Herrería y fachada: cenefa, brise, faja, visera, puertas de servicio', mat: .6, sub: true, quien: 'herrería / carpintería' },
+  div: { n: 'Divisorios de steel frame', mat: .5, sub: true, quien: 'cuadrilla de steel frame', propio: true },
+  san: { n: 'Sanitaria', mat: .55, sub: true, quien: 'sanitario', propio: true },
+  ele: { n: 'Eléctrica', mat: .5, sub: true, quien: 'electricista', propio: true },
+  ext: { n: 'Exteriores', mat: .55, sub: true, quien: 'empresa de pavimentos' },
+};
+const PROPIO = { san: true, ele: true, panel: true, div: false };
+
 /* ---------- rubrado ---------- */
 function rubrado(st = S) {
   const { n, env, modo } = st, E = ENV[env], L = locales(n), eq = modo === 'equipado';
   const ac = acero(env), R = [];
   const cat = t => R.push({ cat: t });
-  const it = (t, q, un, pu, nota = '') => R.push({ t, q, un, pu, c: q * pu, nota });
+  let PQ = 'sbu';  // paquete actual: a quién se le contrata
+  const pq = x => PQ = x;
+  const it = (t, q, un, pu, nota = '', mat) => R.push({ t, q, un, pu, c: q * pu, nota, pq: PQ, mat: mat ?? (PAQ[PQ] ? PAQ[PQ].mat : 1) });
   cat('1 · Preliminares y suelo');
-  it('Obrador, cerco de obra, baño químico, replanteo', 1, 'gl', 3800);
-  it('Desmonte 20 cm y relleno de tosca compactada 30 cm', 285, 'm²', 14);
-  cat('2 · Platea de fundación');
-  it('Platea H25 15 cm, malla Ø6 c/15 doble, nylon 200 µ, bomba', 266, 'm²', 78);
-  it('Viga de borde 30 × 40 perimetral', 71, 'ml', 55);
-  it('Engrosamiento bajo columnas 1,2 × 1,2 × 0,5 con pernos', 12, 'u', 210);
+  pq('sbu'); it('Obrador, cerco de obra, baño químico, replanteo', 1, 'gl', 3800);
+  pq('suelos'); it('Estudio de suelos: 2 sondeos SPT o penetrómetro hasta 6 m, con informe', 1, 'gl', 1200);
+  pq('horm'); it('Desmonte 20 cm y relleno de tosca compactada 30 cm al 95 % Proctor', 285, 'm²', 14);
+  cat('2 · Fundación: platea y vigas de fundación');
+  it('Platea H30 15 cm, malla Ø6 c/15 doble, nylon 200 µ, bomba (ambiente marino)', 266, 'm²', 82);
+  it('Vigas de fundación 30 × 60: 6 transversales (ejes 1-6) + 2 longitudinales (A y B)', 6 * 10.6 + 2 * 25.6, 'ml', 95, 'toman el empotramiento de las columnas');
+  it('Nudos bajo columnas: ensanche 1,2 × 1,2 en el cruce de vigas, colocación de pernos con plantilla', 12, 'u', 160);
   it('Terminación llaneado mecánico (queda como piso de local)', 250, 'm²', 4);
   cat('3 · Estructura de acero');
-  it('Acero estructural fabricado, con antióxido y esmalte, montado', Math.round(ac.kg), 'kg', 3.3, 'ver planilla de acero');
-  it('Alquiler de manitou / grúa para montaje', 1, 'gl', 2400);
+  pq('est'); it('Acero laminado y tubos: fabricado, granallado, epoxi + poliuretano (ambiente marino) y montado', Math.round(ac.kg - ac.kgG), 'kg', 3.4, 'ver planilla de piezas');
+  it('Perfiles conformados galvanizados (correas, largueros, bastidores) montados', Math.round(ac.kgG), 'kg', 2.6);
+  it('Pernos de anclaje Ø24 con plantilla (48 u)', 48, 'u', 18);
+  it('Grúa / manitou para el montaje', 1, 'gl', 2400);
   cat('4 · Techo');
-  it(E.roof.nom + ' (material)', SUP.techo, 'm²', E.roof.usd);
-  it('Montaje de techo, fijaciones y sellado de juntas', SUP.techo, 'm²', 10);
-  it('Canaleta interna sur en chapa galvanizada desarrollo 1 m', 25.6, 'ml', 45);
-  it('Babetas y cupertina de pretil', 72, 'ml', 18);
-  it('Bajadas pluviales Ø110 con embudo', 3, 'u', 180);
+  pq('panmat'); it(E.roof.nom + ' (material)', SUP.techo, 'm²', E.roof.usd);
+  pq('panel'); it('Montaje de techo, fijaciones y sellado de juntas', SUP.techo, 'm²', 10, '', 0.15);
+  it('Canaleta interna sur en chapa galvanizada desarrollo 1 m', 25.6, 'ml', 45, '', 0.6);
+  it('Babetas y cupertina de pretil', 72, 'ml', 18, '', 0.6);
+  it('Bajadas pluviales Ø110 con embudo', 3, 'u', 180, '', 0.6);
   cat('5 · Muros y fachada');
-  it(E.wall.nom + ' (material)', SUP.muro, 'm²', E.wall.usd);
-  it('Montaje de muros, remates, esquineros y zócalo', SUP.muro, 'm²', 13);
-  it('Vidrieras de aluminio línea pesada, laminado 5+5 (incluye el portal de piso a dintel)', SUP.vid, 'm²', 240);
+  pq('panmat'); it(E.wall.nom + ' (material)', SUP.muro, 'm²', E.wall.usd);
+  pq('panel'); it('Montaje de muros, remates, esquineros y zócalo', SUP.muro, 'm²', 13, '', 0.3);
+  pq('alu'); it('Vidrieras de aluminio línea pesada, laminado 5+5 (incluye el portal de piso a dintel)', SUP.vid, 'm²', 240);
   it('Puerta vidriada de acceso por local (cerradura y cierrapuertas)', n, 'u', 380);
-  it('Puerta de servicio y escape al pasaje sur, chapa inyectada', n, 'u', 420);
+  pq('herr'); it('Puerta de servicio y escape al pasaje sur, chapa inyectada', n, 'u', 420);
   it('Cenefa de chapa negra plegada: sube en la esquina del frente, recorre el dintel del frente y el lateral norte y baja en la esquina del fondo', SUP.cenefa, 'm²', 65);
   it('Brise de listones de madera tratada (eucalipto grandis)', SUP.brise, 'm²', 120);
   it('Faja de cartelería en chapa negra con soporte', SUP.faja, 'ml', 45);
   it('Visera blanca sobre la faja (chapa plegada, vuelo 60 cm)', SUP.visor, 'ml', 55);
   it('Marco blanco del portal vidriado (chapa plegada)', SUP.marco, 'ml', 45);
-  if (E.roof.trap) it('Cumbrera, tapajuntas y cierres de onda del techo trapezoidal', 25.6, 'ml', 22);
+  pq('panel'); if (E.roof.trap) it('Cumbrera, tapajuntas y cierres de onda del techo trapezoidal', 25.6, 'ml', 22, '', 0.6);
   cat('6 · Divisorios entre locales');
+  pq('div');
   it('Steel frame 100 mm, doble placa de yeso RH por cara y lana de roca', (n - 1) * 10 * 4.4, 'm²', 52, n - 1 + ' divisorio' + (n > 2 ? 's' : ''));
   cat('7 · Sanitaria general (se deja siempre)');
+  pq('san');
   it('Colector cloacal PVC 110 enterrado por el pasaje sur', 34, 'ml', 38);
   it('Cámaras de inspección 60 × 60', 4, 'u', 260);
   it('Previsión universal por módulo: ramal 110 + 40 bajo platea y punto de agua', 5, 'u', 320, 'uno por módulo de 5 m');
@@ -253,31 +338,36 @@ function rubrado(st = S) {
   it('Pluviales enterrados a cuneta', 1, 'gl', 1400);
   it('Cámara separadora de grasas (previsión gastronomía)', 1, 'u', 650);
   cat('8 · Eléctrica general (se deja siempre)');
+  pq('ele');
   it('Gabinete de medidores UTE en el frente, una medición por local', 1, 'gl', 1800 + 450 * n);
   it('Caños vacíos y alimentación a cada local', n, 'u', 380);
   it('Puesta a tierra y tablero de servicios comunes', 1, 'gl', 1300);
   it('Iluminación de plaza, estacionamiento y cartelería', 1, 'gl', 3000);
   if (eq) {
     cat('9 · Equipamiento por local (entrega equipada)');
-    it('Baño accesible UNIT 200 completo (inodoro, lavatorio, barras, cerámica, extractor)', n, 'u', 3200);
-    it('Kitchenette (mesada con pileta y bajo mesada)', n, 'u', 1500);
-    it('Tablero del local, circuitos e iluminación LED', 250, 'm²', 14);
+    pq('san'); it('Baño accesible UNIT 200 completo (inodoro, lavatorio, barras, cerámica, extractor)', n, 'u', 3200, '', 0.6);
+    it('Kitchenette (mesada con pileta y bajo mesada)', n, 'u', 1500, '', 0.7);
+    pq('ele'); it('Tablero del local, circuitos e iluminación LED', 250, 'm²', 14);
     it('Preinstalación de aire acondicionado (cañería, desagüe, toma, base en techo)', n, 'u', 360);
   } else {
     cat('9 · Por local (entrega en cáscara)');
+    pq('ele');
     it('Tablero de obra por local y una boca de luz', n, 'u', 420);
     it('Tapones y señalización de previsiones', n, 'u', 60);
   }
   cat('10 · Seguridad contra incendio');
+  pq('sbu');
   it('Extintores, luces de emergencia y señalización (general)', 1, 'gl', 1200);
   it('Idem por local', n, 'u', 250);
   cat('11 · Exteriores');
+  pq('ext');
   it('Estacionamiento en hormigón 12 cm con demarcación', 240, 'm²', 32);
   it('Plaza peatonal en baldosa de hormigón (como el render)', 190, 'm²', 38);
   it('Vereda municipal', 52, 'm²', 30);
   it('Canteros y jardinería', 1, 'gl', 1200);
   it('Patio de servicio en pedregullo', 110, 'm²', 8);
   cat('12 · Cierre de obra');
+  pq('sbu');
   it('Andamios, fletes de paneles y limpieza final', 1, 'gl', 2900);
   const costo = R.filter(r => !r.cat).reduce((s, r) => s + r.c, 0);
   const venta = rd(costo * K);
@@ -296,7 +386,7 @@ function rubrado(st = S) {
 const ivaK = () => S.iva ? 1.22 : 1;
 
 /* ================= UI ================= */
-const TABS = [['p-proy', 'Proyecto'], ['p-impl', 'Implantación'], ['p-planta', 'Planta'], ['p-fach', 'Fachadas'], ['p-est', 'Estructura'], ['p-3d', '3D'], ['p-env', 'Paneles'], ['p-rub', 'Rubrado'], ['p-loc', 'Locales e instalaciones'], ['p-rent', 'Rentabilidad']];
+const TABS = [['p-proy', 'Proyecto'], ['p-impl', 'Implantación'], ['p-planta', 'Planta'], ['p-fach', 'Fachadas'], ['p-est', 'Estructura'], ['p-3d', '3D'], ['p-env', 'Paneles'], ['p-rub', 'Rubrado'], ['p-sub', 'Subcontratos'], ['p-ped', 'Cotizar estructura'], ['p-loc', 'Locales e instalaciones'], ['p-rent', 'Rentabilidad']];
 const $ = id => document.getElementById(id);
 $('tabs').innerHTML = TABS.map(([id, t]) => `<button data-p="${id}">${t}</button>`).join('');
 function show(id) { document.querySelectorAll('.pg').forEach(p => p.classList.toggle('on', p.id === id)); document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.p === id)); history.replaceState(null, '', '#' + id.slice(2)); if (id === 'p-3d') v3.start(); }
@@ -512,12 +602,14 @@ function dEst() {
   { const W = 31, H = 17, sc = 30, t = T(3, 4.2, sc, H); let s = '';
     s += R_(t, -.3, -.3, 25.3, 10.3, 'fill="#e9e5dc" stroke="#24211d" stroke-width="1.2"');
     s += R_(t, -.3, -.3, 25.3, 10.3, 'fill="none" stroke="#24211d" stroke-width="7" stroke-opacity=".15"');
-    FR.forEach(u => [0, 10].forEach(v => { s += R_(t, u - .6, v - .6, u + .6, v + .6, 'fill="#cfc6b6" stroke="#24211d" stroke-dasharray="4 3" stroke-width=".8"'); s += R_(t, u - .15, v - .15, u + .15, v + .15, 'fill="#b5622a"'); }));
+    FR.forEach(u => s += R_(t, u - .15, -.15, u + .15, 10.15, 'fill="#cfc6b6" stroke="#24211d" stroke-dasharray="5 3" stroke-width=".8"'));
+    [0, 10].forEach(v => s += R_(t, -.15, v - .15, 25.15, v + .15, 'fill="#cfc6b6" stroke="#24211d" stroke-dasharray="5 3" stroke-width=".8"'));
+    FR.forEach(u => [0, 10].forEach(v => { s += R_(t, u - .6, v - .6, u + .6, v + .6, 'fill="#bdb3a0" stroke="#24211d" stroke-width=".8"'); s += R_(t, u - .2, v - .225, u + .2, v + .225, 'fill="#b5622a"'); }));
     STUB.forEach(u => s += `<circle cx="${t.X(u)}" cy="${t.Y(.9)}" r="5" fill="#8b5a2b"/>`);
     s += L_(t, -.3, -1.5, 25.3, -1.5, 'stroke="#8b5a2b" stroke-width="2.5"');
     STUB.forEach(u => s += L_(t, u, .9, u, -1.5, 'stroke="#8b5a2b" stroke-width="1.6"'));
     s += TX(t, 12.5, -2.4, 'colector cloacal Ø110 por el pasaje sur (fuera de la platea)', `font-size="10" fill="#8b5a2b" ${FT}`);
-    s += TX(t, 12.5, 6, 'PLATEA H25 · 15 cm · malla Ø6 c/15 doble', `font-size="12" font-weight="700" ${FT}`) + TX(t, 12.5, 5, 'viga de borde 30 × 40 · engrosamiento 1,2 × 1,2 × 0,5 bajo cada columna', `font-size="10" ${FT}`) + TX(t, 12.5, 4.2, 'pernos 4 Ø20 · placa 300 × 300 × 16 · NPT +0,15', `font-size="10" ${FT}`);
+    s += TX(t, 7.5, 6.3, 'PLATEA H30 · 15 cm · malla Ø6 c/15 doble', `font-size="12" font-weight="700" ${FT}`) + TX(t, 7.5, 5.4, '8 vigas de fundación 30 × 60 (- - -): 6 transversales + 2 longitudinales', `font-size="10" ${FT}`) + TX(t, 7.5, 4.6, 'nudo 1,2 × 1,2 bajo cada columna · 4 pernos Ø24 · placa 400 × 450 × 25', `font-size="10" ${FT}`) + TX(t, 7.5, 3.8, 'tosca compactada 30 cm al 95 % Proctor · NPT +0,15', `font-size="10" ${FT}`);
     FR.forEach((u, k) => s += TX(t, u, 11.3, k + 1, `font-size="11" font-weight="700" fill="#b5622a" ${FT}`));
     s += cotaH(t, -.3, 25.3, -3.4, '25,60') + cotaV(t, -.3, 10.3, -1.6, '10,60');
     SV($('svFund'), W, H, s, sc); }
@@ -529,8 +621,9 @@ function dEst() {
     s += L_(t, -.3, -.15, 25.3, -.15, 'stroke="#7fb3c9" stroke-width="6"');
     [2.5, 12.5, 22.5].forEach(u => s += `<circle cx="${t.X(u)}" cy="${t.Y(-.15)}" r="6" fill="#2a8a5a"/>`);
     s += TX(t, 12.5, -1.1, 'canaleta interna sur · 3 bajadas Ø110 ●', `font-size="10" fill="#2a8a5a" ${FT}`);
-    s += TX(t, 12.5, 10.9, `${cs.length} líneas de correas C160 · separación ${f2(cs[1] - cs[0])} m (${ENV[S.env].roof.nom})`, `font-size="11" font-weight="700" ${FT}`);
-    s += TX(t, 22.5, 2, 'cruces Ø16', `font-size="9" fill="#2f6f86" ${FT}`);
+    s += TX(t, 12.5, 10.9, `${cs.length} líneas de correas C200×70×25×2,5 continuas · cada ${f2(cs[1] - cs[0])} m · tensores Ø10 a media luz`, `font-size="11" font-weight="700" ${FT}`);
+    FR.slice(0, 5).forEach(u => s += L_(t, u + 2.5, 0, u + 2.5, 10, 'stroke="#888" stroke-width=".8" stroke-dasharray="2 3"'));
+    s += TX(t, 22.5, 2, 'cruces Ø24', `font-size="9" fill="#2f6f86" ${FT}`) + TX(t, 12.5, 9.6, 'VCN tubo 200×100×6,3 (viga de viento de la vidriera)', `font-size="9" fill="#b5622a" ${FT}`);
     FR.forEach((u, k) => s += TX(t, u, -2.3, k + 1, `font-size="11" font-weight="700" fill="#b5622a" ${FT}`));
     s += cotaH(t, 0, 25, -3.4, '5 × 5,00 = 25,00') + cotaV(t, 0, 10, -1.6, '10,00');
     s += TX(t, 26, 9.3, 'B (norte)', `font-size="10" ${FT}`, 'start') + TX(t, 26, .2, 'A (sur)', `font-size="10" ${FT}`, 'start');
@@ -541,19 +634,33 @@ function dEst() {
     s += R_(t, -.135, 0, .135, B.hS, 'fill="#b5622a"') + R_(t, 9.865, 0, 10.135, B.hN, 'fill="#b5622a"');
     s += `<polygon points="${t.X(-.135)},${t.Y(B.hS)} ${t.X(10.135)},${t.Y(B.hN)} ${t.X(10.135)},${t.Y(B.hN + .3)} ${t.X(-.135)},${t.Y(B.hS + .3)}" fill="#c9773d"/>`;
     s += `<polygon points="${t.X(.135)},${t.Y(B.hS)} ${t.X(1.4)},${t.Y(B.hS + .038)} ${t.X(.135)},${t.Y(B.hS - .45)}" fill="#b5622a"/><polygon points="${t.X(9.865)},${t.Y(B.hN)} ${t.X(8.6)},${t.Y(B.hN - .038)} ${t.X(9.865)},${t.Y(B.hN - .45)}" fill="#b5622a"/>`;
-    s += TX(t, 5, B.hS + .75, `IPE 300 · L = 10,40 · pendiente ${Math.round(ENV[S.env].roof.pend * 100)} %`, `font-size="11" ${FT}`) + TX(t, .5, 2, 'IPE 270', `font-size="10" ${FT}`, 'start') + TX(t, 9.5, 2, 'IPE 270', `font-size="10" ${FT}`, 'end');
-    s += TX(t, 1.2, B.hS - .9, 'cartela', `font-size="9" fill="#666" ${FT}`, 'start') + TX(t, 5, -.95, 'unión rígida con cartela en ambos nudos · base articulada con 4 pernos Ø20', `font-size="9" fill="#666" ${FT}`);
+    s += TX(t, 5, B.hS + .75, `IPE 300 · L = 10,40 · pendiente ${Math.round(ENV[S.env].roof.pend * 100)} %`, `font-size="11" ${FT}`) + TX(t, .5, 2, 'HEA 240', `font-size="10" ${FT}`, 'start') + TX(t, 9.5, 2, 'HEA 240', `font-size="10" ${FT}`, 'end');
+    s += TX(t, 1.2, B.hS - .9, 'cartela', `font-size="9" fill="#666" ${FT}`, 'start') + TX(t, 5, -.95, 'nudos rígidos con cartela · bases EMPOTRADAS: placa 400×450×25 con rigidizadores y 4 pernos Ø24 a viga de fundación 30×60', `font-size="9" fill="#666" ${FT}`);
     s += cotaV(t, 0, B.hS, -1.2, '4,00') + cotaV(t, 0, B.hN, 11.3, f2(B.hN)) + cotaH(t, 0, 10, 5.7, '10,00');
     SV($('svPort'), W, H, s, sc); }
-  $('tAcero').innerHTML = `<table><tr><th>Posición</th><th>Perfil</th><th class="n">Cant.</th><th class="n">Largo</th><th class="n">kg</th></tr>` + ac.P.map(p => `<tr><td>${p.pos}</td><td>${p.perfil}</td><td class="n">${p.n || ''}</td><td class="n">${p.L ? f2(p.L) : ''}</td><td class="n">${Math.round(p.kg).toLocaleString('es-UY')}</td></tr>`).join('') + `<tr class="tt"><td colspan="4">Total acero · ${f1(ac.kg / 250)} kg/m²</td><td class="n">${Math.round(ac.kg).toLocaleString('es-UY')}</td></tr></table>`;
+  $('tVerif').innerHTML = `<table><tr><th>Pórtico (viento del norte y del sur, 0,9D+1,6W)</th><th class="n">Uso</th><th class="n">Deriva en servicio</th><th>Resultado</th></tr>` + VERIF.map((r, i) => `<tr${i === VERIF.length - 1 ? ' class="best"' : ''}><td>${r[0]}</td><td class="n">${r[1]}</td><td class="n">${r[2]}</td><td>${r[3]}</td></tr>`).join('') + `</table><table style="margin-top:10px"><tr><th>Pieza</th><th class="n">Uso</th><th>Resultado</th></tr>` + VERIF2.map(r => `<tr${/adoptado/.test(r[0]) ? ' class="best"' : ''}><td>${r[0]}</td><td class="n">${r[1]}</td><td>${r[2]}</td></tr>`).join('') + `</table>`;
+  $('tSuelo').innerHTML = `<table><tr><th>Qué</th><th>Valor</th><th>Comentario</th></tr>` + [
+    ['Suelo esperado', 'arena fina, de duna, medianamente densa', 'zona de médanos fijados; sin estudio, se toma prudente'],
+    ['Tensión admisible supuesta', '1,0 kg/cm² (100 kPa)', 'confirmar con 2 sondeos SPT o penetrómetro hasta 6 m (incluido en el rubrado)'],
+    ['Presión real bajo la platea', '≈ 0,06 kg/cm² en promedio; ≈ 0,2 kg/cm² en los nudos con viento', 'el edificio es liviano: la capacidad del suelo sobra 5 veces'],
+    ['Lo que sí manda', 'asentamiento diferencial y lavado de la arena', 'compactar tosca al 95 % Proctor modificado, platea continua y pluviales a cuneta (no infiltrar junto a la platea)'],
+    ['Arranque por viento (succión del techo)', '43 kN mayorados por columna', 'lo resiste el peso del nudo + vigas + platea tributaria ≈ 88 kN × 0,9 = 79 kN: verifica'],
+    ['Empuje horizontal en la base', '53 kN mayorados por columna', 'lo toma la viga de fundación transversal (riostra A-B) y el rozamiento de la platea'],
+    ['Momento de empotramiento', '≈ 100 kNm mayorado por columna', 'lo toma la viga de fundación 30 × 60 con 4 Ø16 arriba y 4 Ø16 abajo, estribos Ø8 c/15'],
+    ['Vigas de riostra / fundación', '8 vigas 30 × 60 (115 ml)', '6 transversales, una por pórtico, uniendo las columnas A y B; 2 longitudinales en las líneas A y B'],
+    ['Espesor de platea', '15 cm con malla doble Ø6 c/15', 'alcanza para locales (5 kN/m²); en los nudos, ensanche de 1,2 × 1,2 m'],
+    ['Hormigón', 'H30, recubrimiento 3 cm en platea y 4 cm en vigas', 'ambiente marino (a menos de 2 km del mar): más compacto y durable que H25. Pernos y perfiles conformados galvanizados'],
+  ].map(r => `<tr><td>${r[0]}</td><td><b>${r[1]}</b></td><td class="note">${r[2]}</td></tr>`).join('') + `</table>`;
+  $('tAcero').innerHTML = `<table><tr><th>Marca</th><th>Posición</th><th>Perfil</th><th class="n">Cant.</th><th class="n">Largo</th><th class="n">kg</th></tr>` + piezas(S.env).map(p => `<tr><td><b>${p.m}</b></td><td>${p.pos}</td><td>${p.perfil}</td><td class="n">${p.n || ''}</td><td class="n">${p.L > 1 ? f2(p.L) : ''}</td><td class="n">${p.kg ? Math.round(p.kg).toLocaleString('es-UY') : ''}</td></tr>`).join('') + `<tr class="tt"><td colspan="5">Total acero · ${f1(ac.kg / 250)} kg/m²</td><td class="n">${Math.round(ac.kg).toLocaleString('es-UY')}</td></tr></table>`;
   $('crit').innerHTML = [
     'Pórticos cada 5 m con luz libre de 10 m: sin columnas adentro de los locales, la división se cambia sin tocar la estructura.',
-    'La fachada norte es toda vidrio, así que ahí no puede haber cruces. La estabilidad longitudinal la dan las cruces del muro sur y del techo (paños extremos), más la viga carrera norte rígida sobre la vidriera.',
-    'La vidriera no carga: los parantes de tubo 100 × 100 cada 2,5 m toman el viento y sostienen la faja de cartel y el brise. Los perfiles de aluminio quedan libres para dilatar.',
-    `Correas según el panel: ${Object.entries(ENV).map(([k, e]) => k + ' cada ' + f2(B.A / Math.ceil(B.A / e.roof.luz)) + ' m').join(' · ')}. El Isoroof grueso ahorra líneas de correas.`,
+    'Columnas HEA 240 con base empotrada: con base articulada el pórtico se movía 5 cm con viento, y las vidrieras no lo aguantan. Empotradas se mueven 9 mm (h/495).',
+    'La fachada norte es toda vidrio, así que ahí no puede haber cruces. En sentido longitudinal, las columnas norte (HEA 240 empotradas también en su eje débil) trabajan en voladizo; en el sur hay cruces Ø24, y en el techo, cruces en los paños extremos que hacen de viga de viento para los testeros.',
+    'La vidriera no carga: los parantes de tubo 120 × 120 × 4 cada 2,5 m van de la platea a +6,00, toman el viento y sostienen faja, brise y cenefa. Arriba apoyan en la viga carrera norte (tubo 200 × 100 × 6,3 acostado), que es la viga de viento de la fachada.',
+    'Correas C200 continuas cada 2,0 m como máximo, con tensores a media luz y tornapuntas al ala inferior de las vigas: con succión de viento se comprime el ala de abajo y hay que arriostrarla.',
     'Techo hacia el sur, a una canaleta interna detrás del pretil: 3 % con panel engrafado (Isodec) o 7 % con Isoroof trapezoidal, que es el mínimo que pide Kingspan Bromyros para ese panel. En los dos casos desde la plaza no se ven ni el techo ni las bajadas, como en el render. Los equipos de aire quedan escondidos detrás del pretil.',
-    'Viento: Punta del Este es zona de viento fuerte (UNIT 50-84). El ingeniero verifica succión en el techo y en el pretil, y la fijación del panel (tornillos por correa).',
-    'Platea con engrosamiento bajo columnas: no hace falta excavar zapatas en suelo arenoso; antes de hormigonar se dejan todas las previsiones sanitarias (ver pestaña Locales).',
+    'Viento según UNIT 50-84: velocidad característica 43,9 m/s (zona a menos de 25 km de la costa), presión ≈ 1,0 kN/m² a 6 m. Coeficientes: barlovento 0,8, sotavento −0,5, techo −0,9, pretil 1,5, presión interior ±0,2/0,3. Es un predimensionado: el ingeniero hace el cálculo final y firma.',
+    'Fundación: platea de 15 cm con una grilla de 8 vigas de fundación 30 × 60 que toman el empotramiento de las columnas y el empuje horizontal del pórtico. Ver la verificación de suelo abajo.',
   ].map(x => `<li>${x}</li>`).join('');
 }
 
@@ -641,6 +748,139 @@ function renderTablas() {
   $('tModo').innerHTML = `<table><tr><th>Ítem</th><th>Cáscara</th><th>Equipado</th></tr>` + rowsM.map(r => `<tr><td>${r[0]}</td><td>${r[1]}</td><td>${r[2]}</td></tr>`).join('') + `</table>`;
 }
 
+/* ================= SUBCONTRATOS ================= */
+const CUAD = 392; // USD por día de cuadrilla propia (1 of. esp. + 1 of. + 2 peones, laudo + BPS de obra)
+function renderSub() {
+  const k = ivaK(), r = rubrado(), lbl = S.iva ? 'con IVA' : 'sin IVA';
+  $('chkProp').innerHTML = Object.entries(PAQ).filter(([, p]) => p.propio).map(([key, p]) => `<label style="margin-right:14px"><input type="checkbox" data-pq="${key}" ${PROPIO[key] ? 'checked' : ''}> ${p.n}</label>`).join('');
+  const A = {}; r.R.filter(x => !x.cat).forEach(x => { const a = A[x.pq] || (A[x.pq] = { c: 0, mat: 0, items: [] }); a.c += x.c; a.mat += x.c * x.mat; a.items.push(x.t.split(' (')[0].split(':')[0]); });
+  let cReal = 0, rows = '';
+  Object.entries(PAQ).forEach(([key, p]) => { const a = A[key]; if (!a) return;
+    const mo = a.c - a.mat, prop = a.mat + mo * .75, esProp = !!(p.propio && PROPIO[key]); cReal += esProp ? prop : a.c;
+    const dias = p.propio ? Math.ceil(mo * .75 / CUAD) : null;
+    rows += `<tr${esProp ? ' class="best"' : ''}><td><b>${p.n}</b><div class="note">${[...new Set(a.items)].slice(0, 4).join(' · ')}${a.items.length > 4 ? '…' : ''}</div></td><td>${esProp ? '<b>SBU, cuadrilla propia</b>' : (p.quien || 'SBU')}${p.doc ? ' · <a href="#ped" onclick="__jcg.show(\'p-ped\');return false">pedido de cotización</a>' : ''}</td><td class="n">${u$(a.c * k)}</td><td class="n">${u$(a.mat * k)}</td><td class="n">${p.propio ? u$(prop * k) : '—'}</td><td class="n">${p.propio ? '<b class="ok">−' + u$((a.c - prop) * k) + '</b>' : '—'}</td><td class="n">${dias != null ? dias + ' días' : '—'}</td></tr>`; });
+  const gSub = r.venta - r.costo, gProp = r.venta - cReal;
+  $('kSub').innerHTML = [[u$(r.venta * k), 'precio de obra al cliente ' + lbl], [u$(r.costo * k), 'costo con todo subcontratado'], [u$(cReal * k), 'costo con lo propio marcado'], [u$(gSub), 'ganancia SBU todo subcontratado (sin IVA)'], [u$(gProp), 'ganancia SBU con lo propio (sin IVA)'], [f1(gProp / r.venta * 100) + ' %', 'margen sobre el precio']].map(([v, t]) => `<div><b>${v}</b><span>${t}</span></div>`).join('');
+  $('tSub').innerHTML = `<table><tr><th>Paquete</th><th>Quién</th><th class="n">Precio subcontrato</th><th class="n">de eso, materiales</th><th class="n">Si lo hace SBU</th><th class="n">Ahorro</th><th class="n">Cuadrilla</th></tr>${rows}<tr class="tt"><td colspan="2">Costo real de la obra</td><td class="n">${u$(r.costo * k)}</td><td></td><td class="n">${u$(cReal * k)}</td><td class="n ok">−${u$((r.costo - cReal) * k)}</td><td></td></tr></table><p class="note">Los precios de subcontrato son los del rubrado (costo directo con mano de obra). Antes de decidir, conviene pedir dos cotizaciones por paquete: el de estructura metálica ya tiene su pedido armado.</p>`;
+}
+document.addEventListener('change', e => { if (e.target.dataset && e.target.dataset.pq) { PROPIO[e.target.dataset.pq] = e.target.checked; renderSub(); } });
+
+/* ================= PEDIDO DE COTIZACIÓN · ESTRUCTURA METÁLICA ================= */
+function dPed() {
+  const E = ENV[S.env], P = piezas(S.env), cs = correas(S.env), hN = B.hS + E.roof.pend * B.A, kg = P.reduce((t, p) => t + p.kg, 0), hoy = new Date().toLocaleDateString('es-UY');
+  const pie = n => `<div class="pie"><span>Smart Building Uruguay · Ramiro Portugau, director de obra · 098 526 226 · smartbuildinguruguay@gmail.com</span><span>Pedido de cotización estructura · ${n}</span></div>`;
+  const cab = `<div class="meta"><span><b>SBU · Pedido de cotización</b> · Estructura metálica · Locales comerciales Avda. Pedragosa Sierra, padrón 10596, Punta del Este</span><span>${hoy}</span></div>`;
+  const grupos = [['lam', 'Perfiles laminados (ASTM A36 o A572 Gr 50)'], ['tub', 'Tubos estructurales (ASTM A500 Gr B)'], ['gal', 'Perfiles conformados galvanizados (Z275 mínimo; Z350 preferible por ambiente marino)'], ['acc', 'Accesorios, chapas y barras'], ['perno', 'Pernos de anclaje']];
+  const tabla = grupos.map(([g, t]) => { const L = P.filter(p => p.grupo === g); if (!L.length) return ''; const sk = L.reduce((a, p) => a + p.kg, 0); return `<tr class="cat"><td colspan="6">${t}${sk ? ' · ' + Math.round(sk).toLocaleString('es-UY') + ' kg' : ''}</td></tr>` + L.map(p => `<tr><td><b>${p.m}</b></td><td>${p.pos}${p.nota ? `<div class="note">${p.nota}</div>` : ''}</td><td>${p.perfil}</td><td class="n">${p.n || ''}</td><td class="n">${p.L > 1 ? f2(p.L) : ''}</td><td class="n">${p.kg ? Math.round(p.kg).toLocaleString('es-UY') : ''}</td></tr>`).join(''); }).join('');
+  const form = [['1', 'Fabricación de perfiles laminados y tubos', 'kg', Math.round(P.filter(p => /lam|tub/.test(p.grupo)).reduce((a, p) => a + p.kg, 0))], ['2', 'Perfiles conformados galvanizados', 'kg', Math.round(P.filter(p => p.grupo === 'gal').reduce((a, p) => a + p.kg, 0))], ['3', 'Accesorios: placas, cartelas, cruces, tensores, tornapuntas, bulonería', 'kg', Math.round(P.filter(p => p.grupo === 'acc' || p.m === '—').reduce((a, p) => a + p.kg, 0))], ['4', 'Pernos de anclaje Ø24 con plantillas (entrega antes del hormigonado)', 'u', 48], ['5', 'Protección: granallado Sa 2½ + epoxi zinc 75 µm + epoxi 100 µm + poliuretano 50 µm', 'gl', ''], ['5b', 'Alternativa: galvanizado en caliente de laminados y tubos', 'gl', ''], ['6', 'Planos de taller y memoria de soldaduras', 'gl', ''], ['7', 'Transporte a obra (Punta del Este)', 'gl', ''], ['8', 'Montaje con grúa o manitou, nivelación, grouting de placas y retoques de pintura', 'gl', ''], ['9', 'Precio unitario por kg adicional / a descontar (para ajustes del cálculo final)', 'USD/kg', '']];
+  let h = '';
+  // ---- hoja 1
+  h += `<div class="hoja">${cab}<h1>Estructura metálica · pedido de cotización</h1>
+  <p>Edificio de locales comerciales de una planta, 25,00 × 10,00 m (250 m²), sobre Avda. Pedragosa Sierra, Punta del Este (padrón 10596). Seis pórticos de alma llena cada 5,00 m, luz 10,00 m, columnas empotradas en vigas de fundación, techo de panel sándwich ${E.roof.nom} con pendiente ${Math.round(E.roof.pend * 100)} %, muros de panel y fachada vidriada al norte con parantes hasta +6,00 que sostienen faja, brise y cenefa. La misma obra se repetirá después en los padrones 10597 y 10598: cotizar también el precio por edificio repetido.</p>
+  <h2>1 · Qué se pide cotizar</h2><ul class="c">
+   <li>Fabricación completa según la planilla de piezas y los croquis adjuntos, con planos de taller a cargo del taller, aprobados por SBU antes de fabricar.</li>
+   <li>Protección anticorrosiva para ambiente marino (a menos de 2 km del mar): laminados y tubos granallados Sa 2½, epoxi rico en zinc 75 µm, epoxi intermedio 100 µm y poliuretano 50 µm (total ≈ 225 µm). Cotizar aparte la alternativa en galvanizado en caliente. Conformados galvanizados de fábrica; tornillería galvanizada.</li>
+   <li>Provisión de 48 pernos de anclaje Ø24 grado 8.8 galvanizados, L 650 mm, con doble tuerca, arandela y plantillas de posicionado, entregados <b>antes</b> del hormigonado de las vigas de fundación.</li>
+   <li>Transporte, montaje con equipo propio (grúa o manitou), aplomado, nivelación, grouting de placas base con mortero sin contracción y retoques de pintura.</li>
+   <li>Personal con BPS y seguro de accidentes del BSE al día, plan de seguridad y trabajo en altura según Decreto 125/014.</li></ul>
+  <h2>2 · Materiales y ejecución</h2><table><tr><td>Perfiles laminados</td><td>ASTM A36 (fy 250 MPa) o A572 Gr 50</td></tr><tr><td>Tubos</td><td>ASTM A500 Gr B</td></tr><tr><td>Conformados</td><td>acero galvanizado Z275 mínimo, Z350 preferible</td></tr><tr><td>Soldadura</td><td>AWS D1.1, electrodo E70XX; filetes según planos de taller; uniones de obra abulonadas</td></tr><tr><td>Bulones</td><td>grado 8.8 galvanizados, con arandela</td></tr><tr><td>Tolerancias</td><td>aplome de columnas h/500; posición de pernos ± 3 mm (con plantilla)</td></tr><tr><td>Colores</td><td>estructura interior: blanco o gris claro; parantes y bastidores de fachada: grafito (quedan detrás del vidrio)</td></tr></table>
+  <h2>3 · Cargas y criterio de cálculo</h2><p>Predimensionado de SBU con viento según UNIT 50-84 (velocidad característica 43,9 m/s, costa), peso propio 0,35 kN/m² y sobrecarga de techo 0,5 kN/m², verificado por modelo de pórtico (uso máximo 63 %, deriva h/495). <b>El cálculo definitivo lo hace y firma el ingeniero de la obra; las secciones pueden ajustarse.</b> Por eso se pide el precio por kg del renglón 9.</p>
+  <h2>4 · Plazos</h2><p>Montaje previsto en las semanas 4 a 6 de obra, después de la platea. Indicar plazo de fabricación desde la aprobación de los planos de taller y días de montaje.</p>${pie('1/5')}</div>`;
+  // ---- hoja 2: planilla
+  h += `<div class="hoja">${cab}<h2 style="margin-top:0">5 · Planilla de piezas (marcas de los croquis)</h2><table><tr><th>Marca</th><th>Pieza</th><th>Perfil</th><th class="n">Cant.</th><th class="n">Largo m</th><th class="n">kg</th></tr>${tabla}<tr class="tt"><td colspan="5">Total estimado · ${f1(kg / 250)} kg/m² de planta</td><td class="n">${Math.round(kg).toLocaleString('es-UY')}</td></tr></table><p class="note">Largos teóricos entre ejes o niveles; los de corte los define el taller en sus planos. Correas con 5 % de solape. Pendiente del techo ${Math.round(E.roof.pend * 100)} %: columnas sur ${f2(B.hS - B.npt)} m, norte ${f2(hN - B.npt)} m desde la cara superior de la placa.</p>${pie('2/5')}</div>`;
+  // ---- hoja 3: croquis planta y pórtico
+  h += `<div class="hoja">${cab}<h2 style="margin-top:0">6 · Croquis: planta de estructura y pórtico tipo</h2><svg id="pk1"></svg><svg id="pk2"></svg>${pie('3/5')}</div>`;
+  // ---- hoja 4: fachadas y detalles
+  h += `<div class="hoja">${cab}<h2 style="margin-top:0">7 · Croquis: fachada norte, muro sur y muro oeste</h2><svg id="pk3"></svg><svg id="pk4"></svg><h2>8 · Detalles tipo</h2><svg id="pk5"></svg>${pie('4/5')}</div>`;
+  // ---- hoja 5: formulario
+  h += `<div class="hoja">${cab}<h2 style="margin-top:0">9 · Formulario de cotización (completar)</h2><p>Empresa: ____________________________ RUT: ______________ Contacto: ______________________ Tel.: ______________</p>
+  <table class="fill"><tr><th>#</th><th>Renglón</th><th>Unidad</th><th class="n">Cantidad</th><th class="n">Precio unitario USD</th><th class="n">Total USD</th></tr>${form.map(f => `<tr><td>${f[0]}</td><td>${f[1]}</td><td>${f[2]}</td><td class="n">${f[3] !== '' ? Number(f[3]).toLocaleString('es-UY') : ''}</td><td></td><td></td></tr>`).join('')}<tr class="tt"><td></td><td colspan="4">Total sin IVA (renglones 1 a 8, con la protección elegida)</td><td></td></tr><tr><td></td><td colspan="4">IVA</td><td></td></tr><tr class="tt"><td></td><td colspan="4">Total con IVA</td><td></td></tr></table>
+  <table style="margin-top:4mm" class="fill"><tr><td style="width:45%">Plazo de fabricación desde aprobación de planos</td><td></td></tr><tr><td>Días de montaje en obra y equipo que usa</td><td></td></tr><tr><td>Precio por cada edificio repetido (10597 y 10598)</td><td></td></tr><tr><td>Forma de pago</td><td></td></tr><tr><td>Validez de la oferta</td><td></td></tr><tr><td>Excluye / observaciones</td><td></td></tr></table>
+  <h3>Condiciones</h3><ul class="c"><li>Cotizar sobre esta planilla; si el taller propone otra solución (por ejemplo, columnas o correas distintas), cotizarla aparte como alternativa.</li><li>La visita a obra se coordina con SBU. Fundación, platea y hormigonado de pernos los hace otra empresa: el taller entrega pernos y plantillas, y verifica su posición antes del montaje.</li><li>Garantía de pintura y de soldaduras por escrito.</li><li>Enviar la oferta a smartbuildinguruguay@gmail.com o por WhatsApp al 098 526 226.</li></ul>${pie('5/5')}</div>`;
+  $('ped').innerHTML = h;
+  dPedCroquis(hN, cs);
+}
+function dPedCroquis(hN, cs) {
+  const lab = (t, x, y, txt, fs = 10, col = '#b5622a', anc = 'middle') => TX(t, x, y, txt, `font-size="${fs * 1.35}" font-weight="700" fill="${col}" ${FT}`, anc);
+  { // planta de estructura
+    const W = 32, H = 17.5, sc = 30, t = T(3.2, 4.6, sc, H); let s = '';
+    s += R_(t, -.3, -.3, 25.3, 10.3, 'fill="#fbf7ef" stroke="#999" stroke-dasharray="4 3"');
+    cs.forEach(v => s += L_(t, -.3, v, 25.3, v, 'stroke="#777" stroke-width="1.4"'));
+    for (let u = 2.5; u < 25; u += 5) s += L_(t, u, 0, u, 10, 'stroke="#2f6f86" stroke-width=".9" stroke-dasharray="2 3"');
+    [[0, 5], [20, 25]].forEach(([a, b]) => s += L_(t, a, 0, b, 10, 'stroke="#2f6f86" stroke-width="1.3"') + L_(t, a, 10, b, 0, 'stroke="#2f6f86" stroke-width="1.3"'));
+    FR.forEach((u, i) => { s += L_(t, u, 0, u, 10, 'stroke="#b5622a" stroke-width="5"'); s += lab(t, u + .35, 5.4, 'V' + (i + 1), 10, '#b5622a', 'start');
+      [0, 10].forEach(v => s += R_(t, u - .2, v - .2, u + .2, v + .2, 'fill="#24211d"')); s += lab(t, u, -1.0, `C${i + 1}A`, 9, '#24211d') + lab(t, u, 10.65, `C${i + 1}B`, 9, '#24211d'); });
+    s += L_(t, 0, 10.25, 25, 10.25, 'stroke="#b5622a" stroke-width="3"') + lab(t, 12.5, 11.35, 'VCN tubo 200×100×6,3', 9) + L_(t, 0, -.05, 25, -.05, 'stroke="#b5622a" stroke-width="2"') + lab(t, 12.5, -1.65, 'VCS IPE 160', 9);
+    for (let u = 0; u <= 25.01; u += 2.5) s += R_(t, u - .12, 10.4, u + .12, 10.64, 'fill="#6f4222"');
+    for (let v = .7; v <= 10.01; v += 3.1) s += R_(t, 25.4, v - .12, 25.64, v + .12, 'fill="#6f4222"');
+    for (let v = 2.5; v <= 7.51; v += 2.5) s += R_(t, -.64, v - .12, -.4, v + .12, 'fill="#6f4222"');
+    s += R_(t, 25.35, -.6, 25.75, -.2, 'fill="#1c1c1c"') + R_(t, -.75, 10.35, -.35, 10.75, 'fill="#1c1c1c"');
+    s += lab(t, 26.1, 5, 'PE1–PE4', 9, '#6f4222', 'start') + lab(t, -1, 5.6, 'PO1–PO3', 9, '#6f4222', 'end') + lab(t, 26.1, -.6, 'PI1', 9, '#1c1c1c', 'start') + lab(t, -1, 10.9, 'PI2', 9, '#1c1c1c', 'end') + lab(t, 12.5, 12.2, 'PN1 … PN11 (cada 2,50, fachada norte)', 9, '#6f4222');
+    s += lab(t, 2.5, 7.4, 'CR', 10, '#2f6f86') + lab(t, 22.5, 7.4, 'CR', 10, '#2f6f86') + lab(t, 7.5, 2.1, 'TC', 9, '#2f6f86') + lab(t, 13.6, cs[1] + .2, `CO · ${cs.length} líneas C200 cada ${f2(cs[1] - cs[0])}`, 9, '#555', 'start');
+    s += cotaH(t, 0, 25, -2.8, '5 × 5,00 = 25,00') + cotaV(t, 0, 10, -2.2, '10,00');
+    s += norte(t.X(29.5), t.Y(13.2), .7);
+    SV($('pk1'), W, H, `<text x="10" y="22" font-size="16" font-weight="700" ${FT}>Planta de estructura de techo y columnas</text>` + s, sc); }
+  { // pórtico tipo
+    const W = 32, H = 9.6, sc = 30, t = T(6, 1.6, sc, H); let s = '';
+    s += R_(t, -1, -.6, 11, -.15, 'fill="#e5dfd3" stroke="#999"') + lab(t, 5, -.5, 'viga de fundación 30 × 60 (no se cotiza)', 8, '#777');
+    s += R_(t, -.12, 0, .12, B.hS, 'fill="#b5622a"') + R_(t, 9.88, 0, 10.12, hN, 'fill="#b5622a"');
+    s += `<polygon points="${t.X(-.12)},${t.Y(B.hS)} ${t.X(10.12)},${t.Y(hN)} ${t.X(10.12)},${t.Y(hN + .3)} ${t.X(-.12)},${t.Y(B.hS + .3)}" fill="#c9773d"/>`;
+    s += `<polygon points="${t.X(.12)},${t.Y(B.hS)} ${t.X(1.3)},${t.Y(B.hS + .04)} ${t.X(.12)},${t.Y(B.hS - .5)}" fill="#8d4a1e"/><polygon points="${t.X(9.88)},${t.Y(hN)} ${t.X(8.7)},${t.Y(hN - .04)} ${t.X(9.88)},${t.Y(hN - .5)}" fill="#8d4a1e"/>`;
+    cs.forEach(v => s += R_(t, v - .06, hRoof(v) + .3, v + .06, hRoof(v) + .5, 'fill="#555"'));
+    [2, 6].forEach(v => s += L_(t, v, hRoof(v) + .3, v - .5, hRoof(v) - .05, 'stroke="#555" stroke-width="1.2"'));
+    [0, 10].forEach(u => { s += R_(t, u - .25, 0, u + .25, .04, 'fill="#24211d"'); s += L_(t, u - .17, -.55, u - .17, .1, 'stroke="#2f6f86" stroke-width="1.5"') + L_(t, u + .17, -.55, u + .17, .1, 'stroke="#2f6f86" stroke-width="1.5"'); });
+    s += lab(t, -.35, 2.2, 'C·A HEA 240', 10, '#b5622a', 'end') + lab(t, 10.35, 2.2, 'C·B HEA 240', 10, '#b5622a', 'start') + lab(t, 5, B.hS + .95, `V · IPE 300 · L 10,40 · ${Math.round(ENV[S.env].roof.pend * 100)} %`, 10) + lab(t, 1.4, B.hS - .75, 'CA cartela', 9, '#8d4a1e', 'start') + lab(t, 8.6, hN - .75, 'CA', 9, '#8d4a1e', 'end');
+    s += lab(t, -.35, .25, 'PB + PA 4 Ø24', 9, '#2f6f86', 'end') + lab(t, 10.35, .25, 'PB + PA', 9, '#2f6f86', 'start') + lab(t, 2, hRoof(2) - .5, 'TP', 9, '#555') + lab(t, 6, hRoof(6) - .5, 'TP', 9, '#555') + lab(t, 8, hRoof(8) + .75, 'CO', 9, '#555');
+    s += cotaV(t, 0, B.hS, -2.6, f2(B.hS)) + cotaV(t, 0, hN, 12.4, f2(hN)) + cotaH(t, 0, 10, -1.2, '10,00 entre ejes');
+    s += lab(t, 15, 6.5, 'Nudos rígidos con cartela y chapa de testa abulonada.', 9, '#24211d', 'start') + lab(t, 15, 5.8, 'Bases empotradas: placa 400 × 450 × 25 con 4 rigidizadores,', 9, '#24211d', 'start') + lab(t, 15, 5.2, '4 pernos Ø24 a la viga de fundación, grout 3 cm sin contracción.', 9, '#24211d', 'start') + lab(t, 15, 4.4, 'Tornapuntas L 50×5 de correa al ala inferior de la viga', 9, '#24211d', 'start') + lab(t, 15, 3.8, '(cada 2 correas, a ambos lados).', 9, '#24211d', 'start') + lab(t, 15, 3.0, 'Seis pórticos iguales, ejes 1 a 6.', 9, '#24211d', 'start');
+    SV($('pk2'), W, H, `<text x="10" y="22" font-size="16" font-weight="700" ${FT}>Pórtico tipo (ejes 1 a 6)</text>` + s, sc); }
+  { // fachada norte: x = 25 − u
+    const W = 32, H = 9.6, sc = 30, t = T(3, 1.6, sc, H); let s = '';
+    s += L_(t, -1, 0, 26.5, 0, 'stroke="#24211d" stroke-width="1.4"');
+    s += R_(t, 0, B.cen, 25.4, B.hPar, 'fill="none" stroke="#1c1c1c" stroke-dasharray="5 3"') + lab(t, 12.5, 5.6, 'cenefa negra (la cotiza la herrería, va atornillada a BN)', 8, '#777');
+    FR.forEach(u => s += R_(t, 25 - u - .12, 0, 25 - u + .12, hN, 'fill="none" stroke="#b5622a" stroke-dasharray="4 3"'));
+    for (let u = 0; u <= 25.01; u += 2.5) s += R_(t, 25 - u - .06, 0, 25 - u + .06, 6.0, 'fill="#6f4222"');
+    s += R_(t, 24.3, 0, 24.6, 6.0, 'fill="#1c1c1c"') + lab(t, 24.45, 6.25, 'PI2', 9, '#1c1c1c');
+    [3.0, 3.55, 4.3, B.cen, 5.5, 5.95].forEach(hh => s += L_(t, 0, hh, 25, hh, 'stroke="#555" stroke-width="1"'));
+    s += L_(t, 0, hN - .1, 25, hN - .1, 'stroke="#b5622a" stroke-width="4"') + lab(t, 3, hN + .15, 'VCN', 9);
+    s += lab(t, 1.25, 1.2, 'PN', 9, '#6f4222') + lab(t, 26, 3.3, 'BN (6 líneas)', 9, '#555', 'start') + lab(t, 12.5, 1.5, 'vidrieras: las cotiza el aluminiero, fijan a PN', 8, '#777');
+    s += lab(t, 0, -.55, '← esquina avda.', 8, '#555', 'start') + cotaV(t, 0, 6.0, -1.0, '6,00 desde NPT');
+    SV($('pk3'), W, H, `<text x="10" y="22" font-size="16" font-weight="700" ${FT}>Fachada norte · parantes PN, bastidores BN, VCN y pilastra PI2</text>` + s, sc); }
+  { // muro sur (x = u, oeste a la izquierda) + muro oeste
+    const W = 32, H = 9.8, sc = 30, t = T(1.5, 2.0, sc, H); let s = '';
+    s += L_(t, -.5, 0, 25.5, 0, 'stroke="#24211d" stroke-width="1.4"');
+    FR.forEach(u => s += R_(t, u - .12, 0, u + .12, B.hS, 'fill="#b5622a"'));
+    s += L_(t, 0, B.hS - .1, 25, B.hS - .1, 'stroke="#b5622a" stroke-width="3"') + lab(t, 12.5, B.hS + .05, 'VCS', 9);
+    [1.5, 3.0, 4.5, 5.9].forEach(hh => s += L_(t, -.2, hh, 25.2, hh, 'stroke="#555" stroke-width="1.2"'));
+    for (let u = 0; u <= 25.01; u += 2.5) s += R_(t, u - .04, B.hS, u + .04, 6.0, 'fill="#6f4222"');
+    [[0, 5], [20, 25]].forEach(([a, b]) => s += L_(t, a, .4, b, B.hS - .2, 'stroke="#2f6f86" stroke-width="1.4"') + L_(t, a, B.hS - .2, b, .4, 'stroke="#2f6f86" stroke-width="1.4"'));
+    s += R_(t, 25.3, 0, 25.6, 6.0, 'fill="#1c1c1c"') + lab(t, 25.9, 6.1, 'PI1', 9, '#1c1c1c', 'start');
+    s += lab(t, 2.5, 2.5, 'CR', 9, '#2f6f86') + lab(t, 22.5, 2.5, 'CR', 9, '#2f6f86') + lab(t, 26.2, 3.0, 'LS (4)', 9, '#555', 'start') + lab(t, 26.2, 5.0, 'MP', 9, '#6f4222', 'start') + lab(t, 0, -.75, 'Muro sur visto desde el pasaje: C·A, VCS, LS, MP y cruces CR. Muro oeste igual, con PO1–PO3, LO y cruces CR en los dos paños.', 8.5, '#24211d', 'start');
+    SV($('pk4'), W, H, `<text x="10" y="22" font-size="16" font-weight="700" ${FT}>Muro sur · largueros LS, montantes MP, cruces CR</text>` + s, sc); }
+  { // detalles
+    const W = 32, H = 9.6, sc = 30, t = T(0, 0, sc, H); let s = '';
+    const box2 = (x, ttl) => R_(t, x, .3, x + 7.6, 9.0, 'fill="#fff" stroke="#ccc"') + lab(t, x + 3.8, 8.4, ttl, 9.5, '#24211d');
+    // 1 base empotrada
+    s += box2(.2, 'D1 · Base empotrada');
+    s += R_(t, .8, .8, 7.2, 2.6, 'fill="#e5dfd3" stroke="#999"') + lab(t, 4, 1.1, 'viga de fundación 30×60', 8, '#777');
+    s += R_(t, 2.2, 2.6, 5.8, 2.75, 'fill="#bbb"') + R_(t, 2.0, 2.75, 6.0, 3.05, 'fill="#24211d"') + R_(t, 3.5, 3.05, 4.5, 7.6, 'fill="#b5622a"');
+    [2.6, 5.4].forEach(x => s += `<polygon points="${t.X(x)},${t.Y(3.05)} ${t.X(x < 4 ? 3.5 : 4.5)},${t.Y(3.05)} ${t.X(x < 4 ? 3.5 : 4.5)},${t.Y(4.6)}" fill="#8d4a1e"/>`);
+    [2.4, 5.6].forEach(x => s += L_(t, x, 1.0, x, 3.35, 'stroke="#2f6f86" stroke-width="2.5"'));
+    s += lab(t, .5, 3.45, 'PB 400×450×25', 8, '#24211d', 'start') + lab(t, 6.0, 2.2, 'PA 4 Ø24', 8, '#2f6f86', 'start') + lab(t, 4.6, 5.5, 'HEA 240', 8, '#b5622a', 'start') + lab(t, 4, 2.68, 'grout 3 cm', 7, '#555');
+    // 2 nudo
+    s += box2(8.1, 'D2 · Nudo de pórtico');
+    s += R_(t, 9.0, .9, 10.0, 6.6, 'fill="#b5622a"') + `<polygon points="${t.X(10)},${t.Y(5.2)} ${t.X(15.4)},${t.Y(5.5)} ${t.X(15.4)},${t.Y(6.5)} ${t.X(10)},${t.Y(6.6)}" fill="#c9773d"/>` + `<polygon points="${t.X(10)},${t.Y(5.2)} ${t.X(12.6)},${t.Y(5.34)} ${t.X(10)},${t.Y(3.6)}" fill="#8d4a1e"/>` + R_(t, 10.0, 3.5, 10.2, 6.7, 'fill="#24211d"');
+    [3.9, 4.6, 5.4, 6.2].forEach(y => s += `<circle cx="${t.X(10.1)}" cy="${t.Y(y)}" r="3" fill="#fff"/>`);
+    s += lab(t, 12.6, 7.2, 'V IPE 300', 8, '#b5622a') + lab(t, 9.5, .55, 'C HEA 240', 8, '#b5622a') + lab(t, 12.4, 4.4, 'CA cartela', 8, '#8d4a1e', 'start') + lab(t, 10.4, 3.1, 'chapa de testa 20 mm · 8 bulones M20 8.8', 7.5, '#24211d', 'start');
+    // 3 correa
+    s += box2(16.0, 'D3 · Correa y tornapunta');
+    s += R_(t, 16.8, 3.0, 22.8, 3.6, 'fill="#c9773d"') + lab(t, 19.8, 2.6, 'V IPE 300', 8, '#b5622a') + R_(t, 19.5, 3.6, 19.7, 4.6, 'fill="#24211d"') + `<path d="M${t.X(19.7)} ${t.Y(3.9)}h${.9 * sc}v${-1.3 * sc}h${-.5 * sc}" fill="none" stroke="#555" stroke-width="5"/>` + lab(t, 21.1, 5.2, 'CO C200 + CL clip', 8, '#555') + L_(t, 20.4, 3.9, 18.2, 2.8, 'stroke="#555" stroke-width="2"') + lab(t, 18.0, 1.6, 'TP L50×5 al ala inferior', 8, '#555');
+    // 4 parante
+    s += box2(23.9, 'D4 · Parante y VCN');
+    s += R_(t, 26.9, .9, 27.5, 7.6, 'fill="#6f4222"') + R_(t, 25.0, 5.0, 26.9, 5.6, 'fill="#b5622a"') + lab(t, 26.0, 5.9, 'VCN', 8, '#b5622a') + R_(t, 26.6, 4.85, 27.8, 5.75, 'fill="none" stroke="#24211d" stroke-width="1.5"') + lab(t, 28.0, 5.3, 'clip con agujero colisado', 7.5, '#24211d', 'start') + lab(t, 28.0, 4.8, '(dilatación vertical)', 7.5, '#24211d', 'start') + lab(t, 27.6, 2.0, 'PN 120×120×4', 8, '#6f4222', 'start') + R_(t, 26.7, .9, 27.7, 1.05, 'fill="#24211d"') + lab(t, 27.2, .5, 'placa 200×200×12 + 4 brocas', 7.5, '#24211d');
+    SV($('pk5'), W, H, s, sc); }
+}
+
 function renderRent() {
   const k = ivaK(), base = +$('inAlq').value || 0, vac = (+$('inVac').value || 0) / 100, gas = (+$('inGas').value || 0) / 100, ter = +$('inTer').value || 0;
   const fac = { 2: 1, 3: 1.08, 4: 1.15, 5: 1.22 };
@@ -660,10 +900,10 @@ const v3 = (() => {
   const ST = [
     ['ter', 'Terreno y replanteo', 'Limpieza, desmonte de 20 cm, relleno de tosca compactada y replanteo de ejes 1 a 6 y A-B. Cerco de obra y obrador.'],
     ['inst', 'Previsiones bajo platea', 'Antes de hormigonar: un ramal sanitario por módulo de 5 m (los que no se usan quedan con tapón), colector por el pasaje sur con cámaras, agua desde el medidor de OSE y caños eléctricos vacíos desde el gabinete de UTE.'],
-    ['plat', 'Platea', 'Platea H25 de 15 cm con malla doble, viga de borde 30 × 40 y engrosamiento bajo cada columna con 4 pernos Ø20. Queda llaneada: es el piso de los locales.'],
-    ['est', 'Pórticos', '6 pórticos: columnas IPE 270 y vigas IPE 300 con cartela. Vigas carrera norte (rígida, sobre la vidriera) y sur.'],
-    ['cru', 'Arriostramiento', 'Cruces Ø16 con tensor en los paños extremos del techo y en el muro sur. Recién acá la nave queda estable para seguir.'],
-    ['cor', 'Correas de techo', 'Correas C160 sobre las vigas, a la separación que pide el panel elegido.'],
+    ['plat', 'Platea y vigas de fundación', 'Grilla de 8 vigas de fundación 30 × 60 (una por pórtico y las dos líneas A y B), nudos de 1,2 × 1,2 bajo columnas con 4 pernos Ø24, y platea H30 de 15 cm con malla doble. Queda llaneada: es el piso de los locales.'],
+    ['est', 'Pórticos', '6 pórticos: columnas HEA 240 con base empotrada (placa 400×450×25 y 4 pernos Ø24) y vigas IPE 300 con cartela. Carrera norte tubo 200×100×6,3 (viga de viento de la vidriera) y carrera sur IPE 160.'],
+    ['cru', 'Arriostramiento', 'Cruces Ø24 con tensor en los paños extremos del techo, en el muro sur y en el muro oeste. En la vidriera norte no hay cruces: ahí trabajan las columnas empotradas.'],
+    ['cor', 'Correas de techo', 'Correas C200 continuas cada 2,0 m como máximo, tensores Ø10 a media luz y tornapuntas al ala inferior de las vigas.'],
     ['lar', 'Largueros y montantes de pretil', 'Largueros C120 en los muros sur y oeste, y montantes sobre columnas y vigas carrera hasta +6,00: sostienen el pretil, la cenefa y el borde superior de los paneles.'],
     ['bas', 'Parantes y bastidores de fachada', 'Tubos 100 × 100 de piso a +6,00 cada 2,5 m en el norte y el frente, pilastras de esquina donde baja la cenefa, y bastidores C100 para la faja, el brise y la cenefa: todo apoyado en los parantes.'],
     ['techo', 'Techo de panel', 'Paneles de techo sobre las correas, canaleta interna al sur y babetas contra el pretil.'],
@@ -713,36 +953,41 @@ const v3 = (() => {
     bx(g, -2.2, -2.2, -.9, -1.5, -.8, .02, M(0x555555), 'Cámara separadora de grasas');
     // ---- 2 platea
     g = groups.plat;
-    bx(g, -.3, -.3, -.25, 25.3, 10.3, B.npt, MAT.conc, 'Platea H25 15 cm sobre tosca compactada · viga de borde 30 × 40');
-    FR.forEach(u => [0, 10].forEach(v => { bx(g, u - .6, v - .6, -.6, u + .6, v + .6, -.25, MAT.conc, 'Engrosamiento 1,2 × 1,2 × 0,5 bajo columna'); bx(g, u - .15, v - .15, B.npt, u + .15, v + .15, B.npt + .016, M(0x777777), 'Placa base 300 × 300 × 16 con 4 pernos Ø20'); }));
+    bx(g, -.3, -.3, -.25, 25.3, 10.3, B.npt, MAT.conc, 'Platea H30 15 cm con malla doble sobre tosca compactada');
+    FR.forEach(u => bx(g, u - .15, -.15, -.6, u + .15, 10.15, -.25, M(0xb9b2a4), 'Viga de fundación transversal 30 × 60 (riostra A-B del pórtico)'));
+    [0, 10].forEach(v => bx(g, -.15, v - .15, -.6, 25.15, v + .15, -.25, M(0xb9b2a4), 'Viga de fundación longitudinal 30 × 60'));
+    FR.forEach(u => [0, 10].forEach(v => { bx(g, u - .6, v - .6, -.6, u + .6, v + .6, -.26, MAT.conc, 'Nudo de fundación 1,2 × 1,2 bajo columna'); bx(g, u - .2, v - .225, B.npt, u + .2, v + .225, B.npt + .025, M(0x777777), 'PB · placa base 400 × 450 × 25 con rigidizadores y 4 pernos Ø24'); }));
     // ---- 3 pórticos
     g = groups.est;
     FR.forEach((u, i) => {
-      bx(g, u - .135, -.135, B.npt, u + .135, .135, B.hS, MAT.steel, 'Columna IPE 270 · eje ' + (i + 1) + ' A');
-      bx(g, u - .135, 9.865, B.npt, u + .135, 10.135, B.hN, MAT.steel, 'Columna IPE 270 · eje ' + (i + 1) + ' B');
-      beam(g, [u, -.1, B.hS + .15], [u, 10.1, B.hN + .15], .15, .3, MAT.steel, `Viga de pórtico IPE 300 · eje ${i + 1}`);
+      bx(g, u - .12, -.12, B.npt, u + .12, .12, B.hS, MAT.steel, `C${i + 1}A · columna HEA 240 empotrada`);
+      bx(g, u - .12, 9.88, B.npt, u + .12, 10.12, B.hN, MAT.steel, `C${i + 1}B · columna HEA 240 empotrada`);
+      beam(g, [u, -.1, B.hS + .15], [u, 10.1, B.hN + .15], .15, .3, MAT.steel, `V${i + 1} · viga de pórtico IPE 300`);
     });
-    beam(g, [0, 10, B.hN - .15], [25, 10, B.hN - .15], .1, .2, MAT.steel, 'Viga carrera norte IPE 200 (rígida, sobre la vidriera)');
-    beam(g, [0, 0, B.hS - .1], [25, 0, B.hS - .1], .08, .16, MAT.steel, 'Viga carrera sur IPE 160');
+    beam(g, [0, 10.15, B.hN - .1], [25, 10.15, B.hN - .1], .2, .1, MAT.steel, 'VCN · tubo 200×100×6,3 acostado: viga de viento de la vidriera');
+    beam(g, [0, 0, B.hS - .1], [25, 0, B.hS - .1], .08, .16, MAT.steel, 'VCS · viga carrera sur IPE 160');
     // ---- 4 arriostramiento
     g = groups.cru;
-    [[0, 5], [20, 25]].forEach(([a, b]) => { const ha = hRoof(0) + B.prf, hb = hRoof(10) + B.prf; cyl(g, [a, 0, ha], [b, 10, hb], .02, MAT.brace, 'Cruz de arriostramiento de techo Ø16 con tensor'); cyl(g, [a, 10, hb], [b, 0, ha], .02, MAT.brace, 'Cruz de arriostramiento de techo Ø16 con tensor'); });
-    [[0, 5], [20, 25]].forEach(([a, b]) => { cyl(g, [a, -.15, .4], [b, -.15, B.hS - .2], .02, MAT.brace, 'Cruz en muro sur'); cyl(g, [a, -.15, B.hS - .2], [b, -.15, .4], .02, MAT.brace, 'Cruz en muro sur'); });
+    [[0, 5], [20, 25]].forEach(([a, b]) => { const ha = hRoof(0) + B.prf, hb = hRoof(10) + B.prf; cyl(g, [a, 0, ha], [b, 10, hb], .025, MAT.brace, 'CR · cruz de techo Ø24 con tensor (viga de viento del testero)'); cyl(g, [a, 10, hb], [b, 0, ha], .025, MAT.brace, 'CR · cruz de techo Ø24 con tensor'); });
+    [[0, 5], [20, 25]].forEach(([a, b]) => { cyl(g, [a, -.15, .4], [b, -.15, B.hS - .2], .025, MAT.brace, 'CR · cruz muro sur Ø24'); cyl(g, [a, -.15, B.hS - .2], [b, -.15, .4], .025, MAT.brace, 'CR · cruz muro sur Ø24'); });
+    [[0, 5], [5, 10]].forEach(([a, b]) => { cyl(g, [-.15, a, .4], [-.15, b, B.hS - .2], .025, MAT.brace, 'CR · cruz muro oeste Ø24'); cyl(g, [-.15, a, B.hS - .2], [-.15, b, .4], .025, MAT.brace, 'CR · cruz muro oeste Ø24'); });
     // ---- 5 correas
     g = groups.cor;
-    cs.forEach(v => beam(g, [-.3, v, hRoof(v) + B.prf + .08], [25.3, v, hRoof(v) + B.prf + .08], .06, .16, MAT.cor, `Correa C160 · ${cs.length} líneas cada ${f2(cs[1] - cs[0])} m`));
+    cs.forEach(v => beam(g, [-.3, v, hRoof(v) + B.prf + .1], [25.3, v, hRoof(v) + B.prf + .1], .07, .2, MAT.cor, `CO · correa C200×70×25×2,5 · ${cs.length} líneas cada ${f2(cs[1] - cs[0])} m`));
+    for (let u = 2.5; u < 25; u += 5) cyl(g, [u, 0, hRoof(0) + B.prf + .12], [u, 10, hRoof(10) + B.prf + .12], .012, MAT.brace, 'TC · tensor de correas Ø10 a media luz');
+    FR.forEach(u => cs.slice(1, -1).forEach((v, j) => { if (j % 2) return; [-1, 1].forEach(sd => cyl(g, [u + sd * .6, v, hRoof(v) + B.prf + .05], [u + sd * .02, v, hRoof(v) + .02], .018, MAT.cor, 'TP · tornapunta L 50×5: arriostra el ala inferior de la viga con succión')); }));
     // ---- 6 largueros y montantes de pretil (sur y oeste)
     g = groups.lar;
     for (let u = 0; u <= 25.01; u += 2.5) post(g, u, -.22, u % 5 === 0 ? B.hS : B.hS - .2, B.hPar, .05, MAT.cor, 'Montante de pretil tubo 50 × 50 · sobre columna o viga carrera');
-    for (let v = 2.5; v <= 7.51; v += 2.5) post(g, -.22, v, B.npt, B.hPar, .08, MAT.cor, 'Montante intermedio de muro oeste');
+    for (let v = 2.5; v <= 7.51; v += 2.5) post(g, -.22, v, B.npt, B.hPar, .12, MAT.cor, 'PO · parante muro oeste tubo 120×120×4');
     [1.5, 3.0, B.hS - .4, 5.0, 5.9].forEach(h => { beam(g, [-.22, -.22, h], [25, -.22, h], .05, .12, MAT.cor, 'Larguero C120 · muro sur'); beam(g, [-.22, -.22, h], [-.22, 10.22, h], .05, .12, MAT.cor, 'Larguero C120 · muro oeste'); });
     // ---- 7 parantes y bastidores de fachada (norte y frente), apoyados
     g = groups.bas;
-    for (let u = 0; u <= 25.01; u += 2.5) post(g, u, 10.22, B.npt, B.hPar, .1, MAT.cor, 'Parante tubo 100 × 100 · de piso a +6,00: vidriera, faja, brise y cenefa');
-    for (let v = .7; v <= 10.01; v += 3.1) post(g, 25.22, v, B.npt, B.hPar, .1, MAT.cor, 'Parante tubo 100 × 100 · frente a la avenida');
-    post(g, 25.22, -.22, B.npt, B.hPar, .12, MAT.cor, 'Pilastra de esquina del frente (donde sube la cenefa)');
-    post(g, -.22, 10.22, B.npt, B.hPar, .12, MAT.cor, 'Pilastra de esquina del fondo (donde baja la cenefa)');
-    [3.0, 3.55, 4.3, B.cen, 5.5, 5.95].forEach(h => { beam(g, [-.22, 10.22, h], [25.22, 10.22, h], .05, .1, MAT.cor, 'Bastidor C100 de faja, brise y cenefa · atornillado a los parantes'); beam(g, [25.22, -.22, h], [25.22, 10.22, h], .05, .1, MAT.cor, 'Bastidor C100 · frente'); });
+    for (let u = 0; u <= 25.01; u += 2.5) post(g, u, 10.22, B.npt, B.hPar, .12, MAT.cor, 'PN · parante tubo 120×120×4 de platea a +6,00: vidriera, faja, brise y cenefa');
+    for (let v = .7; v <= 10.01; v += 3.1) post(g, 25.22, v, B.npt, B.hPar, .12, MAT.cor, 'PE · parante tubo 120×120×4 · frente a la avenida');
+    post(g, 25.22, -.22, B.npt, B.hPar, .15, MAT.cor, 'PI1 · pilastra tubo 150×150×5 (sube la cenefa)');
+    post(g, -.22, 10.22, B.npt, B.hPar, .15, MAT.cor, 'PI2 · pilastra tubo 150×150×5 (baja la cenefa)');
+    [3.0, 3.55, 4.3, B.cen, 5.5, 5.95].forEach(h => { beam(g, [-.22, 10.22, h], [25.22, 10.22, h], .05, .1, MAT.cor, 'BN · bastidor C100 galvanizado, atornillado a los parantes'); beam(g, [25.22, -.22, h], [25.22, 10.22, h], .05, .1, MAT.cor, 'Bastidor C100 · frente'); });
     // ---- 8 techo
     g = groups.techo;
     for (let u = -.3; u < 25.3; u += 1) { const u1 = Math.min(u + 1, 25.3); beam(g, [(u + u1) / 2, -.3, hRoof(-.3) + tC + er / 2], [(u + u1) / 2, 10.3, hRoof(10.3) + tC + er / 2], (u1 - u) - .02, er, MR, `${E.roof.nom} · U ${f2(E.roof.U)} W/m²K · pendiente ${Math.round(E.roof.pend * 100)} %`); if (E.roof.trap) for (let r = 0; r < 3; r++) beam(g, [u + .17 + r * .333, -.3, hRoof(-.3) + tC + er + .02], [u + .17 + r * .333, 10.3, hRoof(10.3) + tC + er + .02], .05, .04, MR, E.roof.nom); }
@@ -836,9 +1081,10 @@ const v3 = (() => {
 })();
 
 /* ================= ACTUALIZAR ================= */
-function upd() { setPend(); renderTablas(); dImpl(); dRep(); dPlanta(); dFach(); dEst(); dInst(); renderRent(); v3.rebuild(); }
+function upd() { setPend(); renderTablas(); renderSub(); dPed(); dImpl(); dRep(); dPlanta(); dFach(); dEst(); dInst(); renderRent(); v3.rebuild(); }
 upd();
+if (/pedido/.test(location.search)) document.body.classList.add('pedido');
 const h0 = location.hash.slice(1); show(TABS.find(t => t[0] === 'p-' + h0) ? 'p-' + h0 : 'p-proy');
-window.__jcg = { S, rubrado, acero, locales, correas, upd, show };
+window.__jcg = { S, rubrado, acero, piezas, locales, correas, upd, show, PROPIO };
 </script>
 </body></html>
