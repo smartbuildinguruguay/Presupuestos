@@ -92,6 +92,11 @@ body.cine aside{display:none}body.cine .lbl{display:none!important}body.cine #ap
 table{width:100%;border-collapse:collapse;font:500 .74rem var(--m);margin-top:6px}td,th{padding:3px 4px;border-bottom:1px solid var(--line);text-align:left}th{color:var(--mute);font-weight:500}td.n,th.n{text-align:right}
 .ok{color:#8fd694}.mal{color:#ff8a7a}
 @media (max-width:820px){#app{grid-template-columns:1fr;grid-template-rows:58vh auto;height:auto}main{grid-row:1;height:58vh}aside{grid-row:2;border-right:0}#ficha{width:auto;left:12px;top:auto;bottom:12px}#plano{width:auto;left:12px;max-height:45%}.leyenda{display:none}}
+.chest{font:500 .7rem var(--m);color:var(--mute);margin:0 0 8px}.chq{display:flex;flex-wrap:wrap;gap:5px;margin:0 0 8px}.chq button{font:500 .72rem var(--f);background:rgba(255,255,255,.06);color:var(--ink);border:1px solid var(--line);border-radius:14px;padding:4px 9px;cursor:pointer;text-align:left}.chq button:hover{border-color:var(--cu)}
+.chmsgs{max-height:46vh;overflow:auto;display:flex;flex-direction:column;gap:7px;padding:4px 2px;margin:0 0 8px}.cm{font-size:.8rem;line-height:1.45;padding:7px 10px;border-radius:9px;max-width:94%}.cm.user{align-self:flex-end;background:#4a4f56}.cm.assistant{align-self:flex-start;background:rgba(255,255,255,.05);border:1px solid var(--line)}.cm .li{display:block;padding-left:12px;text-indent:-9px}.cm .li:before{content:'· '}.cm .cc{margin-top:6px;padding-top:5px;border-top:1px dashed var(--line);font:500 .68rem var(--m);color:var(--cu)}
+.chin{display:flex;gap:6px;align-items:stretch}.chin textarea{flex:1;font:inherit;font-size:.82rem;background:rgba(0,0,0,.25);color:var(--ink);border:1px solid var(--line);border-radius:7px;padding:7px;resize:vertical}.chb{display:flex;flex-direction:column;gap:5px}#chMic.on{background:#b23a2a;color:#fff}
+.chh{display:flex;flex-wrap:wrap;gap:6px;align-items:center;font:700 .82rem var(--f);margin:12px 0 4px}.btn.mini{font-size:.66rem;padding:3px 7px}.chlog{margin:0;padding-left:16px;font-size:.72rem;color:var(--mute)}.chlog li{margin:2px 0}
+body.ing .tabs [data-t="chat"]{display:none!important}
 </style>
 </head>
 <body>
@@ -158,6 +163,7 @@ table{width:100%;border-collapse:collapse;font:500 .74rem var(--m);margin-top:6p
 </main>
 </div>
 
+<script>window.LA_CHAT_URL="https://claude.ai/artifact/16wa6Y6tJkiZebCmfko9tC"</script>
 <script type="module">
 import * as THREE from 'three';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
@@ -1247,6 +1253,195 @@ const reloj = new THREE.Clock();
   ACT[ALT].forEach(a => a.upd(cur && (ED === 'ambos' || cur.f.ed === ED) ? cur : null, fly, dt));
   camaraAuto(dt); O.update(); R.render(S, C); L2.render(S, C); if (REC) { recFrame(); if ((REC.n = (REC.n || 0) + 1) % 15 === 0) recUI() } })();
 window.__la = { PANELES, SEQ, CARAS, C, O, G, BMC, CER, SHIFT, EST, GAL, REM, QA, ALTS, diasTxt, calc };
+
+/* ================= Chat con Claude: estudiar y afinar costos y métodos =================
+   Funciona dentro de claude.ai (página publicada en la cuenta de SBU): usa la cuenta de quien la abre.
+   En GitHub Pages no hay sesión de Claude: muestra el link a la versión con chat. */
+{
+  const CHAT_URL = window.LA_CHAT_URL || '';
+  const QA0 = JSON.parse(JSON.stringify(QA));            // valores de fábrica para comparar y deshacer
+  const EST = { ov: null, log: [], msgs: [] };           // ov = ajustes guardados; log = cambios con valor anterior
+  let DB = null, SAMPLE = null, DICT = null, ocupado = false, ctrl = null;
+  const el = id => document.getElementById(id);
+  const fmtV = v => typeof v === 'number' ? (Math.round(v * 1000) / 1000).toLocaleString('es-UY') : JSON.stringify(v);
+  const nomAlt = k => ALTS[k] ? ALTS[k].n.split(' · ')[0] : k;
+
+  /* ---------- estado que ve Claude ---------- */
+  function estado() {
+    const alts = {}; ['A', 'C', 'B'].forEach(k => { const x = calc(k), q = QA[k];
+      alts[k] = { opcion: ALTS[k].n, cuadrilla: ALTS[k].crew, dias: diasTxt(k),
+        fases: q.fases.map((f, i) => ({ i, fase: f[0], dias: f[1], cuadrilla: f[2], en_altura: f[3], costo_usd: Math.round(x.fases[i].nom + x.fases[i].comp) })),
+        maquinas: x.maq.map((m, i) => ({ i, maquina: m.n, clave_precio: m.key === 'm_mani_d' ? 'm_mani' : m.key, dias: m.dias, fletes: m.fl, usd: Math.round(m.usd), nota: m.key === 'm_mani' ? 'días calculados solos: descarga + líneas + galpón + establo' : undefined })),
+        andamios: q.and, andamios_usd: Math.round(x.and), seguridad_usd: Math.round(x.seg), flete_paneles_usd: Math.round(x.flete), imprevistos_usd: Math.round(x.imp),
+        costo_directo: Math.round(x.directo),
+        regimen_obra_BPS: { ganancia: Math.round(x.ganObra), bps_aparte: Math.round(x.bpsObra), iva_compras_no_recuperable: Math.round(x.ivaCompras), total_cliente: Math.round(x.totObra) },
+        regimen_IVA: { cargas_IC: Math.round(x.cargasIC), costo_total: Math.round(x.costoIC), ganancia: Math.round(x.ganIC), precio_sin_iva: Math.round(x.precio), total_con_iva: Math.round(x.totIC) } }; });
+    const c = cobro(calc(ALT));
+    return { obra: 'La Armonía, Santa Isabel: cubierta Hiansa-Panel 5G 30 mm, galpón 1 agua (paneles hasta 8,51 m, borde alto +5,62) y establo con núcleo 2 aguas al 91 % y galerías 4 aguas',
+      m2_cubierta: Math.round(M2()), opcion_elegida: ALT, regimen: REG === 'obra' ? 'obra registrada en BPS (Ley 14.411), sin IVA de venta' : 'SBU factura con IVA (Industria y Comercio)',
+      cobro_opcion_elegida: { costo_real: Math.round(c.costo), precio: Math.round(c.precio), usd_m2: Math.round(c.precio / c.m2 * 10) / 10, ganancia_sin_iva: Math.round(c.gan), precio_m2_fijado_a_mano: c.manual },
+      parametros: Object.fromEntries(Object.keys(PC).map(k => [k, { valor: PV[k], que_es: PC[k][1], de_fabrica: PC[k][0] }])),
+      opciones: alts };
+  }
+
+  /* ---------- cambios (los usa Claude y quedan con deshacer) ---------- */
+  function refrescar(fases) { if (fases) aplicar(); try { const sec = el('costos').closest('section'); if (!sec.hidden) costos(); else resumen() } catch (e) {} pintarCambios(); guardar() }
+  function registrar(desc, undo) { EST.log.push({ t: Date.now(), desc, undo }); if (EST.log.length > 60) EST.log.shift() }
+  const H = {
+    cambiar_parametro({ clave, valor }) {
+      if (!(clave in PC)) throw new Error('No existe el parámetro ' + clave + '. Claves: ' + Object.keys(PC).join(', '));
+      valor = Number(valor); if (!isFinite(valor)) throw new Error('valor no numérico');
+      const antes = PV[clave]; PV[clave] = valor; registrar(`${PC[clave][1]}: ${fmtV(antes)} → ${fmtV(valor)}`, { p: clave, v: antes });
+      try { localStorage.setItem('la-costos-2', JSON.stringify(Object.fromEntries(Object.entries(PV).filter(([k, x]) => PC[k] && x !== PC[k][0])))) } catch (e) {}
+      refrescar(); return { ok: true, clave, antes, ahora: valor };
+    },
+    cambiar_fase({ opcion, indice, dias, cuadrilla, en_altura }) {
+      const q = QA[opcion]; if (!q || !q.fases[indice]) throw new Error('fase inexistente');
+      const f = q.fases[indice], antes = JSON.parse(JSON.stringify(f)), d = [];
+      if (dias != null) { f[1] = Math.max(0, Number(dias)); d.push(`${antes[1]} → ${f[1]} días`) }
+      if (cuadrilla) { const cr = {}; ['oe', 'of', 'mo', 'pe'].forEach(k => { const v = Number(cuadrilla[k] || 0); if (v > 0) cr[k] = v }); f[2] = cr; d.push(`cuadrilla ${JSON.stringify(cr)}`) }
+      if (en_altura != null) { f[3] = Math.max(0, Number(en_altura)); d.push(`${f[3]} en altura`) }
+      registrar(`${nomAlt(opcion)} · ${f[0]}: ${d.join(', ')}`, { f: [opcion, indice, antes] });
+      refrescar(true); return { ok: true, fase: f[0], ahora: { dias: f[1], cuadrilla: f[2], en_altura: f[3] }, dias_totales: diasTxt(opcion) };
+    },
+    cambiar_maquina({ opcion, indice, dias, fletes }) {
+      const q = QA[opcion]; if (!q || !q.maq[indice]) throw new Error('máquina inexistente');
+      const m = q.maq[indice], antes = m.slice(); if (m[1] === 'm_mani' && dias != null) throw new Error('Los días de este manitou se calculan solos con las fases: cambiá los días de las fases');
+      if (dias != null) m[2] = Math.max(0, Number(dias)); if (fletes != null) m[3] = Math.max(0, Number(fletes));
+      registrar(`${nomAlt(opcion)} · ${m[0]}: ${antes[2]} → ${m[2]} días, ${m[3]} fletes`, { m: [opcion, indice, antes] });
+      refrescar(); return { ok: true, maquina: m[0], dias: m[2], fletes: m[3] };
+    },
+    cambiar_andamio({ opcion, indice, m2, semanas }) {
+      const q = QA[opcion]; if (!q || !q.and[indice]) throw new Error('andamio inexistente');
+      const a = q.and[indice], antes = a.slice(); if (m2 != null) a[1] = Number(m2); if (semanas != null) a[2] = Number(semanas);
+      registrar(`${nomAlt(opcion)} · andamio ${a[0]}: ${antes[1]} m² × ${antes[2]} sem → ${a[1]} × ${a[2]}`, { a: [opcion, indice, antes] });
+      refrescar(); return { ok: true, andamio: a };
+    },
+    elegir({ opcion, regimen }) {
+      const antes = { ALT, REG };
+      if (opcion && ALTS[opcion] && opcion !== ALT) { ALT = opcion; ordenar(); el('alt').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x.dataset.a === ALT)); altTxt(); aplicar() }
+      if (regimen === 'obra' || regimen === 'iva') REG = regimen === 'iva' ? 'ic' : 'obra';
+      registrar(`Vista: ${nomAlt(ALT)} · ${REG === 'obra' ? 'obra BPS' : 'factura con IVA'}`, { sel: antes });
+      refrescar(); return { ok: true, opcion: ALT, regimen: REG };
+    },
+  };
+  function deshacer() { const c = EST.log.pop(); if (!c) return; const u = c.undo;
+    if (u.p) PV[u.p] = u.v;
+    if (u.f) { const [k, i, a] = u.f; QA[k].fases[i] = a }
+    if (u.m) { const [k, i, a] = u.m; QA[k].maq[i] = a }
+    if (u.a) { const [k, i, a] = u.a; QA[k].and[i] = a }
+    if (u.sel) { ALT = u.sel.ALT; REG = u.sel.REG; ordenar(); el('alt').querySelectorAll('button').forEach(x => x.setAttribute('aria-pressed', x.dataset.a === ALT)); altTxt() }
+    try { localStorage.setItem('la-costos-2', JSON.stringify(Object.fromEntries(Object.entries(PV).filter(([k, x]) => PC[k] && x !== PC[k][0])))) } catch (e) {}
+    refrescar(true) }
+  function deFabrica() { Object.keys(PC).forEach(k => PV[k] = PC[k][0]); Object.keys(QA0).forEach(k => { QA[k].fases = JSON.parse(JSON.stringify(QA0[k].fases)); QA[k].maq = JSON.parse(JSON.stringify(QA0[k].maq)); QA[k].and = JSON.parse(JSON.stringify(QA0[k].and)) }); EST.log = []; try { localStorage.removeItem('la-costos-2') } catch (e) {} refrescar(true) }
+
+  /* ---------- guardar: base de datos de la página (se comparte entre equipos) o el navegador ---------- */
+  function ovActual() { const ov = { pv: {}, qa: {}, alt: ALT, reg: REG };
+    Object.keys(PC).forEach(k => { if (PV[k] !== PC[k][0]) ov.pv[k] = PV[k] });
+    Object.keys(QA0).forEach(k => { const d = {}; ['fases', 'maq', 'and'].forEach(t => { const a = JSON.stringify(QA[k][t]); if (a !== JSON.stringify(QA0[k][t])) d[t] = QA[k][t] }); if (Object.keys(d).length) ov.qa[k] = d });
+    return ov }
+  function aplicarOv(ov) { if (!ov) return; Object.assign(PV, ov.pv || {}); Object.entries(ov.qa || {}).forEach(([k, d]) => { if (!QA[k]) return; ['fases', 'maq', 'and'].forEach(t => { if (d[t]) QA[k][t] = JSON.parse(JSON.stringify(d[t])) }) }) }
+  let tGuardar = null;
+  function guardar() { clearTimeout(tGuardar); tGuardar = setTimeout(async () => {
+    const ov = ovActual(), log = EST.log.map(c => ({ t: c.t, desc: c.desc })), msgs = EST.msgs.slice(-80);
+    try { localStorage.setItem('la-estudio-1', JSON.stringify({ ov, msgs })) } catch (e) {}
+    if (DB) { try { await DB.doc('estudio/estado').set({ ov, cambios: log.slice(-60), actualizado: Date.now() }); await DB.doc('estudio/chat').set({ msgs, actualizado: Date.now() }) } catch (e) { estadoTxt('No se pudo guardar en la página: queda en este navegador') } }
+  }, 600) }
+  el('costos').addEventListener('change', guardar); el('costos').addEventListener('input', guardar);
+
+  /* ---------- interfaz ---------- */
+  const QUICK = ['¿Qué opción conviene y por qué, con los números de ahora?', 'Bajá el costo de la opción 2 sin perder seguridad: proponé cambios', 'Si el manitou sale USD 260 por día, ¿cómo cambia todo?', 'Compará obra en BPS contra facturar con IVA', '¿Qué supuestos falta cotizar y cuánto pesan?'];
+  function estadoTxt(t) { const s = el('chEst'); if (s) s.textContent = t }
+  function md(t) { return t.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/\*\*(.+?)\*\*/g, '<b>$1</b>').replace(/^#+\s*(.+)$/gm, '<b>$1</b>').replace(/^\s*[-•]\s+(.+)$/gm, '<span class="li">$1</span>').replace(/\n/g, '<br>') }
+  function pintar(parcial) { const box = el('chMsgs'); if (!box) return;
+    box.innerHTML = EST.msgs.map(m => `<div class="cm ${m.r}">${m.r === 'user' ? m.t.replace(/</g, '&lt;') : md(m.t)}${m.cambios && m.cambios.length ? `<div class="cc">${m.cambios.map(c => '✎ ' + c).join('<br>')}</div>` : ''}</div>`).join('')
+      + (parcial != null ? `<div class="cm assistant">${parcial ? md(parcial) : '<i>pensando…</i>'}</div>` : '')
+      + (!EST.msgs.length && parcial == null ? `<p class="nota">Preguntale por costos, días, cuadrillas, máquinas o régimen. Ve los números de las tres opciones en vivo y, si le pedís, cambia los valores y la animación se recalcula. Todo cambio queda en la lista de abajo y se puede deshacer.</p>` : '');
+    box.scrollTop = box.scrollHeight }
+  function pintarCambios() { const l = el('chLog'); if (!l) return; l.innerHTML = EST.log.length ? EST.log.slice().reverse().slice(0, 12).map(c => `<li>${c.desc}</li>`).join('') : '<li class="nota">Sin cambios: valores de fábrica o los guardados.</li>'; el('chUndo').disabled = !EST.log.length }
+
+  const SYS = `Sos el asistente de costeo de Smart Building Uruguay (SBU) dentro del visor 3D de la obra La Armonía. Hablás con Ramiro Portugau, director de obra, en español rioplatense, directo y breve.
+Qué hay: tres métodos para montar la cubierta de paneles Hiansa (opción A = "1", C = "2", B = "3"), cada uno con fases (días, cuadrilla oe=oficial especializado, of=oficial, mo=medio oficial, pe=peón, y cuántos trabajan en altura), máquinas, andamios, seguridad, flete e imprevistos; parámetros de jornales del laudo de construcción, BPS, IVA, tipo de cambio y precios de alquiler (los marcados "supuesto" hay que cotizarlos). Dos regímenes: obra registrada en BPS (sin IVA de venta, BPS aparte, IVA de compras no se recupera) o SBU factura con IVA (cargas de Industria y Comercio, IVA arriba). La ganancia de SBU siempre se habla sin IVA.
+Cómo trabajar:
+- Basate en el estado que viene con cada mensaje; citá números concretos (USD, días, USD/m²).
+- Si te piden cambiar algo, o proponés algo y te dicen que sí, usá las herramientas para aplicarlo; después decí en una línea qué cambió y el nuevo total. Si solo preguntan "qué pasaría si", podés aplicar el cambio, informar y ofrecer deshacer (el usuario tiene un botón Deshacer).
+- No inventes precios de mercado como si fueran hechos: decí cuándo es un supuesto. Cuidá la seguridad (Decreto 125/014, arnés y línea de vida por encima de 2 m): no propongas ahorrar sacando seguridad.
+- Respuestas cortas, con listas cuando compares. Sin preámbulos.`;
+  const TOOLS = [
+    { name: 'leer_estado', description: 'Lee el estado actual completo (parámetros, fases, máquinas y totales de las tres opciones). Usalo después de varios cambios.', inputSchema: { type: 'object', properties: {} }, execute: () => estado() },
+    { name: 'cambiar_parametro', description: 'Cambia un parámetro de costos por su clave (ej. m_mani, m_tij, j_of, margen, imprev, tc, and_m2sem, pm2). pm2 > 0 fija el precio por m² sin IVA; 0 vuelve a costo + ganancia.', inputSchema: { type: 'object', properties: { clave: { type: 'string' }, valor: { type: 'number' } }, required: ['clave', 'valor'] }, execute: x => H.cambiar_parametro(x) },
+    { name: 'cambiar_fase', description: 'Cambia una fase de una opción (A, B o C) por índice: días, cuadrilla {oe,of,mo,pe} y/o cuántos en altura. Recalcula días totales y la animación.', inputSchema: { type: 'object', properties: { opcion: { type: 'string', enum: ['A', 'B', 'C'] }, indice: { type: 'integer' }, dias: { type: 'number' }, cuadrilla: { type: 'object', properties: { oe: { type: 'number' }, of: { type: 'number' }, mo: { type: 'number' }, pe: { type: 'number' } } }, en_altura: { type: 'number' } }, required: ['opcion', 'indice'] }, execute: x => H.cambiar_fase(x) },
+    { name: 'cambiar_maquina', description: 'Cambia días-máquina o fletes de una máquina de una opción por índice. El manitou de la opción C calcula sus días solo.', inputSchema: { type: 'object', properties: { opcion: { type: 'string', enum: ['A', 'B', 'C'] }, indice: { type: 'integer' }, dias: { type: 'number' }, fletes: { type: 'number' } }, required: ['opcion', 'indice'] }, execute: x => H.cambiar_maquina(x) },
+    { name: 'cambiar_andamio', description: 'Cambia m² o semanas de un tramo de andamio de una opción.', inputSchema: { type: 'object', properties: { opcion: { type: 'string', enum: ['A', 'B', 'C'] }, indice: { type: 'integer' }, m2: { type: 'number' }, semanas: { type: 'number' } }, required: ['opcion', 'indice'] }, execute: x => H.cambiar_andamio(x) },
+    { name: 'elegir', description: 'Cambia la opción que se muestra (A, B, C) y/o el régimen (obra | iva).', inputSchema: { type: 'object', properties: { opcion: { type: 'string', enum: ['A', 'B', 'C'] }, regimen: { type: 'string', enum: ['obra', 'iva'] } } }, execute: x => H.elegir(x) },
+  ];
+
+  async function enviar(txt) {
+    txt = (txt || '').trim(); if (!txt || ocupado) return; if (!SAMPLE) { estadoTxt('El chat funciona en la versión dentro de Claude'); return }
+    ocupado = true; el('chSend').textContent = 'Parar'; const n0 = EST.log.length;
+    EST.msgs.push({ r: 'user', t: txt, ts: Date.now() }); pintar('');
+    const hist = EST.msgs.slice(-16, -1).map(m => ({ role: m.r, content: m.t }));
+    while (hist.length && hist[0].role !== 'user') hist.shift();
+    const input = [{ role: 'user', content: SYS }, { role: 'assistant', content: 'Listo, decime.' }, ...hist, { role: 'user', content: `${txt}\n\n[Estado actual del visor, JSON]\n${JSON.stringify(estado())}` }];
+    // el historial tiene que alternar: si quedaron dos del mismo rol seguidos, se unen
+    const inp = []; input.forEach(m => { const l = inp[inp.length - 1]; if (l && l.role === m.role) l.content += '\n\n' + m.content; else inp.push({ ...m }) });
+    ctrl = new AbortController(); let out = '';
+    try {
+      const r = await SAMPLE(inp, { tools: TOOLS, cache: false, signal: ctrl.signal, modelTier: 'default', onText: ({ text }) => { out = text; pintar(out) } });
+      out = r.text || out;
+    } catch (e) {
+      if (e && e.code === 'not_granted') { out = 'No hay permiso para usar Claude desde esta página. Se puede volver a intentar y aceptar el aviso.'; }
+      else if (e && e.code === 'rate_limited') out = 'Límite de uso por ahora: probá en un rato.';
+      else if (ctrl.signal.aborted) out = (e && e.text) || out || '(cortado)';
+      else out = 'Error: ' + ((e && e.message) || e);
+    }
+    EST.msgs.push({ r: 'assistant', t: out || '(sin respuesta)', ts: Date.now(), cambios: EST.log.slice(n0).map(c => c.desc) });
+    ocupado = false; ctrl = null; el('chSend').textContent = 'Enviar'; pintar(); pintarCambios(); guardar();
+  }
+
+  // pestaña y panel
+  {
+    const tb = document.querySelector('#tabs [data-t="costos"]'); const b = document.createElement('button'); b.dataset.t = 'chat'; b.textContent = 'Chat'; tb.after(b);
+    const sec = document.createElement('section'); sec.dataset.p = 'chat'; sec.hidden = true;
+    sec.innerHTML = `<h2>Chat de costeo con Claude</h2><p class="chest" id="chEst">Conectando…</p>
+      <div class="chq" id="chQ">${QUICK.map(q => `<button>${q}</button>`).join('')}</div>
+      <div class="chmsgs" id="chMsgs"></div>
+      <div class="chin"><textarea id="chTxt" rows="2" placeholder="Ej.: ¿y si el establo lo hacemos en 4 días con 2 arriba?"></textarea><div class="chb"><button class="btn" id="chMic" hidden title="Dictar">🎤</button><button class="btn" id="chSend">Enviar</button></div></div>
+      <h3 class="chh">Cambios aplicados <button class="btn mini" id="chUndo">Deshacer último</button> <button class="btn mini" id="chFab">Volver a valores de fábrica</button> <button class="btn mini" id="chBorrar">Borrar chat</button></h3>
+      <ul class="chlog" id="chLog"></ul>
+      <p class="nota" id="chNota"></p>`;
+    document.querySelector('aside section[data-p="costos"]').after(sec);
+    el('tabs').addEventListener('click', e => { const t = e.target.closest('[data-t]'); if (t) { el('app').classList.toggle('ancho', t.dataset.t === 'costos' || t.dataset.t === 'chat'); if (t.dataset.t === 'chat') { pintar(); pintarCambios(); setTimeout(() => el('chTxt').focus(), 50) } } });
+    el('chQ').onclick = e => { const q = e.target.closest('button'); if (q) enviar(q.textContent) };
+    el('chSend').onclick = () => { if (ocupado && ctrl) { ctrl.abort(); return } const t = el('chTxt'); enviar(t.value); t.value = '' };
+    el('chTxt').addEventListener('keydown', e => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); el('chSend').click() } });
+    el('chUndo').onclick = deshacer;
+    el('chFab').onclick = () => { if (el('chFab').dataset.ok) { delete el('chFab').dataset.ok; el('chFab').textContent = 'Volver a valores de fábrica'; deFabrica() } else { el('chFab').dataset.ok = 1; el('chFab').textContent = '¿Seguro? tocá de nuevo' } };
+    el('chBorrar').onclick = () => { if (el('chBorrar').dataset.ok) { delete el('chBorrar').dataset.ok; el('chBorrar').textContent = 'Borrar chat'; EST.msgs = []; pintar(); guardar() } else { el('chBorrar').dataset.ok = 1; el('chBorrar').textContent = '¿Seguro? tocá de nuevo' } };
+  }
+
+  // arranque: lo guardado en el navegador primero; después la base de la página si está
+  try { const s = JSON.parse(localStorage.getItem('la-estudio-1') || 'null'); if (s) { aplicarOv(s.ov); EST.msgs = s.msgs || [] } } catch (e) {}
+  aplicar(); resumen(); pintarCambios();
+  (async () => {
+    for (let i = 0; i < 15 && !(window.claude && window.claude.use); i++) await new Promise(r => setTimeout(r, 100));
+    const cl = window.claude && window.claude.use ? window.claude : null;
+    if (!cl) { estadoTxt('Esta copia está en GitHub: el chat funciona en la versión dentro de Claude.'); el('chNota').innerHTML = CHAT_URL ? `<a href="${CHAT_URL}" target="_blank" rel="noopener">Abrir el visor con chat en claude.ai →</a>` : ''; el('chQ').hidden = true; el('chTxt').disabled = true; el('chSend').disabled = true; return }
+    const [s, d, di] = await Promise.all([cl.use('sample'), cl.use('db'), cl.use('dictation')]);
+    SAMPLE = s; DB = d; DICT = di;
+    if (!SAMPLE) { estadoTxt('Claude no está disponible en esta vista.'); el('chTxt').disabled = true; el('chSend').disabled = true; }
+    else estadoTxt(DB ? 'Conectado con tu cuenta de Claude · los ajustes y el chat se guardan en la página (los ve quien la tenga compartida)' : 'Conectado con tu cuenta de Claude · lo guardado queda en este navegador');
+    if (DB) { const t = setTimeout(() => {}, 10000); try { const [a, b] = await Promise.all([DB.doc('estudio/estado').get(), DB.doc('estudio/chat').get()]); clearTimeout(t);
+      const va = a && (a.data ? a.data() : a), vb = b && (b.data ? b.data() : b);
+      if (va && va.ov) { aplicarOv(va.ov); aplicar(); try { if (!el('costos').closest('section').hidden) costos(); else resumen() } catch (e) {} }
+      if (vb && vb.msgs) { EST.msgs = vb.msgs; pintar() } } catch (e) { clearTimeout(t) } }
+    if (DICT) { const mic = el('chMic'); mic.hidden = false; let base = '';
+      DICT.onPartial(({ text }) => { el('chTxt').value = base + text }); DICT.onFinal(({ text }) => { base += text + ' '; el('chTxt').value = base });
+      DICT.onState(({ state }) => { mic.classList.toggle('on', state === 'listening') });
+      mic.onclick = () => { if (mic.classList.contains('on')) { DICT.stop().catch(() => {}); return } base = el('chTxt').value ? el('chTxt').value + ' ' : ''; DICT.start().catch(e => { if (e && e.code === 'not_granted') mic.hidden = true }) } }
+  })();
+  window.__la.chat = { estado, H, EST, enviar };
+}
 </script>
 <script>
 /* ================= Relevo técnico en obra (independiente del 3D) =================
