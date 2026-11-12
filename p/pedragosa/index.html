@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Locales comerciales · Avda. Pedragosa Sierra · SBU</title>
+<style>
+*{box-sizing:border-box}html,body{margin:0;height:100%;background:#1c1814;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:#222;-webkit-user-select:none;user-select:none;-webkit-touch-callout:none;overflow:hidden}
+#app{position:fixed;inset:0;display:flex;flex-direction:column}
+header{background:#2a241e;color:#fff;padding:10px 16px;display:flex;align-items:center;gap:14px;flex-wrap:wrap}
+header .logo{color:#d98b52;font-weight:700;font-size:11px;letter-spacing:.25em}
+header h1{font-size:17px;margin:0;font-weight:700}header p{margin:0;font-size:12px;opacity:.75}
+header .sp{flex:1}header a{color:#fff;text-decoration:none;background:#b5622a;padding:7px 12px;border-radius:7px;font-size:13px;font-weight:600}
+#v{position:relative;flex:1;min-height:0;overflow:hidden}#v canvas{display:block;width:100%;height:100%;touch-action:none}
+#wm{position:absolute;inset:0;pointer-events:none;overflow:hidden;opacity:.055;color:#000;font-weight:700;font-size:20px;line-height:110px;transform:rotate(-24deg) scale(1.6);white-space:nowrap}
+#cap{position:absolute;left:16px;bottom:16px;background:rgba(28,24,20,.82);color:#fff;border-left:5px solid #b5622a;border-radius:9px;padding:10px 16px;max-width:min(460px,80vw);transition:opacity .4s}
+#cap b{display:block;font-size:19px}#cap i{font-style:normal;color:#f0b07f;font-size:14px;font-weight:600}#cap span{display:block;font-size:13px;opacity:.88;margin-top:3px}
+#load{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;color:#fff;background:#1c1814;font-size:15px}
+#views{position:absolute;right:12px;top:12px;display:flex;flex-direction:column;gap:6px}
+#views button{background:rgba(255,255,255,.9);border:0;border-radius:7px;padding:7px 10px;font-size:12px;font-weight:600;cursor:pointer;color:#2a241e;text-align:left}
+#bar{background:#f6f2ec;padding:10px 14px;display:flex;gap:16px;align-items:center;flex-wrap:wrap;border-top:1px solid #e3dccf}
+#bar .g{display:flex;gap:6px;align-items:center;flex-wrap:wrap}#bar .t{font-size:11px;font-weight:700;letter-spacing:.12em;color:#8a7a68;text-transform:uppercase;margin-right:2px}
+.btn{border:0;border-radius:8px;padding:8px 13px;font-size:13px;font-weight:700;cursor:pointer;background:#b5622a;color:#fff}
+.chip{border:1px solid #d9cfbf;background:#fff;border-radius:999px;padding:6px 11px;font-size:12px;cursor:pointer;color:#2a241e}.chip.on{background:#2a241e;color:#fff;border-color:#2a241e}
+.chip small{display:block;font-size:10px;opacity:.7}
+label.cap{font-size:12.5px;display:flex;align-items:center;gap:5px;cursor:pointer;background:#fff;border:1px solid #e3dccf;border-radius:7px;padding:5px 9px}
+label.cap i{width:10px;height:10px;border-radius:3px;display:inline-block}
+#vid{position:fixed;inset:0;background:rgba(0,0,0,.85);display:none;align-items:center;justify-content:center;z-index:9}#vid video{max-width:94vw;max-height:84vh;border-radius:8px}#vid button{position:absolute;top:14px;right:16px}
+@media (max-width:700px){header h1{font-size:14px}header p{display:none}#bar{gap:8px;padding:8px}.chip small{display:none}#views{top:8px;right:8px}#views button{padding:5px 8px;font-size:11px}#cap{left:8px;bottom:8px;padding:7px 11px}#cap b{font-size:15px}#cap span{display:none}}
+@media print{body{display:none}}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+</head>
+<body>
+<div id="app">
+ <header><div><div class="logo">SMART BUILDING URUGUAY</div><h1>Locales comerciales · Avda. Pedragosa Sierra</h1><p>Propuesta para Juan Carlos García · Punta del Este</p></div><div class="sp"></div><a href="#" id="vidBtn">▶ Ver video</a></header>
+ <div id="v"><div id="wm"></div><div id="load">Cargando el modelo…</div>
+  <div id="views"></div>
+  <div id="cap" style="opacity:0"><b></b><i></i><span></span></div>
+ </div>
+ <div id="bar">
+  <div class="g"><button class="btn" id="play">▶ Animación</button></div>
+  <div class="g" id="etapas"><span class="t">Etapas</span></div>
+  <div class="g" id="capas"><span class="t">Capas</span></div>
+ </div>
+</div>
+<div id="vid"><video id="vv" src="etapas.mp4" controls playsinline preload="none" poster="poster.jpg" controlslist="nodownload" disablepictureinpicture></video><button class="btn" id="vidX">✕ Cerrar</button></div>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
+
+// ---- protección básica: sin menú contextual, selección, arrastre ni atajos de guardar/imprimir/código
+['contextmenu', 'dragstart', 'selectstart', 'copy'].forEach(e => document.addEventListener(e, ev => ev.preventDefault()));
+document.addEventListener('keydown', e => { const k = e.key.toLowerCase(); if ((e.ctrlKey || e.metaKey) && ['s', 'p', 'u', 'c'].includes(k) || e.key === 'F12' || ((e.ctrlKey || e.metaKey) && e.shiftKey && ['i', 'j', 'c'].includes(k))) e.preventDefault(); });
+document.getElementById('wm').innerHTML = Array(30).fill(Array(8).fill('SBU · Propuesta para Juan Carlos García ·').join(' ')).join('<br>');
+
+const ETAPAS = [
+  { n: 'Etapa 1 · Suelo y fundación', f: '7 dic. → 22 dic. 2026', d: 'Movimiento de suelos, previsiones de sanitaria y eléctrica, vigas, platinas y platea.', k: ['inst', 'plat'], v: 'Estructura', c: '#8a6a3f' },
+  { n: 'Etapa 2 · Estructura', f: '15 ene. → 29 ene. 2027', d: 'Pórticos, arriostramientos, correas y bastidores de fachada, fabricados en taller durante diciembre.', k: ['est', 'cru', 'cor', 'lar', 'bas'], v: 'Estructura', c: '#b5622a' },
+  { n: 'Etapa 3 · Envolvente', f: '3 feb. → 1 mar. 2027', d: 'Techo y muros de panel, vidrieras, faja, brise y cenefa: el edificio queda cerrado.', k: ['techo', 'muro', 'vid', 'faja', 'cen'], v: 'Plaza', c: '#2f6f86' },
+  { n: 'Etapa 4 · Interior', f: '12 feb. → 10 mar. 2027', d: 'Divisorios entre locales, baños, sanitaria, eléctrica e iluminación.', k: ['div', 'iSan', 'iEle'], v: 'Interior', c: '#6c8a3f' },
+  { n: 'Etapa 5 · Entrega', f: '2 mar. → 14 abr. 2027', d: 'Plaza, estacionamiento, conexiones, Bomberos y final de obra. Locales listos para alquilar.', k: ['ext'], v: 'Avenida', c: '#6a4f8a' }];
+const VISTAS = { 'Aérea': [[56.6, 34, -46], [23.1, 0, -8]], 'En el barrio': [[62.6, 19, 21], [21.6, 0, -10]], 'Avenida': [[66.6, 17, -49], [22.6, 1, -8]], 'Plaza': [[24, 2.2, -27], [22.6, 3, -12]], 'Estructura': [[44, 9, 6], [24.6, 2.5, -9]], 'Interior': [[25.1, 33, 9], [23.1, 0, -9]] };
+
+const box = document.getElementById('v'), ren = new THREE.WebGLRenderer({ antialias: true }); ren.setPixelRatio(Math.min(devicePixelRatio, 2)); ren.shadowMap.enabled = true; box.prepend(ren.domElement);
+const sc = new THREE.Scene(); sc.background = new THREE.Color(0xcfdde4); sc.fog = new THREE.Fog(0xcfdde4, 110, 330);
+const cam = new THREE.PerspectiveCamera(40, 1, .1, 600); cam.position.set(62.6, 19, 21);
+const ctl = new OrbitControls(cam, ren.domElement); ctl.target.set(21.6, 0, -10); ctl.enableDamping = true; ctl.maxPolarAngle = Math.PI * .495; ctl.maxDistance = 160; ctl.minDistance = 4;
+sc.add(new THREE.HemisphereLight(0xffffff, 0x8a8070, .9), new THREE.AmbientLight(0xffffff, .45));
+const sun = new THREE.DirectionalLight(0xffffff, 1.5); sun.position.set(30, 50, -60); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -50, right: 50, top: 50, bottom: -50, far: 200 }); sun.target.position.set(25, 0, -10); sc.add(sun, sun.target);
+function resize() { const w = box.clientWidth, h = box.clientHeight; ren.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); }
+addEventListener('resize', resize); resize();
+
+const G = {}; let ready = false;
+new GLTFLoader().load('modelo.glb', g => {
+  g.scene.traverse(o => { if (o.isMesh) { o.castShadow = o.receiveShadow = true; if (o.material.transparent) o.material.depthWrite = false; } });
+  g.scene.children[0].children.forEach(c => { G[c.name] = c; c.userData.y0 = c.position.y; });
+  sc.add(g.scene); document.getElementById('load').remove(); ready = true; mostrarTodo(); });
+
+// ---- vistas
+let viaje = null;
+function irVista(n) { const [p, t] = VISTAS[n]; viaje = { s: performance.now(), p0: cam.position.clone(), t0: ctl.target.clone(), p1: new THREE.Vector3(...p), t1: new THREE.Vector3(...t) }; }
+document.getElementById('views').innerHTML = Object.keys(VISTAS).map(n => `<button data-v="${n}">${n}</button>`).join('');
+document.getElementById('views').onclick = e => { const n = e.target.dataset.v; if (n) { parar(); irVista(n); } };
+
+// ---- capas
+const CAPAS = [['Terreno y fundación', ['inst', 'plat'], '#8a6a3f'], ['Estructura', ETAPAS[1].k, '#b5622a'], ['Envolvente', ETAPAS[2].k, '#2f6f86'], ['Interior', ETAPAS[3].k, '#6c8a3f'], ['Exteriores', ['ext'], '#6a4f8a']];
+document.getElementById('capas').insertAdjacentHTML('beforeend', CAPAS.map(([n, , c], i) => `<label class="cap"><input type="checkbox" data-c="${i}" checked><i style="background:${c}"></i>${n}</label>`).join(''));
+document.getElementById('capas').onchange = e => { parar(); const i = e.target.dataset.c; CAPAS[i][1].forEach(k => { if (G[k]) { G[k].visible = e.target.checked; G[k].position.y = G[k].userData.y0; } }); };
+function setCapas() { document.querySelectorAll('#capas input').forEach((x, i) => x.checked = CAPAS[i][1].some(k => G[k] && G[k].visible)); }
+
+// ---- etapas y animación
+document.getElementById('etapas').insertAdjacentHTML('beforeend', ETAPAS.map((e, i) => `<button class="chip" data-e="${i}">${i + 1} · ${e.n.split('· ')[1]}<small>${e.f.replace(/ 202\d/g, '')}</small></button>`).join(''));
+document.getElementById('etapas').onclick = e => { const b = e.target.closest('[data-e]'); if (b) { parar(); hasta(+b.dataset.e, true); } };
+const cap = document.getElementById('cap');
+function caption(i) { if (i < 0) { cap.style.opacity = 0; return; } const e = ETAPAS[i]; cap.children[0].textContent = e.n; cap.children[1].textContent = e.f; cap.children[2].textContent = e.d; cap.style.opacity = 1; document.querySelectorAll('.chip').forEach((c, j) => c.classList.toggle('on', j === i)); }
+function hasta(i, vista) { if (!ready) return; ETAPAS.forEach((e, j) => e.k.forEach(k => { if (G[k]) { G[k].visible = j <= i; G[k].position.y = G[k].userData.y0; } })); if (G.techo) G.techo.visible = i >= 2 && i !== 3; caption(i); setCapas(); if (vista) irVista(ETAPAS[i].v); }
+function mostrarTodo() { Object.values(G).forEach(g => { g.visible = true; g.position.y = g.userData.y0 || 0; }); caption(-1); setCapas(); document.querySelectorAll('.chip').forEach(c => c.classList.remove('on')); }
+let AN = null; const PASO = 1.1, ESP = 1.6;   // segundos por capa y pausa al terminar cada etapa
+function play() { if (!ready) return; ETAPAS.forEach(e => e.k.forEach(k => G[k] && (G[k].visible = false))); if (G.techo) G.techo.visible = false; const Q = []; ETAPAS.forEach((e, i) => { e.k.forEach(k => G[k] && Q.push({ k, i })); Q.push({ pausa: true, i }); }); AN = { Q, j: 0, t: 0, et: -1 }; irVista('En el barrio'); document.getElementById('play').textContent = '■ Detener'; }
+function parar() { if (!AN) return; AN = null; document.getElementById('play').textContent = '▶ Animación'; }
+document.getElementById('play').onclick = () => AN ? (parar(), mostrarTodo()) : play();
+function tickAnim(dt) {
+  if (!AN) return; const q = AN.Q[AN.j]; if (!q) { parar(); if (G.techo) G.techo.visible = true; caption(4); irVista('Avenida'); return; }
+  if (q.i !== AN.et) { AN.et = q.i; caption(q.i); irVista(ETAPAS[q.i].v); if (q.i === 3 && G.techo) G.techo.visible = false; if (q.i === 4 && G.techo) G.techo.visible = true; }
+  AN.t += dt / (q.pausa ? ESP : PASO); const t = Math.min(1, AN.t);
+  if (!q.pausa) { const g = G[q.k]; g.visible = true; g.position.y = g.userData.y0 + (1 - (1 - (1 - t) ** 3)) * 4; }
+  if (AN.t >= 1) { if (!q.pausa) G[q.k].position.y = G[q.k].userData.y0; AN.j++; AN.t = 0; } setCapas(); }
+
+// ---- video
+const vid = document.getElementById('vid'), vv = document.getElementById('vv');
+document.getElementById('vidBtn').onclick = e => { e.preventDefault(); vid.style.display = 'flex'; vv.play().catch(() => {}); };
+document.getElementById('vidX').onclick = () => { vv.pause(); vid.style.display = 'none'; };
+if (location.hash === '#video') document.getElementById('vidBtn').click();
+
+const clock = new THREE.Clock();
+(function loop() { requestAnimationFrame(loop); const dt = Math.min(.05, clock.getDelta());
+  if (viaje) { const k = Math.min(1, (performance.now() - viaje.s) / 1600), e = k < .5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2; cam.position.lerpVectors(viaje.p0, viaje.p1, e); ctl.target.lerpVectors(viaje.t0, viaje.t1, e); if (k >= 1) viaje = null; }
+  tickAnim(dt); ctl.update(); ren.render(sc, cam); })();
+</script>
+</body>
+</html>
