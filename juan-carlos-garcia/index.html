@@ -9,6 +9,7 @@ header{background:#26231f;color:#f3ece2;padding:14px 18px 0}
 header h1{margin:0;font-size:1.35rem;letter-spacing:.01em}header p{margin:2px 0 10px;color:#cfc4b4;font-size:.86rem}
 .tabs{display:flex;gap:2px;overflow-x:auto;scrollbar-width:none}.tabs button{flex:none;background:none;border:0;color:#cfc4b4;padding:9px 12px;font:600 .86rem system-ui;cursor:pointer;border-bottom:3px solid transparent}
 .tabs button.on{color:#fff;border-color:var(--acc)}
+.subtabs{display:flex;gap:4px;overflow-x:auto;scrollbar-width:none;padding:6px 0 8px}.subtabs[hidden]{display:none}.subtabs button{flex:none;background:rgba(255,255,255,.08);border:1px solid rgba(255,255,255,.18);color:#e8dfd2;border-radius:99px;padding:4px 12px;font:600 .8rem system-ui;cursor:pointer}.subtabs button.on{background:var(--acc);border-color:var(--acc);color:#fff}
 .bar{position:sticky;top:0;z-index:5;background:var(--pn);border-bottom:1px solid var(--ln);padding:8px 18px;display:flex;flex-wrap:wrap;gap:8px 18px;align-items:center;font-size:.86rem}
 .bar label{display:flex;gap:6px;align-items:center}.bar select,.bar input[type=number]{font:inherit;padding:3px 5px;border:1px solid var(--ln);border-radius:5px;background:#fff}
 .seg{display:inline-flex;border:1px solid var(--ln);border-radius:6px;overflow:hidden}.seg button{border:0;background:#fff;padding:4px 10px;font:600 .82rem system-ui;cursor:pointer;color:var(--mut)}.seg button.on{background:var(--acc);color:#fff}
@@ -33,7 +34,9 @@ tr.best td{background:#e5f1e2}.note{font-size:.82rem;color:var(--mut)}.pill{disp
 #etapa input{width:100%}#etapa{grid-template-columns:auto auto auto auto 1fr}#etAn{background:#26231f!important;color:#fff}
 #tSub{overflow-x:auto}#tSub td:nth-child(2){min-width:230px}#tSub td .note{font-size:.72rem;line-height:1.3}#tSub td.n .note{white-space:normal;max-width:190px;margin-left:auto}
 #anim{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(38,35,31,.92);color:#fff;border-radius:9px;padding:8px 12px;font-size:.8rem;display:grid;grid-template-columns:auto auto auto 1fr auto;gap:6px 10px;align-items:center;width:min(96%,820px);z-index:3}#anim[hidden],#etapa[hidden]{display:none!important}#anim button{border:1px solid #555;background:#3a3631;color:#fff;border-radius:6px;padding:4px 10px;font:700 .8rem system-ui;cursor:pointer}#anim label{display:flex;gap:4px;align-items:center}#anRg{width:100%}#anTx{grid-column:1/-1;line-height:1.35}#anTx b{display:block;color:#ffb347}#anTx span{color:#d9d0c3;font-size:.78rem}#txEt{grid-column:1/-1;line-height:1.35}#txEt b{display:block}#txEt span{color:var(--mut);font-size:.78rem}#lay label.fut{opacity:.4}#tip{position:absolute;pointer-events:none;background:#26231f;color:#fff;padding:5px 8px;border-radius:6px;font-size:.78rem;display:none;max-width:260px}
-#vistas{position:absolute;left:50%;transform:translateX(-50%);top:10px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-width:calc(100% - 520px);z-index:3}#vistas button{border:1px solid var(--ln);background:rgba(255,253,249,.95);border-radius:6px;padding:5px 9px;font:600 .76rem system-ui;cursor:pointer}#vistas button.on{background:var(--acc);color:#fff;border-color:var(--acc)}#vistas .fs{background:#26231f;color:#fff;border-color:#26231f}
+#vistas{position:absolute;left:50%;transform:translateX(-50%);top:10px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-width:calc(100% - 520px);z-index:4}#vistas .vl{display:none;position:absolute;top:34px;left:50%;transform:translateX(-50%);background:rgba(255,253,249,.97);border:1px solid var(--ln);border-radius:9px;padding:6px;flex-direction:column;gap:3px;min-width:190px;box-shadow:0 6px 18px rgba(0,0,0,.18)}#vistas.open .vl{display:flex}#vistas .vl button{text-align:left}#vistas .vb{background:#26231f!important;color:#fff!important;border-color:#26231f!important}
+#anDia{position:absolute;left:50%;transform:translateX(-50%);top:48px;background:rgba(38,35,31,.9);color:#fff;border-radius:10px;padding:6px 16px;text-align:center;z-index:3;pointer-events:none}#anDia b{display:block;font-size:1.25rem;color:#f2b705}#anDia span{font-size:.76rem}#anDia[hidden]{display:none!important}
+#anDias{grid-column:1/-1;display:flex;flex-wrap:wrap;gap:3px;align-items:center;font-size:.72rem}#anDias button{padding:2px 7px!important;font-size:.72rem!important;min-width:26px}#anDias button.hoy{background:#f2b705!important;color:#26231f!important;border-color:#f2b705!important}#vistas button{border:1px solid var(--ln);background:rgba(255,253,249,.95);border-radius:6px;padding:5px 9px;font:600 .76rem system-ui;cursor:pointer}#vistas button.on{background:var(--acc);color:#fff;border-color:var(--acc)}#vistas .fs{background:#26231f;color:#fff;border-color:#26231f}
 #pad[hidden]{display:none!important}#lay.min label{display:none}#lay b{cursor:pointer}#lay b:after{content:' ▾';color:var(--mut)}#lay.min b:after{content:' ▸'}
 #pad{position:absolute;right:12px;bottom:12px;z-index:3;display:flex;flex-direction:column;align-items:flex-end;gap:6px}#pad .ph{background:rgba(38,35,31,.85);color:#fff;border-radius:7px;padding:6px 9px;font-size:.74rem;max-width:260px}#pad .pk{display:flex;flex-direction:column;align-items:center;gap:3px}#pad .pk div{display:flex;gap:3px}#pad button{width:42px;height:38px;border-radius:8px;border:1px solid var(--ln);background:rgba(255,253,249,.95);font-size:1rem;cursor:pointer;touch-action:none}
 #v3:fullscreen{height:100vh;border-radius:0;border:0}#v3:fullscreen #lay{max-height:calc(100vh - 160px);overflow:auto}
@@ -42,7 +45,7 @@ tr.best td{background:#e5f1e2}.note{font-size:.82rem;color:var(--mut)}.pill{disp
 .lg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.8rem;margin:6px 0}.lg i{display:inline-block;width:14px;height:4px;vertical-align:middle;margin-right:5px;border-radius:2px}
 ul.c{margin:6px 0;padding-left:18px}ul.c li{margin:3px 0}
 .foot{color:var(--mut);font-size:.8rem;border-top:1px solid var(--ln);margin-top:24px;padding-top:10px}
-@media print{header .tabs,.bar,#lay,#etapa{display:none}section.pg{display:block!important;page-break-after:always}}
+@media print{header .tabs,header .subtabs,.bar,#lay,#etapa{display:none}section.pg{display:block!important;page-break-after:always}}
 body.pmat header,body.pmat .bar,body.pmat .foot,body.pmat .noprint{display:none}body.pmat main{max-width:none;padding:0}body.pmat section.pg{display:none!important}body.pmat #p-mat{display:block!important}
 body.pedido header,body.pedido .bar,body.pedido .foot,body.pedido .noprint{display:none}body.pedido main{max-width:none;padding:0}body.pedido section.pg{display:none!important}body.pedido #p-ped{display:block!important}
 .pedbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px}.btn2{display:inline-block;border:1px solid var(--ln);background:#fff;color:var(--ink);border-radius:7px;padding:7px 12px;font:600 .84rem system-ui;cursor:pointer;text-decoration:none}.btn2:hover{border-color:var(--acc)}.btn2.pri{background:var(--acc);color:#fff;border-color:var(--acc)}
@@ -60,7 +63,7 @@ tr.win td{background:#e5f1e2;font-weight:600}.tag2{display:inline-block;font-siz
 </style></head><body>
 <header><h1>Locales comerciales · Avda. Pedragosa Sierra</h1>
 <p>Juan Carlos García · padrones 10596 · 10597 · 10598, Punta del Este, Maldonado · proyecto tipo de 250 m² sobre el 10596, replicable en los otros dos · Smart Building Uruguay</p>
-<nav class="tabs" id="tabs"></nav></header>
+<nav class="tabs" id="tabs"></nav><nav class="subtabs" id="subtabs"></nav></header>
 <div class="bar">
  <label>Locales <span class="seg" id="segN"></span></label>
  <label>Envolvente <select id="selEnv"></select></label>
@@ -123,7 +126,7 @@ tr.win td{background:#e5f1e2;font-weight:600}.tag2{display:inline-block;font-siz
 <section class="pg" id="p-3d">
  <h2>3D estructural por capas</h2>
  <p class="sub"><b>🎬 Montaje animado</b> (abajo, en la barra de etapas): la obra se arma pieza por pieza, con el manitou con operario subiendo pórticos y paneles, la tijera de 8 m con dos operarios y el día de obra en el cartel. Arriba: vistas armadas (como el render, desde la avenida, la plaza, el portal, aérea, planta, estructura, interior, fondo), <b>tercera persona</b> para caminar la obra y <b>pantalla completa</b> (también con la tecla F). El armado en 16 etapas, en el orden de obra. Se avanza con las flechitas ◀ ▶▶, con ▶ se reproduce solo, con la rueda del mouse sobre la barra de etapas (o Shift + rueda sobre el 3D) y con las flechas del teclado. Pasando el mouse por una pieza se ve qué es. Cambiá arriba la envolvente: cambian el color, el espesor, la pendiente y las correas.</p>
- <div id="v3"><div id="lay"></div><div id="hud"></div><div id="vistas"></div><div id="pad" hidden><div class="ph">Tercera persona · <b>W A S D</b> o flechas para caminar · <b>Shift</b> corre · arrastrá el mouse para mirar</div><div class="pk"><button data-k="f">▲</button><div><button data-k="l">◀</button><button data-k="b">▼</button><button data-k="r">▶</button></div></div></div><div id="anim" hidden><button id="anPl">❚❚</button><button id="anV">×1</button><label><input type="checkbox" id="anSeg" checked> cámara sigue</label><input type="range" id="anRg" min="0" max="100" value="0"><button id="anX">✕ Salir</button><div id="anTx"></div></div><div id="etapa"><button id="etAn" title="Animación del montaje pieza por pieza">🎬 Montaje animado</button><button id="etPrev" title="Etapa anterior (←)">◀</button><button id="etPlay" title="Reproducir (espacio)">▶</button><button id="etNext" title="Etapa siguiente (→)">▶▶</button><input type="range" id="rgEt" min="0" max="15" value="15"><div id="txEt"></div></div><div id="tip"></div></div>
+ <div id="v3"><div id="lay"></div><div id="hud"></div><div id="vistas"></div><div id="pad" hidden><div class="ph">Tercera persona · <b>W A S D</b> o flechas para caminar · <b>Shift</b> corre · arrastrá el mouse para mirar</div><div class="pk"><button data-k="f">▲</button><div><button data-k="l">◀</button><button data-k="b">▼</button><button data-k="r">▶</button></div></div></div><div id="anim" hidden><button id="anPl">❚❚</button><button id="anV">×1</button><label><input type="checkbox" id="anSeg" checked> cámara sigue</label><input type="range" id="anRg" min="0" max="100" value="0"><button id="anX">✕ Salir</button><div id="anTx"></div><div id="anDias"></div></div><div id="anDia" hidden></div><div id="etapa"><button id="etAn" title="Animación del montaje pieza por pieza">🎬 Montaje animado</button><button id="etPrev" title="Etapa anterior (←)">◀</button><button id="etPlay" title="Reproducir (espacio)">▶</button><button id="etNext" title="Etapa siguiente (→)">▶▶</button><input type="range" id="rgEt" min="0" max="15" value="15"><div id="txEt"></div></div><div id="tip"></div></div>
 </section>
 
 <section class="pg" id="p-env">
@@ -196,9 +199,9 @@ tr.win td{background:#e5f1e2;font-weight:600}.tag2{display:inline-block;font-siz
  <h2>Auditoría de costos y estudio de mercado</h2>
  <p class="sub">Revisión del rubrado contra precios de referencia y avisos publicados (noviembre 2026), lo que falta cotizar y cuánto vale el edificio terminado. Se recalcula con la cantidad de locales, la envolvente y la entrega elegidas arriba.</p>
  <div class="k" id="kAud"></div>
- <div class="card"><h3 style="margin-top:0">1 · Lo más importante: aportes BPS de la mano de obra subcontratada</h3><div id="audBps"></div></div>
- <div class="card"><h3 style="margin-top:0">2 · Precios unitarios que pueden quedar cortos</h3><div id="audPU"></div></div>
- <div class="card"><h3 style="margin-top:0">3 · Lo que no está en el rubrado</h3><div id="audFal"></div></div>
+ <div class="card"><h3 style="margin-top:0">1 · Aportes BPS de la mano de obra subcontratada</h3><div id="audBps"></div></div>
+ <div class="card"><h3 style="margin-top:0">2 · Ajustes aplicados al rubrado</h3><div id="audPU"></div></div>
+ <div class="card"><h3 style="margin-top:0">3 · Lo que queda fuera del precio</h3><div id="audFal"></div></div>
  <div class="card"><h3 style="margin-top:0">4 · Mercado: cuánto se alquila y se vende en la zona</h3><div id="audMer"></div></div>
  <div class="card"><h3 style="margin-top:0">5 · Cuánto vale el edificio terminado</h3>
   <div class="bar" style="position:static;border:0;padding:0 0 10px"><label>Alquiler USD/m²/mes <input type="number" id="audAlq" value="24" step="1" style="width:60px"></label>
@@ -345,7 +348,7 @@ function rubrado(st = S) {
   it('Terminación llaneado mecánico (queda como piso de local)', 250, 'm²', 4);
   cat('3 · Estructura de acero');
   pq('est'); if (EST_OVR && EST_OVR.t > 0) { R.push({ t: 'Estructura metálica completa según cotización de ' + EST_OVR.nom + ' (fabricación, protección, transporte y montaje)', q: 1, un: 'gl', pu: EST_OVR.t, c: EST_OVR.t, nota: 'cotización recibida', pq: 'est', mat: .55, ovr: true }); } else {
-  it('Acero laminado y tubos: fabricado, granallado, epoxi + poliuretano (ambiente marino) y montado', Math.round(ac.kg - ac.kgG), 'kg', 3.4, 'ver planilla de piezas');
+  it('Acero laminado y tubos: fabricado, granallado, epoxi + poliuretano (ambiente marino) y montado', Math.round(ac.kg - ac.kgG), 'kg', 3.7, 'ver planilla de piezas · se ajusta con la cotización del taller');
   it('Perfiles conformados galvanizados (correas, largueros, bastidores) montados', Math.round(ac.kgG), 'kg', 2.6);
   it('Pernos de anclaje Ø24 con plantilla (48 u)', 48, 'u', 18);
   it('Grúa / manitou para el montaje', 1, 'gl', 2400); }
@@ -358,7 +361,7 @@ function rubrado(st = S) {
   cat('5 · Muros y fachada');
   pq('panmat'); it(E.wall.nom + ' (material)', SUP.muro, 'm²', E.wall.usd);
   pq('panel'); it('Montaje de muros, remates, esquineros y zócalo (con sus equipos)', SUP.muro, 'm²', 28, '', 0.3);
-  pq('alu'); it('Vidrieras de aluminio línea pesada, laminado 5+5 (incluye el portal de piso a dintel)', SUP.vid, 'm²', 240);
+  pq('alu'); it('Vidrieras de aluminio línea pesada, laminado 5+5 (incluye el portal de piso a dintel)', SUP.vid, 'm²', 290, 'ver planilla de aberturas');
   it('Puerta vidriada de acceso por local (cerradura y cierrapuertas)', n, 'u', 380);
   pq('herr'); it('Puerta de servicio y escape al pasaje sur, chapa inyectada', n, 'u', 420);
   it('Cenefa de chapa negra plegada: sube en la esquina del frente, recorre el dintel del frente y el lateral norte y baja en la esquina del fondo', SUP.cenefa, 'm²', 65);
@@ -370,6 +373,8 @@ function rubrado(st = S) {
   cat('6 · Divisorios entre locales');
   pq('div');
   it('Steel frame 100 mm, doble placa de yeso RH por cara y lana de roca', (n - 1) * 10 * 4.4, 'm²', 52, n - 1 + ' divisorio' + (n > 2 ? 's' : ''));
+  if (eq) it('Cerramiento del baño de cada local: steel frame 70 mm, placa RH por cara', n * 10, 'm²', 45);
+  it('Masillado y pintura látex de divisorios' + (eq ? ' y cerramientos de baño' : '') + ' (2 caras)', ((n - 1) * 10 * 4.4 + (eq ? n * 10 : 0)) * 2, 'm²', 8);
   cat('7 · Sanitaria general (se deja siempre)');
   pq('san');
   it('Colector cloacal PVC 110 enterrado por el pasaje sur', 34, 'ml', 38);
@@ -387,7 +392,8 @@ function rubrado(st = S) {
   it('Iluminación de plaza, estacionamiento y cartelería', 1, 'gl', 3000);
   if (eq) {
     cat('9 · Equipamiento por local (entrega equipada)');
-    pq('san'); it('Baño accesible UNIT 200 completo (inodoro, lavatorio, barras, cerámica, extractor)', n, 'u', 3200, '', 0.6);
+    pq('san'); it('Baño accesible UNIT 200 terminado: inodoro, lavatorio, grifería, barras, accesorios y espejo, cerámica de piso y pared, extractor y termotanque 30 l (el cerramiento va en divisorios)', n, 'u', 3600, '', 0.6);
+    pq('herr'); it('Puerta de baño PB: placa con marco de chapa, manija de palanca y señal libre/ocupado', n, 'u', 280, '', 0.7); pq('san');
     it('Kitchenette (mesada con pileta y bajo mesada)', n, 'u', 1500, '', 0.7);
     pq('ele'); it('Tablero del local, circuitos e iluminación LED', 250, 'm²', 14);
     it('Preinstalación de aire acondicionado (cañería, desagüe, toma, base en techo)', n, 'u', 360);
@@ -403,36 +409,49 @@ function rubrado(st = S) {
   it('Idem por local', n, 'u', 250);
   cat('11 · Exteriores');
   pq('ext');
-  it('Estacionamiento en hormigón 12 cm con demarcación', 240, 'm²', 32);
+  it('Estacionamiento en hormigón 12 cm con malla, juntas y demarcación', 240, 'm²', 37);
   it('Plaza peatonal en baldosa de hormigón (como el render)', 190, 'm²', 38);
   it('Vereda municipal', 52, 'm²', 30);
   it('Canteros y jardinería', 1, 'gl', 1200);
   it('Patio de servicio en pedregullo', 110, 'm²', 8);
-  cat('12 · Cierre de obra');
+  cat('12 · Cierre de obra, seguros y residuos');
   pq('sbu');
   it('Andamios, fletes de paneles y limpieza final', 1, 'gl', 2900);
+  it('Volquetas y retiro de residuos', 8, 'u', 120);
+  it('Seguro todo riesgo de construcción y responsabilidad civil (20 semanas)', 1, 'gl', 1300);
+  { const c0 = R.filter(r => !r.cat).reduce((s, r) => s + r.c, 0); it('Ajuste de laudo y materiales durante la obra (1,5 %)', 1, 'gl', Math.round(c0 * .015 / 10) * 10); }
   const costo = R.filter(r => !r.cat).reduce((s, r) => s + r.c, 0);
+  // aportes BPS de la obra: jornales imponibles ≈ la mitad de la parte de mano de obra de los subcontratos en obra (sin aluminio ni taller), al 75,8 %; se pagan al costo
+  const enObra = { horm: 1, panel: 1, herr: 1, div: 1, san: 1, ele: 1, ext: 1, est: .6 }, moS = R.reduce((t, x) => t + (!x.cat && enObra[x.pq] ? x.c * (1 - x.mat) * enObra[x.pq] : 0), 0), bps = rd(moS * .5 * .758);
   const venta = rd(costo * K);
   // gestión (precios de venta, como en la propuesta)
   const G = [
     ['Proyecto y permiso de construcción', rd(Math.max(2500, venta * .045))],
-    ['Cálculo y planos de estructura (ingeniero)', 900],
+    ['Ingeniero: cálculo estructural, memoria, planos y firma; revisión de planos de taller y 2 visitas de control', 2800],
+    ['Agrimensor: replanteo, niveles y mensura final', 1200],
     ['Registro de obra en BPS', 700],
-    ['Plan de seguridad y prevencionista (Decreto 125/014)', 600],
+    ['Estudio y plan de seguridad + técnico prevencionista con visitas durante 20 semanas (Decreto 125/014)', 2400],
     ['Habilitación de Bomberos del edificio', rd(2000 * K)],
     ['Habilitación comercial por local × ' + n, rd(600 * K) * n],
   ];
   const gest = G.reduce((s, g) => s + g[1], 0);
-  return { R, costo, venta, G, gest, total: venta + gest, ac, L };
+  return { R, costo, venta, G, gest, bps, moS, total: venta + gest + bps, ac, L };
 }
 const ivaK = () => S.iva ? 1.22 : 1;
 
 /* ================= UI ================= */
-const TABS = [['p-proy', 'Proyecto'], ['p-impl', 'Implantación'], ['p-planta', 'Planta'], ['p-fach', 'Fachadas'], ['p-est', 'Estructura'], ['p-3d', '3D'], ['p-env', 'Paneles'], ['p-rub', 'Rubrado'], ['p-sub', 'Subcontratos'], ['p-ped', 'Cotizar estructura'], ['p-mat', 'Cotizar rubros'], ['p-loc', 'Locales e instalaciones'], ['p-rent', 'Rentabilidad'], ['p-aud', 'Auditoría y mercado']];
+const GRP = [['Proyecto', [['p-proy', 'Resumen']]],
+  ['Dibujos y 3D', [['p-3d', '3D y montaje animado'], ['p-impl', 'Implantación'], ['p-planta', 'Planta'], ['p-fach', 'Fachadas'], ['p-est', 'Estructura'], ['p-env', 'Paneles'], ['p-loc', 'Locales e instalaciones']]],
+  ['Costos', [['p-rub', 'Rubrado'], ['p-sub', 'Subcontratos o SBU'], ['p-aud', 'Auditoría y mercado'], ['p-rent', 'Rentabilidad']]],
+  ['Cotizaciones', [['p-mat', 'Rubros: materiales y subcontratos'], ['p-ped', 'Estructura metálica']]]];
+const TABS = GRP.flatMap(g => g[1]), grpDe = id => GRP.find(g => g[1].some(t => t[0] === id));
 const $ = id => document.getElementById(id);
-$('tabs').innerHTML = TABS.map(([id, t]) => `<button data-p="${id}">${t}</button>`).join('');
-function show(id) { document.querySelectorAll('.pg').forEach(p => p.classList.toggle('on', p.id === id)); document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.p === id)); history.replaceState(null, '', '#' + id.slice(2)); if (id === 'p-3d') v3.start(); }
-$('tabs').onclick = e => { const b = e.target.closest('button'); if (b) show(b.dataset.p); };
+$('tabs').innerHTML = GRP.map(([t, ps], i) => `<button data-g="${i}" data-p="${ps[0][0]}">${t}</button>`).join('');
+const ULT = {};
+function show(id) { const g = grpDe(id) || GRP[0], gi = GRP.indexOf(g); ULT[gi] = id; document.querySelectorAll('.pg').forEach(p => p.classList.toggle('on', p.id === id)); document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', +b.dataset.g === gi));
+  $('subtabs').innerHTML = g[1].length > 1 ? g[1].map(([pid, t]) => `<button data-p="${pid}" class="${pid === id ? 'on' : ''}">${t}</button>`).join('') : ''; $('subtabs').hidden = g[1].length < 2; history.replaceState(null, '', '#' + id.slice(2)); if (id === 'p-3d') v3.start(); }
+$('tabs').onclick = e => { const b = e.target.closest('button'); if (b) show(ULT[+b.dataset.g] || b.dataset.p); };
+$('subtabs').onclick = e => { const b = e.target.closest('button'); if (b) show(b.dataset.p); };
 $('segN').innerHTML = [2, 3, 4, 5].map(n => `<button data-n="${n}">${n}</button>`).join('');
 $('segM').innerHTML = `<button data-m="cascara">Cáscara</button><button data-m="equipado">Equipado</button>`;
 $('selEnv').innerHTML = Object.entries(ENV).map(([k, e]) => `<option value="${k}">${k} · ${e.t}</option>`).join('');
@@ -590,7 +609,7 @@ function dFach() {
     s += L_(t, -1, 0, 26, 0, 'stroke="#24211d" stroke-width="1.6"');
     s += R_(t, 0, B.npt, 25, B.hPar, `fill="${GRA}"`);
     s += R_(t, 0, B.npt, 20, 3.0, `fill="${VID}"`);
-    for (let x = 0; x <= 20.01; x += 2.5) s += R_(t, x - .06, B.npt, x + .06, 3.0, `fill="${BL}"`);
+    aberturas().filter(a => /^VN/.test(a.cod)).forEach(a => { for (let i = 0; i <= a.k; i++) { const x = Math.min(20, a.x0 + i * a.pw); s += R_(t, x - .06, B.npt, x + .06, 3.0, `fill="${BL}"`); } });
     s += R_(t, 0, 2.2, 20, 2.26, `fill="${BL}"`);
     s += R_(t, 0, 3.0, 20, 3.55, `fill="${NEG}"`);
     s += R_(t, 0, 3.55, 20.4, 3.63, `fill="#fff" stroke="#ccc" stroke-width=".5"`);
@@ -742,12 +761,12 @@ function dInst() {
 /* ================= TABLAS ================= */
 function renderTablas() {
   const r = rubrado(), k = ivaK(), lbl = S.iva ? 'con IVA' : 'sin IVA';
-  $('tot').innerHTML = `${S.n} locales · ${S.env} · ${S.modo}: ${u$((r.total) * k)} <small>${lbl} · obra + gestión</small>`;
+  $('tot').innerHTML = `${S.n} locales · ${S.env} · ${S.modo}: ${u$((r.venta + r.gest) * k + r.bps)} <small>${lbl} · obra + gestión + BPS</small>`;
   document.querySelectorAll('#segN button').forEach(b => b.classList.toggle('on', +b.dataset.n === S.n));
   document.querySelectorAll('#segM button').forEach(b => b.classList.toggle('on', b.dataset.m === S.modo));
   $('selEnv').value = S.env;
   const kp = (v, s) => `<div><b>${v}</b><span>${s}</span></div>`;
-  $('kProy').innerHTML = kp('250 m²', '25 × 10 m en planta baja') + kp(S.n + ' locales', f1(250 / S.n) + ' m² cada uno') + kp(u$(r.venta * k), 'obra ' + lbl) + kp(u$(r.venta * k / 250), 'por m² de obra') + kp(u$(r.gest * k), 'gestión y habilitaciones') + kp('≈ 5 meses', 'de obra');
+  $('kProy').innerHTML = kp('250 m²', '25 × 10 m en planta baja') + kp(S.n + ' locales', f1(250 / S.n) + ' m² cada uno') + kp(u$(r.venta * k), 'obra ' + lbl) + kp(u$(r.venta * k / 250), 'por m² de obra') + kp(u$(r.gest * k), 'gestión y habilitaciones') + kp(u$(r.bps), 'aportes BPS de la obra, al costo') + kp('≈ 5 meses', 'de obra');
   $('resProy').innerHTML = `<ul class="c">
    <li><b>Terreno:</b> padrón 10596, 1.000 m², frente a Pedragosa Sierra, frente al Centro de Convenciones del lado de Beverly Hills. Se repite igual en 10597 y 10598.</li>
    <li><b>Edificio:</b> 25 × 10 m, pórticos de acero cada 5 m, platea, muros ${ENV[S.env].wall.nom} y techo ${ENV[S.env].roof.nom}.</li>
@@ -772,8 +791,8 @@ function renderTablas() {
   h += `<tr class="tt"><td colspan="4">Total obra</td><td class="n">${u$(r.costo)}</td><td class="n">${u$(r.venta * k)}</td></tr></table>`;
   $('tRub').innerHTML = h;
   const cats = []; let cc = null; r.R.forEach(x => { if (x.cat) { cc = { t: x.cat, c: 0 }; cats.push(cc); } else cc.c += x.c; });
-  $('kRub').innerHTML = kp(u$(r.costo), 'costo directo') + kp(u$(r.venta * k), 'venta obra ' + lbl) + kp(u$(r.venta * k / 250), 'por m²') + kp(u$((r.venta - r.costo)), 'margen SBU (sin IVA)') + kp(Math.round(r.ac.kg).toLocaleString('es-UY') + ' kg', 'acero · ' + f1(r.ac.kg / 250) + ' kg/m²') + kp(u$(r.total * k), 'total con gestión');
-  $('tGest').innerHTML = `<table><tr><th>Servicio</th><th class="n">Precio ${lbl}</th></tr>` + r.G.map(g => `<tr><td>${g[0]}</td><td class="n">${u$(g[1] * k)}</td></tr>`).join('') + `<tr class="tt"><td>Total gestión</td><td class="n">${u$(r.gest * k)}</td></tr></table><p class="note">No incluye tasas y timbres oficiales (permiso municipal, DNB, conexiones de OSE y UTE), que se pagan contra recibo. Las habilitaciones comerciales de cada local las puede tramitar el inquilino según su rubro.</p>`;
+  $('kRub').innerHTML = kp(u$(r.costo), 'costo directo') + kp(u$(r.venta * k), 'venta obra ' + lbl) + kp(u$(r.venta * k / 250), 'por m²') + kp(u$((r.venta - r.costo)), 'margen SBU (sin IVA)') + kp(Math.round(r.ac.kg).toLocaleString('es-UY') + ' kg', 'acero · ' + f1(r.ac.kg / 250) + ' kg/m²') + kp(u$((r.venta + r.gest) * k + r.bps), 'total con gestión y BPS');
+  $('tGest').innerHTML = `<table><tr><th>Servicio</th><th class="n">Precio ${lbl}</th></tr>` + r.G.map(g => `<tr><td>${g[0]}</td><td class="n">${u$(g[1] * k)}</td></tr>`).join('') + `<tr class="tt"><td>Total gestión</td><td class="n">${u$(r.gest * k)}</td></tr><tr><td><b>Aportes BPS de la obra</b> (estimado: jornales imponibles ${u$(r.moS * .5)} × 75,8 %; se pagan a BPS al costo, sin margen ni IVA)</td><td class="n"><b>${u$(r.bps)}</b></td></tr><tr class="tt"><td>Total obra + gestión + BPS</td><td class="n">${u$((r.venta + r.gest) * k + r.bps)}</td></tr></table><p class="note">El monto de BPS se ajusta con la mano de obra imponible que declare cada subcontratista (se pide en los pedidos de cotización). No incluye tasas y timbres oficiales (permiso municipal, DNB, conexiones de OSE y UTE), que se pagan contra recibo. Las habilitaciones comerciales de cada local las puede tramitar el inquilino según su rubro.</p>`;
   const P = [['Permisos, mensura, cálculo', 'semanas -6 a 0', 'en paralelo con la compra de paneles'], ['Suelo, previsiones y platea', 'semanas 1-3', 'previsiones sanitarias y caños antes de hormigonar'], ['Estructura de acero', 'semanas 4-6', 'fabricación en taller desde la semana 1'], ['Techo y muros de panel', 'semanas 7-9', 'el edificio queda cerrado'], ['Vidrieras, brise, faja', 'semanas 10-13', 'aberturas encargadas en la semana 2'], ['Divisorios e instalaciones', 'semanas 10-15', 'en paralelo con la fachada'], ['Equipamiento de locales', 'semanas 14-18', S.modo === 'equipado' ? 'baños, kitchenettes, tableros' : 'no aplica en cáscara'], ['Exteriores, conexiones, Bomberos', 'semanas 16-20', 'plaza, estacionamiento, final de obra']];
   $('tPlazo').innerHTML = `<table><tr><th>Etapa</th><th>Cuándo</th><th>Nota</th></tr>` + P.map(p => `<tr><td>${p[0]}</td><td>${p[1]}</td><td class="note">${p[2]}</td></tr>`).join('') + `</table><p class="note">Unas 20 semanas de obra. Para los padrones 10597 y 10598 el proyecto ya está hecho: baja la gestión y se ganan semanas.</p>`;
   // modos
@@ -1106,8 +1125,6 @@ function renderMat() {
       ele: ['Eléctrica', 'instalador eléctrico autorizado UTE', `Gabinete de medidores en el frente (uno por local), alimentación enterrada a cada local, puesta a tierra, servicios comunes, iluminación exterior y cartelería${S.modo === 'equipado' ? ', y tablero, circuitos, iluminación LED y preinstalación de aire en cada local' : ''}. Incluye firma de instalador autorizado y trámite UTE.`, 'Indicar si cotiza con materiales; potencia que propone pedir a UTE'],
       ext: ['Exteriores y pavimentos', 'empresa de pavimentos / paisajismo', 'Estacionamiento en hormigón 12 cm con malla y demarcación, plaza peatonal en baldosa de hormigón, vereda municipal, canteros con jardinería y patio de servicio en pedregullo.', 'Indicar si cotiza con materiales; plazo'] }[key];
     let I = r.R.filter(x => !x.cat && x.pq === key);
-    if (key === 'div' && S.modo === 'equipado') I = I.concat([{ t: 'Cerramiento del baño de cada local: steel frame 70 mm, placa RH por cara', q: S.n * 10, un: 'm²' }]);
-    if (key === 'div') I = I.concat([{ t: 'Masillado y pintura látex de divisorios y cerramientos (2 caras)', q: I.reduce((t, x) => t + x.q, 0) * 2, un: 'm²' }]);
     const t = 'Subcontrato · ' + ALC[0];
     h += `<div class="hoja">${cab(t)}<h1>${ALC[0]} · pedido de cotización</h1><p><b>Para:</b> ${ALC[1]}. <b>Alcance:</b> ${ALC[2]}</p>
     <p class="note">Edificio de ${S.n} locales, 25 × 10 m, una planta, sobre Avda. Pedragosa Sierra frente al Centro de Convenciones. Planos del visor del proyecto a pedido. La obra se repite en dos padrones vecinos.</p>
@@ -1149,46 +1166,22 @@ function renderAud() {
   const r = rubrado(S), n = S.n, eq = S.modo === 'equipado', R = r.R.filter(x => !x.cat), K = 1.1 * 1.25;
   const sum = f => R.filter(f).reduce((t, x) => t + x.c, 0), item = re => R.find(x => re.test(x.t));
   const rg = (a, b) => `${u$(a)} a ${u$(b)}`;
-  // 1 · BPS: jornales imponibles ≈ la mitad de la parte de mano de obra de cada subcontrato en obra (el resto es ganancia, gastos y equipos del subcontratista)
-  const enObra = { horm: 1, panel: 1, herr: 1, div: 1, san: 1, ele: 1, ext: 1, est: .6 };   // en estructura solo cuenta el montaje
-  const mo = R.reduce((t, x) => t + (enObra[x.pq] ? x.c * (1 - x.mat) * enObra[x.pq] : 0), 0), imp = mo * .5, bps = imp * .758;
-  $('audBps').innerHTML = `<p>En Uruguay el titular de la obra responde por el <b>aporte unificado de la construcción: 71,8 % + 4 % de Caja de Profesionales = 75,8 %</b> sobre los jornales de la gente que trabaja en la obra, también la de los subcontratistas (Ley 14.411). Los subcontratos casi siempre cotizan <b>"precio + aportes por cuenta del propietario"</b> y el rubrado no tiene esa línea.</p>
-  <table><tr><th>Concepto</th><th class="n">Estimado</th></tr>
-  <tr><td>Parte de mano de obra en los subcontratos que trabajan en la obra (sin aluminio ni fabricación en taller)</td><td class="n">${u$(mo)}</td></tr>
-  <tr><td>Jornales imponibles (≈ 50 % de esa parte)</td><td class="n">${u$(imp)}</td></tr>
-  <tr><td><b>Aportes BPS 75,8 %</b></td><td class="n"><b>${rg(bps * .8, bps * 1.2)}</b></td></tr></table>
-  <div class="warn"><b>Qué hacer:</b> pedir a cada subcontratista que cotice aparte el monto de mano de obra imponible y agregar una línea "Aportes BPS de obra (por cuenta del propietario)", como en La Armonía. Se cobra al costo, sin margen. Si algún subcontrato es una empresa con todo incluido, se descuenta su parte. Es el ajuste más grande de toda la auditoría: el rubrado mira los costos sin estos aportes.</div>`;
-  // 2 · precios unitarios
-  const ac = r.ac, kgL = ac.kg - ac.kgG, vid = item(/^Vidrieras/), ban = item(/^Baño accesible/), div = item(/^Steel frame 100/), est = item(/^Estacionamiento/);
-  const PU = [
-    ['Acero laminado fabricado, granallado, epoxi + PU, montado', '3,40 USD/kg', 'Con granallado y pintura marina, los talleres de la zona suelen cotizar 3,60 a 4,20 USD/kg montado. Se confirma con las cotizaciones de la pestaña Cotizar estructura.', kgL * .2, kgL * .8],
-    vid && ['Vidrieras de aluminio línea pesada, laminado 5+5', '240 USD/m²', 'Paños de 2,85 m de alto y un portal de 4,6 m: con laminado 5+5, perfilería pesada y anclajes al pórtico se va a 280 a 350 USD/m². Pedir cotización con planilla de aberturas.', vid.q * 40, vid.q * 110],
-    ban && ['Baño accesible UNIT 200 completo', '3.200 USD/local', 'Si incluye cerramiento de steel frame, puerta de 90, cerámica piso y pared, artefactos accesibles, barras, extractor y agua caliente, queda en 4.000 a 5.000 por baño.', ban.q * 800, ban.q * 1800],
-    div && ['Divisorios entre locales', '52 USD/m²', 'Falta la terminación (masillado y pintura de las dos caras, ≈ 7 a 10 USD/m² por cara). Bomberos puede pedir separación resistente al fuego entre locales: placa RF en vez de RH (+4 a 6 USD/m²).', div.q * 18, div.q * 26],
-    est && ['Estacionamiento en hormigón 12 cm', '32 USD/m²', 'Con malla, juntas aserradas y demarcación da 36 a 40 USD/m².', est.q * 4, est.q * 8],
-  ].filter(Boolean);
-  const puMin = PU.reduce((t, x) => t + x[3], 0), puMax = PU.reduce((t, x) => t + x[4], 0);
-  const OK = ['Platea H30 15 cm (82 USD/m²) y vigas de fundación 30 × 60 (95 USD/ml): razonables con bomba y ambiente marino.', 'Paneles: precios de lista Kingspan; se confirman con el pedido a BMC (pestaña Cotizar materiales).', 'Montaje de paneles 24 / 28 USD/m² con equipos: en línea con colocadores de la zona.', 'Obrador, estudio de suelos, sanitaria y eléctrica generales: razonables para la escala.'];
-  $('audPU').innerHTML = `<table><tr><th>Rubro</th><th>En el rubrado</th><th>Criterio</th><th class="n">Puede faltar (costo)</th></tr>` + PU.map(x => `<tr><td>${x[0]}</td><td>${x[1]}</td><td class="note">${x[2]}</td><td class="n">${rg(x[3], x[4])}</td></tr>`).join('') + `<tr><td colspan="3"><b>Total precios unitarios</b></td><td class="n"><b>${rg(puMin, puMax)}</b></td></tr></table>
-  <p class="note"><b>Están bien:</b> ${OK.join(' ')}</p>`;
-  // 3 · faltantes
-  const FA = [
-    ['Seguro todo riesgo de construcción y responsabilidad civil', 'obra', r.costo * .004, r.costo * .006],
-    ['Volquetas y retiro de residuos (6 a 10)', 'obra', 700, 1200],
-    ['Agrimensor: replanteo, niveles y mensura final', 'obra', 800, 1500],
-    ['Ajuste de laudo y materiales durante 20 semanas (≈ 1 a 2 %)', 'obra', r.costo * .01, r.costo * .02],
-    ['Cálculo de estructura con memoria y firma (rubrado 900) y prevencionista 20 semanas (rubrado 600)', 'gestión', 1500, 3500],
-    ['Tasas del permiso, timbres, conexiones UTE y OSE (se pagan contra recibo)', 'cliente', 3000, 8000],
-    ['Régimen de propiedad horizontal (solo si se venden los locales por separado): plano, escribano, Catastro', 'cliente, opcional', 4000, 8000],
-    ['Cortinas de enrollar o rejas para las vidrieras (fuera de temporada)', 'opcional', 8000, 13000],
-    ['Previsión de ducto de extracción para gastronomía', 'opcional', 1500, 2500],
-  ];
-  const sel = t => FA.filter(x => x[1] === t), s2 = (a, i) => a.reduce((t, x) => t + x[i], 0);
-  const faO = [s2(sel('obra'), 2), s2(sel('obra'), 3)], faG = [s2(sel('gestión'), 2), s2(sel('gestión'), 3)];
-  $('audFal').innerHTML = `<table><tr><th>Ítem</th><th>Va en</th><th class="n">Estimado</th></tr>` + FA.map(x => `<tr><td>${x[0]}</td><td>${x[1]}</td><td class="n">${rg(x[2], x[3])}</td></tr>`).join('') + `</table><p class="note">Los de "obra" suben el costo directo; los de "gestión" suben esa tabla; los del cliente y los opcionales se le muestran aparte para que decida.</p>`;
-  // resumen
-  const cMin = r.costo + puMin + faO[0], cMax = r.costo + puMax + faO[1], vMin = cMin * K, vMax = cMax * K;
-  $('kAud').innerHTML = [[u$(r.costo), 'costo directo del rubrado'], [rg(cMin, cMax), 'costo directo corregido'], [rg(vMin, vMax), 'precio de obra corregido sin IVA'], [`${u$(vMin / 250)} a ${u$(vMax / 250)}`, 'por m² cubierto'], [rg(bps * .8, bps * 1.2), 'aportes BPS aparte (al costo)'], [rg(vMin - r.venta + faG[0], vMax - r.venta + faG[1]), 'cuánto sube el precio al cliente']].map(([a, b]) => `<div><b>${a}</b><span>${b}</span></div>`).join('');
+  // 1 · BPS (ya en el rubrado)
+  const bps = r.bps, imp = r.moS * .5;
+  $('audBps').innerHTML = `<p>En Uruguay el titular de la obra responde por el <b>aporte unificado de la construcción: 71,8 % + 4 % de Caja de Profesionales = 75,8 %</b> sobre los jornales de la gente que trabaja en la obra, también la de los subcontratistas (Ley 14.411). Los subcontratos casi siempre cotizan "precio + aportes por cuenta del propietario".</p>
+  <table><tr><th>Concepto</th><th class="n">Estimado</th></tr><tr><td>Parte de mano de obra en los subcontratos que trabajan en la obra (sin aluminio ni fabricación en taller)</td><td class="n">${u$(r.moS)}</td></tr><tr><td>Jornales imponibles (≈ 50 % de esa parte)</td><td class="n">${u$(imp)}</td></tr><tr><td><b>Aportes BPS 75,8 %</b> · ya está en el rubrado, en la tabla de gestión, al costo</td><td class="n"><b>${u$(bps)}</b></td></tr></table>
+  <p class="note">Se ajusta con el monto imponible que declare cada subcontratista: todos los pedidos de cotización lo piden.</p>`;
+  // 2 · ajustes aplicados y lo que queda por confirmar
+  const AJ = [['Acero laminado fabricado, granallado, epoxi + PU, montado', '3,40 USD/kg', '3,70 USD/kg', 'los talleres de la zona cotizan 3,60 a 4,20 con pintura marina'], ['Vidrieras de aluminio línea pesada, laminado 5+5', '240 USD/m²', '290 USD/m²', 'paños de 2,85 m y portal de 4,6 m; rango 280 a 350'], ['Baño accesible', '3.200 / local (sin paredes, puerta ni termotanque)', '3.600 + cerramiento 10 m² a 45 + puerta 280 ≈ 4.330', 'baño completo'], ['Divisorios', 'sin terminación', '+ masillado y pintura de las 2 caras, 8 USD/m²', 'Bomberos puede pedir placa RF (+4 a 6 USD/m²)'], ['Estacionamiento en hormigón 12 cm', '32 USD/m²', '37 USD/m²', 'con malla, juntas y demarcación'], ['Volquetas, seguro de obra y ajuste de laudo (1,5 %)', 'no estaban', 'agregados al rubro 12', ''], ['Ingeniero: cálculo, memoria, planos, firma, revisión de taller y 2 visitas', '900', '2.800', 'con 13 t de acero y pórticos empotrados, 900 no cubre ni el cálculo'], ['Prevencionista: estudio, plan y visitas 20 semanas', '600', '2.400', 'Decreto 125/014'], ['Agrimensor: replanteo, niveles y mensura', 'no estaba', '1.200', ''], ['Aportes BPS de la obra', 'no estaban', u$(bps).replace('USD ', ''), 'al costo, ver punto 1']];
+  const kgL = r.ac.kg - r.ac.kgG, vid = R.find(x => /^Vidrieras/.test(x.t)), pend = [kgL * .5, (vid ? vid.q : 0) * 60], pMax = pend[0] + pend[1];
+  $('audPU').innerHTML = `<table><tr><th>Rubro</th><th>Antes</th><th>Ahora en el rubrado</th><th>Criterio</th></tr>` + AJ.map(x => `<tr><td>${x[0]}</td><td>${x[1]}</td><td><b>${x[2]}</b></td><td class="note">${x[3]}</td></tr>`).join('') + `</table>
+  <div class="warn"><b>Queda por confirmar con cotizaciones:</b> si el acero sale a 4,20 USD/kg y las vidrieras a 350 USD/m², el costo sube hasta ${u$(pMax)} más (${u$(pend[0])} acero, ${u$(pend[1])} vidrieras). Se carga la cotización real del taller en la pestaña Cotizaciones › Estructura metálica y reemplaza el estimado.</div>
+  <p class="note"><b>Están bien:</b> platea H30 (82 USD/m²) y vigas de fundación (95 USD/ml) con bomba y ambiente marino; paneles a precio de lista Kingspan (se confirman con BMC); montaje de paneles 24 / 28 USD/m² con equipos; obrador, estudio de suelos, sanitaria y eléctrica generales.</p>`;
+  // 3 · lo que sigue afuera del precio
+  const FA = [['Tasas del permiso, timbres, conexiones UTE y OSE (se pagan contra recibo)', 'cliente', 3000, 8000], ['Régimen de propiedad horizontal (solo si se venden los locales por separado): plano, escribano, Catastro', 'cliente, opcional', 4000, 8000], ['Cortinas de enrollar o rejas para las vidrieras (fuera de temporada)', 'opcional', 8000, 13000], ['Previsión de ducto de extracción para gastronomía', 'opcional', 1500, 2500], ['Equipos de aire acondicionado (hay preinstalación)', 'inquilino', 1500, 3000]];
+  $('audFal').innerHTML = `<table><tr><th>Ítem</th><th>Quién</th><th class="n">Estimado</th></tr>` + FA.map(x => `<tr><td>${x[0]}</td><td>${x[1]}</td><td class="n">${rg(x[2], x[3])}</td></tr>`).join('') + `</table><p class="note">Se le muestran a Juan Carlos aparte para que decida.</p>`;
+  const totK = r.venta + r.gest + bps;
+  $('kAud').innerHTML = [[u$(r.costo), 'costo directo (corregido)'], [u$(r.venta), 'precio de obra sin IVA'], [u$(r.venta / 250), 'obra por m² cubierto'], [u$(r.gest), 'gestión y habilitaciones'], [u$(bps), 'aportes BPS al costo'], [u$(totK), 'total sin IVA'], ['+ ' + u$(pMax * K), 'riesgo de precio a confirmar']].map(([a, b]) => `<div><b>${a}</b><span>${b}</span></div>`).join('');
   // 4 · mercado
   const CM = [
     ['Alquiler', 'Pedragosa Sierra', '136', '5.550/mes', '40,8 /m²', 'a', 'local chico, avenida'],
@@ -1207,11 +1200,11 @@ function renderAud() {
   $('audMer').innerHTML = `<table><tr><th>Tipo</th><th>Dónde</th><th class="n">m²</th><th class="n">USD</th><th class="n">USD/m²</th><th>Nota</th></tr>` + CM.map(x => `<tr><td>${x[0]}</td><td>${x[1]} <sup>${x[5]}</sup></td><td class="n">${x[2]}</td><td class="n">${x[3]}</td><td class="n">${x[4]}</td><td class="note">${x[6]}</td></tr>`).join('') + `</table>
   <div class="warn"><b>Lectura:</b> los locales chicos y nuevos sobre avenida se alquilan entre 25 y 40 USD/m²; los grandes o en zonas menos comerciales, entre 15 y 21. Los de 62 m² de este proyecto, sobre Pedragosa Sierra frente al Centro de Convenciones, entran en la franja alta: 24 a 26 USD/m² es un valor prudente. La pestaña Rentabilidad usa 28,3 para 4 locales equipados: está dentro del rango. Según la inmobiliaria consultada por Forbes, en Maldonado casi no hay locales disponibles y lo que se construye se alquila rápido.</div>`;
   // 5 · valuación
-  const alq = +$('audAlq').value || 0, cap = (+$('audCap').value || 7) / 100, bruto = alq * 250 * 12, val = bruto / cap, inv = r.total + (vMin + vMax) / 2 - r.venta + (faG[0] + faG[1]) / 2 + bps;
+  const alq = +$('audAlq').value || 0, cap = (+$('audCap').value || 7) / 100, bruto = alq * 250 * 12, val = bruto / cap, inv = r.total;
   const caps = [6, 7, 8], alqs = [22, 24, 26, 30, 35];
   $('audVal').innerHTML = `<p>Valor por renta = alquiler anual ÷ tasa de capitalización. En Punta del Este se compra a una renta bruta del 6 al 8 % (6 % lo que dice la inmobiliaria, 8,4 % lo que pide la esquina de Italia y Pedragosa Sierra, 9 % la oferta de pozo en Lussich).</p>
   <table><tr><th>Alquiler USD/m²/mes</th>${caps.map(c => `<th class="n">renta ${c} %</th>`).join('')}<th class="n">USD/m²</th></tr>` + alqs.map(a => `<tr${a === alq ? ' class="best"' : ''}><td>${a} (${u$(a * 250)}/mes)</td>${caps.map(c => `<td class="n">${u$(a * 250 * 12 / (c / 100))}</td>`).join('')}<td class="n">${u$(a * 12 / .07)} a 7 %</td></tr>`).join('') + `</table>
-  <div class="k" style="margin-top:12px"><div><b>${u$(val)}</b><span>valor con ${alq} USD/m² y ${f1(cap * 100)} %</span></div><div><b>${u$(inv)}</b><span>inversión corregida sin IVA ni terreno (obra + gestión + BPS)</span></div><div><b>${u$(val - inv)}</b><span>valor que se crea por padrón, antes del terreno</span></div><div><b>${u$((val - inv) * 3)}</b><span>en los 3 padrones</span></div></div>
+  <div class="k" style="margin-top:12px"><div><b>${u$(val)}</b><span>valor con ${alq} USD/m² y ${f1(cap * 100)} %</span></div><div><b>${u$(inv)}</b><span>inversión sin IVA ni terreno (obra + gestión + BPS)</span></div><div><b>${u$(val - inv)}</b><span>valor que se crea por padrón, antes del terreno</span></div><div><b>${u$((val - inv) * 3)}</b><span>en los 3 padrones</span></div></div>
   <div class="warn"><b>Control por comparables:</b> vendiendo por separado a 2.800-3.500 USD/m² (entre el pozo de Lussich y el promedio de Punta del Este), los 250 m² valen ${u$(700000)} a ${u$(875000)}. El cálculo por renta da más porque los locales chicos se alquilan caro por m²; para hablar con Juan Carlos conviene usar el rango prudente, <b>USD 0,7 a 1,1 millones por padrón</b>, y por defecto se toma 24 USD/m² al 8 %.</div><p class="note"> Para vender por unidad hace falta propiedad horizontal. El valor del terreno (1.000 m² por padrón) es aparte y conviene tasarlo.</p>`;
   // 6 · producto
   $('audProd').innerHTML = `<ul>
@@ -1236,7 +1229,7 @@ function renderAud() {
 function renderRent() {
   const k = ivaK(), base = +$('inAlq').value || 0, vac = (+$('inVac').value || 0) / 100, gas = (+$('inGas').value || 0) / 100, ter = +$('inTer').value || 0;
   const fac = { 2: 1, 3: 1.08, 4: 1.15, 5: 1.22 };
-  const rows = [2, 3, 4, 5].map(n => { const r = rubrado({ ...S, n }); const alq = base * fac[n] * (S.modo === 'equipado' ? 1.12 : 1); const anual = alq * 250 * 12; const neto = anual * (1 - vac) * (1 - gas); const inv = (r.total) * k + ter; return { n, m2: 250 / n, alq, mes: alq * 250 / n, anual, neto, inv, y: neto / inv, pb: inv / neto }; });
+  const rows = [2, 3, 4, 5].map(n => { const r = rubrado({ ...S, n }); const alq = base * fac[n] * (S.modo === 'equipado' ? 1.12 : 1); const anual = alq * 250 * 12; const neto = anual * (1 - vac) * (1 - gas); const inv = (r.venta + r.gest) * k + r.bps + ter; return { n, m2: 250 / n, alq, mes: alq * 250 / n, anual, neto, inv, y: neto / inv, pb: inv / neto }; });
   const best = rows.reduce((a, b) => b.y > a.y ? b : a);
   $('tRent').innerHTML = `<table><tr><th>Locales</th><th class="n">m² c/u</th><th class="n">Alquiler USD/m²/mes</th><th class="n">Por local / mes</th><th class="n">Ingreso neto / año</th><th class="n">Inversión ${S.iva ? 'con IVA' : 'sin IVA'}</th><th class="n">Rentabilidad neta</th><th class="n">Repago</th></tr>` + rows.map(r => `<tr${r === best ? ' class="best"' : ''}${r.n === S.n ? ' style="outline:2px solid var(--acc)"' : ''}><td><b>${r.n}</b>${r === best ? ' <span class="pill">mejor</span>' : ''}</td><td class="n">${f1(r.m2)}</td><td class="n">${f1(r.alq)}</td><td class="n">${u$(r.mes)}</td><td class="n">${u$(r.neto)}</td><td class="n">${u$(r.inv)}</td><td class="n"><b>${f1(r.y * 100)} %</b></td><td class="n">${f1(r.pb)} años</td></tr>`).join('') + `</table>
   <p class="note">Supuestos: alquiler base para locales de 125 m², que sube 8 % (3 locales), 15 % (4) y 22 % (5) por m² al achicarse el local; entrega equipada +12 %. Inversión = obra + gestión de este visor, entrega ${S.modo === 'equipado' ? 'equipada' : 'en cáscara'}, envolvente ${S.env}${ter ? ', más el terreno' : ', sin terreno'}. No incluye impuestos sobre la renta ni financiación.</p>
@@ -1304,8 +1297,18 @@ const v3 = (() => {
     b(new THREE.BoxGeometry(2.6, .12, 1.3), Y, 0, 0, 0, plat); [[-1.25, -.6], [-1.25, .6], [1.25, -.6], [1.25, .6]].forEach(([x, z]) => b(new THREE.BoxGeometry(.05, 1.1, .05), Y, x, .55, z, plat)); b(new THREE.BoxGeometry(2.6, .05, .05), Y, 0, 1.1, -.6, plat); b(new THREE.BoxGeometry(2.6, .05, .05), Y, 0, 1.1, .6, plat);
     const w1 = persona(0xb5622a), w2 = persona(0x6f8f9a); w1.position.set(-.6, .06, 0); w2.position.set(.6, .06, 0); plat.add(w1, w2);
     const suelo = persona(0x3d8b3d);
-    [mani, tij, suelo].forEach(o => { o.visible = false; sc.add(o); });
-    return { mani, boom, bm, fork, tij, plat, sx, suelo, w1, w2, mPos: new THREE.Vector3(B.E0 - 4, 0, -(B.N0 + 14)), tPos: new THREE.Vector3(B.E0 - 4, 0, -(B.N0 + 16)), tH: .5 };
+    // soldadora inverter sobre ruedas al pie de la tijera, con el cable hasta la pinza del soldador
+    const sold = new THREE.Group(), R = M(0xc0392b), G = M(0x555555);
+    b(new THREE.BoxGeometry(.62, .42, .38), R, 0, .36, 0, sold); b(new THREE.BoxGeometry(.5, .04, .3), G, 0, .6, 0, sold); b(new THREE.BoxGeometry(.04, .18, .3), G, .3, .69, 0, sold);
+    b(new THREE.BoxGeometry(.02, .12, .2), new THREE.MeshStandardMaterial({ color: 0x222222, emissive: 0x2ecc71, emissiveIntensity: .6 }), -.32, .42, 0, sold);
+    [-.2, .2].forEach(z => { const w = b(new THREE.CylinderGeometry(.11, .11, .06, 12), D, .22, .11, z, sold); w.rotation.x = Math.PI / 2; });
+    b(new THREE.BoxGeometry(.06, .15, .06), G, -.25, .08, 0, sold);
+    sold.scale.setScalar(1.7); sold.traverse(o => { if (o.isMesh) o.userData.info = 'Motosoldadora con cable a la pinza del soldador en la tijera'; });
+    const cab = new THREE.Line(new THREE.BufferGeometry().setFromPoints(Array.from({ length: 16 }, () => new THREE.Vector3())), new THREE.LineBasicMaterial({ color: 0x111111 })); cab.frustumCulled = false; sc.add(cab);
+    const chis = new THREE.Mesh(new THREE.SphereGeometry(.05, 8, 6), new THREE.MeshBasicMaterial({ color: 0xbfe8ff })); sc.add(chis);
+    const pinza = new THREE.Vector3(.25, 1.25, -.25);   // mano del soldador w1, en coordenadas de la plataforma
+    [mani, tij, suelo, sold].forEach(o => { o.visible = false; sc.add(o); }); cab.visible = chis.visible = false;
+    return { sold, cab, chis, pinza, mani, boom, bm, fork, tij, plat, sx, suelo, w1, w2, mPos: new THREE.Vector3(B.E0 - 4, 0, -(B.N0 + 14)), tPos: new THREE.Vector3(B.E0 - 4, 0, -(B.N0 + 16)), tH: .5 };
   }
   const lado = c => { const u = c.x - B.E0, v = -c.z - B.N0; if (v > 9) return 'N'; if (v < 1) return 'S'; if (u < 1) return 'O'; if (u > 24) return 'E'; return 'N'; };
   function spot(c, d) { const u = c.x - B.E0, v = -c.z - B.N0, s = lado(c), cl = (x, a, b) => Math.max(a, Math.min(b, x));
@@ -1321,14 +1324,24 @@ const v3 = (() => {
     m.tPos.lerp(tw, .1); m.tH += (h - m.tH) * .1; m.tij.position.copy(m.tPos); const s = lado(tgt); m.tij.rotation.y = s === 'N' || s === 'S' ? 0 : Math.PI / 2;
     m.plat.position.y = .6 + m.tH; m.sx.forEach((x, i) => { const hh = m.tH + .4; x.position.y = .6 + hh / 2; x.rotation.z = (i ? 1 : -1) * Math.atan2(hh, 2.3); x.scale.x = Math.hypot(hh, 2.3) / 2.3; });
     m.suelo.position.copy(spot(tgt, 2.4)).add(new THREE.Vector3(1.2, 0, 0)); m.suelo.lookAt(tgt.x, 0, tgt.z);
+    // soldadura: correas, arriostres, largueros y bastidores se sueldan o abulonan desde la tijera
+    const suelda = ['cru', 'cor', 'lar', 'bas'].includes(U.k); m.sold.visible = m.cab.visible = suelda; m.chis.visible = suelda && Math.random() < .55;
+    if (suelda) { const off = new THREE.Vector3(-1.9, 0, 1.0).applyAxisAngle(new THREE.Vector3(0, 1, 0), m.tij.rotation.y); m.sold.position.copy(m.tPos).add(off); m.sold.rotation.y = m.tij.rotation.y;
+      m.tij.updateMatrixWorld(true); const a = m.sold.localToWorld(new THREE.Vector3(.3, .5, 0)), base = m.tij.localToWorld(new THREE.Vector3(-1.2, .5, .62)), top = m.plat.localToWorld(new THREE.Vector3(-1.2, .3, .62)), h = m.plat.localToWorld(m.pinza.clone());
+      const pts = [], P = m.cab.geometry.attributes.position, seg = [[a, base, .25], [base, top, 0], [top, h, .15]];
+      for (let i = 0; i < 16; i++) { const t = i / 15 * 3, j = Math.min(2, Math.floor(t)), f = t - j, [p0, p1, sag] = seg[j], q = p0.clone().lerp(p1, f); q.y -= Math.sin(f * Math.PI) * sag; P.setXYZ(i, q.x, q.y, q.z); }
+      P.needsUpdate = true; m.chis.position.copy(h).add(new THREE.Vector3(0, .05, -.15)); }
   }
   function verHasta(i) { UNITS.forEach((U, j) => U.ms.forEach(m => { m.visible = j < i; m.position.copy(m.userData.p0); m.scale.set(1, 1, 1); })); }
   function animar(on) {
     if (on) { if (modo === '3p') salir3p(); if (play) toggle(); if (!maq) maq = hacerMaquinas(); hacerUnidades();
       AN = { i: 0, t: 0, run: true, vel: 1, seguir: true }; ST.forEach(([k]) => { groups[k].visible = ['ter', 'inst', 'plat'].includes(k) || !!ANIM_ST[k]; });
-      verHasta(0); [maq.mani, maq.tij, maq.suelo].forEach(o => o.visible = true); $('anim').hidden = false; $('etapa').hidden = true; $('anRg').max = UNITS.length; irVista(6); }
-    else { AN = null; if (maq) [maq.mani, maq.tij, maq.suelo].forEach(o => o.visible = false); verHasta(1e9); $('anim').hidden = true; $('etapa').hidden = false; applyVis(); }
+      verHasta(0); [maq.mani, maq.tij, maq.suelo].forEach(o => o.visible = true); $('anim').hidden = false; $('etapa').hidden = true; $('anDia').hidden = false; $('lay').classList.add('min'); $('hud').hidden = true; $('anRg').max = UNITS.length; diasNav(); irVista(6); }
+    else { AN = null; if (maq) [maq.mani, maq.tij, maq.suelo].forEach(o => o.visible = false); verHasta(1e9); $('anim').hidden = true; $('etapa').hidden = false; $('anDia').hidden = true; $('hud').hidden = false; if (maq) maq.sold.visible = maq.cab.visible = maq.chis.visible = false; applyVis(); }
   }
+  function diasNav() { const ini = {}; UNITS.forEach((u, i) => { if (!(u.dia in ini)) ini[u.dia] = i; });
+    $('anDias').innerHTML = '<span>Ir al día</span>' + Array.from({ length: UNITS.total }, (_, i) => i + 1).map(d => `<button data-dia="${d}" data-i="${ini[d] ?? ''}" ${d in ini ? '' : 'disabled'}>${d}</button>`).join('') + `<button data-dia="fin" data-i="${UNITS.length}">✓</button>`;
+    $('anDias').onclick = e => { const b = e.target.closest('[data-dia]'); if (!b || !AN) return; AN.i = +b.dataset.i; AN.t = 0; verHasta(AN.i); groups.ext.visible = AN.i >= UNITS.length; }; }
   function tickAnim(dt) {
     if (!AN || !UNITS.length) return; const U = UNITS[Math.min(AN.i, UNITS.length - 1)];
     if (AN.run && AN.i < UNITS.length) { const dur = U.tipo === 'grua' ? 1.4 : U.tipo === 'tij' ? .55 : .45; AN.t += dt * AN.vel / dur; }
@@ -1347,6 +1360,7 @@ const v3 = (() => {
     const V = UNITS[Math.min(AN.i, UNITS.length - 1)], q = QUIEN[V.k], prop = q && PROPIO[q], quien = !q ? 'aluminiero' : prop ? 'SBU con cuadrilla propia' : PAQ[q].quien;
     $('anTx').innerHTML = AN.i >= UNITS.length ? `<b>Día ${UNITS.total} de ${UNITS.total} · estructura y envolvente terminadas</b><span>${UNITS.length} piezas · quedan exteriores, instalaciones y terminaciones</span>` : `<b>Día ${V.dia} de ${UNITS.total} · ${V.tarea}</b><span>${V.info || ''} · pieza ${AN.i + 1}/${UNITS.length} · ${V.tipo === 'grua' ? 'la sube el manitou con operario; dos en la tijera la reciben y fijan' : V.tipo === 'tij' ? 'dos operarios desde la tijera de 8 m' : 'a mano'} · ${quien}</span>`;
     $('anRg').value = AN.i; $('anPl').textContent = AN.run ? '❚❚' : '▶';
+    { const fin = AN.i >= UNITS.length, d = fin ? UNITS.total : V.dia, key = d + '|' + fin; if ($('anDia').dataset.k !== key) { $('anDia').dataset.k = key; $('anDia').innerHTML = `<b>Día ${d} de ${UNITS.total}</b><span>${fin ? 'estructura y envolvente terminadas' : V.tarea}</span>`; $('anDias').querySelectorAll('[data-dia]').forEach(b => b.classList.toggle('hoy', fin ? b.dataset.dia === 'fin' : +b.dataset.dia === d)); } }
   }
 
   function tick() { const dt = Math.min(.05, clock.getDelta()); tickAnim(dt);
@@ -1534,10 +1548,11 @@ const v3 = (() => {
     ctl = new OrbitControls(cam, ren.domElement); ctl.target.set(B.E0 + 13, 2.5, -(B.N0 + 6)); ctl.enableDamping = true; ctl.maxPolarAngle = Math.PI * .495;
     sc.add(new THREE.HemisphereLight(0xffffff, 0x8a8070, .9), new THREE.AmbientLight(0xffffff, .45));
     const sun = new THREE.DirectionalLight(0xffffff, 1.5); sun.position.set(30, 50, -60); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -50, right: 50, top: 50, bottom: -50, far: 200 }); sun.target.position.set(25, 0, -10); sc.add(sun, sun.target);
-    $('vistas').innerHTML = VISTAS().map((v, i) => `<button data-v="${i}">${v[0]}</button>`).join('') + '<button data-v="3p">🚶 Tercera persona</button><button class="fs" id="fsBtn" title="Pantalla completa (F)">⛶ Pantalla completa</button>';
-    $('vistas').onclick = e => { const b = e.target.closest('button'); if (!b) return; if (b.id === 'fsBtn') { fs(); return; } if (b.dataset.v === '3p') entrar3p(); else irVista(+b.dataset.v); };
+    $('vistas').innerHTML = '<button class="vb" id="vBtn" title="Elegir vista">📷 Vistas ▾</button><div class="vl">' + VISTAS().map((v, i) => `<button data-v="${i}">${v[0]}</button>`).join('') + '</div><button data-v="3p">🚶 Tercera persona</button><button class="fs" id="fsBtn" title="Pantalla completa (F)">⛶</button>';
+    $('vistas').onclick = e => { const b = e.target.closest('button'); if (!b) return; if (b.id === 'vBtn') { $('vistas').classList.toggle('open'); return; } if (b.id === 'fsBtn') { fs(); return; } $('vistas').classList.remove('open'); if (b.dataset.v === '3p') entrar3p(); else irVista(+b.dataset.v); };
+    ren.domElement.addEventListener('pointerdown', () => $('vistas').classList.remove('open'));
     const fs = () => { const el = $('v3'); if (document.fullscreenElement) document.exitFullscreen(); else (el.requestFullscreen || el.webkitRequestFullscreen).call(el).catch?.(() => {}); };
-    document.addEventListener('fullscreenchange', () => { $('fsBtn').textContent = document.fullscreenElement ? '✕ Salir' : '⛶ Pantalla completa'; setTimeout(resize, 50); });
+    document.addEventListener('fullscreenchange', () => { $('fsBtn').textContent = document.fullscreenElement ? '✕' : '⛶'; setTimeout(resize, 50); });
     $('pad').addEventListener('pointerdown', e => { const b = e.target.closest('[data-k]'); if (b) { padK[b.dataset.k] = true; e.preventDefault(); } });
     addEventListener('pointerup', () => { padK = {}; });
     let drag = null; ren.domElement.addEventListener('pointerdown', e => { if (modo === '3p') drag = { x: e.clientX, y: e.clientY }; });
