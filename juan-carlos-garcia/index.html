@@ -30,7 +30,9 @@ tr.best td{background:#e5f1e2}.note{font-size:.82rem;color:var(--mut)}.pill{disp
 #lay label{display:flex;gap:6px;align-items:center;margin:2px 0;cursor:pointer}#lay b{display:block;margin:0 0 4px}
 #etapa{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(255,253,249,.96);border:1px solid var(--ln);border-radius:9px;padding:8px 12px;font-size:.8rem;display:grid;grid-template-columns:auto auto auto 1fr;gap:6px 8px;align-items:center;width:min(96%,760px)}
 #etapa button{border:1px solid var(--ln);background:#fff;border-radius:6px;padding:4px 10px;font:700 .8rem system-ui;cursor:pointer;min-width:38px}#etapa button:hover{border-color:var(--acc)}#etPlay{background:var(--acc)!important;color:#fff}
-#etapa input{width:100%}#txEt{grid-column:1/-1;line-height:1.35}#txEt b{display:block}#txEt span{color:var(--mut);font-size:.78rem}#lay label.fut{opacity:.4}#tip{position:absolute;pointer-events:none;background:#26231f;color:#fff;padding:5px 8px;border-radius:6px;font-size:.78rem;display:none;max-width:260px}
+#etapa input{width:100%}#etapa{grid-template-columns:auto auto auto auto 1fr}#etAn{background:#26231f!important;color:#fff}
+#tSub{overflow-x:auto}#tSub td:nth-child(2){min-width:230px}#tSub td .note{font-size:.72rem;line-height:1.3}#tSub td.n .note{white-space:normal;max-width:190px;margin-left:auto}
+#anim{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(38,35,31,.92);color:#fff;border-radius:9px;padding:8px 12px;font-size:.8rem;display:grid;grid-template-columns:auto auto auto 1fr auto;gap:6px 10px;align-items:center;width:min(96%,820px);z-index:3}#anim[hidden],#etapa[hidden]{display:none!important}#anim button{border:1px solid #555;background:#3a3631;color:#fff;border-radius:6px;padding:4px 10px;font:700 .8rem system-ui;cursor:pointer}#anim label{display:flex;gap:4px;align-items:center}#anRg{width:100%}#anTx{grid-column:1/-1;line-height:1.35}#anTx b{display:block;color:#ffb347}#anTx span{color:#d9d0c3;font-size:.78rem}#txEt{grid-column:1/-1;line-height:1.35}#txEt b{display:block}#txEt span{color:var(--mut);font-size:.78rem}#lay label.fut{opacity:.4}#tip{position:absolute;pointer-events:none;background:#26231f;color:#fff;padding:5px 8px;border-radius:6px;font-size:.78rem;display:none;max-width:260px}
 #vistas{position:absolute;left:50%;transform:translateX(-50%);top:10px;display:flex;flex-wrap:wrap;gap:4px;justify-content:center;max-width:calc(100% - 520px);z-index:3}#vistas button{border:1px solid var(--ln);background:rgba(255,253,249,.95);border-radius:6px;padding:5px 9px;font:600 .76rem system-ui;cursor:pointer}#vistas button.on{background:var(--acc);color:#fff;border-color:var(--acc)}#vistas .fs{background:#26231f;color:#fff;border-color:#26231f}
 #pad[hidden]{display:none!important}#lay.min label{display:none}#lay b{cursor:pointer}#lay b:after{content:' ▾';color:var(--mut)}#lay.min b:after{content:' ▸'}
 #pad{position:absolute;right:12px;bottom:12px;z-index:3;display:flex;flex-direction:column;align-items:flex-end;gap:6px}#pad .ph{background:rgba(38,35,31,.85);color:#fff;border-radius:7px;padding:6px 9px;font-size:.74rem;max-width:260px}#pad .pk{display:flex;flex-direction:column;align-items:center;gap:3px}#pad .pk div{display:flex;gap:3px}#pad button{width:42px;height:38px;border-radius:8px;border:1px solid var(--ln);background:rgba(255,253,249,.95);font-size:1rem;cursor:pointer;touch-action:none}
@@ -118,8 +120,8 @@ tr.win td{background:#e5f1e2;font-weight:600}.tag2{display:inline-block;font-siz
 
 <section class="pg" id="p-3d">
  <h2>3D estructural por capas</h2>
- <p class="sub">Arriba: vistas armadas (como el render, desde la avenida, la plaza, el portal, aérea, planta, estructura, interior, fondo), <b>tercera persona</b> para caminar la obra y <b>pantalla completa</b> (también con la tecla F). El armado en 16 etapas, en el orden de obra. Se avanza con las flechitas ◀ ▶▶, con ▶ se reproduce solo, con la rueda del mouse sobre la barra de etapas (o Shift + rueda sobre el 3D) y con las flechas del teclado. Pasando el mouse por una pieza se ve qué es. Cambiá arriba la envolvente: cambian el color, el espesor, la pendiente y las correas.</p>
- <div id="v3"><div id="lay"></div><div id="hud"></div><div id="vistas"></div><div id="pad" hidden><div class="ph">Tercera persona · <b>W A S D</b> o flechas para caminar · <b>Shift</b> corre · arrastrá el mouse para mirar</div><div class="pk"><button data-k="f">▲</button><div><button data-k="l">◀</button><button data-k="b">▼</button><button data-k="r">▶</button></div></div></div><div id="etapa"><button id="etPrev" title="Etapa anterior (←)">◀</button><button id="etPlay" title="Reproducir (espacio)">▶</button><button id="etNext" title="Etapa siguiente (→)">▶▶</button><input type="range" id="rgEt" min="0" max="15" value="15"><div id="txEt"></div></div><div id="tip"></div></div>
+ <p class="sub"><b>🎬 Montaje animado</b> (abajo, en la barra de etapas): la obra se arma pieza por pieza, con el manitou con operario subiendo pórticos y paneles, la tijera de 8 m con dos operarios y el día de obra en el cartel. Arriba: vistas armadas (como el render, desde la avenida, la plaza, el portal, aérea, planta, estructura, interior, fondo), <b>tercera persona</b> para caminar la obra y <b>pantalla completa</b> (también con la tecla F). El armado en 16 etapas, en el orden de obra. Se avanza con las flechitas ◀ ▶▶, con ▶ se reproduce solo, con la rueda del mouse sobre la barra de etapas (o Shift + rueda sobre el 3D) y con las flechas del teclado. Pasando el mouse por una pieza se ve qué es. Cambiá arriba la envolvente: cambian el color, el espesor, la pendiente y las correas.</p>
+ <div id="v3"><div id="lay"></div><div id="hud"></div><div id="vistas"></div><div id="pad" hidden><div class="ph">Tercera persona · <b>W A S D</b> o flechas para caminar · <b>Shift</b> corre · arrastrá el mouse para mirar</div><div class="pk"><button data-k="f">▲</button><div><button data-k="l">◀</button><button data-k="b">▼</button><button data-k="r">▶</button></div></div></div><div id="anim" hidden><button id="anPl">❚❚</button><button id="anV">×1</button><label><input type="checkbox" id="anSeg" checked> cámara sigue</label><input type="range" id="anRg" min="0" max="100" value="0"><button id="anX">✕ Salir</button><div id="anTx"></div></div><div id="etapa"><button id="etAn" title="Animación del montaje pieza por pieza">🎬 Montaje animado</button><button id="etPrev" title="Etapa anterior (←)">◀</button><button id="etPlay" title="Reproducir (espacio)">▶</button><button id="etNext" title="Etapa siguiente (→)">▶▶</button><input type="range" id="rgEt" min="0" max="15" value="15"><div id="txEt"></div></div><div id="tip"></div></div>
 </section>
 
 <section class="pg" id="p-env">
@@ -140,14 +142,14 @@ tr.win td{background:#e5f1e2;font-weight:600}.tag2{display:inline-block;font-siz
 
 <section class="pg" id="p-sub">
  <h2>Costos de obra y subcontratos</h2>
- <p class="sub">Cada rubro va a un paquete: lo que se subcontrata, lo que se compra directo y lo que puede hacer SBU con cuadrilla propia. El precio al cliente no cambia; lo que cambia es el costo real y la ganancia de SBU. Si lo hace SBU, se paga el material y la mano de obra propia (≈ 75 % de lo que cobra un subcontratista por la misma tarea, porque no se pagan sus gastos ni su ganancia).</p>
- <div class="card"><b>Lo hace SBU:</b> <span id="chkProp"></span></div>
+ <p class="sub">Todo está calculado como si se subcontratara. Tildá <b>Lo hacemos nosotros</b> en un rubro y se compara con el costo de hacerlo con cuadrilla propia: materiales + mano de obra propia + alquiler de manitou con operario y tijeras. El precio al cliente no cambia; lo que cambia es el costo real y la ganancia de SBU. Si lo hace SBU, se paga el material y la mano de obra propia (≈ 75 % de lo que cobra un subcontratista por la misma tarea, porque no se pagan sus gastos ni su ganancia).</p>
+ <div class="card"><b>Alquileres para lo que hace SBU</b> (sin IVA): <label>Manitou con operario USD/día <input type="number" data-eq="mani" style="width:70px"></label> <label>Tijera eléctrica 8 m USD/día <input type="number" data-eq="tij" style="width:70px"></label> <label>Flete manitou <input type="number" data-eq="fmani" style="width:70px"></label> <label>Flete tijera <input type="number" data-eq="ftij" style="width:70px"></label><p class="note" style="margin:6px 0 0">La tijera de 8 m de altura de trabajo (plataforma a 6 m) alcanza: el borde del techo está a +4,3/4,6 y la cenefa termina a +6,00. Una de 6 m de trabajo (plataforma 4 m) no llega a la cenefa. El manitou se usa con su operario.</p></div>
  <div class="k" id="kSub"></div>
  <div class="card"><div id="tSub"></div></div>
  <div class="card"><h3 style="margin-top:0">Ojo con hacerlo propio</h3><ul class="c">
   <li>La mano de obra propia va con BPS de obra (aporte unificado sobre jornales) y seguro del BSE: está incluida en el costo de la cuadrilla (≈ USD 392 por día, 1 oficial especializado, 1 oficial y 2 peones con aportes).</li>
   <li>Sanitaria y eléctrica necesitan firma de técnico habilitado para OSE, UTE y la habilitación de Bomberos: si las hace SBU, igual hay que contratar la firma (instalador autorizado UTE, sanitario para OSE).</li>
-  <li>Montaje de paneles: con cuadrilla propia hace falta el manitou o la grúa los días de techo; ya está en el rubrado de estructura. Kingspan Bromyros da asistencia técnica de montaje.</li>
+  <li>Montaje de paneles: con cuadrilla propia se alquila el manitou con operario (sube los paquetes al techo y los paneles largos de muro) y tijeras de 8 m; Kingspan Bromyros da asistencia técnica de montaje. El precio de subcontrato (USD 24/m² techo, 28/m² muro) ya incluye los equipos del colocador.</li>
   <li>Lo que se hace propio saca días de la cuadrilla de otras obras: mirá la columna de días.</li></ul></div>
 </section>
 
@@ -283,20 +285,21 @@ const SUP = (() => {
 /* ---------- paquetes de obra: subcontrato o SBU con cuadrilla propia ---------- */
 // mat = parte de materiales del precio; si lo hace SBU, la mano de obra cuesta ~75 % de lo que cobra un subcontratista (sin su gastos y ganancia)
 const PAQ = {
-  sbu: { n: 'SBU · dirección, obrador e incendio', mat: .6, sub: false, fijo: true },
-  suelos: { n: 'Estudio de suelos', mat: 1, sub: true, fijo: true, quien: 'laboratorio geotécnico' },
-  horm: { n: 'Movimiento de suelo y hormigón', mat: .55, sub: true, quien: 'empresa de hormigón / fundaciones' },
-  est: { n: 'Estructura metálica', mat: .55, sub: true, quien: 'taller metalúrgico (fabrica, pinta y monta)', doc: true },
-  panmat: { n: 'Paneles (material)', mat: 1, sub: false, fijo: true, quien: 'compra directa a Kingspan Bromyros' },
-  panel: { n: 'Montaje de paneles y zinguería', mat: .25, sub: true, quien: 'colocador de paneles', propio: true },
-  alu: { n: 'Aberturas de aluminio', mat: .7, sub: true, quien: 'aluminiero' },
-  herr: { n: 'Herrería y fachada: cenefa, brise, faja, visera, puertas de servicio', mat: .6, sub: true, quien: 'herrería / carpintería' },
-  div: { n: 'Divisorios de steel frame', mat: .5, sub: true, quien: 'cuadrilla de steel frame', propio: true },
-  san: { n: 'Sanitaria', mat: .55, sub: true, quien: 'sanitario', propio: true },
-  ele: { n: 'Eléctrica', mat: .5, sub: true, quien: 'electricista', propio: true },
-  ext: { n: 'Exteriores', mat: .55, sub: true, quien: 'empresa de pavimentos' },
+  sbu: { n: 'SBU · dirección, obrador e incendio', mat: .6, quien: 'SBU' },
+  suelos: { n: 'Estudio de suelos', mat: 1, quien: 'laboratorio geotécnico' },
+  horm: { n: 'Movimiento de suelo, platea y vigas de fundación', mat: .65, quien: 'empresa de hormigón / fundaciones', propio: true, eq: d => [['Alquiler de vibrador, regla vibratoria y helicóptero', 0, 0, 0, 380]] },
+  est: { n: 'Estructura metálica (fabricación y montaje)', mat: .82, eqS: .05, quien: 'taller metalúrgico', doc: true, propio: true, nProp: 'el taller fabrica y entrega; SBU monta', eq: d => [['Manitou 4 t / 14 m con operario', 'mani', Math.max(3, Math.ceil(d * .6)), 1], ['Tijera eléctrica 8 m (×2)', 'tij', 2 * d, 1]] },
+  panmat: { n: 'Paneles (material)', mat: 1, quien: 'compra directa a Kingspan Bromyros' },
+  panel: { n: 'Montaje de paneles y zinguería', mat: .25, eqS: .3, quien: 'colocador de paneles', propio: true, eq: d => [['Manitou con operario (sube paquetes al techo y paneles de muro)', 'mani', Math.ceil(d * .55), 1], ['Tijeras eléctricas 8 m: una toda la obra y otra para muros y remates', 'tij', d + Math.ceil(d / 2), 1], ['Líneas de vida, arneses y EPP', 0, 0, 0, 650]] },
+  alu: { n: 'Aberturas de aluminio', mat: .7, quien: 'aluminiero' },
+  herr: { n: 'Herrería y fachada: cenefa, brise, faja, visera, puertas', mat: .6, eqS: .1, quien: 'herrería / carpintería', propio: true, nProp: 'se compra fabricado; SBU coloca', eq: d => [['Tijera eléctrica 8 m (×2)', 'tij', 2 * d, 1]] },
+  div: { n: 'Divisorios de steel frame', mat: .5, eqS: .04, quien: 'cuadrilla de steel frame', propio: true, eq: d => [['Tijera eléctrica 8 m', 'tij', Math.ceil(d * .5), 1]] },
+  san: { n: 'Sanitaria', mat: .55, quien: 'sanitario', propio: true, firma: 'firma de sanitario para OSE', eq: d => [['Firma técnica e inspecciones OSE', 0, 0, 0, 450]] },
+  ele: { n: 'Eléctrica', mat: .5, eqS: .02, quien: 'electricista', propio: true, firma: 'firma de instalador autorizado UTE', eq: d => [['Tijera eléctrica 8 m (iluminación y cartel)', 'tij', 2, 1], ['Firma de instalador autorizado UTE', 0, 0, 0, 500]] },
+  ext: { n: 'Exteriores', mat: .55, quien: 'empresa de pavimentos', propio: true, eq: d => [['Placa compactadora y cortadora', 0, 0, 0, 300]] },
 };
-const PROPIO = { san: true, ele: true, panel: true, div: false };
+const PROPIO = {};  // por defecto todo subcontratado; se tilda lo que hace SBU
+const EQP = { mani: 300, tij: 110, fmani: 350, ftij: 200 };  // USD/día y fletes (ida y vuelta), sin IVA
 
 /* ---------- rubrado ---------- */
 function rubrado(st = S) {
@@ -323,13 +326,13 @@ function rubrado(st = S) {
   it('Grúa / manitou para el montaje', 1, 'gl', 2400); }
   cat('4 · Techo');
   pq('panmat'); it(E.roof.nom + ' (material)', SUP.techo, 'm²', E.roof.usd);
-  pq('panel'); it('Montaje de techo, fijaciones y sellado de juntas', SUP.techo, 'm²', 10, '', 0.15);
+  pq('panel'); it('Montaje de techo, fijaciones y sellado de juntas (con sus equipos)', SUP.techo, 'm²', 24, '', 0.15);
   it('Canaleta interna sur en chapa galvanizada desarrollo 1 m', 25.6, 'ml', 45, '', 0.6);
   it('Babetas y cupertina de pretil', 72, 'ml', 18, '', 0.6);
   it('Bajadas pluviales Ø110 con embudo', 3, 'u', 180, '', 0.6);
   cat('5 · Muros y fachada');
   pq('panmat'); it(E.wall.nom + ' (material)', SUP.muro, 'm²', E.wall.usd);
-  pq('panel'); it('Montaje de muros, remates, esquineros y zócalo', SUP.muro, 'm²', 13, '', 0.3);
+  pq('panel'); it('Montaje de muros, remates, esquineros y zócalo (con sus equipos)', SUP.muro, 'm²', 28, '', 0.3);
   pq('alu'); it('Vidrieras de aluminio línea pesada, laminado 5+5 (incluye el portal de piso a dintel)', SUP.vid, 'm²', 240);
   it('Puerta vidriada de acceso por local (cerradura y cierrapuertas)', n, 'u', 380);
   pq('herr'); it('Puerta de servicio y escape al pasaje sur, chapa inyectada', n, 'u', 420);
@@ -764,19 +767,27 @@ function renderTablas() {
 
 /* ================= SUBCONTRATOS ================= */
 const CUAD = 392; // USD por día de cuadrilla propia (1 of. esp. + 1 of. + 2 peones, laudo + BPS de obra)
+function costoPropio(key, a) {
+  const p = PAQ[key], eqS = a.c * (p.eqS || 0), mo = a.c - a.mat - eqS, moP = mo * .75, dias = Math.max(1, Math.ceil(moP / CUAD));
+  const eq = (p.eq ? p.eq(dias) : []).map(([n, tipo, d, fl, fijo]) => { const usd = fijo || (tipo ? d * EQP[tipo] + fl * EQP['f' + tipo] : 0); return { n, d, usd }; });
+  const eqT = eq.reduce((t, e) => t + e.usd, 0);
+  return { mo, moP, dias, eq, eqT, total: a.mat + moP + eqT };
+}
 function renderSub() {
   const k = ivaK(), r = rubrado(), lbl = S.iva ? 'con IVA' : 'sin IVA';
-  $('chkProp').innerHTML = Object.entries(PAQ).filter(([, p]) => p.propio).map(([key, p]) => `<label style="margin-right:14px"><input type="checkbox" data-pq="${key}" ${PROPIO[key] ? 'checked' : ''}> ${p.n}</label>`).join('');
+  document.querySelectorAll('[data-eq]').forEach(i => { if (document.activeElement !== i) i.value = EQP[i.dataset.eq]; });
   const A = {}; r.R.filter(x => !x.cat).forEach(x => { const a = A[x.pq] || (A[x.pq] = { c: 0, mat: 0, items: [] }); a.c += x.c; a.mat += x.c * x.mat; a.items.push(x.t.split(' (')[0].split(':')[0]); });
-  let cReal = 0, rows = '';
+  let cReal = 0, rows = '', dTot = 0;
   Object.entries(PAQ).forEach(([key, p]) => { const a = A[key]; if (!a) return;
-    const mo = a.c - a.mat, prop = a.mat + mo * .75, esProp = !!(p.propio && PROPIO[key]); cReal += esProp ? prop : a.c;
-    const dias = p.propio ? Math.ceil(mo * .75 / CUAD) : null;
-    rows += `<tr${esProp ? ' class="best"' : ''}><td><b>${p.n}</b><div class="note">${[...new Set(a.items)].slice(0, 4).join(' · ')}${a.items.length > 4 ? '…' : ''}</div></td><td>${esProp ? '<b>SBU, cuadrilla propia</b>' : (p.quien || 'SBU')}${p.doc ? ' · <a href="#ped" onclick="__jcg.show(\'p-ped\');return false">pedido de cotización</a>' : ''}</td><td class="n">${u$(a.c * k)}</td><td class="n">${u$(a.mat * k)}</td><td class="n">${p.propio ? u$(prop * k) : '—'}</td><td class="n">${p.propio ? '<b class="ok">−' + u$((a.c - prop) * k) + '</b>' : '—'}</td><td class="n">${dias != null ? dias + ' días' : '—'}</td></tr>`; });
+    const cp = p.propio ? costoPropio(key, a) : null, esProp = !!(cp && PROPIO[key]); cReal += esProp ? cp.total : a.c; if (esProp) dTot += cp.dias;
+    const dif = cp ? a.c - cp.total : 0;
+    rows += `<tr${esProp ? ' class="best"' : ''}><td style="text-align:center">${p.propio ? `<input type="checkbox" data-pq="${key}" ${PROPIO[key] ? 'checked' : ''} title="Lo hacemos nosotros">` : ''}</td><td><b>${p.n}</b><div class="note">${[...new Set(a.items)].slice(0, 4).join(' · ')}${a.items.length > 4 ? '…' : ''}</div></td><td>${esProp ? `<b>SBU</b>${p.nProp ? ' · ' + p.nProp : ''}` : p.quien}${p.doc ? ' · <a href="#ped" onclick="__jcg.show(\'p-ped\');return false">pedido</a>' : ''}</td><td class="n">${u$(a.c * k)}</td>`
+      + (cp ? `<td class="n">${u$(a.mat * k)}</td><td class="n">${u$(cp.moP * k)}<div class="note">${cp.dias} días de cuadrilla</div></td><td class="n">${u$(cp.eqT * k)}<div class="note">${cp.eq.map(e => e.n.split(' (')[0] + (e.d ? ' ' + e.d + ' d' : '')).join(' · ')}</div></td><td class="n"><b>${u$(cp.total * k)}</b></td><td class="n"><b class="${dif >= 0 ? 'ok' : ''}" style="${dif < 0 ? 'color:var(--bad)' : ''}">${dif >= 0 ? '−' : '+'}${u$(Math.abs(dif) * k)}</b></td>` : `<td colspan="5" class="note">se subcontrata o se compra</td>`) + `</tr>`; });
   const gSub = r.venta - r.costo, gProp = r.venta - cReal;
-  $('kSub').innerHTML = [[u$(r.venta * k), 'precio de obra al cliente ' + lbl], [u$(r.costo * k), 'costo con todo subcontratado'], [u$(cReal * k), 'costo con lo propio marcado'], [u$(gSub), 'ganancia SBU todo subcontratado (sin IVA)'], [u$(gProp), 'ganancia SBU con lo propio (sin IVA)'], [f1(gProp / r.venta * 100) + ' %', 'margen sobre el precio']].map(([v, t]) => `<div><b>${v}</b><span>${t}</span></div>`).join('');
-  $('tSub').innerHTML = `<table><tr><th>Paquete</th><th>Quién</th><th class="n">Precio subcontrato</th><th class="n">de eso, materiales</th><th class="n">Si lo hace SBU</th><th class="n">Ahorro</th><th class="n">Cuadrilla</th></tr>${rows}<tr class="tt"><td colspan="2">Costo real de la obra</td><td class="n">${u$(r.costo * k)}</td><td></td><td class="n">${u$(cReal * k)}</td><td class="n ok">−${u$((r.costo - cReal) * k)}</td><td></td></tr></table><p class="note">Los precios de subcontrato son los del rubrado (costo directo con mano de obra). Antes de decidir, conviene pedir dos cotizaciones por paquete: el de estructura metálica ya tiene su pedido armado.</p>`;
+  $('kSub').innerHTML = [[u$(r.venta * k), 'precio de obra al cliente ' + lbl], [u$(r.costo * k), 'costo todo subcontratado'], [u$(cReal * k), 'costo con lo tildado'], [u$(gSub), 'ganancia SBU todo subcontratado (sin IVA)'], [u$(gProp), 'ganancia SBU con lo tildado (sin IVA)'], [dTot ? dTot + ' días' : '—', 'de cuadrilla propia']].map(([v, t]) => `<div><b>${v}</b><span>${t}</span></div>`).join('');
+  $('tSub').innerHTML = `<table><tr><th title="Lo hacemos nosotros">Nos.</th><th>Paquete</th><th>Quién</th><th class="n">Subcontrato</th><th class="n">Materiales</th><th class="n">MO propia</th><th class="n">Equipos</th><th class="n">Si lo hace SBU</th><th class="n">Diferencia</th></tr>${rows}<tr class="tt"><td></td><td colspan="2">Costo real de la obra</td><td class="n">${u$(r.costo * k)}</td><td colspan="3"></td><td class="n">${u$(cReal * k)}</td><td class="n ok">${r.costo >= cReal ? '−' : '+'}${u$(Math.abs(r.costo - cReal) * k)}</td></tr></table><p class="note">El precio de subcontrato es el del rubrado e incluye sus equipos. Si lo hace SBU: materiales + mano de obra propia (≈ 75 % de la que cobra un subcontratista, sin la parte de sus equipos, con BPS de obra; cuadrilla de 4 a USD ${CUAD}/día) + alquileres. En sanitaria y eléctrica se suma la firma del técnico habilitado. En estructura, el taller fabrica y entrega, y el montaje lo hace SBU con manitou y tijeras.</p>`;
 }
+document.addEventListener('input', e => { if (e.target.dataset && e.target.dataset.eq) { EQP[e.target.dataset.eq] = +e.target.value || 0; renderSub(); } });
 document.addEventListener('change', e => { if (e.target.dataset && e.target.dataset.pq) { PROPIO[e.target.dataset.pq] = e.target.checked; renderSub(); } });
 
 /* ================= PEDIDO DE COTIZACIÓN · ESTRUCTURA METÁLICA ================= */
@@ -983,7 +994,80 @@ const v3 = (() => {
     const d = new THREE.Vector3(B.E0 + 12, 0, -(B.N0 + 6)).sub(avatar.position); yaw = Math.atan2(-d.x, -d.z);
     document.querySelectorAll('#vistas [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === '3p')); }
   function salir3p() { if (modo !== '3p') return; modo = 'orbit'; ctl.enabled = true; $('pad').hidden = true; if (avatar) { ctl.target.copy(avatar.position).add(new THREE.Vector3(0, 1.4, 0)); } }
-  function tick() { const dt = Math.min(.05, clock.getDelta());
+  /* ===== animación del montaje: pieza por pieza, con manitou, tijeras y cuadrilla ===== */
+  const ANIM_ST = { est: ['grua', 3, 'Montaje de pórticos'], cru: ['tij', 1, 'Arriostramiento'], cor: ['tij', 2, 'Correas, tensores y tornapuntas'], lar: ['tij', 2, 'Largueros y montantes de pretil'], bas: ['grua', 3, 'Parantes y bastidores de fachada'], techo: ['grua', 5, 'Techo de panel'], muro: ['grua', 7, 'Muros de panel'], vid: ['tij', 5, 'Vidrieras y portal'], faja: ['tij', 4, 'Faja, visera y brise'], cen: ['tij', 2, 'Cenefa negra'], div: ['mano', 4, 'Divisorios, baños y equipos'] };
+  const QUIEN = { est: 'est', cru: 'est', cor: 'est', lar: 'est', bas: 'est', techo: 'panel', muro: 'panel', vid: null, faja: 'herr', cen: 'herr', div: 'div' };
+  let UNITS = [], AN = null, maq = null;
+  function hacerUnidades() {
+    UNITS = []; const keys = Object.keys(ANIM_ST); let d0 = 0;
+    keys.forEach(k => { const g = groups[k]; if (!g) return; const us = []; let cur = null;
+      g.children.forEach(m => { if (!m.isMesh) return; m.userData.p0 = m.position.clone(); const c = new THREE.Box3().setFromObject(m).getCenter(new THREE.Vector3());
+        if (cur && cur.info === m.userData.info && cur.c.distanceTo(c) < .7 || cur && !m.userData.info) cur.ms.push(m); else { cur = { k, info: m.userData.info || '', c, ms: [m] }; us.push(cur); } });
+      const [tipo, dias, tarea] = ANIM_ST[k]; us.forEach((u, i) => { u.tipo = tipo; u.tarea = tarea; u.dia = d0 + Math.floor(i / us.length * dias) + 1; u.box = new THREE.Box3(); u.ms.forEach(m => u.box.union(new THREE.Box3().setFromObject(m))); u.c = u.box.getCenter(new THREE.Vector3()); });
+      d0 += dias; UNITS.push(...us); });
+    UNITS.total = d0;
+  }
+  const persona = col => { const g = new THREE.Group(), add = (geo, mat, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; g.add(m); return m; };
+    add(new THREE.BoxGeometry(.34, .8, .2), M(0x3b3b3b), 0, .4, 0); add(new THREE.BoxGeometry(.44, .6, .26), M(col), 0, 1.1, 0); add(new THREE.SphereGeometry(.12, 12, 8), M(0xd9a07a), 0, 1.55, 0); add(new THREE.CylinderGeometry(.15, .16, .08, 12), M(0xffd23f), 0, 1.67, 0); return g; };
+  function hacerMaquinas() {
+    const Y = M(0xf2b705), D = M(0x2b2b2b), mani = new THREE.Group();
+    const b = (geo, mat, x, y, z, par = mani) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; par.add(m); return m; };
+    b(new THREE.BoxGeometry(3.2, .9, 1.9), Y, 0, 1.0, 0); b(new THREE.BoxGeometry(.9, 1.3, .9), new THREE.MeshStandardMaterial({ color: 0x9fcfe0, transparent: true, opacity: .55 }), -.3, 2.05, .45);
+    [[-1.1, -.95], [-1.1, .95], [1.1, -.95], [1.1, .95]].forEach(([x, z]) => { const w = b(new THREE.CylinderGeometry(.55, .55, .45, 16), D, x, .55, z); w.rotation.x = Math.PI / 2; });
+    const boom = new THREE.Group(); boom.position.set(-1.2, 1.8, -.35); mani.add(boom);
+    const bm = b(new THREE.BoxGeometry(1, .38, .38), Y, .5, 0, 0, boom); const fork = b(new THREE.BoxGeometry(.9, .08, 1.0), D, 0, 0, 0, mani);
+    const op = persona(0x2f6f86); op.position.set(-.3, .95, .45); op.scale.setScalar(.85); mani.add(op);
+    const tij = new THREE.Group(), base = b(new THREE.BoxGeometry(2.4, .45, 1.2), Y, 0, .35, 0, tij), sx = [], plat = new THREE.Group(); tij.add(plat);
+    for (let i = 0; i < 2; i++) sx.push(b(new THREE.BoxGeometry(2.3, .08, .08), D, 0, 1, i ? .5 : -.5, tij));
+    b(new THREE.BoxGeometry(2.6, .12, 1.3), Y, 0, 0, 0, plat); [[-1.25, -.6], [-1.25, .6], [1.25, -.6], [1.25, .6]].forEach(([x, z]) => b(new THREE.BoxGeometry(.05, 1.1, .05), Y, x, .55, z, plat)); b(new THREE.BoxGeometry(2.6, .05, .05), Y, 0, 1.1, -.6, plat); b(new THREE.BoxGeometry(2.6, .05, .05), Y, 0, 1.1, .6, plat);
+    const w1 = persona(0xb5622a), w2 = persona(0x6f8f9a); w1.position.set(-.6, .06, 0); w2.position.set(.6, .06, 0); plat.add(w1, w2);
+    const suelo = persona(0x3d8b3d);
+    [mani, tij, suelo].forEach(o => { o.visible = false; sc.add(o); });
+    return { mani, boom, bm, fork, tij, plat, sx, suelo, w1, w2, mPos: new THREE.Vector3(B.E0 - 4, 0, -(B.N0 + 14)), tPos: new THREE.Vector3(B.E0 - 4, 0, -(B.N0 + 16)), tH: .5 };
+  }
+  const lado = c => { const u = c.x - B.E0, v = -c.z - B.N0; if (v > 9) return 'N'; if (v < 1) return 'S'; if (u < 1) return 'O'; if (u > 24) return 'E'; return 'N'; };
+  function spot(c, d) { const u = c.x - B.E0, v = -c.z - B.N0, s = lado(c), cl = (x, a, b) => Math.max(a, Math.min(b, x));
+    const p = s === 'N' ? [cl(u, 1, 24), 10.3 + d] : s === 'S' ? [cl(u, 1, 24), -.6 - d] : s === 'O' ? [-.6 - d, cl(v, 1, 9)] : [25.6 + d, cl(v, 1, 9)];
+    return new THREE.Vector3(B.E0 + p[0], 0, -(B.N0 + p[1])); }
+  function ponerMaquinas(U, k) {
+    const m = maq, tgt = U.c;
+    if (U.tipo === 'grua') { const want = spot(tgt, U.k === 'techo' || U.k === 'cor' ? 4.2 : 5.2); m.mPos.lerp(want, .08); m.mani.position.copy(m.mPos);
+      const dir = new THREE.Vector3().subVectors(tgt, m.mPos); m.mani.rotation.y = Math.atan2(-dir.z, dir.x);
+      const tip = m.cargo || tgt, local = m.mani.worldToLocal(tip.clone()), piv = m.boom.position, dx = local.x - piv.x, dy = local.y - piv.y + .3, dz = local.z - piv.z, L = Math.hypot(dx, dy, dz);
+      m.boom.rotation.set(0, Math.atan2(-dz, dx), Math.atan2(dy, Math.hypot(dx, dz))); m.bm.scale.x = Math.max(1, L); m.bm.position.x = Math.max(1, L) / 2; m.fork.position.set(local.x, local.y - .35, local.z); }
+    const tw = spot(tgt, 1.1), roof = /techo|cor|cru/.test(U.k), h = roof ? Math.max(.3, tgt.y - 1.3) : Math.max(.2, Math.min(5.0, tgt.y - 1.4));
+    m.tPos.lerp(tw, .1); m.tH += (h - m.tH) * .1; m.tij.position.copy(m.tPos); const s = lado(tgt); m.tij.rotation.y = s === 'N' || s === 'S' ? 0 : Math.PI / 2;
+    m.plat.position.y = .6 + m.tH; m.sx.forEach((x, i) => { const hh = m.tH + .4; x.position.y = .6 + hh / 2; x.rotation.z = (i ? 1 : -1) * Math.atan2(hh, 2.3); x.scale.x = Math.hypot(hh, 2.3) / 2.3; });
+    m.suelo.position.copy(spot(tgt, 2.4)).add(new THREE.Vector3(1.2, 0, 0)); m.suelo.lookAt(tgt.x, 0, tgt.z);
+  }
+  function verHasta(i) { UNITS.forEach((U, j) => U.ms.forEach(m => { m.visible = j < i; m.position.copy(m.userData.p0); m.scale.set(1, 1, 1); })); }
+  function animar(on) {
+    if (on) { if (modo === '3p') salir3p(); if (play) toggle(); if (!maq) maq = hacerMaquinas(); hacerUnidades();
+      AN = { i: 0, t: 0, run: true, vel: 1, seguir: true }; ST.forEach(([k]) => { groups[k].visible = ['ter', 'inst', 'plat'].includes(k) || !!ANIM_ST[k]; });
+      verHasta(0); [maq.mani, maq.tij, maq.suelo].forEach(o => o.visible = true); $('anim').hidden = false; $('etapa').hidden = true; $('anRg').max = UNITS.length; irVista(6); }
+    else { AN = null; if (maq) [maq.mani, maq.tij, maq.suelo].forEach(o => o.visible = false); verHasta(1e9); $('anim').hidden = true; $('etapa').hidden = false; applyVis(); }
+  }
+  function tickAnim(dt) {
+    if (!AN || !UNITS.length) return; const U = UNITS[Math.min(AN.i, UNITS.length - 1)];
+    if (AN.run && AN.i < UNITS.length) { const dur = U.tipo === 'grua' ? 1.4 : U.tipo === 'tij' ? .55 : .45; AN.t += dt * AN.vel / dur; }
+    if (AN.i < UNITS.length) {
+      const t = Math.min(1, AN.t); U.ms.forEach(m => m.visible = true);
+      let off = new THREE.Vector3(), sc2 = 1;
+      if (U.tipo === 'grua') { const st = spot(U.c, 2.4).add(new THREE.Vector3(0, .6, 0)), up = st.clone().add(new THREE.Vector3(0, Math.max(2, U.c.y + 1.2 - .6), 0)), hi = U.c.clone().add(new THREE.Vector3(0, 1.3, 0));
+        let p; if (t < .25) p = st.clone().lerp(up, t / .25); else if (t < .8) { const k = (t - .25) / .55; p = up.clone().lerp(hi, k); p.y += Math.sin(k * Math.PI) * .6; } else p = hi.clone().lerp(U.c, (t - .8) / .2);
+        off.subVectors(p, U.c); maq.cargo = p; }
+      else { off.set(0, -(1 - t) * 1.2, 0); sc2 = .5 + .5 * t; maq.cargo = null; }
+      U.ms.forEach(m => { m.position.copy(m.userData.p0).add(off); m.scale.setScalar(sc2); });
+      ponerMaquinas(U);
+      if (AN.t >= 1) { U.ms.forEach(m => { m.position.copy(m.userData.p0); m.scale.set(1, 1, 1); }); AN.i++; AN.t = 0; if (AN.i >= UNITS.length) { AN.run = false; groups.ext.visible = true; } }
+      if (AN.seguir && !viaje) { const d = U.c.clone().sub(ctl.target).multiplyScalar(Math.min(1, dt * 1.5)); ctl.target.add(d); cam.position.add(d); }
+    }
+    const V = UNITS[Math.min(AN.i, UNITS.length - 1)], q = QUIEN[V.k], prop = q && PROPIO[q], quien = !q ? 'aluminiero' : prop ? 'SBU con cuadrilla propia' : PAQ[q].quien;
+    $('anTx').innerHTML = AN.i >= UNITS.length ? `<b>Día ${UNITS.total} de ${UNITS.total} · estructura y envolvente terminadas</b><span>${UNITS.length} piezas · quedan exteriores, instalaciones y terminaciones</span>` : `<b>Día ${V.dia} de ${UNITS.total} · ${V.tarea}</b><span>${V.info || ''} · pieza ${AN.i + 1}/${UNITS.length} · ${V.tipo === 'grua' ? 'la sube el manitou con operario; dos en la tijera la reciben y fijan' : V.tipo === 'tij' ? 'dos operarios desde la tijera de 8 m' : 'a mano'} · ${quien}</span>`;
+    $('anRg').value = AN.i; $('anPl').textContent = AN.run ? '❚❚' : '▶';
+  }
+
+  function tick() { const dt = Math.min(.05, clock.getDelta()); tickAnim(dt);
     if (viaje) { viaje.t = Math.min(1, (performance.now() - viaje.s) / 900); const k = viaje.t < .5 ? 2 * viaje.t * viaje.t : 1 - Math.pow(-2 * viaje.t + 2, 2) / 2; cam.position.lerpVectors(viaje.p0, viaje.p1, k); ctl.target.lerpVectors(viaje.t0, viaje.t1, k); if (viaje.t >= 1) viaje = null; }
     if (modo === '3p' && avatar) {
       const f = (keys.w || keys.arrowup || padK.f ? 1 : 0) - (keys.s || keys.arrowdown || padK.b ? 1 : 0), r = (keys.d || keys.arrowright || padK.r ? 1 : 0) - (keys.a || keys.arrowleft || padK.l ? 1 : 0);
@@ -1181,17 +1265,20 @@ const v3 = (() => {
     document.addEventListener('fullscreenchange', () => $('lay').classList.toggle('min', !!document.fullscreenElement));
     $('lay').onchange = e => { vis[e.target.dataset.k] = e.target.checked; applyVis(); };
     $('rgEt').oninput = applyVis;
+    $('etAn').onclick = () => animar(true); $('anX').onclick = () => animar(false); $('anPl').onclick = () => { if (!AN) return; if (AN.i >= UNITS.length) { AN.i = 0; verHasta(0); groups.ext.visible = false; } AN.run = !AN.run; };
+    $('anV').onclick = () => { if (!AN) return; AN.vel = AN.vel >= 8 ? 1 : AN.vel * 2; $('anV').textContent = '×' + AN.vel; }; $('anSeg').onchange = e => { if (AN) AN.seguir = e.target.checked; };
+    $('anRg').oninput = e => { if (!AN) return; AN.i = +e.target.value; AN.t = 0; verHasta(AN.i); groups.ext.visible = AN.i >= UNITS.length; };
     $('etPrev').onclick = () => ir(-1); $('etNext').onclick = () => ir(1); $('etPlay').onclick = toggle;
     $('etapa').addEventListener('wheel', e => { e.preventDefault(); ir(e.deltaY > 0 ? 1 : -1); }, { passive: false });
     ren.domElement.addEventListener('wheel', e => { if (e.shiftKey) { e.preventDefault(); e.stopImmediatePropagation(); ir(e.deltaY > 0 ? 1 : -1); } }, { passive: false, capture: true });
-    addEventListener('keydown', e => { if (!$('p-3d').classList.contains('on') || /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName) && document.activeElement !== $('rgEt')) return; const k = e.key.toLowerCase(); if (k === 'f' && !e.ctrlKey && !e.metaKey) { $('fsBtn').click(); return; } if (modo === '3p') { if (['w', 'a', 's', 'd', 'q', 'e', 'shift', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k)) { keys[k] = true; e.preventDefault(); return; } if (k === 'escape') { salir3p(); return; } } if (true) { if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); ir(1); } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); ir(-1); } else if (e.key === ' ') { e.preventDefault(); toggle(); } } });
+    addEventListener('keydown', e => { if (!$('p-3d').classList.contains('on') || /INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName) && document.activeElement !== $('rgEt')) return; const k = e.key.toLowerCase(); if (k === 'f' && !e.ctrlKey && !e.metaKey) { $('fsBtn').click(); return; } if (AN && k === ' ') { e.preventDefault(); $('anPl').click(); return; } if (modo === '3p') { if (['w', 'a', 's', 'd', 'q', 'e', 'shift', 'arrowup', 'arrowdown', 'arrowleft', 'arrowright'].includes(k)) { keys[k] = true; e.preventDefault(); return; } if (k === 'escape') { salir3p(); return; } } if (true) { if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); ir(1); } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); ir(-1); } else if (e.key === ' ') { e.preventDefault(); toggle(); } } });
     ren.domElement.addEventListener('pointermove', e => { const r = ren.domElement.getBoundingClientRect(); mouse.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1); ray.setFromCamera(mouse, cam); const objs = []; Object.values(groups).forEach(g => g.visible && g.traverse(o => o.isMesh && objs.push(o))); const hit = ray.intersectObjects(objs, false).find(h => h.object.userData.info); const tip = $('tip'); if (hit) { tip.style.display = 'block'; tip.textContent = hit.object.userData.info; tip.style.left = (e.clientX - r.left + 14) + 'px'; tip.style.top = (e.clientY - r.top + 10) + 'px'; } else tip.style.display = 'none'; });
     addEventListener('resize', resize); resize(); build(); hud();
     ctl.addEventListener('start', () => { viaje = null; document.querySelectorAll('#vistas [data-v]').forEach(b => b.classList.remove('on')); });
     (function loop() { requestAnimationFrame(loop); tick(); ren.render(sc, cam); })();
   }
   function resize() { if (!ren) return; const el = $('v3'); ren.setSize(el.clientWidth, el.clientHeight); cam.aspect = el.clientWidth / el.clientHeight; cam.updateProjectionMatrix(); }
-  return { start, rebuild: () => { if (started) { build(); hud(); } }, ir, ST };
+  return { start, rebuild: () => { if (started) { if (AN) animar(false); build(); hud(); } }, ir, ST };
 })();
 
 /* ================= ACTUALIZAR ================= */
