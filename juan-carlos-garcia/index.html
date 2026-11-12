@@ -1270,14 +1270,17 @@ const v3 = (() => {
     [3.0, 3.55, 4.3, B.cen, 5.5, 5.95].forEach(h => { beam(g, [-.22, 10.22, h], [25.22, 10.22, h], .05, .1, MAT.cor, 'BN · bastidor C100 galvanizado, atornillado a los parantes'); beam(g, [25.22, -.22, h], [25.22, 10.22, h], .05, .1, MAT.cor, 'Bastidor C100 · frente'); });
     // ---- 8 techo
     g = groups.techo;
-    for (let u = -.3; u < 25.3; u += 1) { const u1 = Math.min(u + 1, 25.3); beam(g, [(u + u1) / 2, -.3, hRoof(-.3) + tC + er / 2], [(u + u1) / 2, 10.3, hRoof(10.3) + tC + er / 2], (u1 - u) - .02, er, MR, `${E.roof.nom} · U ${f2(E.roof.U)} W/m²K · pendiente ${Math.round(E.roof.pend * 100)} %`); if (E.roof.trap) for (let r = 0; r < 3; r++) beam(g, [u + .17 + r * .333, -.3, hRoof(-.3) + tC + er + .02], [u + .17 + r * .333, 10.3, hRoof(10.3) + tC + er + .02], .05, .04, MR, E.roof.nom); }
+    for (let u = -.3, nT = 1; u < 25.3; u += 1, nT++) { const u1 = Math.min(u + 1, 25.3); beam(g, [(u + u1) / 2, -.3, hRoof(-.3) + tC + er / 2], [(u + u1) / 2, 10.3, hRoof(10.3) + tC + er / 2], (u1 - u) - .02, er, MR, `T${nT} · ${E.roof.nom} · U ${f2(E.roof.U)} W/m²K · pendiente ${Math.round(E.roof.pend * 100)} %`); if (E.roof.trap) for (let r = 0; r < 3; r++) beam(g, [u + .17 + r * .333, -.3, hRoof(-.3) + tC + er + .02], [u + .17 + r * .333, 10.3, hRoof(10.3) + tC + er + .02], .05, .04, MR, E.roof.nom); }
     bx(g, -.3, -.4, B.hS + .15, 25.3, .1, B.hS + .45, M(0x7fb3c9), 'Canaleta interna sur · chapa galvanizada');
-    // ---- 9 muros
+    // ---- 9 muros: panel por panel, con las mismas marcas del pedido de cotización (ancho útil 1,10 m)
     g = groups.muro;
-    for (let u = -.3; u < 25.3; u += 1) bx(g, u + .01, -.3 - ew, B.npt, Math.min(u + 1, 25.3) - .01, -.3, B.hPar, MW, E.wall.nom + ' · muro sur');
-    for (let v = -.3; v < 10.3; v += 1) bx(g, -.3 - ew, v + .01, B.npt, -.3, Math.min(v + 1, 10.3) - .01, B.hPar, MW, E.wall.nom + ' · muro oeste');
-    bx(g, .7, 10.3, 3.0, 25.3, yF, B.hPar, MW, E.wall.nom + ' · franja alta norte (detrás del brise y la cenefa)');
-    bx(g, 25.3, -.3, 3.0, xE, 10.3, B.hPar, MW, E.wall.nom + ' · franja alta del frente');
+    const aW = 1.10, tira = (pre, n0, a0, a1, h0, h1, mk) => { let k = 0; for (let a = a0; a < a1 - .01; a += aW, k++) mk(a, Math.min(a + aW, a1), h0, h1, `${pre}${n0 + k} · ${E.wall.nom} · ${f2(h1 - h0)} m`); };
+    tira('MS', 1, -.3 - ew, 25.3 + ew, B.npt, B.hPar, (a, b, h0, h1, inf) => bx(g, a + .01, -.3 - ew, h0, b - .01, -.3, h1, MW, inf + ' · fachada sur'));
+    tira('MO', 1, 0, 10.6 + 2 * ew, B.npt, B.hPar, (a, b, h0, h1, inf) => bx(g, -.3 - ew, 10.3 + ew - b + .01, h0, -.3, 10.3 + ew - a - .01, h1, MW, inf + ' · fachada oeste'));
+    tira('MN', 1, 0, 20.3, 3.0, B.hPar, (a, b, h0, h1, inf) => bx(g, 25.3 - b + .01, 10.3, h0, 25.3 - a - .01, yF, h1, MW, inf + ' · franja alta norte'));
+    tira('MN', 20, 0, 4.3, B.cen, B.hPar, (a, b, h0, h1, inf) => bx(g, 5 - b + .01, 10.3, h0, 5 - a - .01, yF, h1, MW, inf + ' · sobre el portal'));
+    bx(g, 25.3, -.3 - ew, B.npt, xE, .8, B.hPar, MW, `ME0 · ${E.wall.nom} · ${f2(B.hPar - B.npt)} m · esquina sur del frente`);
+    tira('ME', 1, .8, 10.3 + ew, 3.0, B.hPar, (a, b, h0, h1, inf) => bx(g, 25.3, a + .01, h0, xE, b - .01, h1, MW, inf + ' · franja alta del frente'));
     // ---- 10 vidrieras y portal
     g = groups.vid;
     bx(g, B.uH, yF, B.npt, xE, yF + .04, 3.0, MAT.glass, 'Vidriera aluminio línea pesada · laminado 5+5');
