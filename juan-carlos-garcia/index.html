@@ -1311,7 +1311,10 @@ const PV_SEED = [
   { id: 'k-eld', nom: 'Electricidad Daniel (sucursal Maldonado)', wa: '094 276 090', tel: '094 276 159 (iluminación)', web: 'electricidaddaniel.com.uy', nota: '3 de Febrero 706, Maldonado · cables, térmicas, tableros, iluminación LED; compra por WhatsApp', rub: ['electrica'] },
   { id: 'k-nyg', nom: 'N&G Materiales Eléctricos', wa: '096 077 602', tel: '4226 0541', web: 'nygmaterialeselectricos.com.uy', nota: 'Av. Aparicio Saravia, Maldonado · cables, luminarias y reflectores LED', rub: ['electrica'] },
   { id: 'k-ell', nom: 'Electricidad Lussich', tel: '4224 2874', mail: 'electricidadlussich@hotmail.com', nota: 'Maldonado · materiales eléctricos, iluminación y tornillería', rub: ['electrica'] },
-  { id: 'k-mau', nom: 'Maudy S.A.', tel: '4226 0254', nota: 'Av. Martiniano Chiossi, Punta del Este · materiales eléctricos', rub: ['electrica'] },
+  { id: 'k-mau', nom: 'Maudy S.A.', wa: '096 406 329', tel: '4226 0254', web: 'maudy.com.uy', nota: 'Martiniano Chiossi esq. Luxemburgo, Maldonado · térmicas, tableros, caños, cables; cotizan listas de obra', rub: ['electrica'] },
+  { id: 'k-syd', nom: 'Electricidad Sydney', wa: '096 336 719', web: 'electricidadsydney.com', nota: 'Av. de los Gauchos esq. Zufriategui, Maldonado · más de 25 años; cables, canalizaciones, tableros; trabaja con instaladores y empresas', rub: ['electrica'] },
+  { id: 'k-mgi', nom: 'MGI Uruguay (Punta del Este)', tel: '4224 7081', mail: 'ventaspdeleste@mgi.com.uy', web: 'mgi.com.uy', nota: 'Av. Aparicio Saravia esq. Tacuabé · material eléctrico profesional: gabinetes, tableros, protección, luces de emergencia', rub: ['electrica', 'incendio'] },
+  { id: 'k-cpl', nom: 'COMPEL (mayorista)', wa: '097 537 221', tel: '2202 7472', mail: 'compelsrl@gmail.com', web: 'compel.com.uy', nota: 'Montevideo · importador mayorista desde 1989, envíos diarios al interior: sirve para comparar precio por volumen', rub: ['electrica'] },
   { id: 'k-sanm', nom: 'Sanitaria Maldonado', wa: '095 154 154', tel: '4224 5145', web: 'sanitariamaldonado.com.uy', nota: 'Ventura Alegre 934 esq. Solís · caños, termofusión, grifería, artículos sanitarios, bombas; hace envíos', rub: ['sanitaria', 'banos'] },
   { id: 'k-msan', nom: 'Maldonado Sanitarios', wa: '091 093 457', nota: 'Rincón 1330, Maldonado · artículos sanitarios', rub: ['sanitaria', 'banos'] },
   { id: 'k-sup', nom: 'Suprasur', tel: '4222 2404', nota: 'Av. Aiguá, Maldonado · sanitarios (confirmar rubro)', rub: ['sanitaria'] },
@@ -1321,7 +1324,7 @@ const PV_SEED = [
 ];
 
 let PVD = { prov: [], resp: {}, rub: 'hormigon', fecha: '', seed: [] }; try { Object.assign(PVD, JSON.parse(localStorage.getItem('jcg-proveedores') || '{}')) } catch (e) {}
-PVD.seed = PVD.seed || []; PV_SEED.forEach(p => { if (!PVD.seed.includes(p.id)) { PVD.seed.push(p.id); if (!PVD.prov.some(x => x.id === p.id)) PVD.prov.push(JSON.parse(JSON.stringify(p))); } });
+PVD.seed = PVD.seed || []; PV_SEED.forEach(p => { const ya = PVD.prov.find(x => x.id === p.id); if (ya) ['wa', 'tel', 'mail', 'web', 'nota'].forEach(f => { if (p[f] && !ya[f]) ya[f] = p[f]; }); if (!PVD.seed.includes(p.id)) { PVD.seed.push(p.id); if (!PVD.prov.some(x => x.id === p.id)) PVD.prov.push(JSON.parse(JSON.stringify(p))); } });
 /* WhatsApp: en la compu va directo a WhatsApp Web (siempre en la misma pestaña) o a la app de escritorio, sin la página intermedia de wa.me */
 const WA_MODOS = { web: 'WhatsApp Web (misma pestaña)', app: 'App de WhatsApp de la compu', wa: 'Celular / preguntar (wa.me)' };
 const waModo = () => PVD.waModo || (/Android|iPhone|iPad|Mobile/i.test(navigator.userAgent) ? 'wa' : 'web');
