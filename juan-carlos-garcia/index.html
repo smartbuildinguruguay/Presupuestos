@@ -1864,9 +1864,9 @@ const v3 = (() => {
     document.querySelectorAll('#vistas [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === '3p')); }
   function salir3p() { if (modo !== '3p') return; modo = 'orbit'; ctl.enabled = true; $('pad').hidden = true; if (avatar) { ctl.target.copy(avatar.position).add(new THREE.Vector3(0, 1.4, 0)); } }
   /* ===== animación del montaje: pieza por pieza, con manitou, tijeras y cuadrilla ===== */
-  const ANIM_ST = { fRep: ['piso', 1, 'Replanteo de ejes con estacas e hilos'], fExc: ['exc', 2, 'Excavación de zanjas de vigas y pozos de nudos'], fArm: ['baja', 2, 'Armado de jaulas de hierro en el piso y bajada a la zanja'], fPn: ['baja', 1, 'Pernos Ø24 y platinas con plantilla en cada columna'], inst: ['piso', 1, 'Previsiones sanitarias y eléctricas bajo platea'], fHv: ['horm', 1, 'Hormigonado de vigas y nudos con bomba'], fTos: ['piso', 2, 'Relleno de tosca compactada'], fMal: ['piso', 1, 'Nylon, separadores y malla doble'], fHp: ['horm', 1, 'Hormigonado de platea con bomba y llaneado (luego 6 días de curado)', 6], est: ['grua', 3, 'Montaje de pórticos'], cru: ['tij', 1, 'Arriostramiento'], cor: ['tij', 2, 'Correas, tensores y tornapuntas'], lar: ['tij', 2, 'Largueros y montantes de pretil'], bas: ['grua', 3, 'Parantes y bastidores de fachada'], techo: ['grua', 5, 'Techo de panel'], muro: ['grua', 7, 'Muros de panel'], vid: ['tij', 5, 'Vidrieras y portal'], faja: ['tij', 4, 'Faja, visera y brise'], cen: ['tij', 2, 'Cenefa negra'], div: ['mano', 4, 'Divisorios, baños y equipos'], iSan: ['mano', 3, 'Sanitaria interior: ventilaciones, agua, artefactos y bajadas pluviales'], iEle: ['mano', 4, 'Eléctrica: tableros, caños y cables, luminarias, tomas, aire y luces exteriores'] };
-  const QUIEN = { fRep: 'horm', fExc: 'horm', fArm: 'horm', inst: 'san', fHv: 'horm', fTos: 'horm', fMal: 'horm', fHp: 'horm', fPn: 'horm', est: 'est', cru: 'est', cor: 'est', lar: 'est', bas: 'est', techo: 'panel', muro: 'panel', vid: null, faja: 'herr', cen: 'herr', div: 'div', iSan: 'san', iEle: 'ele' };
-  let UNITS = [], AN = null, maq = null;
+  const ANIM_ST = { fRep: ['piso', 1, 'Replanteo de ejes con estacas e hilos'], sExc: ['exc', 2, 'Excavación general del suelo y retiro de la tierra'], sTos: ['tos', 3, 'Relleno de tosca en capas de 20 cm, compactadas con rodillo'], fExc: ['exc', 2, 'Excavación de zanjas de vigas y pozos de nudos'], fArm: ['baja', 2, 'Armado de jaulas de hierro en el piso y bajada a la zanja'], fPn: ['baja', 1, 'Pernos Ø24 y platinas con plantilla en cada columna'], inst: ['piso', 1, 'Previsiones sanitarias y eléctricas bajo platea'], fHv: ['horm', 1, 'Hormigonado de vigas y nudos con bomba'], fTos: ['piso', 2, 'Relleno de tosca compactada'], fMal: ['piso', 1, 'Nylon, separadores y malla doble'], fHp: ['horm', 1, 'Hormigonado de platea con bomba y llaneado (luego 6 días de curado)', 6], est: ['grua', 3, 'Montaje de pórticos'], cru: ['tij', 1, 'Arriostramiento'], cor: ['tij', 2, 'Correas, tensores y tornapuntas'], lar: ['tij', 2, 'Largueros y montantes de pretil'], bas: ['grua', 3, 'Parantes y bastidores de fachada'], techo: ['grua', 5, 'Techo de panel'], muro: ['grua', 7, 'Muros de panel'], vid: ['tij', 5, 'Vidrieras y portal'], faja: ['tij', 4, 'Faja, visera y brise'], cen: ['tij', 2, 'Cenefa negra'], div: ['mano', 4, 'Divisorios, baños y equipos'], iSan: ['mano', 3, 'Sanitaria interior: ventilaciones, agua, artefactos y bajadas pluviales'], iEle: ['mano', 4, 'Eléctrica: tableros, caños y cables, luminarias, tomas, aire y luces exteriores'] };
+  const QUIEN = { sExc: 'horm', sTos: 'horm', fRep: 'horm', fExc: 'horm', fArm: 'horm', inst: 'san', fHv: 'horm', fTos: 'horm', fMal: 'horm', fHp: 'horm', fPn: 'horm', est: 'est', cru: 'est', cor: 'est', lar: 'est', bas: 'est', techo: 'panel', muro: 'panel', vid: null, faja: 'herr', cen: 'herr', div: 'div', iSan: 'san', iEle: 'ele' };
+  let UNITS = [], AN = null, maq = null, HUE = [];
   const CAM = (() => { const v = ((6 * 10.6 + 2 * 25.6) * .3 * .6 + 12 * 1.2 * 1.2 * .45) * 1.05, p = 266 * .15 * 1.05; return { v: Math.ceil(v / 7), p: Math.ceil(p / 7), mv: v, mp: p }; })();
   function hacerUnidades() {
     UNITS = []; const keys = Object.keys(ANIM_ST); let d0 = 0; const PL = plan(); UNITS.plan = PL;
@@ -1925,9 +1925,19 @@ const v3 = (() => {
     b(new THREE.BoxGeometry(.6, .5, .8), M(0x777777), -3.2, 2.0, 0, mixer); b(new THREE.BoxGeometry(1.3, .12, .3), M(0x777777), -3.9, 1.5, 0, mixer);
     [-2.6, -1.2, 2.6].forEach(x => [-1, 1].forEach(z => { const w = b(new THREE.CylinderGeometry(.5, .5, .4, 14), D, x, .5, z * 1.1, mixer); w.rotation.x = Math.PI / 2; }));
     mixer.traverse(o => { if (o.isMesh) o.userData.info = 'Camión hormigonera de 7 m³: descarga en la tolva de la bomba'; });
+    // camión volcador (saca la tierra y trae la tosca) y rodillo compactador vibrante
+    const volc = new THREE.Group(), caja = new THREE.Group(); b(new THREE.BoxGeometry(6.4, .5, 2.3), D, 0, .9, 0, volc); b(new THREE.BoxGeometry(1.7, 1.7, 2.3), M(0xc0392b), 2.5, 1.95, 0, volc); b(new THREE.BoxGeometry(.6, .8, 2.0), new THREE.MeshStandardMaterial({ color: 0x9fcfe0, transparent: true, opacity: .6 }), 3.1, 2.2, 0, volc);
+    caja.position.set(-3.0, 1.15, 0); volc.add(caja); b(new THREE.BoxGeometry(4.3, .1, 2.3), M(0x8a8a8a), 2.15, 0, 0, caja); [-1.1, 1.1].forEach(z => b(new THREE.BoxGeometry(4.3, 1.1, .08), M(0x8a8a8a), 2.15, .55, z, caja)); b(new THREE.BoxGeometry(.08, 1.1, 2.3), M(0x8a8a8a), 4.3, .55, 0, caja);
+    const carga = b(new THREE.BoxGeometry(4.1, .8, 2.1), M(0xd6c393), 2.15, .45, 0, caja);
+    [-2.3, -1.2, 2.5].forEach(x => [-1, 1].forEach(z => { const w = b(new THREE.CylinderGeometry(.5, .5, .4, 14), D, x, .5, z * 1.1, volc); w.rotation.x = Math.PI / 2; }));
+    volc.traverse(o => { if (o.isMesh) o.userData.info = 'Camión volcador de 12 m³: retira la tierra y trae la tosca'; });
+    const rod = new THREE.Group(), dr = b(new THREE.CylinderGeometry(.62, .62, 1.7, 18), Y, -1.15, .62, 0, rod); dr.rotation.x = Math.PI / 2; b(new THREE.BoxGeometry(.3, .3, 1.8), D, -1.15, 1.2, 0, rod); b(new THREE.BoxGeometry(2.0, 1.0, 1.5), Y, .55, 1.05, 0, rod);
+    [-1, 1].forEach(z => { const w = b(new THREE.CylinderGeometry(.55, .55, .45, 14), D, .9, .55, z * .62, rod); w.rotation.x = Math.PI / 2; }); const rOp2 = persona(0x2f6f86); rOp2.position.set(.5, 1.5, 0); rOp2.scale.setScalar(.8); rod.add(rOp2);
+    rod.traverse(o => { if (o.isMesh) o.userData.info = 'Rodillo compactador vibrante: compacta cada capa de 20 cm de tosca'; });
+    [volc, rod].forEach(o => { o.visible = false; sc.add(o); });
     const h2 = persona(0x3d8b3d), h3 = persona(0x6f8f9a);   // dos más en el piso (manguera y regla)
     [retro, bomba, mixer, h2, h3].forEach(o => { o.visible = false; sc.add(o); });
-    const fund = { retro, rArm, rA2, bomba, pl1, pl2, pl3, mang, mixer, tambor, h2, h3, mixN: 0, mixT: 0, mixPrev: null };
+    const fund = { mT: M(0xd6c393), mE: M(0x7d5f40), volc, caja, carga, rod, retro, rArm, rA2, bomba, pl1, pl2, pl3, mang, mixer, tambor, h2, h3, mixN: 0, mixT: 0, mixPrev: null };
     [mani, tij, suelo, sold].forEach(o => { o.visible = false; sc.add(o); }); cab.visible = chis.visible = false;
     const NCH = 60, chG = new THREE.BufferGeometry(); chG.setAttribute('position', new THREE.BufferAttribute(new Float32Array(NCH * 3), 3));
     const chispas = new THREE.Points(chG, new THREE.PointsMaterial({ color: 0xffd27a, size: .07, transparent: true, opacity: .95, depthWrite: false })); chispas.frustumCulled = false; chispas.visible = false; sc.add(chispas);
@@ -1940,7 +1950,13 @@ const v3 = (() => {
     const p = s === 'N' ? [cl(u, 1, 24), 10.3 + d] : s === 'S' ? [cl(u, 1, 24), -.6 - d] : s === 'O' ? [-.6 - d, cl(v, 1, 9)] : [25.6 + d, cl(v, 1, 9)];
     return new THREE.Vector3(B.E0 + p[0], 0, -(B.N0 + p[1])); }
   function ponerFund(U) {
-    const f = maq.fund, tgt = U.c, en = U.k.startsWith('f') || U.k === 'inst', exc = U.tipo === 'exc', hor = U.tipo === 'horm';
+    const f = maq.fund, tgt = U.c, en = /^(f|s[A-Z])/.test(U.k) || U.k === 'inst', exc = U.tipo === 'exc', hor = U.tipo === 'horm', tos = U.tipo === 'tos';
+    f.volc.visible = U.k === 'sExc' || tos; f.rod.visible = tos;
+    if (f.volc.visible) { const t = AN ? Math.min(1, AN.t) : 0, cz = Math.max(-.2, Math.min(10.2, -(tgt.z + B.N0)));
+      if (U.k === 'sExc') { f.volc.position.copy(P3([Math.max(1, Math.min(24, tgt.x - B.E0)), -4.6, 0])); f.volc.rotation.y = 0; f.caja.rotation.z = 0; f.carga.visible = true; f.carga.scale.y = Math.max(.05, t); f.carga.position.y = .05 + .4 * Math.max(.05, t); f.carga.material = f.mE; }
+      else { f.volc.position.copy(P3([-4.6, 4.5, 0])); f.volc.rotation.y = Math.PI; const k = t < .3 ? t / .3 : t < .5 ? 1 : Math.max(0, 1 - (t - .5) / .2); f.caja.rotation.z = -.75 * k; f.carga.visible = t < .45; f.carga.scale.y = 1; f.carga.position.y = .45; f.carga.material = f.mT; } }
+    if (tos) { const t = AN ? Math.min(1, AN.t) : 0, k = Math.max(0, (t - .25) / .75), pas = Math.min(3, Math.floor(k * 4)), fr = k * 4 - pas, u = pas % 2 ? 25 - fr * 25.4 : -.2 + fr * 25.4;
+      f.rod.position.copy(P3([u, 1.3 + pas * 2.6, 0])); f.rod.position.y = U.box.max.y; f.rod.rotation.y = pas % 2 ? Math.PI : 0; f.rod.position.y += Math.sin(performance.now() / 25) * .01; }
     f.retro.visible = exc; [f.bomba, f.pl1, f.pl2, f.pl3, f.mang, f.mixer].forEach(o => o.visible = hor); f.h2.visible = f.h3.visible = en;
     if (en) { f.h2.position.copy(tgt).setY(0).add(new THREE.Vector3(1.4, 0, -1.2)); f.h3.position.copy(tgt).setY(0).add(new THREE.Vector3(-1.5, 0, 1.0)); f.h2.lookAt(tgt.x, 0, tgt.z); f.h3.lookAt(tgt.x, 0, tgt.z); }
     if (exc) { const want = tgt.clone().setY(0).add(new THREE.Vector3(-2.8, 0, 1.6)); f.retro.position.lerp(want, .08); const d = tgt.clone().sub(f.retro.position); f.retro.rotation.y = Math.atan2(-d.z, d.x); const t = performance.now() / 600; f.rArm.rotation.z = -.35 + Math.sin(t) * .25; f.rA2.rotation.z = -1.1 + Math.cos(t) * .35; }
@@ -1957,7 +1973,7 @@ const v3 = (() => {
       f.tambor.rotation.x += t >= .7 ? .08 : .02; }
   }
   function ponerMaquinas(U, k) {
-    const m = maq, tgt = U.c; ponerFund(U); const fund = U.k.startsWith('f') || U.k === 'inst'; m.mani.visible = m.tij.visible = !fund;
+    const m = maq, tgt = U.c; ponerFund(U); const fund = /^(f|s[A-Z])/.test(U.k) || U.k === 'inst'; m.mani.visible = m.tij.visible = !fund;
     if (U.tipo === 'grua') { const want = spot(tgt, U.k === 'techo' || U.k === 'cor' ? 4.2 : 5.2); m.mPos.lerp(want, .08); m.mani.position.copy(m.mPos);
       const dir = new THREE.Vector3().subVectors(tgt, m.mPos); m.mani.rotation.y = Math.atan2(-dir.z, dir.x);
       const tip = m.cargo || tgt, local = m.mani.worldToLocal(tip.clone()), piv = m.boom.position, dx = local.x - piv.x, dy = local.y - piv.y + .3, dz = local.z - piv.z, L = Math.hypot(dx, dy, dz);
@@ -1989,7 +2005,7 @@ const v3 = (() => {
     if (on) { if (modo === '3p') salir3p(); if (play) toggle(); if (!maq) maq = hacerMaquinas(); hacerUnidades();
       AN = { i: 0, t: 0, run: true, vel: 1, seguir: true }; ST.forEach(([k]) => { groups[k].visible = k === 'ter' || !!ANIM_ST[k]; }); Object.keys(ANIM_ST).forEach(k => { if (groups[k]) groups[k].visible = true; });
       verHasta(0); [maq.mani, maq.tij, maq.suelo].forEach(o => o.visible = true); $('anim').hidden = false; $('etapa').hidden = true; $('anDia').hidden = false; $('lay').classList.add('min'); $('hud').hidden = true; $('anRg').max = UNITS.length; diasNav(); irVista(9); }
-    else { AN = null; if (maq) [maq.mani, maq.tij, maq.suelo].forEach(o => o.visible = false); verHasta(1e9); $('anim').hidden = true; $('etapa').hidden = false; $('anDia').hidden = true; $('hud').hidden = false; if (maq) { maq.sold.visible = maq.cab.visible = maq.chis.visible = maq.brazo.visible = maq.torcha.visible = maq.chispas.visible = false; maq.luz.intensity = 0; const f = maq.fund; [f.retro, f.bomba, f.pl1, f.pl2, f.pl3, f.mang, f.mixer, f.h2, f.h3].forEach(o => o.visible = false); } ['fRep', 'fExc', 'fArm', 'fPn', 'fHv', 'fTos', 'fMal', 'fHp'].forEach(k => groups[k] && (groups[k].visible = false)); applyVis(); }
+    else { AN = null; if (maq) [maq.mani, maq.tij, maq.suelo].forEach(o => o.visible = false); verHasta(1e9); $('anim').hidden = true; $('etapa').hidden = false; $('anDia').hidden = true; $('hud').hidden = false; if (maq) { maq.sold.visible = maq.cab.visible = maq.chis.visible = maq.brazo.visible = maq.torcha.visible = maq.chispas.visible = false; maq.luz.intensity = 0; const f = maq.fund; [f.volc, f.rod, f.retro, f.bomba, f.pl1, f.pl2, f.pl3, f.mang, f.mixer, f.h2, f.h3].forEach(o => o.visible = false); } HUE.forEach(m => m.visible = true); ['fRep', 'sExc', 'sTos', 'fExc', 'fArm', 'fPn', 'fHv', 'fTos', 'fMal', 'fHp'].forEach(k => groups[k] && (groups[k].visible = false)); applyVis(); }
   }
   function diasNav() { const ini = {}; UNITS.forEach((u, i) => { if (!(u.dia in ini)) ini[u.dia] = i; });
     const PL = UNITS.plan, fe = []; { let x = new Date(PL.by.fRep.s); while (fe.length < UNITS.total) { if (habil(x)) fe.push(new Date(x)); x = addD(x, 1); } } UNITS.fe = fe;
@@ -1997,8 +2013,8 @@ const v3 = (() => {
     $('anDias').onclick = e => { const b = e.target.closest('[data-dia]'); if (!b || !AN) return; AN.i = +b.dataset.i; AN.t = 0; verHasta(AN.i); groups.ext.visible = AN.i >= UNITS.length; }; }
   function tickAnim(dt) {
     if (!AN || !UNITS.length) return; const U = UNITS[Math.min(AN.i, UNITS.length - 1)];
-    if (AN.run && AN.i < UNITS.length) { const dur = U.tipo === 'grua' ? 1.4 : U.tipo === 'tij' ? .55 : U.tipo === 'horm' ? 1.6 : U.tipo === 'exc' ? .7 : U.tipo === 'baja' ? .9 : U.tipo === 'piso' ? .35 : .45; AN.t += dt * AN.vel / dur; }
-    { const ks = Object.keys(ANIM_ST), at = ks.indexOf(UNITS[Math.min(AN.i, UNITS.length - 1)].k), fin = AN.i >= UNITS.length; if (groups.techo) groups.techo.visible = fin || at < ks.indexOf('div'); if (groups.fRep) { groups.fRep.visible = !fin && at <= ks.indexOf('fMal'); groups.fArm.visible = !fin && at <= ks.indexOf('fHv'); } }
+    if (AN.run && AN.i < UNITS.length) { const dur = U.tipo === 'grua' ? 1.4 : U.tipo === 'tij' ? .55 : U.tipo === 'horm' ? 1.6 : U.tipo === 'exc' ? .7 : U.tipo === 'baja' ? .9 : U.tipo === 'tos' ? 2.2 : U.tipo === 'piso' ? .35 : .45; AN.t += dt * AN.vel / dur; }
+    { const ks = Object.keys(ANIM_ST), at = ks.indexOf(UNITS[Math.min(AN.i, UNITS.length - 1)].k), fin = AN.i >= UNITS.length; if (groups.techo) groups.techo.visible = fin || at < ks.indexOf('div'); { const pre = !fin && at < ks.indexOf('fExc'); HUE.forEach(m => m.visible = !pre); if (groups.fExc) groups.fExc.visible = !pre; } if (groups.fRep) { groups.fRep.visible = !fin && at <= ks.indexOf('fMal'); groups.fArm.visible = !fin && at <= ks.indexOf('fHv'); } }
     if (AN.i < UNITS.length) {
       const t = Math.min(1, AN.t); U.ms.forEach(m => m.visible = true);
       let off = new THREE.Vector3(), sc2 = 1;
@@ -2006,7 +2022,7 @@ const v3 = (() => {
         let p; if (t < .25) p = st.clone().lerp(up, t / .25); else if (t < .8) { const k = (t - .25) / .55; p = up.clone().lerp(hi, k); p.y += Math.sin(k * Math.PI) * .6; } else p = hi.clone().lerp(U.c, (t - .8) / .2);
         off.subVectors(p, U.c); maq.cargo = p; }
       else if (U.tipo === 'baja') { maq.cargo = null; const up = t < .5 ? 1.1 : 1.1 * (1 - (t - .5) / .5), k = t < .5 ? Math.max(.05, t * 2) : 1; U.ms.forEach(m => { m.position.copy(m.userData.p0); m.position.y += up; m.scale.set(1, k, 1); }); off = null; }
-      else if (['piso', 'exc', 'horm'].includes(U.tipo)) { maq.cargo = null; const k = U.tipo === 'exc' ? Math.max(.02, 1 - t) : Math.max(.03, t); U.ms.forEach(m => { m.position.copy(m.userData.p0); if (!m.userData.raiz) m.position.y -= (1 - k) * (m.userData.h || 0) / 2; m.scale.set(1, 1, 1); if (m.userData.raiz) m.scale.y = k; else m.scale.y = k; }); off = null; }
+      else if (['piso', 'exc', 'horm', 'tos'].includes(U.tipo)) { maq.cargo = null; const k = U.tipo === 'exc' ? Math.max(.02, 1 - t) : Math.max(.03, t); U.ms.forEach(m => { m.position.copy(m.userData.p0); if (!m.userData.raiz) m.position.y -= (1 - k) * (m.userData.h || 0) / 2; m.scale.set(1, 1, 1); if (m.userData.raiz) m.scale.y = k; else m.scale.y = k; }); off = null; }
       else { off.set(0, -(1 - t) * 1.2, 0); sc2 = .5 + .5 * t; maq.cargo = null; }
       if (off) U.ms.forEach(m => { m.position.copy(m.userData.p0).add(off); m.scale.setScalar(sc2); });
       ponerMaquinas(U);
@@ -2077,10 +2093,10 @@ const v3 = (() => {
         [[x0, z0, x1, hz0], [x0, hz1, x1, z1], [x0, hz0, hx0, hz1], [hx1, hz0, x1, hz1]].forEach(([a, b, c, d]) => { if (c - a > .01 && d - b > .01) box(g, a, y0, b, c, y1, d, mat, info); }); };
       hueco(-.06, -.02, -20, -LOT.F - 45, LOT.D, 30, MAT.grass); hueco(-.02, 0, 0, -LOT.F, LOT.D, 0, M(0xb8d197), 'Padrón 10596 · 1.000 m²');
       const TI = M(0xb39368), FO = M(0x3a2b1f);
-      bx(g, -.7, -.7, -.75, 25.7, 10.7, -.65, FO, 'Fondo de zanjas a −0,65');
+      HUE = []; HUE.push(bx(g, -.7, -.7, -.75, 25.7, 10.7, -.65, FO, 'Fondo de zanjas a −0,65')); bx(g, -.7, -.7, SUE().bot - .06, 25.7, 10.7, SUE().bot, M(0x4a3a2a), 'Fondo de la excavación general');
       const ZA = [...FR.map(u => [u - .25, -.25, u + .25, 10.25]), [-.25, -.25, 25.25, .25], [-.25, 9.75, 25.25, 10.25], ...FR.flatMap(u => [0, 10].map(v => [u - .65, v - .65, u + .65, v + .65]))];
       const xs = [...new Set([-.7, 25.7, -.3, 25.3, ...ZA.flatMap(z => [z[0], z[2]])].map(x => Math.round(x * 100) / 100))].sort((a, b) => a - b), ys = [...new Set([-.7, 10.7, -.3, 10.3, ...ZA.flatMap(z => [z[1], z[3]])].map(x => Math.round(x * 100) / 100))].sort((a, b) => a - b);
-      for (let j = 0; j < ys.length - 1; j++) { let run = null; const flush = () => { if (run) bx(g, run.a, ys[j], -.65, run.b, ys[j + 1], run.top, TI, 'Terreno: desmonte de 20 cm dentro de la huella'); run = null; };
+      for (let j = 0; j < ys.length - 1; j++) { let run = null; const flush = () => { if (run) HUE.push(bx(g, run.a, ys[j], -.65, run.b, ys[j + 1], run.top, TI, 'Terreno: desmonte de 20 cm dentro de la huella')); run = null; };
         for (let i = 0; i < xs.length - 1; i++) { const cx = (xs[i] + xs[i + 1]) / 2, cy = (ys[j] + ys[j + 1]) / 2, zan = ZA.some(z => cx > z[0] && cx < z[2] && cy > z[1] && cy < z[3]);
           const top = cx > -.3 && cx < 25.3 && cy > -.3 && cy < 10.3 ? -.3 : 0;
           if (zan) { flush(); continue; } if (run && run.top === top) run.b = xs[i + 1]; else { flush(); run = { a: xs[i], b: xs[i + 1], top }; } } flush(); } }
@@ -2146,7 +2162,9 @@ const v3 = (() => {
     [0, 10].forEach(v => bx(g, -.15, v - .15, -.6, 25.15, v + .15, -.25, M(0xb9b2a4), 'Viga de fundación longitudinal 30 × 60'));
     FR.forEach(u => [0, 10].forEach(v => { bx(g, u - .6, v - .6, -.6, u + .6, v + .6, -.26, MAT.conc, 'Nudo de fundación 1,2 × 1,2 bajo columna'); bx(g, u - .2, v - .225, B.npt, u + .2, v + .225, B.npt + .025, M(0x777777), 'PB · placa base 400 × 450 × 25 con rigidizadores y 4 pernos Ø24'); }));
     // ---- fundación paso a paso (solo para la animación del montaje)
-    { const FK = ['fRep', 'fExc', 'fArm', 'fPn', 'fHv', 'fTos', 'fMal', 'fHp']; FK.forEach(k => { groups[k] = new THREE.Group(); groups[k].visible = false; sc.add(groups[k]); });
+    { const FK = ['fRep', 'sExc', 'sTos', 'fExc', 'fArm', 'fPn', 'fHv', 'fTos', 'fMal', 'fHp']; FK.forEach(k => { groups[k] = new THREE.Group(); groups[k].visible = false; sc.add(groups[k]); });
+      { const su = SUE(), nF = 8, w = 26.4 / nF; for (let i = 0; i < nF; i++) { const u0 = -.7 + i * w; bx(groups.sExc, u0, -.7, su.bot, u0 + w, 10.7, 0, M(i % 2 ? 0x7d5f40 : 0x86674a), `Excavación general a ${f2(-su.bot)} m · franja ${i + 1} de ${nF} (≈ ${Math.round(su.vol / nF)} m³)`); }
+        for (let c = 0; c < su.capas; c++) { const a = su.bot + (-.65 - su.bot) * c / su.capas, b = su.bot + (-.65 - su.bot) * (c + 1) / su.capas; bx(groups.sTos, -.7, -.7, a, 25.7, 10.7, b, M(c % 2 ? 0xd6c393 : 0xcbb57f), `Tosca · capa ${c + 1} de ${su.capas}, 20 cm compactada al 95 % Proctor, con ensayo de densidad`); } }
       const HIE = new THREE.MeshStandardMaterial({ color: 0xc2611f, roughness: .6, metalness: .3 }), HIW = new THREE.MeshBasicMaterial({ color: 0xd2742f, wireframe: true });
       const TIE = M(0x5b4632), TOS = M(0xd6c393), NYL = new THREE.MeshStandardMaterial({ color: 0x9fb4c0, transparent: true, opacity: .55, roughness: .3 }), HIL = new THREE.MeshBasicMaterial({ color: 0xffffff });
       // replanteo: hilos entre estacas por los ejes
@@ -2336,7 +2354,7 @@ const sigHab = d => { let x = new Date(d); while (!habil(x)) x = addD(x, 1); ret
 const masHab = (d, n) => { let x = sigHab(d); for (let i = 1; i < n; i++) x = sigHab(addD(x, 1)); return x; };
 const fFe = (d, y) => d.toLocaleDateString('es-UY', { weekday: 'short', day: 'numeric', month: 'short', ...(y ? { year: 'numeric' } : {}) });
 const fCo = d => d.toLocaleDateString('es-UY', { day: 'numeric', month: 'short' });
-const SUELO_D = { S0: 2, S1: 3, S2: 4, S3: 5, S4: 7 };
+const SUE = (st = S) => { const o = SUELO[st.suelo] || SUELO.S0, vol = Math.round(AHUE * (o.prof + .2)); return { o, bot: Math.min(-(o.prof + .2), -.85), capas: Math.max(1, Math.round(o.prof / .2)), dEx: Math.max(1, Math.ceil(vol / 150)), vol, tos: Math.round(AHUE * o.prof * 1.3) }; };
 const ETAPAS = [['Proyecto, permisos y acopios', '#6c655c', 'Pablo Alcoba dibuja y presenta; el ingeniero calcula la fundación primero para poder arrancar con inicio anticipado. Fabricación de la estructura, los paneles y las vidrieras fuera de la obra.'],
   ['Etapa 1 · Suelo, fundación, previsiones y platinas', '#8b5a2b', 'Lo que se hace este año: movimiento de suelos, vigas de fundación, todo lo que va bajo la platea, pernos y platinas de las 12 columnas y la platea llaneada. Cura durante la licencia.'],
   ['Etapa 2 · Estructura metálica', '#b5622a', 'Al volver de la licencia: pórticos, arriostramiento, correas, largueros y bastidores de fachada. El taller fabrica desde diciembre.'],
@@ -2354,8 +2372,11 @@ function plan(st = S) {
   add('ia', 0, 'Inicio anticipado autorizado (a confirmar)', 1, { fijo: '2026-12-04', hito: true });
   add('pc', 0, 'Resto del proyecto ejecutivo y permiso completo: arquitectura, estructura, sanitaria, eléctrica, Bomberos', 25, { fijo: '2026-12-01' });
   add('fRep', 1, 'Obrador, cerco y replanteo de ejes', 1, { ini: 1 });
-  add('suelo', 1, 'Movimiento de suelos: ' + (SUELO[st.suelo] || SUELO.S0).n.toLowerCase(), SUELO_D[st.suelo] || 2, { fs: 'fRep' });
-  add('fExc', 1, 'Excavación de zanjas y pozos de nudos', 2, { fs: 'suelo' });
+  const su = SUE(st);
+  add('sExc', 1, `Excavación general a ${f2(su.o.prof + .2)} m y retiro de tierra (≈ ${su.vol} m³, retro y camiones)`, su.dEx, { fs: 'fRep' });
+  add('sTos', 1, `Tosca en ${su.capas} capa${su.capas > 1 ? 's' : ''} de 20 cm, compactada con rodillo al 95 % Proctor, ensayo por capa (≈ ${su.tos} m³)`, su.capas, { fs: 'sExc' });
+  if (st.suelo === 'S4') add('pil', 1, 'Pilotines bajo los nudos: perforación, armadura y hormigón', 3, { fs: 'sTos' });
+  add('fExc', 1, 'Excavación de zanjas y pozos de nudos', 2, { fs: st.suelo === 'S4' ? 'pil' : 'sTos' });
   add('fArm', 1, 'Armaduras de vigas y nudos: se arman en el piso y se bajan', 2, { ss: 'fExc', lag: 1 });
   add('fPn', 1, 'Pernos y platinas con plantilla en las 12 columnas', 1, { fs: 'fArm' });
   add('inst', 1, 'Previsiones bajo platea: sanitaria, agua, caños eléctricos y tierra', 1, { ss: 'fPn' });
@@ -2440,9 +2461,10 @@ function renderCrono() {
   ${pg.peor < -500 ? `<div class="warn">En algún momento SBU adelanta plata: hasta <b>${u$(-pg.peor)}</b> el ${fFe(pg.cuando, true)}, porque paga la seña de paneles y vidrieras o el saldo del taller antes del cobro siguiente.</div>` : '<p class="note ok">Con estos hitos SBU no adelanta plata propia en ningún momento.</p>'}
   <p class="note">Cada etapa se cobra por lo que cuesta, con el mismo margen del presupuesto: la mitad como anticipo para acopiar y el saldo contra entrega. Aparte, los <b>aportes BPS de la obra (${u$(r.bps)})</b> los paga Juan Carlos al costo, mes a mes, según los jornales declarados. "Gastado por SBU" es el costo directo en el momento real de pago: el taller y los paneles se pagan mitad al encargar y mitad al recibir.</p>`;
   $('crEstAnt').value = CR.estAnt;
-  $('crRie').innerHTML = `<ul class="c">
+  const ult = (() => { const keep = CR.ini; let d = D0('2026-12-22'), r = null; for (let i = 0; i < 40 && !r; i++, d = addD(d, -1)) { if (!habil(d)) continue; CR.ini = dS(d); if (plan().antes) r = new Date(d); } CR.ini = keep; return r; })(), SU0 = SUE();
+  $('crRie').innerHTML = `<div class="${P.antes ? 'note' : 'warn'}" style="margin-bottom:8px"><b>Movimiento de suelos con la opción elegida (${SU0.o.n}):</b> excavación general de ≈ ${SU0.vol} m³ en ${SU0.dEx} día${SU0.dEx > 1 ? 's' : ''} con retro y camiones, y ${SU0.capas} capa${SU0.capas > 1 ? 's' : ''} de tosca de 20 cm (≈ ${SU0.tos} m³), una por día con rodillo y ensayo de densidad. Para hormigonar la platea antes de la licencia hay que arrancar la obra a más tardar el <b>${ult ? fFe(ult, true) : '—'}</b>${P.antes ? '.' : `: con inicio el ${fFe(D0(CR.ini))} la platea pasa al ${fFe(P.by.fHp.f)}`}</div><ul class="c">
    <li><b>Inicio anticipado.</b> La Intendencia de Maldonado lo permite: se pide junto con el permiso y lleva la constancia de inscripción de la obra en BPS. Para presentar la primera semana de diciembre, el estudio de suelos y el cálculo de fundación tienen que estar a fin de noviembre.</li>
-   <li><b>La platea antes de la licencia</b> sale justo con suelo firme. Con sustitución de 0,60 a 1,00 m se agregan 1 a 3 días: o se arranca antes, o se pide excepción a la IGTSS para trabajar los primeros días de la licencia (vence el 4 de diciembre). Lo dice el estudio de suelos: cambiá la opción de suelo arriba y el cronograma se recalcula.</li>
+   <li><b>La platea antes de la licencia.</b> Depende del suelo: con suelo firme sobra, con sustitución de 1 m hay que arrancar a fines de noviembre. Si no se llega, hay dos salidas: dejar vigas y previsiones hechas y hormigonar la platea el 11 de enero, o pedir excepción a la IGTSS para trabajar los primeros días de la licencia (vence el 4 de diciembre). El estudio de suelos decide: cambiá la opción de suelo arriba y todo se recalcula.</li>
    <li><b>Taller y paneles.</b> La estructura se encarga cuando Juan Carlos paga su anticipo: con la platea terminada el taller arranca recién en enero, porque también para en la licencia; con el inicio de obra fabrica en diciembre. Paneles y vidrieras se señan al empezar el montaje (los paneles tardan unas 2 semanas y medio, las vidrieras unas 4).</li>
    <li><b>Carnaval y Turismo.</b> Contamos sin trabajar el 8 y 9 de febrero y la semana del 22 al 27 de marzo (segundo período de licencia).</li><li><b>Margen.</b> Hay 10 días hábiles de reserva por lluvia, atrasos de proveedores o trámites antes de la inspección final: con el plan base la entrega queda en ${fFe(P.fin, true)}, antes de la meta del 16 de abril.</li>
    <li><b>Lo que puede atrasar la entrega:</b> la habilitación de Bomberos y las conexiones de UTE y OSE, que no dependen de nosotros. Conviene pedirlas en marzo, con la obra cerrada.</li></ul>`;
