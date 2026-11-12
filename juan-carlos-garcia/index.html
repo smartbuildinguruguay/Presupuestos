@@ -203,6 +203,7 @@ tr.win td{background:#e5f1e2;font-weight:600}.tag2{display:inline-block;font-siz
  <div class="k" id="kCro"></div>
  <div class="card"><div class="bar" style="position:static;border:0;padding:0 0 8px"><label>Inicio de obra <input type="date" id="crIni"></label><span class="note">El movimiento de suelos depende de la opción de suelo de arriba. Las barras son días hábiles; en naranja, las licencias.</span></div><div id="crGantt" style="overflow-x:auto"></div></div>
  <div class="card"><h3 style="margin-top:0">Etapas</h3><div id="crEt"></div></div>
+ <div class="card"><h3 style="margin-top:0">Escenarios según el estudio de suelos</h3><div id="crEsc"></div></div>
  <div class="card"><h3 style="margin-top:0">Pagos por avance de obra</h3><div id="crPag"></div></div>
  <div class="card"><h3 style="margin-top:0">Supuestos y riesgos del plazo</h3><div id="crRie"></div></div>
 </section>
@@ -2346,7 +2347,7 @@ const v3 = (() => {
    (23/12/2026–9/1/2027 y 22–27/3/2027, IGTSS). Lo usan la pestaña de cronograma y la animación. */
 const LIC = [['2026-12-23', '2027-01-09', 'Licencia de la construcción, 1.er período'], ['2027-03-22', '2027-03-27', 'Licencia de la construcción, 2.º período (Turismo)']];
 const FER = ['2026-12-25', '2027-01-01', '2027-01-06', '2027-02-08', '2027-02-09', '2027-05-01'];
-const CR = { ini: '2026-12-07', meta: '2027-04-16', firma: '2026-11-20', estAnt: 'ini' };
+const CR = { ini: '2026-12-07', meta: '2027-04-16', firma: '2026-11-18', estAnt: 'ini' };
 const dS = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`, D0 = s => new Date(s + 'T12:00:00');
 const addD = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
 const habil = d => { const s = dS(d), w = d.getDay(); return w > 0 && w < 6 && !FER.includes(s) && !LIC.some(([a, b]) => s >= a && s <= b); };
@@ -2364,7 +2365,7 @@ const ETAPAS = [['Proyecto, permisos y acopios', '#6c655c', 'Pablo Alcoba dibuja
 function plan(st = S) {
   const T = [], by = {}, add = (k, e, n, d, o = {}) => { const t = { k, e, n, d, ...o }; T.push(t); by[k] = t; return t; };
   add('ante', 0, 'Llega el anteproyecto de la arquitecta', 1, { fijo: '2026-11-17', hito: true });
-  add('suel', 0, 'Estudio de suelos: 2 sondeos SPT e informe', 8, { fijo: '2026-11-18' });
+  add('suel', 0, 'Estudio de suelos: 2 sondeos SPT e informe', 7, { fijo: '2026-11-19' });
   add('pej', 0, 'Pablo Alcoba + ingeniero: implantación, fundación, sanitaria bajo platea y cálculo de fundación', 8, { fijo: '2026-11-18' });
   add('firma', 0, 'Firma del contrato con Juan Carlos', 1, { fijo: CR.firma, hito: true });
   add('bps', 0, 'Registro de obra en BPS y permiso con pedido de inicio anticipado en la Intendencia', 2, { fijo: '2026-11-30' });
@@ -2461,6 +2462,9 @@ function renderCrono() {
   ${pg.peor < -500 ? `<div class="warn">En algún momento SBU adelanta plata: hasta <b>${u$(-pg.peor)}</b> el ${fFe(pg.cuando, true)}, porque paga la seña de paneles y vidrieras o el saldo del taller antes del cobro siguiente.</div>` : '<p class="note ok">Con estos hitos SBU no adelanta plata propia en ningún momento.</p>'}
   <p class="note">Cada etapa se cobra por lo que cuesta, con el mismo margen del presupuesto: la mitad como anticipo para acopiar y el saldo contra entrega. Aparte, los <b>aportes BPS de la obra (${u$(r.bps)})</b> los paga Juan Carlos al costo, mes a mes, según los jornales declarados. "Gastado por SBU" es el costo directo en el momento real de pago: el taller y los paneles se pagan mitad al encargar y mitad al recibir.</p>`;
   $('crEstAnt').value = CR.estAnt;
+  { const keep = S.suelo, rows = ['S0', 'S1', 'S2', 'S3'].map(k => { S.suelo = k; const Q = plan(), r2 = rubrado(S), pg2 = pagos(); return { k, n: SUELO[k].n, tot: (r2.venta + r2.gest) * ivaK() + r2.bps, pla: Q.by.fHp.f, est: Q.by.est.s, fin: Q.fin, antes: Q.antes, h2: pg2.hit[1].usd, h3: pg2.hit[2].usd }; }); S.suelo = keep; const b0 = rows[0].tot;
+    $('crEsc').innerHTML = `<p class="note" style="margin-top:0">Con inicio de obra el ${fFe(D0(CR.ini), true)}. El precio base es con suelo firme; si el estudio pide sustitución, se suma solo la diferencia del movimiento de suelos y la fundación, ya calculada acá.</p><table><tr><th>Si el estudio de suelos dice…</th><th class="n">Total ${lbl}</th><th class="n">Diferencia</th><th>Platea</th><th>Estructura desde</th><th>Entrega</th><th class="n">Pago 2 · inicio</th><th class="n">Pago 3 · platea</th></tr>${rows.map(x => `<tr class="${x.k === S.suelo ? 'best' : ''}"><td><b>${x.n}</b></td><td class="n">${u$(x.tot)}</td><td class="n">${x.tot - b0 > 0 ? '+ ' + u$(x.tot - b0) : '—'}</td><td class="${x.antes ? 'ok' : 'bad'}">${fCo(x.pla)}${x.antes ? '' : ' (después de la licencia)'}</td><td>${fCo(x.est)}</td><td class="${x.fin <= meta ? 'ok' : 'bad'}">${fFe(x.fin)}</td><td class="n">${u$(x.h2)}</td><td class="n">${u$(x.h3)}</td></tr>`).join('')}</table>
+    <p class="note">Si sale sustitución y no se llega a hormigonar la platea antes del 23 de diciembre, igual quedan hechos el suelo, las vigas, las previsiones y las platinas, y la platea se hace el primer día después de la licencia. El margen de 10 días hábiles absorbe la mayor parte del atraso.</p>`; }
   const ult = (() => { const keep = CR.ini; let d = D0('2026-12-22'), r = null; for (let i = 0; i < 40 && !r; i++, d = addD(d, -1)) { if (!habil(d)) continue; CR.ini = dS(d); if (plan().antes) r = new Date(d); } CR.ini = keep; return r; })(), SU0 = SUE();
   $('crRie').innerHTML = `<div class="${P.antes ? 'note' : 'warn'}" style="margin-bottom:8px"><b>Movimiento de suelos con la opción elegida (${SU0.o.n}):</b> excavación general de ≈ ${SU0.vol} m³ en ${SU0.dEx} día${SU0.dEx > 1 ? 's' : ''} con retro y camiones, y ${SU0.capas} capa${SU0.capas > 1 ? 's' : ''} de tosca de 20 cm (≈ ${SU0.tos} m³), una por día con rodillo y ensayo de densidad. Para hormigonar la platea antes de la licencia hay que arrancar la obra a más tardar el <b>${ult ? fFe(ult, true) : '—'}</b>${P.antes ? '.' : `: con inicio el ${fFe(D0(CR.ini))} la platea pasa al ${fFe(P.by.fHp.f)}`}</div><ul class="c">
    <li><b>Inicio anticipado.</b> La Intendencia de Maldonado lo permite: se pide junto con el permiso y lleva la constancia de inscripción de la obra en BPS. Para presentar la primera semana de diciembre, el estudio de suelos y el cálculo de fundación tienen que estar a fin de noviembre.</li>
