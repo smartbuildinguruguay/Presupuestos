@@ -62,7 +62,7 @@ tr.win td{background:#e5f1e2;font-weight:600}.tag2{display:inline-block;font-siz
 .hoja{background:#fff;border:1px solid var(--ln);border-radius:8px;padding:14mm 13mm;margin:0 auto 14px;max-width:210mm;font-size:9.5pt;line-height:1.4;color:#1d1b18}
 .hoja h1{font-size:15pt;margin:0 0 2mm}.hoja h2{font-size:11.5pt;margin:5mm 0 2mm;border-bottom:1.5px solid #1d1b18;padding-bottom:1mm}.hoja h3{font-size:10pt;margin:3mm 0 1mm}
 .hoja table{font-size:8.3pt}.hoja th,.hoja td{padding:1.6px 4px;line-height:1.25}.hoja td .note{font-size:7.4pt}.hoja .meta{display:flex;justify-content:space-between;gap:10px;color:#6c655c;font-size:8.5pt;border-bottom:1px solid #ccc;padding-bottom:2mm;margin-bottom:3mm}
-.hoja .fill td{height:7mm}.hoja .fill2 td{height:5.2mm;padding-top:1px;padding-bottom:1px}.hoja .pie{margin-top:4mm;color:#6c655c;font-size:7.8pt;border-top:1px solid #ccc;padding-top:1.5mm;display:flex;justify-content:space-between}
+.hoja .fill td{height:7mm}.hoja .tight td{height:4.3mm}.hoja tr.sec td{background:#efece6;height:auto!important;padding-top:3px}.hoja .fill2 td{height:5.2mm;padding-top:1px;padding-bottom:1px}.hoja .pie{margin-top:4mm;color:#6c655c;font-size:7.8pt;border-top:1px solid #ccc;padding-top:1.5mm;display:flex;justify-content:space-between}
 .hoja svg{width:100%;height:auto;display:block;border:1px solid #ddd;border-radius:4px;margin:1mm 0}
 @media print{.noprint,#resp{display:none!important}@page{size:A4;margin:0}body{background:#fff}.hoja{border:0;border-radius:0;margin:0;max-width:none;width:210mm;min-height:297mm;page-break-after:always}}
 </style></head><body>
@@ -190,7 +190,9 @@ tr.win td{background:#e5f1e2;font-weight:600}.tag2{display:inline-block;font-siz
 <section class="pg" id="p-loc">
  <h2>Cómo se dejan previstos los locales</h2>
  <p class="sub">Lo que va bajo la platea se decide antes de hormigonar y después no se puede cambiar. Por eso la clave es dejar <b>previsiones universales</b>: un punto sanitario en el fondo de cada módulo de 5 m. Así sirve para 2, 3, 4 o 5 locales y para el día que se junten o se separen dos.</p>
- <div class="card"><svg class="dw" id="svInst"></svg><div class="lg"><span><i style="background:#8b5a2b"></i>desagüe cloacal</span><span><i style="background:#2f6f86"></i>agua</span><span><i style="background:#d6a400"></i>caño eléctrico vacío</span><span><i style="background:#2a8a5a"></i>pluvial</span><span><i style="background:#999"></i>punto previsto sin usar (tapón)</span></div></div>
+ <div class="card"><h3 style="margin-top:0">Sanitaria</h3><p class="note" style="margin-top:0">Desagües en PVC sanitario para pegar (3,2 mm), ramales en Y a 45°, una cámara por local sobre el colector, pileta de patio sifonada en el baño y pileta tapada en la kitchenette, ventilación Ø63 por el techo. Agua en PPR termofusión con un submedidor por local en el frente.</p><svg class="dw" id="svSan"></svg><svg class="dw" id="svSanL" style="max-width:820px;margin-top:10px"></svg><div class="lg"><span><i style="background:#8b5a2b"></i>cloacal Ø110</span><span><i style="background:#b07a45"></i>Ø63 piletas</span><span><i style="background:#c79a6a"></i>Ø40</span><span><i style="background:#6d4c8f"></i>ventilación Ø63</span><span><i style="background:#2a8a5a"></i>pluvial</span><span><i style="background:#2f6f86"></i>agua fría</span><span><i style="background:#c0392b"></i>agua caliente</span><span><i style="background:#9a9a9a"></i>previsión sin usar (tapón)</span></div></div>
+ <div class="card"><h3 style="margin-top:0">Eléctrica</h3><p class="note" style="margin-top:0">Medición monofásica por local en el gabinete de UTE del frente, alimentación enterrada a cada tablero, 7 circuitos por local, luminarias LED lineales colgadas en dos o tres filas, servicios comunes con fotocélula y reloj.</p><svg class="dw" id="svEle"></svg><div class="g2"><div><svg class="dw" id="svEleL"></svg></div><div><h3>Circuitos del local tipo</h3><div id="tCirc"></div><p class="note">Las cantidades del pedido de materiales salen de este trazado: metros de caño por tramo y de cable por sección y color, cajas, tomas y llaves contadas boca por boca.</p></div></div></div>
+ <div class="card" style="display:none"><svg class="dw" id="svInst"></svg><div class="lg"><span><i style="background:#8b5a2b"></i>desagüe cloacal</span><span><i style="background:#2f6f86"></i>agua</span><span><i style="background:#d6a400"></i>caño eléctrico vacío</span><span><i style="background:#2a8a5a"></i>pluvial</span><span><i style="background:#999"></i>punto previsto sin usar (tapón)</span></div></div>
  <div class="g2"><div class="card" id="cModo"></div><div class="card" id="cPrev"></div></div>
  <div class="card"><h3 style="margin-top:0">Qué queda hecho y qué completa cada inquilino</h3><div id="tModo"></div></div>
 </section>
@@ -399,8 +401,8 @@ function rubrado(st = S) {
   it('Masillado y pintura látex de divisorios' + (eq ? ' y cerramientos de baño' : '') + ' (2 caras)', ((n - 1) * 10 * 4.4 + (eq ? n * 10 : 0)) * 2, 'm²', 8);
   cat('7 · Sanitaria general (se deja siempre)');
   pq('san');
-  it('Colector cloacal PVC 110 enterrado por el pasaje sur', 34, 'ml', 38);
-  it('Cámaras de inspección 60 × 60', 4, 'u', 260);
+  it('Colector cloacal PVC 110 enterrado por el pasaje sur, al 1 %', 38, 'ml', 38, 'ver plano de sanitaria');
+  it('Cámaras de inspección 60 × 60 prefabricadas (inicial, una por local y la de conexión con tapa para tránsito)', n + 2, 'u', 260);
   it('Previsión universal por módulo: ramal 110 + 40 bajo platea y punto de agua', 5, 'u', 320, 'uno por módulo de 5 m');
   it('Conexión a saneamiento OSE (o pozo según zona)', 1, 'gl', 1500);
   it('Acometida de agua, medidor general y colector con submedidores', 1, 'gl', 1200 + 120 * n);
@@ -417,7 +419,8 @@ function rubrado(st = S) {
     pq('san'); it('Baño accesible UNIT 200 terminado: inodoro, lavatorio, grifería, barras, accesorios y espejo, cerámica de piso y pared, extractor y termotanque 30 l (el cerramiento va en divisorios)', n, 'u', 3600, '', 0.6);
     pq('herr'); it('Puerta de baño PB: placa con marco de chapa, manija de palanca y señal libre/ocupado', n, 'u', 280, '', 0.7); pq('san');
     it('Kitchenette (mesada con pileta y bajo mesada)', n, 'u', 1500, '', 0.7);
-    pq('ele'); it('Tablero del local, circuitos e iluminación LED', 250, 'm²', 14);
+    it('Instalación sanitaria interior de cada local: pileta de patio y pileta tapada bajo platea, ventilación Ø63 al techo, agua fría y caliente en PPR', n, 'u', 600, 'según despiece', 0.45);
+    pq('ele'); it('Tablero de 7 circuitos, 10 luminarias LED lineales, tomas, llaves, cartel y luces de emergencia por local', n, 'u', 2000, 'según despiece eléctrico', 0.55);
     it('Preinstalación de aire acondicionado (cañería, desagüe, toma, base en techo)', n, 'u', 360);
   } else {
     cat('9 · Por local (entrega en cáscara)');
@@ -748,6 +751,362 @@ function dEst() {
   ].map(x => `<li>${x}</li>`).join('');
 }
 
+/* ================= INSTALACIONES: un solo trazado para planos, despiece, 3D y animación =================
+   Coordenadas del proyecto: u de oeste a este (0..25), v de sur a norte (0 = cara interior del muro sur), h altura (negativa = enterrado).
+   Pasaje de servicio al sur (v −3..0): colector cloacal, agua, pluviales y caños eléctricos van enterrados ahí. */
+const INS = { tv: 2.9, vCol: -1.5, vAg: -2.35, vPlu: -2.8, vEle: -.75, uFin: 36.3, uLin: 37, bat: 33.0, hT: 1.5, BAJ: [2.5, 12.5, 22.5] };
+function instal(st = S) {
+  const n = st.n, eq = st.modo === 'equipado', L = locales(n), E = ENV[st.env];
+  const I = { n, eq, L: [], S: [], C: [], cam: [], pz: {}, ext: [] };
+  const len = p => p.reduce((t, q, i) => i ? t + Math.hypot(q[0] - p[i - 1][0], q[1] - p[i - 1][1], q[2] - p[i - 1][2]) : 0, 0);
+  const sT = (tipo, d, p, info, loc) => I.S.push({ tipo, d, p, info, loc, len: len(p) });
+  const pz = (k, q = 1) => { I.pz[k] = (I.pz[k] || 0) + q; };
+  const hCol = u => -.6 - .01 * (u + 1);              // colector al 1 %: −0,60 al inicio, ≈ −0,97 en la conexión
+  const hc = v => hRoof(v) + B.prf - .04;              // caños de techo: bajo las correas
+  I.hCol = hCol; I.hc = hc;
+  const usados = L.map(l => l.s);
+  /* ---------- sanitaria: colector y cámaras ---------- */
+  I.cam.push({ u: -1, t: 'inicial: recibe la grasera (previsión gastronomía)' });
+  L.slice().sort((a, b) => a.s - b.s).forEach(l => I.cam.push({ u: l.s, t: 'recibe el Local ' + l.num, loc: l.num }));
+  I.cam.push({ u: INS.uFin, t: 'de conexión, en el estacionamiento: tapa para tránsito', fin: true });
+  I.cam.forEach((c, i) => { c.id = 'CI ' + (i + 1); c.h = hCol(c.u); c.v = INS.vCol; });
+  sT('col', 110, [[-1, INS.vCol, hCol(-1)], [INS.uFin, INS.vCol, hCol(INS.uFin)], [INS.uLin + .4, INS.vCol, hCol(INS.uFin) - .03]], 'Colector cloacal PVC Ø110 al 1 % por el pasaje de servicio');
+  sT('gra', 110, [[-2.0, INS.vCol, hCol(-1) + .08], [-1, INS.vCol, hCol(-1) + .05]], 'Salida de la grasera a la CI 1');
+  I.gra = [-2.6, INS.vCol];
+  STUB.filter(u => !usados.includes(u)).forEach(u => {
+    sT('prev', 110, [[u, .9, B.npt + .02], [u, .9, -.35], [u, .3, -.38], [u, INS.vCol + .3, hCol(u) + .2], [u, INS.vCol, hCol(u)]], 'Previsión sin usar: Ø110 con tapón (sirve si se divide distinto)');
+    sT('prev', 40, [[u + .35, .9, B.npt + .02], [u + .35, .9, -.2], [u, .9, -.3]], 'Previsión Ø40 con tapón');
+    pz('y110'); pz('c45_110', 2); pz('tap110'); pz('tap40'); pz('c90_40'); pz('c45_40'); pz('cam160');
+  });
+  pz('tap110');   // grasera sin conectar
+  /* ---------- pluviales ---------- */
+  const hCan = B.hS + .2;
+  INS.BAJ.forEach((u, i) => {
+    sT('bpl', 110, [[u, -.12, hCan], [u, -.42, hCan - .3], [u, -.42, .4], [u, -.75, .05]], `Bajada pluvial ${i + 1} Ø110 desde el canalón`);
+    sT('pl', 110, [[u, -.8, -.3], [u, INS.vPlu, -.42]], 'Pluvial enterrado Ø110');
+    pz('c45_110', 2); pz('c90_110'); pz('rejHoj'); pz('abr110', 3); pz('boca');
+  });
+  sT('pl', 110, [[INS.BAJ[0], INS.vPlu, -.42], [INS.uLin + .6, INS.vPlu, -.78]], 'Colector pluvial Ø110 a la cuneta');
+  pz('y110', INS.BAJ.length - 1); pz('c90_110');
+  /* ---------- agua: medidor OSE, batería de submedidores y un caño por local ---------- */
+  sT('ag32', 32, [[34.9, INS.vAg, -.35], [INS.bat - .2, INS.vAg, -.35]], 'Agua Ø32 del medidor OSE a la batería de submedidores');
+  pz('ll32'); pz('tee32', Math.max(0, n - 1)); pz('c90_32', 2); pz('red32', n);
+  /* ---------- por local ---------- */
+  L.forEach(l => {
+    const s = l.s, x0 = s - 1;
+    const ksp = x0 + 2.1 + 1.8 <= l.b - .3 ? [x0 + 2.1, x0 + 3.9] : [x0 - 1.9, x0 - .1], kc = (ksp[0] + ksp[1]) / 2;
+    const dp = ksp[0] > x0 ? Math.min(l.b - 1.3, ksp[1] + .3) : Math.min(l.b - 1.3, x0 + 2.3);
+    const wa = l.i === 0 ? .04 : l.a + .06, wb = l.b - .06;
+    const P = { x0, ksp, kc, dp, wa, wb, ino: [s - .65, .3], lav: [s + .575, .22], pps: [s + .35, 1.25], kit: [kc, .3], ppt: [kc, .95], ven: [s - .92, .1], ent: [s + .92, .1], termo: [ksp[1] - .35, .1], tab: [wa, INS.tv], aa: [dp + .45, .05], cart: [Math.max(5.6, Math.min(24.4, l.a + l.w / 2)), 10.2] };
+    const R = { num: l.num, l, P, circ: [], bocas: [] }; I.L.push(R);
+    const hA = 1.2, hRf = hRoof(.1) + B.prf + .2 + E.roof.e;
+    // sanitaria
+    if (eq) {
+      sT('loc', 110, [[s, 1.25, -.3], [s, .75, -.33], [s, .3, -.36], [s, -.1, -.42], [s, INS.vCol, hCol(s) + .03]], `Local ${l.num} · ramal Ø110 a su cámara`, l.num);
+      sT('ino', 110, [[P.ino[0], P.ino[1], B.npt], [P.ino[0], P.ino[1], -.28], [s - .18, .3, -.35]], `Local ${l.num} · descarga del inodoro Ø110`, l.num);
+      sT('pps', 63, [[P.pps[0], P.pps[1], -.18], [s, 1.25, -.29]], `Local ${l.num} · salida Ø63 de la pileta de patio sifonada (baño)`, l.num);
+      sT('lav', 40, [[P.lav[0], .03, .45], [P.lav[0], .03, -.1], [P.pps[0], P.pps[1] - .15, -.12]], `Local ${l.num} · desagüe del lavatorio Ø40`, l.num);
+      sT('kit', 40, [[kc, .03, .5], [kc, .03, -.1], [kc, P.ppt[1] - .15, -.12]], `Local ${l.num} · desagüe de la kitchenette Ø40`, l.num);
+      sT('ppt', 63, [[kc, P.ppt[1], -.22], [s + (kc > s ? .3 : -.3), .9, -.28], [s, .75, -.33]], `Local ${l.num} · salida Ø63 de la pileta tapada (kitchenette)`, l.num);
+      sT('ven', 63, [[s - .45, .3, -.33], [P.ven[0], P.ven[1], -.3], [P.ven[0], P.ven[1], hRf + .5]], `Local ${l.num} · ventilación Ø63 hasta 0,50 m sobre el techo`, l.num);
+      sT('cond', 32, [[P.aa[0] - .3, .03, 2.65], [P.aa[0] - .3, -.45, 2.65], [P.aa[0] - .3, -.45, .2]], `Local ${l.num} · desagüe del aire Ø32 al exterior`, l.num);
+      pz('pps'); pz('ppt'); pz('y110'); pz('y110x63', 3); pz('c90_110'); pz('c45_110', 2); pz('tapReg'); pz('cam160');
+      pz('c90_63', 3); pz('c45_63', 2); pz('somb'); pz('pasT'); pz('abr63', 4); pz('c90_40', 2); pz('c45_40', 2); pz('c90_32', 2);
+      // agua
+      sT('ag25', 25, [[INS.bat, INS.vAg, -.4], [P.ent[0], INS.vAg, -.4], [P.ent[0], -.15, -.36], [P.ent[0], P.ent[1], -.25], [P.ent[0], P.ent[1], hA]], `Local ${l.num} · agua Ø25 desde su submedidor`, l.num);
+      sT('af', 20, [[P.ent[0], .03, hA], [P.ino[0] + .12, .03, hA], [P.ino[0] + .12, .03, .25]], `Local ${l.num} · agua fría Ø20 al lavatorio y al inodoro`, l.num);
+      sT('af', 20, [[P.lav[0] - .08, .03, hA], [P.lav[0] - .08, .03, .55]], `Local ${l.num} · agua fría al lavatorio`, l.num);
+      sT('af', 20, [[P.ent[0], .03, hA], [P.termo[0] - .1, .03, hA], [P.termo[0] - .1, .03, 1.75]], `Local ${l.num} · agua fría Ø20 al termotanque`, l.num);
+      sT('af', 20, [[kc - .08, .03, hA], [kc - .08, .03, 1.05]], `Local ${l.num} · agua fría a la kitchenette`, l.num);
+      sT('ac', 20, [[P.termo[0] + .1, .03, 1.75], [P.termo[0] + .1, .03, 1.36], [kc + .08, .03, 1.36], [kc + .08, .03, 1.05]], `Local ${l.num} · agua caliente Ø20 a la kitchenette`, l.num);
+      sT('ac', 20, [[kc + .08, .03, 1.36], [P.lav[0] + .08, .03, 1.36], [P.lav[0] + .08, .03, .55]], `Local ${l.num} · agua caliente Ø20 al lavatorio`, l.num);
+      pz('c90_25', 3); pz('ll25', 2); pz('red2520'); pz('tee20', 4); pz('c90_20', 9); pz('ros20', 7); pz('ll20', 2); pz('flex', 5);
+    } else {
+      sT('loc', 110, [[s, .9, B.npt + .02], [s, .9, -.35], [s, .3, -.38], [s, INS.vCol + .3, hCol(s) + .2], [s, INS.vCol, hCol(s) + .03]], `Local ${l.num} · previsión Ø110 con tapón a su cámara`, l.num);
+      sT('lav', 40, [[s + .35, .9, B.npt + .02], [s + .35, .9, -.2], [s, .9, -.3]], `Local ${l.num} · previsión Ø40 con tapón`, l.num);
+      sT('ag25', 25, [[INS.bat, INS.vAg, -.4], [s + .7, INS.vAg, -.4], [s + .7, .9, -.25], [s + .7, .9, .5]], `Local ${l.num} · agua Ø25 con llave y tapón`, l.num);
+      pz('tap110'); pz('tap40'); pz('c90_40'); pz('c45_110'); pz('cam160'); pz('c90_25', 2); pz('ll25', 2); pz('tapAg');
+    }
+    pz('subm'); pz('ret'); pz('ud25', 2);
+    /* ---------- eléctrica del local ---------- */
+    const C = (id, nom, sec, prot, segs, bocas, extra = {}) => { const c = { loc: l.num, id, nom, sec, prot, segs: segs.map(([p, enc]) => ({ p, enc, len: len(p) })), bocas, ...extra }; c.len = c.segs.reduce((t, x) => t + x.len, 0); R.circ.push(c); I.C.push(c); return c; };
+    const hT = INS.hT, encW = l.i === 0 ? 'rig' : 'corr';     // en divisorio va corrugado embutido; en muro de panel, caño rígido a la vista
+    const ux = l.i === 0 ? .3 : l.a + .3;
+    R.alim = { p: [[33.5 - .15 * l.i, -1.0, .2], [33.5 - .15 * l.i, -1.0, -.6], [33.5 - .15 * l.i, INS.vEle, -.6], [ux, INS.vEle, -.6], [ux, INS.vEle + .3, -.72], [ux, INS.tv, -.72], [ux, INS.tv, -.15], [wa, INS.tv, 0], [wa, INS.tv, hT - .3]] };
+    R.alim.len = len(R.alim.p); R.alim.ent = len(R.alim.p.slice(0, 7));
+    if (eq) {
+      const k = Math.max(2, Math.round(l.w / 3.1)), us = Array.from({ length: k }, (_, j) => l.a + l.w * (j + .5) / k), vs = [3.2, 4.7, 6.2, 7.7, 9.2];
+      R.filas = us;
+      C('C1', 'Iluminación del salón', 1.5, 10, [[[[wa, INS.tv, hT + .3], [wa, INS.tv, hc(INS.tv)], [wa, 3.2, hc(3.2)], [us[k - 1], 3.2, hc(3.2)]], 'rig'], ...us.map(u => [[[u, 3.2, hc(3.2)], [u, 9.2, hc(9.2)]], 'rig']), [[[wa, 3.2, hc(3.2)], [wa, 3.6, 1.1]], encW]],
+        [...us.flatMap(u => vs.map(v => ({ t: 'lum', p: [u, v, 3.2] }))), { t: 'emer', p: [wa, 8.6, 2.7] }, { t: 'emer', p: [wa, 2.45, 2.7] }, { t: 'l2', p: [wa, 3.6, 1.1] }], { ret: (hc(3.6) - 1.1) * 2 });
+      const far = Math.max(s + .2, ksp[1] - .2), near = Math.min(s - .3, ksp[0] + .2);
+      C('C2', 'Luz de baño y kitchenette, extractor', 1.5, 10, [[[[wa, INS.tv, hT + .3], [wa, INS.tv, 2.75], [wa, .03, 2.75], [far, .03, 2.75]], 'rig'], [[[s, .03, 2.75], [s, 1.1, 2.62]], 'corr'], [[[x0 + 1.94, .03, 2.75], [x0 + 1.94, 1.75, 2.6], [x0 + 1.94, 1.75, 1.1]], 'corr'], [[[ksp[0] + .2, .03, 2.75], [ksp[0] + .2, .03, 1.2]], 'rig'], [[[kc, .03, 2.75], [kc, .03, 1.65]], 'rig']],
+        [{ t: 'plaf', p: [s, 1.1, 2.6] }, { t: 'extr', p: [s - .3, .03, 2.3] }, { t: 'reg', p: [kc, .1, 1.62] }, { t: 'l2', p: [x0 + 1.94, 1.75, 1.1] }, { t: 'l1', p: [ksp[0] + .2, .03, 1.2] }], { ret: (2.75 - 1.1) * 2 + (2.75 - 1.2) });
+      const tA = [3.5, 6.5, 9.4];
+      C('C3', 'Tomas del salón', 2.5, 16, [[[[wa, INS.tv, hT - .3], [wa, INS.tv, .3], [wa, 9.4, .3]], encW], ...(l.esq ? [[[[wa, INS.tv, hT + .3], [wa, INS.tv, 2.4], [wa, .03, 2.4], [l.b - .6, .03, 2.4], [l.b - .6, .03, .3]], 'rig']] : [[[[wa, INS.tv, hT + .3], [wa, INS.tv, hc(INS.tv)], [wb, INS.tv, hc(INS.tv)], [wb, INS.tv, .3], [wb, 9.4, .3]], 'corr']])],
+        [...tA.map(v => ({ t: 'td', p: [wa, v, .3] })), ...(l.esq ? [{ t: 'td', p: [l.b - .6, .03, .3] }] : tA.map(v => ({ t: 'td', p: [wb, v, .3] })))]);
+      C('C4', 'Tomas de kitchenette y baño', 2.5, 16, [[[[wa, INS.tv, hT - .2], [wa, .03, 1.15], [Math.max(ksp[1] - .4, s + .85), .03, 1.15]], 'rig']],
+        [{ t: 'td', p: [ksp[0] + .45, .03, 1.15] }, { t: 'td', p: [ksp[1] - .4, .03, 1.15] }, { t: 'ts', p: [s + .85, .03, 1.15] }]);
+      C('C5', 'Termotanque', 2.5, 16, [[[[wa, INS.tv, hT + .1], [wa, .03, 2.0], [P.termo[0], .03, 2.0]], 'rig']], [{ t: 'tt', p: [P.termo[0] + .3, .03, 2.0] }]);
+      C('C6', 'Aire acondicionado', 4, 20, [[[[wa, INS.tv, hT + .2], [wa, .03, 3.0], [P.aa[0] + .7, .03, 3.0], [P.aa[0] + .7, .03, 2.75]], 'rig']], [{ t: 'taa', p: [P.aa[0] + .7, .03, 2.75] }]);
+      C('C7', 'Cartel en la faja (con reloj)', 2.5, 10, [[[[wa, INS.tv, hT + .3], [wa, INS.tv, 3.3], [wa, 9.95, 3.3], [P.cart[0], 9.95, 3.3], [P.cart[0], 10.2, 3.3]], l.i === 0 ? 'rig' : 'rig']], [{ t: 'ce', p: [P.cart[0], 10.2, 3.3] }]);
+      R.aa = { int: [P.aa[0], .03, 2.75], ext: [P.aa[0], 1.3] };
+    } else {
+      C('C1', 'Tablero de obra: una boca de luz y un toma', 2.5, 16, [[[[wa, INS.tv, hT + .3], [wa, INS.tv, hc(INS.tv)], [l.a + l.w / 2, INS.tv, hc(INS.tv)], [l.a + l.w / 2, 5, hc(5)]], 'rig'], [[[wa, INS.tv, hT - .3], [wa, INS.tv, .3], [wa, 3.8, .3]], encW]], [{ t: 'lum', p: [l.a + l.w / 2, 5, 3.2] }, { t: 'td', p: [wa, 3.8, .3] }]);
+    }
+    R.circ.forEach(c => c.bocas.forEach(b => R.bocas.push(b)));
+  });
+  /* ---------- eléctrica general: gabinete, tierra, servicios comunes ---------- */
+  I.gab = { u0: 33.4, u1: 35.2, v: -1.05 }; I.tsc = [35.75, -1.05];
+  I.acom = [[INS.uLin, -1.05, -.6], [35.2, -1.05, -.6], [34.9, -1.05, .2]];
+  I.jab = [[32.4, -1.95], [29.4, -1.95], [26.4, -1.95]];
+  I.pat = [[33.6, -1.0, .3], [33.6, -1.0, -.5], [32.4, -1.95, -.5], [26.4, -1.95, -.5]];
+  I.patLen = len(I.pat) + 1.0;
+  const SC = (id, nom, sec, prot, segs, bocas) => { const c = { loc: 0, id, nom, sec, prot, segs: segs.map(([p, enc]) => ({ p, enc, len: len(p) })), bocas }; c.len = c.segs.reduce((t, x) => t + x.len, 0); I.ext.push(c); return c; };
+  const t0 = [I.tsc[0], I.tsc[1], .3], ap = Array.from({ length: 8 }, (_, i) => 6.25 + i * 2.5);
+  SC('S1', 'Plaza: apliques bajo la visera', 2.5, 10, [[[t0, [I.tsc[0], -1.05, -.5], [26.1, -1.05, -.5], [26.1, 10.75, -.5]], 'ent'], [[[26.1, 10.75, -.5], [25.65, 10.75, 3.45], [ap[0], 10.75, 3.45]], 'ext']], ap.map(u => ({ t: 'apl', p: [u, 10.75, 3.45] })));
+  SC('S2', 'Estacionamiento: 2 columnas con 2 proyectores', 2.5, 10, [[[t0, [I.tsc[0], -1.05, -.5], [31, -1.05, -.5], [31, 2, -.5], [31, 12.5, -.5]], 'ent'], [[[31, 2, -.5], [31, 2, 5]], 'col'], [[[31, 12.5, -.5], [31, 12.5, 5]], 'col']], [{ t: 'col', p: [31, 2, 5] }, { t: 'col', p: [31, 12.5, 5] }]);
+  SC('S3', 'Pasaje de servicio: apliques en el muro sur', 2.5, 10, [[[t0, [I.tsc[0], -1.05, -.5], [25.6, -1.05, -.5], [25.6, -.5, -.5]], 'ent'], [[[25.6, -.5, -.5], [25.6, -.48, 2.7], [4.5, -.48, 2.7]], 'ext']], [4.5, 13.5, 21].map(u => ({ t: 'tor', p: [u, -.48, 2.6] })));
+  SC('S4', 'Tomas exteriores', 2.5, 16, [[[t0, [I.tsc[0], -1.05, .8]], 'ext'], [[[26.1, 10.75, -.5], [26.1, 10.75, .8]], 'ext']], [{ t: 'tex', p: [I.tsc[0], -1.15, .8] }, { t: 'tex', p: [26.1, 10.8, .8] }]);
+  I.ap = ap;
+  return I;
+}
+/* ---------- despiece de sanitaria y eléctrica a partir del trazado ---------- */
+function despInst(st = S) {
+  const I = instal(st), n = I.n, eq = I.eq, z = I.pz, r1 = v => Math.ceil(v * 1.1), mS = (f) => I.S.filter(f).reduce((t, x) => t + x.len, 0);
+  const pvc = d => r1(mS(x => x.d === d && !['ag25', 'af', 'ac', 'ag32'].includes(x.tipo)));
+  const san = [
+    ['## A · Desagüe cloacal enterrado, bajo platea y por el pasaje · PVC sanitario para pegar, pared 3,2 mm (UNIT 206)'],
+    ['Caño PVC Ø110 × 3,2 mm para pegar: colector, ramal de cada local, descarga de inodoros y previsiones', 'ml', r1(mS(x => x.d === 110 && !['pl', 'bpl'].includes(x.tipo)))],
+    ['Caño PVC Ø63 × 3,2 mm para pegar: salidas de piletas de patio y ventilaciones', 'ml', pvc(63)],
+    ['Caño PVC Ø40 × 3,2 mm para pegar: lavatorios, kitchenettes y previsiones', 'ml', pvc(40)],
+    ['Ramal Y a 45° Ø110 × 110 (misma medida, no T): entrada de inodoros y de previsiones al colector', 'u', z.y110 - (INS.BAJ.length - 1)],
+    ['Ramal Y a 45° reducido Ø110 × 63 (no T): pileta de patio, pileta tapada y ventilación de cada local', 'u', z.y110x63 || 0],
+    ['Codo 87°30′ Ø110 con base (pie de inodoro)', 'u', n * (eq ? 1 : 0)],
+    ['Codo 45° Ø110', 'u', (z.c45_110 || 0) - INS.BAJ.length * 2],
+    ['Codo 87°30′ Ø63 / codo 45° Ø63', 'u', `${z.c90_63 || 0} / ${z.c45_63 || 0}`],
+    ['Codo 87°30′ Ø40 / codo 45° Ø40', 'u', `${z.c90_40 || 0} / ${z.c45_40 || 0}`],
+    ...(eq ? [['Pileta de patio sifonada (PPS) Ø110 abierta, 3 entradas Ø40 y salida Ø63, con marco y rejilla de acero inoxidable 15 × 15: piso del baño', 'u', n],
+      ['Pileta de patio tapada (PPT) Ø110, 3 entradas Ø40 y salida Ø63, tapa ciega: bajo la mesada de la kitchenette', 'u', n],
+      ['Tapa de registro (tapón de inspección) Ø110 a rosca, en el arranque del ramal de cada local', 'u', n]] : []),
+    ['Tapón Ø110 para pegar: previsiones sin usar' + (eq ? '' : ' y de cada local') + ' y grasera', 'u', z.tap110 || 0],
+    ['Tapón Ø40 para pegar: previsiones sin usar' + (eq ? '' : ' y de cada local'), 'u', z.tap40 || 0],
+    ['Camisa pasaviga: caño PVC Ø160 de 0,40 m (cruce del ramal por la viga de fundación sur)', 'u', z.cam160 || 0],
+    ['Adhesivo para PVC (lata de 1 l) y limpiador', 'u', Math.max(3, Math.ceil(n * .75 + 1))],
+    ['## B · Cámaras y grasera'],
+    ['Cámara de inspección prefabricada de hormigón, 60 × 60 interior, profundidad 0,60 a 1,00 m (con aro suplemento), tapa y contratapa de hormigón armado con marco de hierro ángulo: pasaje de servicio', 'u', I.cam.length - 1],
+    ['Cámara de inspección ídem con tapa de hierro fundido reforzada para tránsito de autos (cámara de conexión, en el estacionamiento)', 'u', 1],
+    ['Cámara separadora de grasas prefabricada ≈ 150 l, entrada y salida Ø110, con tapa (previsión para gastronomía, queda con tapón)', 'u', 1],
+    ...(eq ? [['## C · Ventilación (atraviesa el techo de panel)'],
+      ['Sombrerete (terminal de ventilación) Ø63', 'u', n],
+      ['Pasante de techo para caño Ø63: babeta de EPDM con base flexible de aluminio, sella el caño contra el panel', 'u', n],
+      ['Abrazadera metálica Ø63 para fijar la ventilación a la estructura', 'u', z.abr63]] : []),
+    [`## ${eq ? 'D' : 'C'} · Pluviales (el canalón y sus bocas de salida van en el pedido de paneles y zinguería)`],
+    [`Caño PVC Ø110 × 3,2 mm: ${INS.BAJ.length} bajadas por el muro sur y enterrado hasta la cuneta`, 'ml', r1(mS(x => ['pl', 'bpl'].includes(x.tipo)))],
+    ['Codo 45° Ø110 (desvío de la bajada bajo el canalón) / codo 87°30′ Ø110', 'u', `${INS.BAJ.length * 2} / ${INS.BAJ.length + 1}`],
+    ['Ramal Y a 45° Ø110 × 110 (unión de bajadas en el colector pluvial)', 'u', INS.BAJ.length - 1],
+    ['Rejilla parahojas tipo canasto Ø110, en la boca de salida del canalón', 'u', z.rejHoj],
+    ['Abrazadera metálica Ø110 para bajada, cada 1,5 m', 'u', z.abr110],
+    ['Boca de desagüe pluvial 40 × 40 prefabricada con reja, al pie de cada bajada', 'u', z.boca],
+    ...(eq ? [['Caño PVC Ø32 para desagüe de condensado de los aires (al exterior, a la boca pluvial)', 'ml', r1(mS(x => x.tipo === 'cond'))], ['Codo 90° Ø32', 'u', z.c90_32]] : []),
+    [`## ${eq ? 'E' : 'D'} · Agua potable · polipropileno termofusión (PPR); agua caliente PN 20`],
+    ['Caño PPR Ø32 (1"): del medidor general de OSE a la batería de submedidores', 'ml', Math.max(3, r1(mS(x => x.tipo === 'ag32')))],
+    ['Caño PPR Ø25 (¾"): un caño por local desde su submedidor, enterrado por el pasaje', 'ml', r1(mS(x => x.tipo === 'ag25'))],
+    ...(eq ? [['Caño PPR Ø20 (½") PN 20, agua fría dentro de cada local', 'ml', r1(mS(x => x.tipo === 'af'))], ['Caño PPR Ø20 (½") PN 20, agua caliente', 'ml', r1(mS(x => x.tipo === 'ac'))]] : []),
+    ['Tee PPR Ø32 / codo 90° Ø32 / reducción Ø32 × 25', 'u', `${z.tee32} / 2 / ${z.red32}`],
+    ['Codo 90° PPR Ø25', 'u', z.c90_25],
+    ...(eq ? [['Reducción PPR Ø25 × 20', 'u', z.red2520], ['Tee PPR Ø20', 'u', z.tee20], ['Codo 90° PPR Ø20', 'u', z.c90_20], ['Unión PPR Ø20 con rosca hembra metálica ½" (salidas a artefactos y termotanque)', 'u', z.ros20]] : [['Tapón PPR Ø25 para la previsión de agua de cada local', 'u', n]]),
+    ['Llave de paso esférica PPR Ø32 (general, junto al medidor)', 'u', 1],
+    ['Llave de paso esférica PPR Ø25 (antes de cada submedidor y en la entrada de cada local)', 'u', z.ll25],
+    ...(eq ? [['Llave de paso esférica PPR Ø20 (entrada del termotanque y del inodoro)', 'u', z.ll20]] : []),
+    ['Submedidor de agua (caudalímetro) ¾" DN20, chorro múltiple, clase B, lectura en m³: uno por local, en batería junto al medidor de OSE', 'u', n],
+    ['Válvula de retención ¾" (después de cada submedidor)', 'u', n],
+    ['Unión doble PPR Ø25 (para desmontar cada submedidor)', 'u', z.ud25],
+    ...(eq ? [['Flexible mallado de acero inoxidable ½" × 40 cm (lavatorio, kitchenette e inodoro)', 'u', z.flex]] : []),
+  ];
+  /* eléctrica */
+  const C = I.C, X = I.ext, cab = {}, cano = { rig: 0, corr: 0, ext: 0, ent: 0 }, add = (k, v) => cab[k] = (cab[k] || 0) + v;
+  [...C, ...X].forEach(c => { c.segs.forEach(s => { cano[s.enc] = (cano[s.enc] || 0) + s.len; }); const L = c.len * 1.12 + c.bocas.length * .6; if (c.loc) { add(c.sec + '|F', L); add(c.sec + '|N', L); add(c.sec + '|T', L); if (c.ret) add(c.sec + '|R', c.ret * 1.15); } else add('ext', L); });
+  const cnt = t => I.L.reduce((s, R) => s + R.bocas.filter(b => b.t === t).length, 0), alimL = I.L.reduce((t, R) => t + R.alim.len + 2.5, 0), alimE = I.L.reduce((t, R) => t + R.alim.ent, 0), zanja = Math.max(...I.L.map(R => R.alim.ent));
+  const lum = cnt('lum'), r5 = v => Math.ceil(v / 5) * 5, MEC = /^(td|ts|l1|l2|taa|tt)$/, sobre = (R, b) => b.p[1] <= .2 || (R.l.i === 0 && Math.abs(b.p[0] - R.P.wa) < .01);
+  const ele = [
+    ['## A · Gabinete de medidores, acometida y puesta a tierra'],
+    [`Gabinete normalizado UTE para ${n + 1} medidores (${n} locales + servicios comunes), con lugar para medidor trifásico en cada posición, caja de protección general y bornera (los medidores los pone UTE)`, 'u', 1],
+    ['Caño PVC rígido Ø63 para la acometida de UTE (de la línea de propiedad al gabinete), con curva', 'ml', 5],
+    ['Jabalina de acero cobreado Ø5/8" × 1,50 m con grampa: 3 en línea cada 3 m en el pasaje', 'u', 3],
+    ['Cable de cobre desnudo 16 mm²: une las 3 jabalinas y llega a la barra de tierra del gabinete', 'ml', r5(I.patLen * 1.15)],
+    ['Caja de inspección de puesta a tierra 20 × 20 con tapa', 'u', 1],
+    ['## B · Alimentación enterrada a cada local (monofásica 230 V)'],
+    [`Caño PVC rígido Ø50 enterrado a 0,60 m: uno por local + uno de reserva (deja pasar cable trifásico si un local lo necesita)`, 'ml', r5((alimE + zanja) * 1.05)],
+    ['Curva PVC Ø50', 'u', n * 4 + 2],
+    ['Cámara de pasaje eléctrica 40 × 40 con tapa de hormigón', 'u', n + 1],
+    [`Cable subterráneo 0,6/1 kV 3 × 10 mm² (fase, neutro y tierra), del gabinete al tablero de cada local: ${I.L.map(R => `L${R.num} ${Math.ceil(R.alim.len + 2.5)} m`).join(', ')}`, 'ml', r5(alimL)],
+    ['Cinta de señalización "peligro eléctrico" sobre los caños', 'ml', r5(zanja + 15)],
+    ['Caño PVC rígido Ø32 gris para la subida al tablero', 'ml', Math.ceil(n * 1.6)],
+    ...(eq ? [
+      ['## C · Tablero de cada local (uno por local, 7 circuitos)'],
+      ['Tablero de sobreponer 24 módulos con puerta, barras de neutro y de tierra y peines', 'u', n],
+      ['Interruptor termomagnético general 2 × 40 A', 'u', n],
+      ['Interruptor diferencial 2 × 40 A 30 mA (uno para iluminación, termotanque y cartel; otro para tomas y aire)', 'u', 2 * n],
+      ['Termomagnético 2 × 10 A (C1 luz salón, C2 luz baño y kitchenette, C7 cartel)', 'u', 3 * n],
+      ['Termomagnético 2 × 16 A (C3 tomas salón, C4 tomas kitchenette, C5 termotanque)', 'u', 3 * n],
+      ['Termomagnético 2 × 20 A (C6 aire acondicionado)', 'u', n],
+      ['Reloj programable modular para el cartel', 'u', n],
+      ['## D · Canalizaciones, cables y mecanismos dentro de los locales'],
+      ['Caño PVC rígido Ø20 gris y curvas: a la vista en el techo y en los muros de panel', 'ml', r5(cano.rig * 1.1)],
+      ['Caño corrugado ignífugo Ø20: embutido en los divisorios de steel frame', 'ml', r5(cano.corr * 1.1)],
+      ...[[1.5, 'C1 y C2, luces'], [2.5, 'C3, C4, C5 y C7, tomas, termotanque y cartel'], [4, 'C6, aire']].flatMap(([sec, q]) => [['F', 'marrón (fase)'], ['N', 'celeste (neutro)'], ['T', 'verde-amarillo (tierra)'], ...(sec === 1.5 ? [['R', 'negro (retornos de llaves)']] : [])].map(([k, col]) => [`Cable ${String(sec).replace('.', ',')} mm² ${col} · ${q}`, 'ml', r5(cab[sec + '|' + k] || 0)])),
+      ['Cable tipo taller 3 × 1,5 mm² (bajada de cada luminaria colgante)', 'ml', r5(lum * 1.3)],
+      ['Caja rectangular 5 × 10 para placa de yeso (tomas y llaves en divisorios y baño)', 'u', I.L.reduce((t, R) => t + R.bocas.filter(b => MEC.test(b.t) && !sobre(R, b)).length, 0)],
+      ['Caja rectangular 5 × 10 de sobreponer (tomas, llaves y salidas sobre muro de panel)', 'u', I.L.reduce((t, R) => t + R.bocas.filter(b => MEC.test(b.t) && sobre(R, b)).length, 0)],
+      ['Caja de paso cuadrada 10 × 10 con tapa (techo y derivaciones)', 'u', n * 6],
+      [`Toma doble 10 A con tierra (bastidor, 2 módulos y tapa): ${cnt('td') - 2 * n} en salones + ${2 * n} sobre mesadas`, 'u', cnt('td')],
+      ['Toma simple 10 A con tierra (baño, junto al lavatorio)', 'u', cnt('ts')],
+      ['Toma 20 A con tierra para el aire acondicionado', 'u', cnt('taa')],
+      ['Salida para termotanque: módulo de llave bipolar 16 A con salida de cable', 'u', cnt('tt')],
+      ['Llave de 1 punto (kitchenette)', 'u', cnt('l1')],
+      ['Llave de 2 puntos (salón: una tecla por fila de luminarias; baño: luz y extractor)', 'u', cnt('l2')],
+      ['Grampas, conectores, cuplas, borneras y cinta aisladora', 'gl', 1],
+      ['## E · Iluminación de los locales'],
+      [`Luminaria LED lineal colgante 1,20 m, 40 W, ≈ 4.800 lm, 4000 K, con kit de suspensión de cable de acero: ${I.L[0].filas.length} filas de 5 por local, colgadas a 3,2 m`, 'u', lum],
+      ['Plafón LED 18 W IP44 (baño)', 'u', cnt('plaf')],
+      ['Regleta LED 18 W (sobre la mesada de la kitchenette)', 'u', cnt('reg')],
+      ['## F · Preinstalación de aire acondicionado (juego por local, split de 24.000 BTU)'],
+      ['Caño de cobre 3/8" + 5/8" con aislación, juego de 5 m', 'u', n],
+      ['Cable de interconexión 4 × 1,5 mm² (unidad interior a exterior)', 'ml', 6 * n],
+      ['Ménsula o base antivibratoria para la unidad exterior en el techo, detrás del pretil', 'u', n],
+      ['Pasatecho con babeta de EPDM para las cañerías', 'u', n],
+      ['## G · Cartel de cada local'],
+      ['Caja estanca IP65 con bornera detrás de la faja (cartel hasta 300 W, circuito C7 con reloj)', 'u', n],
+    ] : [
+      ['## C · Tablero de obra de cada local'],
+      ['Tablero de obra: caja 8 módulos, general 2 × 25 A, diferencial 30 mA, 2 térmicas', 'u', n],
+      ['Caño PVC rígido Ø20 y cable 2,5 mm² (boca de luz y un toma por local)', 'gl', 1],
+    ]),
+    [`## ${eq ? 'H' : 'D'} · Servicios comunes (plaza, estacionamiento y pasaje)`],
+    ['Tablero de servicios comunes IP65 de 24 módulos', 'u', 1],
+    ['Interruptor general 2 × 25 A + diferencial 2 × 25 A 30 mA', 'juego', 1],
+    ['Termomagnético 2 × 10 A (plaza, estacionamiento, pasaje)', 'u', 3],
+    ['Termomagnético 2 × 16 A (tomas exteriores y reserva)', 'u', 2],
+    ['Contactor 2 × 25 A + reloj programable + fotocélula', 'juego', 1],
+    ['Aplique LED de exterior IP65 20 W, luz hacia abajo, bajo la visera (plaza)', 'u', I.ap.length],
+    ['Columna metálica galvanizada 5 m con brazo doble y base', 'u', 2],
+    ['Proyector LED 100 W IP65 (estacionamiento)', 'u', 4],
+    ['Aplique tortuga LED IP65 15 W (pasaje de servicio)', 'u', 3],
+    ['Toma exterior IP65 con tapa', 'u', 2],
+    ['Caño PVC rígido Ø25 enterrado (circuitos exteriores)', 'ml', r5(cano.ent * 1.05)],
+    ['Caño PVC rígido Ø20 gris IP65 a la vista (bajo la visera y en el muro sur)', 'ml', r5(cano.ext * 1.1)],
+    ['Cable subterráneo 0,6/1 kV 3 × 2,5 mm² (circuitos exteriores, incluye las columnas)', 'ml', r5(cab.ext || 0)],
+  ];
+  return { I, san, ele, cab, cano };
+}
+
+/* ---- planos de sanitaria y eléctrica (se usan en la pestaña y en los pedidos de cotización) ---- */
+const CS = { col: '#8b5a2b', loc: '#8b5a2b', ino: '#8b5a2b', gra: '#8b5a2b', prev: '#9a9a9a', pps: '#b07a45', ppt: '#b07a45', lav: '#c79a6a', kit: '#c79a6a', ven: '#6d4c8f', cond: '#5aa0a0', pl: '#2a8a5a', bpl: '#2a8a5a', ag32: '#2f6f86', ag25: '#2f6f86', af: '#2f6f86', ac: '#c0392b' };
+const CC = { C1: '#d68a00', C2: '#a0522d', C3: '#2f6f86', C4: '#2a8a5a', C5: '#c0392b', C6: '#6d4c8f', C7: '#444', S1: '#d68a00', S2: '#b5622a', S3: '#6d4c8f', S4: '#2a8a5a' };
+const PL_ = (t, pts, st) => `<polyline points="${pts.map(p => t.X(p[0]) + ',' + t.Y(p[1])).join(' ')}" fill="none" ${st}/>`;
+const dedup = p => p.filter((q, i) => !i || Math.hypot(q[0] - p[i - 1][0], q[1] - p[i - 1][1]) > .005);
+function baseEdif(t, L, sc, op = {}) {
+  let s = R_(t, -1.5, -3, 26.5, 0, 'fill="url(#hat2)" opacity=".35"') + R_(t, 25.4, -3, INS.uLin, 13.5, 'fill="#eeece7"') + L_(t, INS.uLin, -3.4, INS.uLin, 14, 'stroke="#b23a2a" stroke-width="1.2" stroke-dasharray="8 4"');
+  s += TX(t, INS.uLin + .3, 13.2, 'línea de propiedad', `font-size="${8.5}" fill="#b23a2a" ${FT}`, 'start') + TX(t, INS.uLin + 1.6, 6, 'AVDA.', `font-size="12" font-weight="700" fill="#777" ${FT}`) + TX(t, 31, 7.6, 'estacionamiento', `font-size="10" fill="#888" ${FT}`) + TX(t, -1.3, -.45, 'pasaje de servicio', `font-size="8.5" fill="#888" ${FT}`, 'start') + TX(t, 12.5, 11.4, 'PLAZA (NORTE)', `font-size="9" fill="#888" ${FT}`);
+  s += R_(t, 0, 0, 25, 10, 'fill="#fbfaf6" stroke="#24211d" stroke-width="1.6"');
+  L.forEach(l => { if (l.i > 0) s += L_(t, l.a, 0, l.a, 10, 'stroke="#8d8a84" stroke-width="2.5"'); s += TX(t, l.a + l.w / 2, op.yLbl ?? 6.6, 'LOCAL ' + l.num, `font-size="${op.fs || 12}" font-weight="700" fill="#555" ${FT}`); });
+  if (I_EQ()) L.forEach(l => { const x0 = l.s - 1; s += R_(t, x0, 0, x0 + 2, 2.2, 'fill="#eef5f8" stroke="#888" stroke-width=".8"'); });
+  return s;
+}
+const I_EQ = () => S.modo === 'equipado';
+function dSan(el, op = {}) {
+  if (!el) return; const I = instal(), W = 45, H = 19.5, sc = op.sc || 24, t = T(4, 4.6, sc, H), L = locales(S.n); let s = baseEdif(t, L, sc);
+  const w = d => d >= 110 ? 3 : d >= 63 ? 2.2 : d >= 40 ? 1.6 : 1.3;
+  I.S.forEach(x => { const p = dedup(x.p); if (p.length < 2) { s += `<circle cx="${t.X(p[0][0])}" cy="${t.Y(p[0][1])}" r="2.5" fill="${CS[x.tipo]}"/>`; return; } s += PL_(t, p, `stroke="${CS[x.tipo] || '#555'}" stroke-width="${w(x.d)}" ${x.tipo === 'prev' ? 'stroke-dasharray="5 3"' : x.tipo === 'ac' ? 'stroke-dasharray="4 2"' : ''} stroke-linejoin="round"`); });
+  I.cam.forEach(c => { s += R_(t, c.u - .35, c.v - .35, c.u + .35, c.v + .35, `fill="#fff" stroke="${CS.col}" stroke-width="1.6"`) + TX(t, c.u + .45, c.v + .3, c.id, `font-size="8.5" font-weight="700" fill="${CS.col}" ${FT}`, 'start'); });
+  s += R_(t, I.gra[0] - .55, I.gra[1] - .45, I.gra[0] + .55, I.gra[1] + .45, `fill="#fff" stroke="${CS.col}" stroke-width="1.4"`) + TX(t, I.gra[0], I.gra[1] + .7, 'grasera', `font-size="8.5" fill="${CS.col}" ${FT}`);
+  s += R_(t, 33.4, INS.vAg - .3, 35.2, INS.vAg + .25, 'fill="#2f6f86"') + TX(t, 32.9, INS.vAg - .12, `medidor OSE + ${S.n} submedidores`, `font-size="8" fill="#2f6f86" ${FT}`, 'end');
+  if (I_EQ()) I.L.forEach(R => { const P = R.P; s += `<circle cx="${t.X(P.pps[0])}" cy="${t.Y(P.pps[1])}" r="${.16 * sc}" fill="#fff" stroke="${CS.pps}" stroke-width="1.4"/>` + R_(t, P.ppt[0] - .15, P.ppt[1] - .15, P.ppt[0] + .15, P.ppt[1] + .15, `fill="#fff" stroke="${CS.ppt}" stroke-width="1.4"`) + `<circle cx="${t.X(P.ven[0])}" cy="${t.Y(P.ven[1])}" r="${.1 * sc}" fill="${CS.ven}"/>`; });
+  INS.BAJ.forEach((u, i) => s += `<circle cx="${t.X(u)}" cy="${t.Y(-.42)}" r="${.14 * sc}" fill="${CS.pl}"/>` + R_(t, u - .2, -1.0, u + .2, -.6, `fill="#fff" stroke="${CS.pl}" stroke-width="1.2"`));
+  s += TX(t, INS.uLin + .8, INS.vPlu - .1, 'a cuneta', `font-size="8.5" fill="${CS.pl}" ${FT}`, 'start') + TX(t, INS.uLin + .6, INS.vCol - .1, 'a OSE', `font-size="8.5" fill="${CS.col}" ${FT}`, 'start');
+  s += TX(t, -1, INS.vCol + .55, '−0,60', `font-size="8" fill="#666" ${FT}`) + TX(t, INS.uFin, INS.vCol + .55, '−0,97', `font-size="8" fill="#666" ${FT}`);
+  s += TX(t, -3.5, -4.15, `Colector Ø110 al 1 % con ${I.cam.length} cámaras · ramal de cada local a su cámara · previsiones sin usar con tapón · agua: un caño Ø25 por local desde su submedidor`, `font-size="9.5" ${FT}`, 'start');
+  SV(el, W, H, (op.tit === false ? '' : titulo(W, `Sanitaria · planta general · ${S.n} locales ${S.modo}`, 'desagües bajo platea y por el pasaje, pluviales a cuneta, agua con batería de submedidores en el frente', sc)) + s, sc);
+}
+function dSanL(el, op = {}) {
+  if (!el) return; const I = instal(), R = I.L.find(R => R.l.i === 1) || I.L[0], l = R.l, P = R.P;
+  const u0 = l.a - .5, u1 = l.b + .5, W = u1 - u0, H = 6.6, sc = op.sc || 80, kk = sc / 50, t = T(-u0, 2.75, sc, H), cid = el.id + '-cl'; let s = '', g = '';
+  s += `<defs><clipPath id="${cid}"><rect x="${t.X(u0)}" y="${t.Y(3.5)}" width="${W * sc}" height="${(3.5 + 2.5) * sc}"/></clipPath></defs>`;
+  g += R_(t, u0, -2.5, u1, 0, 'fill="url(#hat2)" opacity=".3"') + R_(t, l.a, 0, l.b, 3.5, 'fill="#fbfaf6"') + L_(t, u0, 0, u1, 0, 'stroke="#24211d" stroke-width="4"');
+  [l.a, l.b].forEach(u => g += L_(t, u, 0, u, 3.5, 'stroke="#8d8a84" stroke-width="3"'));
+  if (I.eq) { g += R_(t, P.x0, 0, P.x0 + 2, 2.2, 'fill="#eef5f8" stroke="#24211d" stroke-width="1.4"') + R_(t, P.ino[0] - .2, .05, P.ino[0] + .2, .7, 'fill="#fff" stroke="#24211d"') + R_(t, P.lav[0] - .28, .02, P.lav[0] + .28, .45, 'fill="#fff" stroke="#24211d"') + R_(t, P.ksp[0], 0, P.ksp[1], .6, 'fill="#f3e7d6" stroke="#24211d"');
+    g += TX(t, P.x0 + 1, 1.95, 'baño accesible', `font-size="11" ${FT}`) + TX(t, P.kc, .72, 'kitchenette', `font-size="10.5" ${FT}`); }
+  const w = d => (d >= 110 ? 4 : d >= 63 ? 3 : d >= 40 ? 2.2 : 1.6) * kk, off = { af: .07, ac: .14 };
+  I.S.filter(x => x.loc === R.num).forEach(x => { const p = dedup(x.p.map(q => [q[0], q[1] + (off[x.tipo] && q[1] < .2 ? off[x.tipo] : 0), q[2]])); if (p.length < 2) return; g += PL_(t, p, `stroke="${CS[x.tipo]}" stroke-width="${w(x.d)}" ${x.tipo === 'ac' ? 'stroke-dasharray="5 3"' : ''} stroke-linejoin="round" opacity=".9"`); });
+  const cam = I.cam.find(c => c.loc === R.num); if (cam) g += R_(t, cam.u - .35, cam.v - .35, cam.u + .35, cam.v + .35, `fill="#fff" stroke="${CS.col}" stroke-width="2"`);
+  g += L_(t, u0, INS.vCol, u1, INS.vCol, `stroke="${CS.col}" stroke-width="${5 * kk}"`) + L_(t, u0, INS.vAg, u1, INS.vAg, `stroke="#2f6f86" stroke-width="${2 * kk}"`);
+  if (I.eq) { g += `<circle cx="${t.X(P.pps[0])}" cy="${t.Y(P.pps[1])}" r="${.16 * sc}" fill="#fff" stroke="${CS.pps}" stroke-width="2"/><path d="M${t.X(P.pps[0]) - 5} ${t.Y(P.pps[1])}h10M${t.X(P.pps[0])} ${t.Y(P.pps[1]) - 5}v10" stroke="${CS.pps}"/>` + R_(t, P.ppt[0] - .15, P.ppt[1] - .15, P.ppt[0] + .15, P.ppt[1] + .15, `fill="#fff" stroke="${CS.ppt}" stroke-width="2"`);
+    g += `<circle cx="${t.X(P.ven[0])}" cy="${t.Y(P.ven[1])}" r="${.09 * sc}" fill="${CS.ven}"/><circle cx="${t.X(l.s)}" cy="${t.Y(1.25)}" r="${.08 * sc}" fill="#fff" stroke="${CS.col}" stroke-width="2"/>`;
+    g += `<circle cx="${t.X(P.termo[0])}" cy="${t.Y(.25)}" r="${.18 * sc}" fill="#fff" stroke="#c0392b" stroke-width="1.4"/>` + TX(t, P.termo[0], .25 - .07, 'T', `font-size="9" font-weight="700" fill="#c0392b" ${FT}`); }
+  s += `<g clip-path="url(#${cid})">${g}</g>`;
+  // llamadas: arriba (zona del local) y abajo (pasaje), con línea guía
+  const co = (au, av, lu, lv, txt, col, anc = 'start') => L_(t, au, av, lu, lv + .08, `stroke="${col}" stroke-width=".8"`) + `<circle cx="${t.X(au)}" cy="${t.Y(av)}" r="2" fill="${col}"/>` + TX(t, lu + (anc === 'start' ? .05 : -.05), lv, txt, `font-size="10.5" font-weight="600" fill="${col}" ${FT}`, anc);
+  const left = l.a + .15, mid = l.a + l.w * .52;
+  if (I.eq) {
+    s += co(P.ven[0], P.ven[1], left, 3.25, 'ventilación Ø63 al techo, sombrerete', CS.ven) + co(l.s, 1.25, left, 2.9, 'registro Ø110 + ramal Y 110 × 63', CS.col) + co(P.pps[0], P.pps[1], left, 2.55, 'PPS Ø110 abierta, rejilla inox', CS.pps);
+    s += co(P.ppt[0], P.ppt[1], mid, 3.25, 'PPT Ø110 tapa ciega (kitchenette)', CS.ppt) + co(P.termo[0], .25, mid, 2.9, 'termotanque 30 l: F y C en PPR Ø20', '#c0392b') + co(P.lav[0], .15, mid, 2.55, 'lavatorio Ø40 a la PPS', CS.lav);
+    s += co(l.s, .3, left, -.45, 'ramal Y 110 × 110 (inodoro)', CS.col) + co(l.s, .75, mid, -.45, 'ramal Y 110 × 63 (pileta tapada)', CS.col);
+  }
+  s += co(l.s, -.6, left, -.85, 'Ø110 con camisa Ø160 al cruzar la viga', CS.col) + co(P.ent[0] + (I.eq ? 0 : -.22), -1.0, mid, -1.2, 'agua Ø25 propia, desde su submedidor', '#2f6f86');
+  if (cam) s += TX(t, cam.u + .45, cam.v - .3, `${cam.id} · 60 × 60`, `font-size="10.5" font-weight="700" fill="${CS.col}" ${FT}`, 'start');
+  s += TX(t, u0 + .1, INS.vCol + .12, 'colector Ø110', `font-size="10" fill="${CS.col}" ${FT}`, 'start') + TX(t, u0 + .1, INS.vAg + .12, `${S.n} caños Ø25 de agua`, `font-size="10" fill="#2f6f86" ${FT}`, 'start');
+  s += TX(t, l.a + l.w / 2, 3.65, `LOCAL ${l.num} · zona de servicio del local tipo (los otros iguales, a espejo si la cocina queda al oeste)`, `font-size="12" font-weight="800" ${FT}`);
+  SV(el, W, H, s, sc);
+}
+function dEle(el, op = {}) {
+  if (!el) return; const I = instal(), W = 45, H = 19.5, sc = op.sc || 24, t = T(4, 4.6, sc, H), L = locales(S.n); let s = baseEdif(t, L, sc, { yLbl: 5.3, fs: 11 });
+  I.L.forEach(R => { const c = R.alim.p.map(q => [q[0], q[1]]); s += PL_(t, dedup(c), 'stroke="#d6a400" stroke-width="2.4" stroke-dasharray="9 4"'); s += R_(t, R.P.tab[0] - .02, INS.tv - .3, R.P.tab[0] + .32, INS.tv + .3, 'fill="#24211d"') + TX(t, R.P.tab[0] + .45, INS.tv + .05, 'TD' + R.num, `font-size="9" font-weight="700" ${FT}`, 'start') + TX(t, (R.alim.p[3][0] + 33) / 2, INS.vEle + .25, '', '');
+    s += R_(t, R.alim.p[4][0] - .2, INS.vEle - .2, R.alim.p[4][0] + .2, INS.vEle + .2, 'fill="#fff" stroke="#d6a400" stroke-width="1.2"');
+    R.circ.forEach(c => c.segs.forEach(sg => s += PL_(t, dedup(sg.p.map(q => [q[0], q[1]])), `stroke="${CC[c.id]}" stroke-width="1" opacity=".75"`)));
+    R.bocas.filter(b => b.t === 'lum').forEach(b => s += R_(t, b.p[0] - .08, b.p[1] - .6, b.p[0] + .08, b.p[1] + .6, 'fill="#fff6cc" stroke="#d68a00" stroke-width=".8"')); });
+  I.ext.forEach(c => { c.segs.forEach(sg => s += PL_(t, dedup(sg.p.map(q => [q[0], q[1]])), `stroke="${CC[c.id]}" stroke-width="1.5" ${sg.enc === 'ent' ? 'stroke-dasharray="6 3"' : ''}`)); c.bocas.forEach(b => s += b.t === 'col' ? `<circle cx="${t.X(b.p[0])}" cy="${t.Y(b.p[1])}" r="7" fill="#fff" stroke="${CC[c.id]}" stroke-width="2"/><path d="M${t.X(b.p[0]) - 5} ${t.Y(b.p[1]) - 5}l10 10m0 -10l-10 10" stroke="${CC[c.id]}"/>` : `<circle cx="${t.X(b.p[0])}" cy="${t.Y(b.p[1])}" r="3.5" fill="${CC[c.id]}"/>`); });
+  s += R_(t, I.gab.u0, I.gab.v - .2, I.gab.u1, I.gab.v + .2, 'fill="#d6a400" stroke="#24211d"') + R_(t, I.tsc[0] - .3, I.tsc[1] - .2, I.tsc[0] + .3, I.tsc[1] + .2, 'fill="#24211d"') + TX(t, 34.3, I.gab.v + .55, `gabinete UTE · ${S.n + 1} medidores`, `font-size="8.5" font-weight="700" fill="#a07a00" ${FT}`) + TX(t, I.tsc[0] + .5, I.tsc[1] - .55, 'TSC', `font-size="8.5" font-weight="700" ${FT}`, 'start');
+  s += PL_(t, I.acom.map(q => [q[0], q[1] + .08]), 'stroke="#b23a2a" stroke-width="2"') + TX(t, INS.uLin + .2, -1.6, 'acometida UTE', `font-size="8" fill="#b23a2a" ${FT}`, 'start');
+  s += PL_(t, dedup(I.pat.map(q => [q[0], q[1]])), 'stroke="#2a8a5a" stroke-width="1.4"'); I.jab.forEach(j => s += `<path d="M${t.X(j[0])} ${t.Y(j[1]) - 7}l6 10h-12z" fill="#2a8a5a"/>`);
+  s += TX(t, 29.4, -2.55, 'puesta a tierra: 3 jabalinas cada 3 m', `font-size="8" fill="#2a8a5a" ${FT}`);
+  s += TX(t, -3.5, -4.15, 'Alimentación monofásica 3 × 10 mm² en caño Ø50 enterrado, uno por local + uno de reserva · luces de plaza bajo la visera, 2 columnas en el estacionamiento y apliques en el pasaje', `font-size="9.5" ${FT}`, 'start');
+  SV(el, W, H, (op.tit === false ? '' : titulo(W, `Eléctrica · planta general · ${S.n} locales ${S.modo}`, 'gabinete de medidores en el frente, tableros de local (TD) junto al muro lateral, servicios comunes (TSC) en el pasaje', sc)) + s, sc);
+}
+function dEleL(el, op = {}) {
+  if (!el) return; const I = instal(), R = I.L.find(R => R.l.i === 1) || I.L[0], l = R.l, P = R.P;
+  const u0 = l.a - .7, LW = 5.2, W = l.w + 1.4 + LW, H = 13, sc = op.sc || 44, t = T(-u0, 1.3, sc, H); let s = '';
+  s += R_(t, l.a, 0, l.b, 10, 'fill="#fbfaf6"') + L_(t, l.a - .6, 0, l.b + .6, 0, 'stroke="#24211d" stroke-width="4"') + L_(t, l.a - .6, 10, l.b + .6, 10, 'stroke="#4aa3c7" stroke-width="3"');
+  [l.a, l.b].forEach(u => s += L_(t, u, 0, u, 10, 'stroke="#8d8a84" stroke-width="3"'));
+  s += R_(t, l.a + .5, 10.05, l.b - .5, 10.35, 'fill="#1c1c1c"') + TX(t, l.a + l.w / 2, 10.7, 'faja de cartelería (afuera, sobre la vidriera)', `font-size="8.5" fill="#555" ${FT}`);
+  if (I.eq) s += R_(t, P.x0, 0, P.x0 + 2, 2.2, 'fill="#eef5f8" stroke="#24211d" stroke-width="1.2"') + R_(t, P.ksp[0], 0, P.ksp[1], .6, 'fill="#f3e7d6" stroke="#24211d"') + R_(t, P.dp, -.05, P.dp + .9, .05, 'fill="#fff" stroke="#24211d"') + TX(t, P.x0 + 1, 1.55, 'baño', `font-size="9" ${FT}`) + TX(t, P.dp + .45, -.4, 'puerta de servicio', `font-size="8" fill="#666" ${FT}`);
+  R.circ.forEach(c => c.segs.forEach(sg => s += PL_(t, dedup(sg.p.map(q => [q[0], q[1]])), `stroke="${CC[c.id]}" stroke-width="1.6" ${sg.enc === 'corr' ? 'stroke-dasharray="5 3"' : ''}`)));
+  const sym = b => { const X = t.X(b.p[0]), Y = t.Y(b.p[1]); switch (b.t) {
+    case 'lum': return R_(t, b.p[0] - .07, b.p[1] - .6, b.p[0] + .07, b.p[1] + .6, 'fill="#fff6cc" stroke="#d68a00" stroke-width="1.2"');
+    case 'emer': return `<rect x="${X - 7}" y="${Y - 5}" width="14" height="10" fill="#fff" stroke="#c0392b"/><text x="${X}" y="${Y + 3.5}" text-anchor="middle" font-size="8" font-weight="700" fill="#c0392b" ${FT}>E</text>`;
+    case 'plaf': return `<circle cx="${X}" cy="${Y}" r="6" fill="#fff6cc" stroke="#a0522d" stroke-width="1.2"/>`;
+    case 'extr': return `<circle cx="${X}" cy="${Y - 6}" r="6" fill="#fff" stroke="#a0522d"/><path d="M${X - 4} ${Y - 10}l8 8m0 -8l-8 8" stroke="#a0522d"/>`;
+    case 'reg': return R_(t, b.p[0] - .4, b.p[1] - .04, b.p[0] + .4, b.p[1] + .04, 'fill="#fff6cc" stroke="#a0522d"');
+    case 'l1': case 'l2': return `<circle cx="${X}" cy="${Y}" r="4" fill="#fff" stroke="#24211d" stroke-width="1.2"/><path d="M${X + 3} ${Y - 3}l6 -6${b.t === 'l2' ? `m-3 -1l4 4` : ''}" stroke="#24211d" stroke-width="1.2"/>`;
+    case 'td': case 'ts': return `<path d="M${X - 6} ${Y}a6 6 0 0 1 12 0z" fill="#fff" stroke="#2f6f86" stroke-width="1.3"/>${b.t === 'td' ? `<path d="M${X - 3} ${Y - 3}v-6M${X + 3} ${Y - 3}v-6" stroke="#2f6f86"/>` : `<path d="M${X} ${Y - 3}v-6" stroke="#2f6f86"/>`}`;
+    case 'taa': return `<rect x="${X - 9}" y="${Y - 7}" width="18" height="10" fill="#fff" stroke="#6d4c8f"/><text x="${X}" y="${Y + 1}" text-anchor="middle" font-size="7" font-weight="700" fill="#6d4c8f" ${FT}>AA</text>`;
+    case 'tt': return `<rect x="${X - 6}" y="${Y - 7}" width="12" height="10" fill="#fff" stroke="#c0392b"/><text x="${X}" y="${Y + 1}" text-anchor="middle" font-size="7" font-weight="700" fill="#c0392b" ${FT}>T</text>`;
+    case 'ce': return `<rect x="${X - 6}" y="${Y - 6}" width="12" height="12" fill="#fff" stroke="#444" stroke-width="1.3"/><text x="${X}" y="${Y + 3}" text-anchor="middle" font-size="7" font-weight="700" ${FT}>C</text>`;
+    default: return ''; } };
+  R.bocas.forEach(b => s += sym(b));
+  s += R_(t, P.tab[0] - .02, INS.tv - .25, P.tab[0] + .3, INS.tv + .25, 'fill="#24211d"') + TX(t, P.tab[0] + .4, INS.tv - .1, 'TD', `font-size="9" font-weight="700" ${FT}`, 'start');
+  if (R.aa) s += R_(t, R.aa.int[0] - .5, -.2, R.aa.int[0] + .5, .02, 'fill="#fff" stroke="#6d4c8f" stroke-width="1.4"') + TX(t, R.aa.int[0], -.8, 'split 24.000 BTU', `font-size="8" fill="#6d4c8f" ${FT}`);
+  const lx = l.b + 1.0; let ly = 9.7; s += TX(t, lx, ly + .45, 'Circuitos', `font-size="10" font-weight="700" ${FT}`, 'start');
+  R.circ.forEach(c => { s += L_(t, lx, ly, lx + .45, ly, `stroke="${CC[c.id]}" stroke-width="2.5"`) + TX(t, lx + .6, ly - .12, `${c.id} · ${c.nom}`, `font-size="9" ${FT}`, 'start') + TX(t, lx + .6, ly - .48, `${String(c.sec).replace('.', ',')} mm² · 2 × ${c.prot} A · ${Math.round(c.len)} m de caño`, `font-size="8" fill="#666" ${FT}`, 'start'); ly -= .92; });
+  ly -= .15; [['lum', 'luminaria LED lineal colgante'], ['emer', 'luz de emergencia'], ['td', 'toma doble 10 A'], ['l2', 'llave de 2 puntos'], ['taa', 'toma 20 A del aire'], ['tt', 'salida termotanque'], ['ce', 'caja estanca del cartel']].forEach(([k, txt]) => { s += (k === 'lum' ? R_(t, lx - .05, ly - .02, lx + .5, ly + .12, 'fill="#fff6cc" stroke="#d68a00"') : sym({ t: k, p: [lx + .22, ly] })) + TX(t, lx + .6, ly - .1, txt, `font-size="9" ${FT}`, 'start'); ly -= .6; });
+  s += TX(t, u0 + .1, 11.35, `LOCAL ${l.num} · local tipo ${f2(l.w)} × 10,00`, `font-size="11" font-weight="800" ${FT}`, 'start') + TX(t, u0 + .1, -1.1, 'línea llena: caño rígido a la vista · punteada: corrugado dentro del divisorio', `font-size="8" fill="#666" ${FT}`, 'start');
+  SV(el, W, H, s, sc);
+}
+function tCircuitos() {
+  const I = instal(), R = I.L.find(R => R.l.i === 1) || I.L[0];
+  return `<table><tr><th>Circuito</th><th>Qué alimenta</th><th class="n">Sección</th><th class="n">Protección</th><th class="n">Caño</th><th>Bocas</th></tr>${R.circ.map(c => { const k = {}; c.bocas.forEach(b => k[b.t] = (k[b.t] || 0) + 1); const N = { lum: 'luminarias', emer: 'emergencias', l1: 'llave 1 p.', l2: 'llaves 2 p.', plaf: 'plafón', extr: 'extractor', reg: 'regleta', td: 'tomas dobles', ts: 'toma simple', tt: 'salida termotanque', taa: 'toma 20 A', ce: 'caja estanca' }; return `<tr><td><b style="color:${CC[c.id]}">${c.id}</b></td><td>${c.nom}</td><td class="n">${String(c.sec).replace('.', ',')} mm²</td><td class="n">2 × ${c.prot} A</td><td class="n">${Math.round(c.len)} m</td><td class="note">${Object.entries(k).map(([a, b]) => `${b} ${N[a] || a}`).join(' · ')}</td></tr>`; }).join('')}</table>`;
+}
+
 /* ---- instalaciones ---- */
 function dInst() {
   const W = 47.5, H = 21, sc = 24, t = T(3.5, 5.5, sc, H); // u, v; avenida a la derecha (u=37 = línea de propiedad)
@@ -779,6 +1138,7 @@ function dInst() {
   s += TX(t, 12.5, 11, 'bases para equipos de aire en el techo, detrás del pretil (⬚)', `font-size="9" fill="#666" ${FT}`);
   s += TX(t, -1, -4.6, 'Las previsiones van cada 5 m, en el centro de cada módulo: sirven para cualquier división de 2 a 5 locales.', `font-size="11" font-weight="700" ${FT}`, 'start');
   SV($('svInst'), W, H, titulo(W, `Instalaciones generales · ${S.n} locales`, 'bajo platea y por el pasaje sur; los medidores en el frente para que cada inquilino tenga su cuenta de UTE y su submedidor de agua', sc) + s, sc);
+  dSan($('svSan')); dSanL($('svSanL')); dEle($('svEle')); dEleL($('svEleL')); $('tCirc').innerHTML = S.modo === 'equipado' ? tCircuitos() : '<p class="note">En cáscara cada local tiene solo tablero de obra, una boca de luz y un toma: los circuitos los hace el inquilino.</p>';
 }
 
 /* ================= TABLAS ================= */
@@ -1081,20 +1441,20 @@ function despiece() {
 }
 const f2n = x => Math.round(x * 100) / 100;
 function cantidades() {
-  const n = S.n, eq = S.modo === 'equipado', L = locales(n);
+  const n = S.n, eq = S.modo === 'equipado', L = locales(n), DI = despInst();
   const hPlatea = 266 * .15, hVig = (6 * 10.6 + 2 * 25.6) * .3 * .6, hNud = 12 * 1.2 * 1.2 * .45;
   const nd = n - 1, aDiv = nd * 10 * 4.4, aBan = eq ? n * 10 : 0;
   const herr = [['Chapa galvanizada prepintada negra, plegada, 0,9 mm (cenefa: frente, lateral norte, bajadas en las esquinas)', 'm²', Math.ceil(SUP.cenefa * 1.1)], ['Chapa negra plegada para faja de cartelería, con soportes', 'ml', Math.ceil(SUP.faja)], ['Visera blanca de chapa plegada, vuelo 60 cm', 'ml', Math.ceil(SUP.visor)], ['Marco blanco del portal vidriado, chapa plegada', 'ml', Math.ceil(SUP.marco)], ['Brise: listones de eucalipto grandis tratado (CCA), 45 × 70 mm, cepillados, con fijaciones de acero inoxidable', 'm²', Math.ceil(SUP.brise)], ['Aceite o protector para madera exterior', 'l', Math.ceil(SUP.brise * .3)], ['Puerta de servicio chapa inyectada 0,90 × 2,10 con marco, cerradura y barral antipánico', 'u', n], ['Tornillería autoperforante, remaches y sellador', 'gl', 1]];
   const div = [['Montante galvanizado 100 mm (divisorios), largo 4,5 m, c/40 cm', 'u', Math.ceil(nd * (10 / .4 + 1) * 1.05)], ['Solera galvanizada 100 mm', 'ml', Math.ceil(nd * 20 * 1.1)], ['Placa de yeso 12,5 mm RH 1,20 × 2,40 (divisorios, 2 placas por cara)', 'u', Math.ceil(aDiv * 4 * 1.1 / 2.88)], ['Alternativa: placa RF 12,5 mm (mismo metraje)', 'u', Math.ceil(aDiv * 4 * 1.1 / 2.88)], ['Lana de roca 50 mm (divisorios)', 'm²', Math.ceil(aDiv * 1.05)], ...(eq ? [['Montante galvanizado 70 mm (baños)', 'u', Math.ceil(n * 12)], ['Solera galvanizada 70 mm (baños)', 'ml', Math.ceil(n * 9)], ['Placa de yeso 12,5 mm RH (baños, 1 por cara)', 'u', Math.ceil(aBan * 2 * 1.1 / 2.88)]] : []), ['Tornillos T1 y T2', 'u', Math.ceil((aDiv * 4 + aBan * 2) * 30 / 1000) * 1000], ['Masilla para juntas (bolsa 25 kg)', 'u', Math.ceil((aDiv + aBan) * 2 * .9 / 25)], ['Cinta de papel para juntas (rollo 75 m)', 'u', Math.ceil((aDiv + aBan) * 2 * 1.5 / 75)], ['Cantoneras y perfil de terminación', 'ml', Math.ceil(nd * 10 + n * 6)], ['Pintura látex interior (balde 20 l)', 'u', Math.ceil((aDiv + aBan) * 2 * .25 / 20)], ['Fijaciones a platea (tarugos / clavos de impacto)', 'u', Math.ceil(nd * 20 / .6 + n * 15)]];
-  const ban = eq ? [['Inodoro accesible (altura 45-50 cm) con mochila y tapa', 'u', n], ['Lavatorio accesible sin pie, con soporte, y grifería monocomando de palanca larga', 'u', n], ['Barra fija 80 cm y barra rebatible 80 cm de acero inoxidable', 'juego', n], ['Espejo inclinable o fijo bajo, accesorios (portarrollo, toallero, jabonera)', 'juego', n], ['Revestimiento cerámico de pared hasta 2,00 m', 'm²', n * 17], ['Piso cerámico o porcelanato antideslizante', 'm²', n * 4.5], ['Adhesivo cementicio y pastina', 'gl', n], ['Termotanque eléctrico 30 l (lavatorio y kitchenette)', 'u', n], ['Mesada de kitchenette 1,20 m (granito o acero inoxidable) con pileta y grifería', 'u', n], ['Bajo mesada melamínico 1,20 m con 2 puertas', 'u', n], ['Puerta de baño placa con marco de chapa, manija de palanca y señal libre/ocupado (PB)', 'u', n], ['Extractor de baño con conducto al exterior', 'u', n]] : [['Entrega en cáscara: solo previsiones (ver sanitaria)', 'gl', 1]];
+  const ban = eq ? [['## Baño accesible (UNIT 200), uno por local · ≈ 2,00 × 2,20 m'], ['Inodoro accesible 45-50 cm de alto, con mochila y tapa reforzada', 'u', n], ['Lavatorio accesible sin pie, con ménsulas, a 0,80 m (libre abajo)', 'u', n], ['Grifería monocomando de palanca larga para lavatorio (F y C)', 'u', n], ['Barra fija 80 cm y barra rebatible 80 cm de acero inoxidable Ø32', 'juego', n], ['Espejo inclinable o fijo bajo + portarrollo, toallero y jabonera', 'juego', n], ['Extractor axial de pared Ø100 mm (4"), 90-100 m³/h, persiana antirretorno, salida directa al exterior con rejilla', 'u', n], ['Revestimiento cerámico de pared hasta 2,00 m', 'm²', n * 17], ['Piso cerámico o porcelanato antideslizante', 'm²', n * 4.5], ['Adhesivo cementicio y pastina', 'gl', n], ['Termotanque eléctrico 30 l, 1.500 W, de colgar (lavatorio y kitchenette)', 'u', n], ['Puerta de baño placa con marco de chapa, manija de palanca y señal libre/ocupado (PB)', 'u', n], ['## Kitchenette, una por local'], ['Mesada de granito gris 1,20 × 0,60 m con zócalo y calado para la pileta', 'u', n], ['Pileta simple de acero inoxidable ≈ 52 × 37 × 18 cm, de pegar por abajo, con válvula y sifón', 'u', n], ['Grifería monocomando de mesada, pico alto giratorio (F y C)', 'u', n], ['Bajo mesada melamínico 1,20 m con 2 puertas', 'u', n]] : [['Entrega en cáscara: solo previsiones (ver sanitaria)', 'gl', 1]];
   const ext = [['Baldosa de hormigón 40 × 40 (plaza)', 'm²', Math.ceil(190 * 1.05)], ['Arena y portland para asiento de baldosas', 'gl', 1], ['Baldosa reglamentaria de vereda municipal (Maldonado)', 'm²', Math.ceil(52 * 1.05)], ['Cordón de hormigón prefabricado', 'ml', 80], ['Pintura de demarcación vial (plazas y accesible)', 'l', 20], ['Tierra negra para canteros', 'm³', 8], ['Césped en panes', 'm²', 60], ['Plantas y arbustos para canteros', 'gl', 1], ['Pedregullo para patio de servicio', 'm³', 12], ['Malla antiyuyo geotextil', 'm²', 115]];
   const inc = [['Extintor ABC 4 kg con soporte y cartel (uno por local + comunes)', 'u', n + 2], ['Extintor CO₂ 5 kg (tableros y medidores)', 'u', 1], ['Luz de emergencia LED autónoma', 'u', 2 * n + 4], ['Cartel de salida fotoluminiscente', 'u', 2 * n + 2], ['Señalización de extintores y planos de evacuación', 'gl', 1], ['Proyecto técnico de seguridad contra incendio y trámite de habilitación ante Bomberos (firma técnica)', 'gl', 1]];
   const eqo = [['Manitou / telehandler 4 t, 14 m, con operario (estructura y paneles)', 'día', 17], ['Plataforma tijera eléctrica 8 m de altura de trabajo', 'día', 50], ['Volqueta 5 m³ con retiro', 'u', 8], ['Baño químico con limpieza semanal', 'mes', 5], ['Contenedor obrador / depósito 20 pies', 'mes', 5], ['Cerco de obra: malla con postes y lona', 'ml', 120], ['Vibrador, regla vibratoria y llaneadora (helicóptero)', 'día', 4], ['Placa compactadora', 'día', 6], ['Seguro todo riesgo de construcción y responsabilidad civil (20 semanas)', 'gl', 1]];
   return {
     herr, div, ban, ext, inc, eqo,
     horm: [['Hormigón elaborado H30, asentamiento 10 cm, con bomba (platea + vigas de fundación + nudos, +5 %)', 'm³', Math.ceil((hPlatea + hVig + hNud) * 1.05)], ['Servicio de bomba (2 bombeos: vigas y platea)', 'u', 2], ['Malla electrosoldada Ø6 c/15 × 15, panel 2,40 × 6,00 (platea, doble capa, con solapes)', 'u', Math.ceil(266 * 2 * 1.12 / 14.4)], ['Hierro Ø16 ADN 500 (vigas de fundación, 8 barras por viga, con empalmes)', 'kg', Math.round(115 * 8 * 1.1 * 1.58)], ['Hierro Ø8 (estribos c/15 de vigas)', 'kg', Math.round(115 / .15 * 1.7 * .395)], ['Hierro Ø10 (refuerzo de nudos bajo columnas)', 'kg', 12 * 40], ['Alambre de atar', 'kg', 60], ['Separadores / galletas para recubrimiento 3 y 4 cm', 'u', 1200], ['Nylon 200 µ', 'm²', 320], [`Tosca para relleno compactado (${f2((SUELO[S.suelo] || SUELO.S0).prof)} m + esponjamiento)`, 'm³', Math.ceil(AHUE * (SUELO[S.suelo] || SUELO.S0).prof * 1.3)], ['Pedregullo para patio de servicio', 'm³', 12], ['Hormigón elaborado H25 para estacionamiento 12 cm', 'm³', Math.ceil(240 * .12 * 1.05)], ['Malla Ø4,2 c/15 para estacionamiento', 'u', Math.ceil(240 * 1.1 / 14.4)]],
-    san: [['Caño PVC Ø110 cloacal (colector, ramales y previsiones)', 'ml', 34 + 5 * 4 + 6], ['Caño PVC Ø63', 'ml', 18], ['Caño PVC Ø40 (piletas y desagües de aire)', 'ml', 8 * n + 10], ['Codos, ramales y piletas de patio Ø110 / Ø63 / Ø40 (juego por punto)', 'gl', 5 + n], ['Cámara de inspección 60 × 60 con tapa', 'u', 4], ['Cámara separadora de grasas prefabricada', 'u', 1], ['Tapones Ø110 y Ø40 para previsiones sin usar', 'u', 2 * (5 - n + 1)], ['Caño PVC Ø110 pluvial (bajadas y enterrado a cuneta)', 'ml', 3 * 5 + 40], ['Embudos / bocas de desagüe de canalón', 'u', 3], ['Caño PPR Ø32 (alimentación general)', 'ml', 36], ['Caño PPR Ø25 (a cada local)', 'ml', 12 * n + 10], ['Llaves de paso Ø25 y Ø32', 'u', n + 2], ['Medidor de agua general (lo instala OSE) + submedidores por local', 'u', n], ...(eq ? [['Inodoro accesible con depósito', 'u', n], ['Lavatorio accesible sin pie con grifería monocomando', 'u', n], ['Barras de accesibilidad (fija y rebatible)', 'juego', n], ['Pileta de acero inoxidable con grifería (kitchenette)', 'u', n], ['Extractor de baño', 'u', n], ['Revestimiento cerámico para baños', 'm²', Math.ceil(n * 12)]] : [])],
-    ele: [['Gabinete de medidores UTE para ' + n + ' medidores + general', 'u', 1], ['Caño PVC rígido Ø40 enterrado (alimentación a cada local)', 'ml', L.reduce((t, l) => t + (35 - l.b) + 8, 0)], ['Cable subterráneo 2 × 10 mm² (o 4 × 10 si es trifásico)', 'ml', Math.round(L.reduce((t, l) => t + (35 - l.b) + 10, 0) * 1.1)], ['Jabalinas de puesta a tierra 1,5 m + cable 16 mm²', 'u', 3], ['Tablero de servicios comunes con diferencial', 'u', 1], ['Proyectores LED 50 W para plaza y estacionamiento', 'u', 8], ['Columna / brazo para proyector', 'u', 4], ['Alimentación de cartelería en la faja (caño y cable)', 'ml', 30], ...(eq ? [['Tablero de local con llave general, diferencial y 6 circuitos', 'u', n], ['Paneles LED 60 × 60 o lineales 40 W', 'u', Math.ceil(250 / 6)], ['Tomacorrientes dobles y llaves', 'u', 8 * n], ['Cable 2,5 mm² y 4 mm² (circuitos de locales)', 'ml', 120 * n], ['Caño y caja para preinstalación de aire', 'juego', n]] : [['Tablero de obra por local', 'u', n]])],
+    san: DI.san,
+    ele: DI.ele,
   };
 }
 function renderMat() {
@@ -1125,7 +1485,7 @@ function renderMat() {
   const hoy = new Date().toLocaleDateString('es-UY'), E = ENV[S.env];
   const pie = (d, n) => `<div class="pie"><span>Smart Building Uruguay · Ramiro Portugau, director de obra · 098 526 226 · smartbuildinguruguay@gmail.com</span><span>${d} · ${n}</span></div>`;
   const cab = t => `<div class="meta"><span><b>SBU · Pedido de cotización</b> · ${t} · Locales comerciales Avda. Pedragosa Sierra, padrón 10596, Punta del Este</span><span>${hoy}</span></div>`;
-  const form = filas => `<table class="fill fill2"><tr><th>#</th><th>Material</th><th>Unidad</th><th class="n">Cantidad</th><th class="n">Precio unitario USD</th><th class="n">Total USD</th></tr>${filas.map((f, i) => `<tr><td>${i + 1}</td><td>${f[0]}</td><td>${f[1]}</td><td class="n">${Number(f[2]).toLocaleString('es-UY')}</td><td></td><td></td></tr>`).join('')}<tr class="tt"><td></td><td colspan="4">Total sin IVA</td><td></td></tr><tr><td></td><td colspan="4">IVA</td><td></td></tr><tr class="tt"><td></td><td colspan="4">Total con IVA</td><td></td></tr></table>`;
+  const form = filas => `<table class="fill fill2${filas.length > 14 ? ' tight' : ''}"><tr><th>#</th><th>Material</th><th>Unidad</th><th class="n">Cantidad</th><th class="n">Precio unitario USD</th><th class="n">Total USD</th></tr>${(() => { let k = 0; return filas.map(f => f.length === 1 ? `<tr class="sec"><td colspan="6"><b>${f[0].replace(/^## /, '')}</b></td></tr>` : `<tr><td>${++k}</td><td>${f[0]}</td><td>${f[1]}</td><td class="n">${typeof f[2] === 'number' ? f[2].toLocaleString('es-UY') : f[2]}</td><td></td><td></td></tr>`).join(''); })()}<tr class="tt"><td></td><td colspan="4">Total sin IVA</td><td></td></tr><tr><td></td><td colspan="4">IVA</td><td></td></tr><tr class="tt"><td></td><td colspan="4">Total con IVA</td><td></td></tr></table>`;
   const datos = `<p>Empresa: ____________________________ RUT: ______________ Contacto: ______________________ Tel.: ______________</p>`;
   const cond = extra => `<table style="margin-top:3mm" class="fill fill2"><tr><td style="width:45%">Plazo de entrega en obra</td><td></td></tr><tr><td>Flete a Punta del Este (incluido / aparte)</td><td></td></tr><tr><td>Precio para los padrones 10597 y 10598 (misma lista)</td><td></td></tr><tr><td>Forma de pago y validez</td><td></td></tr>${extra || ''}<tr><td>Observaciones / alternativas</td><td></td></tr></table><h3>Condiciones</h3><ul class="c"><li>Cantidades estimadas por SBU sobre el proyecto: verificar y avisar si falta algo. Cotizar precio unitario para ajustar.</li><li>Entrega en obra: Avda. Pedragosa Sierra, Punta del Este (frente al Centro de Convenciones). Descarga a cargo de SBU salvo que se indique.</li><li>La obra se repite en dos padrones más: indicar si hay precio por volumen.</li><li>Enviar a smartbuildinguruguay@gmail.com o por WhatsApp al 098 526 226.</li></ul>`;
   let h = '';
@@ -1165,16 +1525,57 @@ function renderMat() {
       horm: ['Fundaciones y platea', 'empresa de hormigón / fundaciones', `Mano de obra y equipos para: ${(SUELO[S.suelo] || SUELO.S0).n.toLowerCase()} (compactada al 95 % Proctor, en capas de 20 cm),` + ' vigas de fundación 30 × 60 con nudos y pernos colocados con plantilla (los pernos los entrega SBU), platea de 15 cm con malla doble, nylon y llaneado mecánico (queda como piso). Hormigón H30 elaborado con bomba.', 'Indicar si cotiza con materiales (hormigón, hierro, tosca) o solo mano de obra y equipos; ensayos de compactación y probetas'],
       panel: ['Montaje de paneles y zinguería', 'colocador de paneles', `Montaje de ${f1(SUP.techo)} m² de techo (${ENV[S.env].roof.nom}) y ${f1(SUP.muro)} m² de muros (${ENV[S.env].wall.nom}) sobre estructura metálica terminada, con remates, canalón interno, babetas, bajadas y sellado. Los paneles y accesorios los compra SBU (ver despiece en el pedido de paneles).`, 'Equipos que pone (manitou, tijeras, líneas de vida); si descarga los paneles del camión'],
       div: ['Divisorios y cerramientos de baño', 'cuadrilla de steel frame / yeso', `${S.n - 1} divisorio${S.n > 2 ? 's' : ''} entre locales en steel frame 100 mm, de platea al techo (4,0 a 4,6 m), doble placa de yeso por cara y lana de roca${S.modo === 'equipado' ? `, y el cerramiento del baño de cada local (≈ 10 m² por baño, placa RH)` : ''}; masillado y pintura de las dos caras. Bomberos puede pedir separación resistente al fuego: cotizar también con placa RF.`, 'Precio por m² con placa RH y con placa RF; si incluye pintura'],
-      san: ['Sanitaria', 'sanitario habilitado', `Instalación sanitaria del edificio: colector cloacal por el pasaje sur con cámaras, previsiones universales cada 5 m bajo platea (antes de hormigonar), pluviales a cuneta, agua con medidor general y submedidores${S.modo === 'equipado' ? ', y baño accesible y kitchenette en cada local' : ''}. Incluye firma para OSE e Intendencia.`, 'Indicar si cotiza con materiales; firma técnica y trámites'],
-      ele: ['Eléctrica', 'instalador eléctrico autorizado UTE', `Gabinete de medidores en el frente (uno por local), alimentación enterrada a cada local, puesta a tierra, servicios comunes, iluminación exterior y cartelería${S.modo === 'equipado' ? ', y tablero, circuitos, iluminación LED y preinstalación de aire en cada local' : ''}. Incluye firma de instalador autorizado y trámite UTE.`, 'Indicar si cotiza con materiales; potencia que propone pedir a UTE'],
+      san: ['Sanitaria', 'sanitario habilitado', `Instalación sanitaria del edificio: colector cloacal por el pasaje sur con cámaras, previsiones universales cada 5 m bajo platea (antes de hormigonar), pluviales a cuneta, agua con medidor general y submedidores${S.modo === 'equipado' ? ', y baño accesible y kitchenette en cada local' : ''}. Planos y despiece completos en el pedido de materiales de sanitaria. Incluye firma para OSE e Intendencia.`, 'Indicar si cotiza con materiales; firma técnica y trámites'],
+      ele: ['Eléctrica', 'instalador eléctrico autorizado UTE', `Gabinete de medidores en el frente (uno por local), alimentación enterrada a cada local, puesta a tierra, servicios comunes, iluminación exterior y cartelería${S.modo === 'equipado' ? ', y tablero, circuitos, iluminación LED y preinstalación de aire en cada local' : ''}. Planos, circuitos y despiece en el pedido de materiales de eléctrica. Incluye firma de instalador autorizado y trámite UTE.`, 'Indicar si cotiza con materiales; potencia que propone pedir a UTE'],
       ext: ['Exteriores y pavimentos', 'empresa de pavimentos / paisajismo', 'Estacionamiento en hormigón 12 cm con malla y demarcación, plaza peatonal en baldosa de hormigón, vereda municipal, canteros con jardinería y patio de servicio en pedregullo.', 'Indicar si cotiza con materiales; plazo'] }[key];
     let I = key === 'ing' ? [['Memoria de cálculo de estructura metálica y fundaciones (viento UNIT 50-84, combinaciones de carga)'], ['Planos de estructura: plantas, pórticos, uniones, placas base y pernos, fundación con armaduras'], ['Revisión y aprobación de los planos de taller del taller metalúrgico'], ['Firma técnica para el permiso de construcción ante la Intendencia de Maldonado'], ['2 visitas de control: armaduras antes de hormigonar y estructura montada']].map(([t]) => ({ t, q: 1, un: 'gl' })) : r.R.filter(x => !x.cat && x.pq === key);
     const t = 'Subcontrato · ' + ALC[0];
     h += `<div class="hoja">${cab(t)}<h1>${ALC[0]} · pedido de cotización</h1><p><b>Para:</b> ${ALC[1]}. <b>Alcance:</b> ${ALC[2]}</p>
-    <p class="note">Edificio de ${S.n} locales, 25 × 10 m, una planta, sobre Avda. Pedragosa Sierra frente al Centro de Convenciones. Planos del visor del proyecto a pedido. La obra se repite en dos padrones vecinos.</p>
-    <h2>Tareas y cantidades</h2>${datos}<table class="fill fill2"><tr><th>#</th><th>Tarea</th><th>Un.</th><th class="n">Cant.</th>${key === 'ing' ? '<th class="n">Honorarios USD</th><th class="n">—</th>' : '<th class="n">Mano de obra USD/u</th><th class="n">Materiales USD/u</th>'}<th class="n">Total USD</th></tr>${I.map((x, i) => `<tr><td>${i + 1}</td><td>${x.t}</td><td>${x.un}</td><td class="n">${f1(Math.round(x.q * 10) / 10)}</td><td></td><td></td><td></td></tr>`).join('')}<tr class="tt"><td></td><td colspan="5">Total sin IVA</td><td></td></tr></table>
-    <table style="margin-top:3mm" class="fill fill2"><tr><td style="width:45%">${['ing', 'suelos'].includes(key) ? 'Profesional o empresa que firma (título y registro en la Intendencia)' : '<b>Monto de mano de obra imponible</b> (jornales para aportes BPS de la obra)'}</td><td></td></tr><tr><td>Personal en régimen de construcción, BPS y seguro BSE al día (sí / no)</td><td></td></tr><tr><td>Cuadrilla y días de trabajo</td><td></td></tr><tr><td>${ALC[3]}</td><td></td></tr><tr><td>Fecha posible de inicio y plazo</td><td></td></tr><tr><td>Forma de pago y validez</td><td></td></tr><tr><td>Precio para los padrones 10597 y 10598</td><td></td></tr><tr><td>Observaciones</td><td></td></tr></table>
+    ${I.length > 8 ? '' : `<p class="note">Edificio de ${S.n} locales, 25 × 10 m, una planta, sobre Avda. Pedragosa Sierra frente al Centro de Convenciones. Planos del visor del proyecto a pedido. La obra se repite en dos padrones vecinos.</p>`}
+    <h2>Tareas y cantidades</h2>${datos}<table class="fill fill2${I.length > 8 ? ' tight' : ''}"><colgroup><col style="width:4%"><col><col style="width:5%"><col style="width:6%"><col style="width:11%"><col style="width:11%"><col style="width:10%"></colgroup><tr><th>#</th><th>Tarea</th><th>Un.</th><th class="n">Cant.</th>${key === 'ing' ? '<th class="n">Honorarios USD</th><th class="n">—</th>' : '<th class="n">Mano de obra USD/u</th><th class="n">Materiales USD/u</th>'}<th class="n">Total USD</th></tr>${I.map((x, i) => `<tr><td>${i + 1}</td><td>${x.t}</td><td>${x.un}</td><td class="n">${f1(Math.round(x.q * 10) / 10)}</td><td></td><td></td><td></td></tr>`).join('')}<tr class="tt"><td></td><td colspan="5">Total sin IVA</td><td></td></tr></table>
+    <table style="margin-top:3mm" class="fill fill2${I.length > 8 ? ' tight' : ''}"><tr><td style="width:45%">${['ing', 'suelos'].includes(key) ? 'Profesional o empresa que firma (título y registro en la Intendencia)' : '<b>Monto de mano de obra imponible</b> (jornales para aportes BPS de la obra)'}</td><td></td></tr><tr><td>Personal en régimen de construcción, BPS y seguro BSE al día (sí / no)</td><td></td></tr><tr><td>Cuadrilla y días de trabajo</td><td></td></tr><tr><td>${ALC[3]}</td><td></td></tr><tr><td>Fecha posible de inicio y plazo</td><td></td></tr><tr><td>Forma de pago y validez</td><td></td></tr><tr><td>Precio para los padrones 10597 y 10598</td><td></td></tr><tr><td>Observaciones</td><td></td></tr></table>
     <h3>Condiciones</h3><ul class="c"><li>Cantidades estimadas por SBU: verificar en planos y obra. Cotizar precio unitario.</li><li>Separar mano de obra y materiales: SBU puede comprar los materiales.</li><li>Los aportes de la obra se liquidan en BPS por la obra de SBU: indicar el monto imponible.</li><li>Enviar a smartbuildinguruguay@gmail.com o por WhatsApp al 098 526 226.</li></ul>${pie(t, '1/1')}</div>`;
+  } else if (MATDOC === 'sanitaria' || MATDOC === 'electrica') {
+    const D = despInst(), I = D.I, n = S.n, eq = S.modo === 'equipado', san = MATDOC === 'sanitaria', t = san ? 'Materiales de sanitaria' : 'Materiales de eléctrica';
+    const filas = san ? D.san : D.ele, nUn = san ? 'barraca o casa de sanitaria' : 'casa de electricidad';
+    const R0 = I.L.find(R => R.l.i === 1) || I.L[0], cnt = tp => I.L.reduce((s, R) => s + R.bocas.filter(b => b.t === tp).length, 0), q = re => { const f = filas.find(f => f.length > 1 && re.test(f[0])); return f ? f[2] : '—'; };
+    const RS = [
+      ['¿Son 9 de cada artículo? (codos, ramales y piletas por punto)', 'No. El juego por punto se reemplazó por el despiece pieza por pieza, contado sobre el plano de la hoja 2: cada pieza tiene su cantidad.'],
+      ['¿Ramales T o Y? ¿De la misma medida o reducidos?', `Todos en Y a 45°, ninguna T en desagües. ${q(/^Ramal Y a 45° Ø110 × 110 \(misma/)} de misma medida Ø110 × 110 (inodoros y previsiones) y ${q(/reducido Ø110 × 63/)} reducidos Ø110 × 63 (piletas y ventilación). Los de pluviales van aparte.`],
+      ['Piletas: ¿cajas sifonadas, piletas de patio, receptáculos?', eq ? `Por local: 1 pileta de patio sifonada abierta Ø110 con rejilla inox en el baño (recibe el lavatorio) y 1 pileta de patio tapada Ø110 bajo la mesada de la kitchenette. No hay ducha ni receptáculo.` : 'En cáscara no van piletas: queda el ramal Ø110 y el Ø40 con tapón en cada local.'],
+      ['Punto 5 · ¿A qué le llaman cámara de inspección? ¿Marco y tapa de hormigón, de resina, terminal?', `Cámara prefabricada de hormigón 60 × 60 interior, de 0,60 a 1,00 m de profundidad (el colector va al 1 %). ${I.cam.length - 1} en el pasaje con tapa y contratapa de hormigón armado y marco de hierro ángulo, y 1 de conexión en el estacionamiento con tapa de hierro fundido para tránsito. Ninguna de resina ni terminal.`],
+      ['Punto 7 · ¿Tapones de 110 o de 40? ¿Obturadores de prueba?', `Tapones para pegar que quedan puestos: ${q(/^Tapón Ø110/)} de Ø110 y ${q(/^Tapón Ø40/)} de Ø40 (previsiones sin usar y grasera). Obturadores no: la prueba hidráulica la hace el sanitario con los suyos.`],
+      ['Punto 9 · Embudos y bocas de desagüe de canalón: ¿qué canalones tienen?', 'Un canalón interno de chapa galvanizada prepintada, desarrollo 1 m, 25,6 m de largo, al sur detrás del pretil. Sus 3 bocas de salida las hace el zinguero (van con los paneles). A sanitaria le pedimos las bajadas Ø110 con codos, abrazaderas, rejilla parahojas y la boca de desagüe 40 × 40 al pie.'],
+      ['Punto 13 · ¿Los caudalímetros tienen medida?', `Submedidores de ¾" (DN20), chorro múltiple, clase B, uno por local (${n}), en batería junto al medidor general, con llave antes, válvula de retención después y uniones dobles. El medidor general lo pone OSE.`],
+      ['Punto 17 · Pileta inox con grifería: ¿medidas? ¿de pegar por abajo o sobreponer?', 'Pasó al pedido de Baños y kitchenettes: pileta simple de acero inoxidable de ≈ 52 × 37 × 18 cm, de pegar por abajo en mesada de granito de 1,20 × 0,60, con grifería monocomando de mesada de pico alto.'],
+      ['Punto 18 · Extractores de baño: ¿medida? ¿qué tipo?', 'También en Baños y kitchenettes: extractor axial de pared Ø100 mm (4"), 90 a 100 m³/h, con persiana antirretorno, que sale directo al exterior por el muro sur, con rejilla exterior.'],
+      ['Punto 19 · Revestimiento: no trabajan', 'Se sacó de sanitaria. La cerámica va en el pedido de Baños y kitchenettes.'],
+      ['¿En qué material cotizamos? ¿PVC de pegar, junta elástica, Awaduct o Duratop?', 'PVC sanitario para pegar, pared 3,2 mm (UNIT 206), en todo lo enterrado y bajo platea. Si les sirve, coticen aparte la alternativa en polipropileno de junta elástica (Awaduct o Duratop) para comparar. El agua va en PPR termofusión.'],
+    ];
+    const RE = [
+      ['Gabinete para 4 medidores: ¿son monofásicos? ¿Piensan poner trifásico?', `Monofásicos 230 V (UTE da monofásico hasta 9,2 kW por servicio, alcanza para cada local). El gabinete va para ${n + 1} medidores, ${n} locales más uno de servicios comunes, con lugar para medidor trifásico en cada posición: si un inquilino de gastronomía pide trifásico, se cambia el medidor y el cable sin tocar el gabinete. Los caños Ø50 ya lo permiten.`],
+      ['Jabalinas con cable de 16 mm²: ¿cuánto cable?', `${q(/^Cable de cobre desnudo 16/)} m de cobre desnudo 16 mm². Son 3 jabalinas en línea cada 3 m en el pasaje, unidas entre sí, y el cable llega a la barra de tierra del gabinete.`],
+      ['Tablero de servicios comunes: ¿cuántos módulos?', 'IP65 de 24 módulos. Lleva general 2 × 25 A, diferencial 2 × 25 A 30 mA, 3 térmicas de 2 × 10 A (plaza, estacionamiento, pasaje), 2 de 2 × 16 A (tomas exteriores y reserva), contactor y reloj. Usa unos 17 módulos y deja reserva. Ver sección H.'],
+      ['Alimentación de cartelería: datos más específicos', `Un circuito por local (C7) desde su propio tablero, con térmica de 2 × 10 A y reloj programable, cable 2,5 mm² con tierra en caño Ø20, unos ${Math.round(R0.circ.find(c => c.id === 'C7')?.len || 13)} m por local hasta una caja estanca IP65 detrás de la faja. Cartel de hasta 300 W por local.`],
+      ['Tomacorrientes dobles y llaves: desglose', eq ? `En el local tipo: ${R0.bocas.filter(b => b.t === 'td').length - 2} tomas dobles en el salón (sobre los muros laterales a 0,30 m; el de la esquina tiene menos porque un lado es vidriera), 2 tomas dobles sobre la mesada, 1 toma simple en el baño, 1 toma de 20 A para el aire y 1 salida para el termotanque. Llaves: 2 de dos puntos (salón y baño) y 1 de un punto (kitchenette). En total, ${cnt('td')} tomas dobles, ${cnt('ts')} simples, ${cnt('taa')} de 20 A, ${cnt('l2')} llaves de 2 puntos y ${cnt('l1')} de 1 punto.` : 'En cáscara, solo un toma doble y una boca de luz por local.'],
+      ['Cables de 2 y 4 mm²: ¿son 480 m de cada uno?', eq ? `No. Ahora va por sección y por color, medido sobre el trazado: 1,5 mm² para luces (${q(/^Cable 1,5 mm² marrón/)} m por color, más ${q(/^Cable 1,5 mm² negro/)} m de retorno), 2,5 mm² para tomas, termotanque y cartel (${q(/^Cable 2,5 mm² marrón/)} m por color) y 4 mm² para el aire (${q(/^Cable 4 mm² marrón/)} m por color). Cada uno en marrón, celeste y verde-amarillo.` : 'En cáscara solo va lo del tablero de obra.'],
+      ['¿Cómo está conformado el juego de preinstalación de aire?', 'Por local, para un split de 24.000 BTU: caño de cobre 3/8" + 5/8" con aislación (juego de 5 m), 6 m de cable de interconexión 4 × 1,5 mm², toma de 20 A con circuito propio de 4 mm², base antivibratoria para la unidad exterior en el techo detrás del pretil y pasatecho con babeta. El desagüe del condensado va en sanitaria, en PVC Ø32.'],
+    ];
+    const RES = san ? RS : RE, alc = san ? `Instalación sanitaria de ${n} locales ${eq ? 'equipados (baño accesible y kitchenette en cada uno)' : 'en cáscara'}: colector cloacal Ø110 al 1 % por el pasaje de servicio con ${I.cam.length} cámaras, ramal de cada local a su cámara, previsiones cada 5 m con tapón, ventilación por el techo, pluviales a cuneta y agua en PPR con un submedidor por local.` : `Instalación eléctrica de ${n} locales ${eq ? 'equipados' : 'en cáscara'}: gabinete de medidores UTE en el frente, puesta a tierra, alimentación monofásica enterrada a cada local, ${eq ? 'tablero de 7 circuitos, iluminación LED, tomas, preinstalación de aire y cartel en cada local, ' : ''}y servicios comunes de plaza, estacionamiento y pasaje.`;
+    const PG = san ? 5 : 6; let pg = 1;
+    h += `<div class="hoja">${cab(t)}<h1>${t} · pedido de cotización</h1><p>${alc} Pedido a ${nUn}.</p>
+    <h2>1 · Respuestas a las consultas (12/11/2026)</h2><table><tr><th style="width:36%">Consulta</th><th>Respuesta</th></tr>${RES.map(r => `<tr><td><b>${r[0]}</b></td><td>${r[1]}</td></tr>`).join('')}</table>
+    <h2>2 · Cómo leer el pedido</h2><ul class="c"><li>Las cantidades salen del trazado de la hoja 2 (planos), medido tramo por tramo, con 10 % de desperdicio en caños y cables.</li><li>Los ítems van numerados de corrido; las letras (A, B, C…) son solo los grupos.</li><li>Si un ítem no lo trabajan, déjenlo en blanco y cotizan el resto. Se aceptan marcas equivalentes: indiquen cuál cotizan.</li></ul>${pie(t, `${pg++}/${PG}`)}</div>`;
+    if (san) h += `<div class="hoja">${cab(t)}<h2 style="margin-top:0">3 · Planos de sanitaria</h2><svg id="mdS1"></svg><svg id="mdS2" style="width:80%;margin:2mm auto"></svg><p class="note">PPS: pileta de patio sifonada abierta. PPT: pileta de patio tapada. CI: cámara de inspección. Colector a −0,60 en la CI 1 y −0,97 en la conexión.</p>${pie(t, `${pg++}/${PG}`)}</div>`;
+    else h += `<div class="hoja">${cab(t)}<h2 style="margin-top:0">3 · Planta general de eléctrica</h2><svg id="mdE1"></svg>${eq ? `<h2>4 · Circuitos de cada local</h2>${tCircuitos()}` : ''}${pie(t, `${pg++}/${PG}`)}</div><div class="hoja">${cab(t)}<h2 style="margin-top:0">${eq ? 5 : 4} · Local tipo</h2><svg id="mdE2"></svg>${pie(t, `${pg++}/${PG}`)}</div>`;
+    // lista de materiales en páginas
+    const per = san ? 27 : 31, NP = Math.ceil((filas.length + 11) / per), sz = Math.ceil((filas.length + 11) / NP), pages = []; let cur = [];
+    filas.forEach(f => { if (cur.length >= sz || (f.length === 1 && cur.length >= sz - 3 && pages.length < NP - 1)) { pages.push(cur); cur = []; } cur.push(f); }); if (cur.length) pages.push(cur);
+    let k = 0; const fila = f => f.length === 1 ? `<tr class="sec"><td colspan="6"><b>${f[0].replace(/^## /, '')}</b></td></tr>` : `<tr><td>${++k}</td><td>${f[0]}</td><td>${f[1]}</td><td class="n">${typeof f[2] === 'number' ? f[2].toLocaleString('es-UY') : f[2]}</td><td></td><td></td></tr>`;
+    const hoja0 = san ? 4 : (eq ? 6 : 5);
+    pages.forEach((P, i) => { const last = i === pages.length - 1;
+      h += `<div class="hoja">${cab(t)}<h2 style="margin-top:0">${hoja0} · Lista de materiales y formulario${pages.length > 1 ? ` (${i + 1} de ${pages.length})` : ''}</h2>${i === 0 ? datos : ''}<table class="fill fill2"><tr><th>#</th><th>Material</th><th>Unidad</th><th class="n">Cantidad</th><th class="n">Precio unitario USD</th><th class="n">Total USD</th></tr>${P.map(fila).join('')}${last ? '<tr class="tt"><td></td><td colspan="4">Total sin IVA</td><td></td></tr><tr><td></td><td colspan="4">IVA</td><td></td></tr><tr class="tt"><td></td><td colspan="4">Total con IVA</td><td></td></tr>' : ''}</table>${last ? cond() : ''}${pie(t, `${pg++}/${PG}`)}</div>`; });
+    h = h.replace(new RegExp(`/${PG}</span>`, 'g'), `/${pg - 1}</span>`);
   } else {
     const C = cantidades(), M = { hormigon: ['Hormigón, hierro y tosca', 'hormigonera y barraca', C.horm, 'Platea H30 de 15 cm con malla doble, 8 vigas de fundación 30 × 60 (115 ml) con nudos bajo columnas, relleno de tosca compactada y estacionamiento en hormigón. Ambiente marino: hormigón H30 con cemento adecuado y recubrimientos de 3 y 4 cm.'], sanitaria: ['Materiales de sanitaria', 'barraca o sanitaria', C.san, `Colector cloacal por el pasaje sur con cámaras, previsiones universales cada 5 m (5 puntos), pluviales a cuneta, agua con medidor general y submedidores por local${S.modo === 'equipado' ? ' y baño accesible y kitchenette en cada local' : ''}. ${S.n} locales.`], herreria: ['Herrería y fachada', 'herrería / plegadora de chapa y carpintería', C.herr, 'Revestimientos de fachada sobre bastidores de la estructura metálica (los bastidores van con la estructura): cenefa negra que sube en la esquina del frente, recorre el frente y todo el lateral norte y baja en la esquina del fondo; faja de cartelería negra con visera blanca; marco blanco del portal; brise de madera; puertas de servicio. Cotizar suministro y colocación por separado.'],
     divisorios: ['Steel frame y yeso', 'barraca o distribuidor de steel frame', C.div, `${S.n - 1} divisorio${S.n > 2 ? 's' : ''} entre locales de 10 m × 4,4 m en steel frame 100 mm con doble placa por cara y lana de roca${S.modo === 'equipado' ? ', y cerramientos de baño (≈ 10 m² por local) en steel frame 70 mm con placa RH' : ''}. Cotizar también placa RF (resistente al fuego) para los divisorios.`],
@@ -1183,10 +1584,12 @@ function renderMat() {
     incendio: ['Seguridad contra incendio', 'empresa habilitada por la Dirección Nacional de Bomberos', C.inc, `Local comercial de 250 m² en ${S.n} unidades, estructura metálica y paneles ${ENV[S.env].wall.pir ? 'PIR' : 'EPS (techo PIR)'}. Equipos, señalización y proyecto con trámite de habilitación ante Bomberos.`],
     equipos: ['Alquileres y servicios de obra', 'empresas de alquiler de equipos y servicios', C.eqo, 'Equipos y servicios para unas 20 semanas de obra. Cotizar precio por día, semana o mes, y flete ida y vuelta a Punta del Este.'],
     electrica: ['Materiales de eléctrica', 'casa de electricidad', C.ele, `Gabinete de medidores UTE en el frente (uno por local), alimentación enterrada a cada local, puesta a tierra, iluminación exterior y cartelería${S.modo === 'equipado' ? ', y tablero, iluminación LED y tomas en cada local' : ''}. ${S.n} locales.`] }[MATDOC];
-    h += `<div class="hoja">${cab(M[0])}<h1>${M[0]} · pedido de cotización</h1><p>${M[3]} Pedido a ${M[1]}.</p><h2>Lista de materiales y formulario</h2>${datos}${form(M[2])}${cond()}${pie(M[0], '1/1')}</div>`;
+    h += M[2].length > 14 ? `<div class="hoja">${cab(M[0])}<h1>${M[0]} · pedido de cotización</h1><p>${M[3]} Pedido a ${M[1]}.</p><h2>Lista de materiales y formulario</h2>${datos}${form(M[2])}${pie(M[0], '1/2')}</div><div class="hoja">${cab(M[0])}<h2 style="margin-top:0">Condiciones de la cotización</h2>${cond()}${pie(M[0], '2/2')}</div>` : `<div class="hoja">${cab(M[0])}<h1>${M[0]} · pedido de cotización</h1><p>${M[3]} Pedido a ${M[1]}.</p><h2>Lista de materiales y formulario</h2>${datos}${form(M[2])}${cond()}${pie(M[0], '1/1')}</div>`;
   }
   el.innerHTML = h;
   if (MATDOC === 'paneles') dMatCroquis();
+  if (MATDOC === 'sanitaria') { dSan($('mdS1'), { sc: 22 }); dSanL($('mdS2')); }
+  if (MATDOC === 'electrica') { dEle($('mdE1'), { sc: 22 }); dEleL($('mdE2'), { sc: 44 }); }
   if (MATDOC === 'aberturas') dAbCroquis();
 }
 function dMatCroquis() {
@@ -1223,7 +1626,7 @@ function renderAud() {
   <table><tr><th>Concepto</th><th class="n">Estimado</th></tr><tr><td>Parte de mano de obra en los subcontratos que trabajan en la obra (sin aluminio ni fabricación en taller)</td><td class="n">${u$(r.moS)}</td></tr><tr><td>Jornales imponibles (≈ 50 % de esa parte)</td><td class="n">${u$(imp)}</td></tr><tr><td><b>Aportes BPS 75,8 %</b> · ya está en el rubrado, en la tabla de gestión, al costo</td><td class="n"><b>${u$(bps)}</b></td></tr></table>
   <p class="note">Se ajusta con el monto imponible que declare cada subcontratista: todos los pedidos de cotización lo piden.</p>`;
   // 2 · ajustes aplicados y lo que queda por confirmar
-  const AJ = [['Acero laminado fabricado, granallado, epoxi + PU, montado', '3,40 USD/kg', '3,70 USD/kg', 'los talleres de la zona cotizan 3,60 a 4,20 con pintura marina'], ['Vidrieras de aluminio línea pesada, laminado 5+5', '240 USD/m²', '290 USD/m²', 'paños de 2,85 m y portal de 4,6 m; rango 280 a 350'], ['Baño accesible', '3.200 / local (sin paredes, puerta ni termotanque)', '3.600 + cerramiento 10 m² a 45 + puerta 280 ≈ 4.330', 'baño completo'], ['Divisorios', 'sin terminación', '+ masillado y pintura de las 2 caras, 8 USD/m²', 'Bomberos puede pedir placa RF (+4 a 6 USD/m²)'], ['Estacionamiento en hormigón 12 cm', '32 USD/m²', '37 USD/m²', 'con malla, juntas y demarcación'], ['Volquetas, seguro de obra y ajuste de laudo (1,5 %)', 'no estaban', 'agregados al rubro 12', ''], ['Ingeniero: cálculo, memoria, planos, firma, revisión de taller y 2 visitas', '900', '2.800', 'con 13 t de acero y pórticos empotrados, 900 no cubre ni el cálculo'], ['Prevencionista: estudio, plan y visitas 20 semanas', '600', '2.400', 'Decreto 125/014'], ['Agrimensor: replanteo, niveles y mensura', 'no estaba', '1.200', ''], ['Aportes BPS de la obra', 'no estaban', u$(bps).replace('USD ', ''), 'al costo, ver punto 1']];
+  const AJ = [['Acero laminado fabricado, granallado, epoxi + PU, montado', '3,40 USD/kg', '3,70 USD/kg', 'los talleres de la zona cotizan 3,60 a 4,20 con pintura marina'], ['Vidrieras de aluminio línea pesada, laminado 5+5', '240 USD/m²', '290 USD/m²', 'paños de 2,85 m y portal de 4,6 m; rango 280 a 350'], ['Baño accesible', '3.200 / local (sin paredes, puerta ni termotanque)', '3.600 + cerramiento 10 m² a 45 + puerta 280 ≈ 4.330', 'baño completo'], ['Divisorios', 'sin terminación', '+ masillado y pintura de las 2 caras, 8 USD/m²', 'Bomberos puede pedir placa RF (+4 a 6 USD/m²)'], ['Estacionamiento en hormigón 12 cm', '32 USD/m²', '37 USD/m²', 'con malla, juntas y demarcación'], ['Volquetas, seguro de obra y ajuste de laudo (1,5 %)', 'no estaban', 'agregados al rubro 12', ''], ['Eléctrica de cada local (equipado)', '14 USD/m² (≈ 875 por local)', '2.000 por local', 'despiece sobre el trazado: 7 circuitos, 10 luminarias lineales, ≈ 135 m de cable por local'], ['Sanitaria interior de cada local y cámaras', 'no estaba; 4 cámaras', '600 por local; una cámara por local (6 en total con 4 locales)', 'piletas de patio, ventilación por el techo y agua fría y caliente en PPR'], ['Ingeniero: cálculo, memoria, planos, firma, revisión de taller y 2 visitas', '900', '2.800', 'con 13 t de acero y pórticos empotrados, 900 no cubre ni el cálculo'], ['Prevencionista: estudio, plan y visitas 20 semanas', '600', '2.400', 'Decreto 125/014'], ['Agrimensor: replanteo, niveles y mensura', 'no estaba', '1.200', ''], ['Aportes BPS de la obra', 'no estaban', u$(bps).replace('USD ', ''), 'al costo, ver punto 1']];
   const kgL = r.ac.kg - r.ac.kgG, vid = R.find(x => /^Vidrieras/.test(x.t)), pend = [kgL * .5, (vid ? vid.q : 0) * 60], pMax = pend[0] + pend[1];
   $('audPU').innerHTML = `<table><tr><th>Rubro</th><th>Antes</th><th>Ahora en el rubrado</th><th>Criterio</th></tr>` + AJ.map(x => `<tr><td>${x[0]}</td><td>${x[1]}</td><td><b>${x[2]}</b></td><td class="note">${x[3]}</td></tr>`).join('') + `</table>
   <div class="warn"><b>Queda por confirmar con cotizaciones:</b> si el acero sale a 4,20 USD/kg y las vidrieras a 350 USD/m², el costo sube hasta ${u$(pMax)} más (${u$(pend[0])} acero, ${u$(pend[1])} vidrieras). Se carga la cotización real del taller en la pestaña Cotizaciones › Estructura metálica y reemplaza el estimado.</div>
@@ -1445,8 +1848,8 @@ const v3 = (() => {
     document.querySelectorAll('#vistas [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === '3p')); }
   function salir3p() { if (modo !== '3p') return; modo = 'orbit'; ctl.enabled = true; $('pad').hidden = true; if (avatar) { ctl.target.copy(avatar.position).add(new THREE.Vector3(0, 1.4, 0)); } }
   /* ===== animación del montaje: pieza por pieza, con manitou, tijeras y cuadrilla ===== */
-  const ANIM_ST = { fRep: ['piso', 1, 'Replanteo de ejes con estacas e hilos'], fExc: ['exc', 2, 'Excavación de zanjas de vigas y pozos de nudos'], fArm: ['baja', 2, 'Armado de jaulas de hierro en el piso y bajada a la zanja'], fPn: ['baja', 1, 'Pernos Ø24 y platinas con plantilla en cada columna'], inst: ['piso', 1, 'Previsiones sanitarias y eléctricas bajo platea'], fHv: ['horm', 1, 'Hormigonado de vigas y nudos con bomba'], fTos: ['piso', 2, 'Relleno de tosca compactada'], fMal: ['piso', 1, 'Nylon, separadores y malla doble'], fHp: ['horm', 1, 'Hormigonado de platea con bomba y llaneado (luego 6 días de curado)', 6], est: ['grua', 3, 'Montaje de pórticos'], cru: ['tij', 1, 'Arriostramiento'], cor: ['tij', 2, 'Correas, tensores y tornapuntas'], lar: ['tij', 2, 'Largueros y montantes de pretil'], bas: ['grua', 3, 'Parantes y bastidores de fachada'], techo: ['grua', 5, 'Techo de panel'], muro: ['grua', 7, 'Muros de panel'], vid: ['tij', 5, 'Vidrieras y portal'], faja: ['tij', 4, 'Faja, visera y brise'], cen: ['tij', 2, 'Cenefa negra'], div: ['mano', 4, 'Divisorios, baños y equipos'] };
-  const QUIEN = { fRep: 'horm', fExc: 'horm', fArm: 'horm', inst: 'san', fHv: 'horm', fTos: 'horm', fMal: 'horm', fHp: 'horm', fPn: 'horm', est: 'est', cru: 'est', cor: 'est', lar: 'est', bas: 'est', techo: 'panel', muro: 'panel', vid: null, faja: 'herr', cen: 'herr', div: 'div' };
+  const ANIM_ST = { fRep: ['piso', 1, 'Replanteo de ejes con estacas e hilos'], fExc: ['exc', 2, 'Excavación de zanjas de vigas y pozos de nudos'], fArm: ['baja', 2, 'Armado de jaulas de hierro en el piso y bajada a la zanja'], fPn: ['baja', 1, 'Pernos Ø24 y platinas con plantilla en cada columna'], inst: ['piso', 1, 'Previsiones sanitarias y eléctricas bajo platea'], fHv: ['horm', 1, 'Hormigonado de vigas y nudos con bomba'], fTos: ['piso', 2, 'Relleno de tosca compactada'], fMal: ['piso', 1, 'Nylon, separadores y malla doble'], fHp: ['horm', 1, 'Hormigonado de platea con bomba y llaneado (luego 6 días de curado)', 6], est: ['grua', 3, 'Montaje de pórticos'], cru: ['tij', 1, 'Arriostramiento'], cor: ['tij', 2, 'Correas, tensores y tornapuntas'], lar: ['tij', 2, 'Largueros y montantes de pretil'], bas: ['grua', 3, 'Parantes y bastidores de fachada'], techo: ['grua', 5, 'Techo de panel'], muro: ['grua', 7, 'Muros de panel'], vid: ['tij', 5, 'Vidrieras y portal'], faja: ['tij', 4, 'Faja, visera y brise'], cen: ['tij', 2, 'Cenefa negra'], div: ['mano', 4, 'Divisorios, baños y equipos'], iSan: ['mano', 3, 'Sanitaria interior: ventilaciones, agua, artefactos y bajadas pluviales'], iEle: ['mano', 4, 'Eléctrica: tableros, caños y cables, luminarias, tomas, aire y luces exteriores'] };
+  const QUIEN = { fRep: 'horm', fExc: 'horm', fArm: 'horm', inst: 'san', fHv: 'horm', fTos: 'horm', fMal: 'horm', fHp: 'horm', fPn: 'horm', est: 'est', cru: 'est', cor: 'est', lar: 'est', bas: 'est', techo: 'panel', muro: 'panel', vid: null, faja: 'herr', cen: 'herr', div: 'div', iSan: 'san', iEle: 'ele' };
   let UNITS = [], AN = null, maq = null;
   const CAM = (() => { const v = ((6 * 10.6 + 2 * 25.6) * .3 * .6 + 12 * 1.2 * 1.2 * .45) * 1.05, p = 266 * .15 * 1.05; return { v: Math.ceil(v / 7), p: Math.ceil(p / 7), mv: v, mp: p }; })();
   function hacerUnidades() {
@@ -1578,7 +1981,7 @@ const v3 = (() => {
   function tickAnim(dt) {
     if (!AN || !UNITS.length) return; const U = UNITS[Math.min(AN.i, UNITS.length - 1)];
     if (AN.run && AN.i < UNITS.length) { const dur = U.tipo === 'grua' ? 1.4 : U.tipo === 'tij' ? .55 : U.tipo === 'horm' ? 1.6 : U.tipo === 'exc' ? .7 : U.tipo === 'baja' ? .9 : U.tipo === 'piso' ? .35 : .45; AN.t += dt * AN.vel / dur; }
-    { const ks = Object.keys(ANIM_ST), at = ks.indexOf(UNITS[Math.min(AN.i, UNITS.length - 1)].k), fin = AN.i >= UNITS.length; if (groups.fRep) { groups.fRep.visible = !fin && at <= ks.indexOf('fMal'); groups.fArm.visible = !fin && at <= ks.indexOf('fHv'); } }
+    { const ks = Object.keys(ANIM_ST), at = ks.indexOf(UNITS[Math.min(AN.i, UNITS.length - 1)].k), fin = AN.i >= UNITS.length; if (groups.techo) groups.techo.visible = fin || at < ks.indexOf('div'); if (groups.fRep) { groups.fRep.visible = !fin && at <= ks.indexOf('fMal'); groups.fArm.visible = !fin && at <= ks.indexOf('fHv'); } }
     if (AN.i < UNITS.length) {
       const t = Math.min(1, AN.t); U.ms.forEach(m => m.visible = true);
       let off = new THREE.Vector3(), sc2 = 1;
@@ -1594,9 +1997,9 @@ const v3 = (() => {
       if (AN.seguir && !viaje) { const d = U.c.clone().sub(ctl.target).multiplyScalar(Math.min(1, dt * 1.5)); ctl.target.add(d); cam.position.add(d); }
     }
     const V = UNITS[Math.min(AN.i, UNITS.length - 1)], q = QUIEN[V.k], prop = q && PROPIO[q], quien = !q ? 'aluminiero' : prop ? 'SBU con cuadrilla propia' : PAQ[q].quien;
-    $('anTx').innerHTML = AN.i >= UNITS.length ? `<b>Día ${UNITS.total} de ${UNITS.total} · estructura y envolvente terminadas</b><span>${UNITS.length} piezas · quedan exteriores, instalaciones y terminaciones</span>` : `<b>Día ${V.dia} de ${UNITS.total} · ${V.tarea}</b><span>${V.info || ''} · pieza ${AN.i + 1}/${UNITS.length} · ${V.tipo === 'grua' ? 'la sube el manitou con operario; dos en la tijera la reciben y fijan' : V.tipo === 'tij' ? 'dos operarios desde la tijera de 8 m' : V.tipo === 'horm' ? `camión ${V.cam} de ${V.nCam} (7 m³ c/u, ${f1(V.k === 'fHv' ? CAM.mv : CAM.mp)} m³ en total) · bomba con pluma · regla y vibrador` : V.tipo === 'exc' ? 'retroexcavadora chica con operario y dos peones' : V.tipo === 'baja' ? 'se arma en el piso y se baja a la zanja sobre separadores' : 'cuadrilla de fundaciones'} · ${quien}</span>`;
+    $('anTx').innerHTML = AN.i >= UNITS.length ? `<b>Día ${UNITS.total} de ${UNITS.total} · obra gruesa, envolvente e instalaciones terminadas</b><span>${UNITS.length} piezas · quedan exteriores y terminaciones</span>` : `<b>Día ${V.dia} de ${UNITS.total} · ${V.tarea}</b><span>${V.info || ''} · pieza ${AN.i + 1}/${UNITS.length} · ${V.tipo === 'grua' ? 'la sube el manitou con operario; dos en la tijera la reciben y fijan' : V.tipo === 'tij' ? 'dos operarios desde la tijera de 8 m' : V.tipo === 'horm' ? `camión ${V.cam} de ${V.nCam} (7 m³ c/u, ${f1(V.k === 'fHv' ? CAM.mv : CAM.mp)} m³ en total) · bomba con pluma · regla y vibrador` : V.tipo === 'exc' ? 'retroexcavadora chica con operario y dos peones' : V.tipo === 'baja' ? 'se arma en el piso y se baja a la zanja sobre separadores' : V.k === 'iSan' ? 'con ayudante, desde escalera y tijera' : V.k === 'iEle' ? 'con ayudante, desde la tijera para lo del techo' : V.k === 'div' ? 'cuadrilla de steel frame' : 'cuadrilla de fundaciones'} · ${quien}</span>`;
     $('anRg').value = AN.i; $('anPl').textContent = AN.run ? '❚❚' : '▶';
-    { const fin = AN.i >= UNITS.length, d = fin ? UNITS.total : V.dia, key = d + '|' + fin; if ($('anDia').dataset.k !== key) { $('anDia').dataset.k = key; $('anDia').innerHTML = `<b>Día ${d} de ${UNITS.total}</b><span>${fin ? 'estructura y envolvente terminadas' : V.tarea}</span>`; $('anDias').querySelectorAll('[data-dia]').forEach(b => b.classList.toggle('hoy', fin ? b.dataset.dia === 'fin' : +b.dataset.dia === d)); } }
+    { const fin = AN.i >= UNITS.length, d = fin ? UNITS.total : V.dia, key = d + '|' + fin; if ($('anDia').dataset.k !== key) { $('anDia').dataset.k = key; $('anDia').innerHTML = `<b>Día ${d} de ${UNITS.total}</b><span>${fin ? 'obra gruesa, envolvente e instalaciones terminadas' : V.tarea}</span>`; $('anDias').querySelectorAll('[data-dia]').forEach(b => b.classList.toggle('hoy', fin ? b.dataset.dia === 'fin' : +b.dataset.dia === d)); } }
   }
 
   function tick() { const dt = Math.min(.05, clock.getDelta()); tickAnim(dt);
@@ -1616,7 +2019,7 @@ const v3 = (() => {
   // etapas de obra en orden: [clave, título, qué se hace]
   const ST = [
     ['ter', 'Terreno y replanteo', 'Limpieza, desmonte de 20 cm, relleno de tosca compactada y replanteo de ejes 1 a 6 y A-B. Cerco de obra y obrador.'],
-    ['inst', 'Previsiones bajo platea', 'Antes de hormigonar: un ramal sanitario por módulo de 5 m (los que no se usan quedan con tapón), colector por el pasaje sur con cámaras, agua desde el medidor de OSE y caños eléctricos vacíos desde el gabinete de UTE.'],
+    ['inst', 'Instalaciones bajo platea', 'Antes de hormigonar: colector Ø110 al 1 % por el pasaje con una cámara por local, ramal de cada local con su pileta de patio y pileta tapada, previsiones con tapón, pluviales a cuneta, un caño de agua Ø25 por local desde su submedidor, caños Ø50 desde el gabinete de UTE y puesta a tierra.'],
     ['plat', 'Platea y vigas de fundación', 'Grilla de 8 vigas de fundación 30 × 60 (una por pórtico y las dos líneas A y B), nudos de 1,2 × 1,2 bajo columnas con 4 pernos Ø24, y platea H30 de 15 cm con malla doble. Queda llaneada: es el piso de los locales.'],
     ['est', 'Pórticos', '6 pórticos: columnas HEA 240 con base empotrada (placa 400×450×25 y 4 pernos Ø24) y vigas IPE 300 con cartela. Carrera norte tubo 200×100×6,3 (viga de viento de la vidriera) y carrera sur IPE 160.'],
     ['cru', 'Arriostramiento', 'Cruces Ø24 con tensor en los paños extremos del techo, en el muro sur y en el muro oeste. En la vidriera norte no hay cruces: ahí trabajan las columnas empotradas.'],
@@ -1628,7 +2031,9 @@ const v3 = (() => {
     ['vid', 'Vidrieras y portal', 'Vidrieras de aluminio que dan la vuelta a la esquina del frente, y el portal blanco de piso a dintel en la esquina del fondo.'],
     ['faja', 'Faja, visera y brise', 'Faja negra de cartelería, visera blanca de 60 cm y brise de listones de madera, fijados a los bastidores.'],
     ['cen', 'Cenefa negra', 'Chapa negra plegada: sube en la esquina del frente, corre por el dintel del frente y todo el lateral norte, y baja en la esquina del fondo.'],
-    ['div', 'Divisorios, baños y equipos', 'Divisorios con lana de roca entre locales, baños y kitchenettes (si la entrega es equipada) y bases de los equipos de aire detrás del pretil.'],
+    ['div', 'Divisorios, baños y equipos', 'Divisorios con lana de roca entre locales, baños y kitchenettes (si la entrega es equipada).'],
+    ['iSan', 'Sanitaria interior', 'Ventilaciones Ø63 al techo con sombrerete, agua fría y caliente en PPR, termotanque, inodoro y lavatorio accesibles, desagües de los aires y bajadas pluviales Ø110 por el muro sur.'],
+    ['iEle', 'Eléctrica e iluminación', 'Tablero de 7 circuitos por local, caños a la vista bajo las correas y corrugados en los divisorios, luminarias LED lineales colgadas, tomas, llaves, cartel, aire acondicionado y luces de plaza, estacionamiento y pasaje.'],
     ['ext', 'Exteriores', 'Plaza peatonal, estacionamiento con 6 lugares, vereda, canteros y patio de servicio.'],
     ['rep', 'Réplica en 10597 y 10598', 'El mismo proyecto en los otros dos padrones.'],
   ];
@@ -1667,17 +2072,56 @@ const v3 = (() => {
     [[0, 0, LOT.D, .05], [0, -LOT.F, LOT.D, -LOT.F + .05]].forEach(([x0, z0, x1, z1]) => box(g, x0, 0, z0, x1, .3, z1, M(0xb23a2a)));
     box(g, 0, 0, -LOT.F, .05, .3, 0, M(0xb23a2a));
     FR.forEach(u => [-1.2, 11.2].forEach(v => bx(g, u - .04, v - .04, 0, u + .04, v + .04, .9, M(0xffffff), 'Estaca de replanteo · eje ' + (FR.indexOf(u) + 1))));
-    // ---- 1 previsiones
+    // ---- 1 previsiones e instalaciones enterradas (mismo trazado que los planos)
     g = groups.inst;
-    STUB.forEach(u => { const used = L.some(l => l.s === u); cyl(g, [u, .9, -.35], [u, .9, B.npt + .3], .055, used ? MAT.pvc : M(0x999999), used ? 'Previsión sanitaria en uso: ramal Ø110 + Ø40 + agua' : 'Previsión sanitaria con tapón (sirve si se divide distinto)'); cyl(g, [u, .9, -.35], [u, -1.5, -.45], .055, MAT.pvc, 'Ramal Ø110 al colector'); });
-    cyl(g, [-1, -1.5, -.5], [36.3, -1.5, -.6], .07, MAT.pvc, 'Colector cloacal Ø110 por el pasaje sur');
-    cyl(g, [1, -2.6, -.3], [33.4, -2.6, -.3], .025, MAT.water, 'Agua desde medidor OSE con submedidores');
-    L.forEach(l => { cyl(g, [l.s + .45, -2.6, -.3], [l.s + .45, 1.1, -.3], .022, MAT.water); cyl(g, [l.s + .45, 1.1, -.3], [l.s + .45, 1.1, B.npt + .3], .022, MAT.water); });
-    L.forEach(l => { const ut = l.b - .6; cyl(g, [33.4, -.8, -.25], [ut, -.8, -.25], .025, MAT.elec, 'Caño eléctrico vacío Ø40 desde el gabinete UTE'); cyl(g, [ut, -.8, -.25], [ut, .5, B.npt + .5], .025, MAT.elec); });
-    bx(g, 33.4, -1.2, 0, 35.2, -.9, 1.8, MAT.elec, `Gabinete de medidores UTE · ${S.n} locales`);
-    bx(g, 33.4, -3, 0, 35.2, -2.4, .6, MAT.water, 'Medidor OSE y colector de submedidores');
-    [-1, 10, 22.5, 36.3].forEach(u => bx(g, u - .35, -1.85, -.7, u + .35, -1.15, .02, M(0x777777), 'Cámara de inspección 60 × 60'));
-    bx(g, -2.2, -2.2, -.9, -1.5, -.8, .02, M(0x555555), 'Cámara separadora de grasas');
+    const IN = instal(), ew3 = ENV[S.env].wall.e;
+    const A3 = (p, tipo) => { let [u, v, h] = p; if (tipo === 'bpl' || tipo === 'cond') { if (v < -.3) v = -.42 - ew3; } else { if (v > -.06 && v < .45 && h > -.05) v -= .27; if (u > -.06 && u < .4 && h > -.05) u -= .27; } return P3([u, v, h]); };
+    const grupo = (gg, p0, info, mat) => { const par = new THREE.Mesh(new THREE.BoxGeometry(.001, .001, .001), mat || MAT.pvc); par.position.copy(p0); par.userData.info = info; gg.add(par); return par; };
+    const hijo = (par, m) => { m.position.sub(par.position); m.userData.info = par.userData.info; m.castShadow = true; par.add(m); return m; };
+    const caño = (par, pts, r, mat, tipo) => { const P = pts.map(p => A3(p, tipo)); for (let i = 1; i < P.length; i++) { const a = P[i - 1], b = P[i], L = a.distanceTo(b); if (L < .005) continue; const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, L, 8), mat); m.position.copy(a).lerp(b, .5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize()); hijo(par, m); } };
+    const caja = (par, p, sx, sy, sz, mat, tipo) => { const m = new THREE.Mesh(new THREE.BoxGeometry(sx, sy, sz), mat); m.position.copy(A3(p, tipo)); return hijo(par, m); };
+    const MS = { pvc: MAT.pvc, ven: M(0x6d4c8f), pl: M(0x2a8a5a), af: MAT.water, ac: M(0xc0392b), cond: M(0x5aa0a0), gris: M(0x9a9a9a) };
+    const rS = d => d >= 110 ? .055 : d >= 63 ? .032 : d >= 40 ? .022 : .016, mS3 = x => x.tipo === 'prev' ? MS.gris : ['pl', 'bpl'].includes(x.tipo) ? MS.pl : x.tipo === 'ven' ? MS.ven : ['ag25', 'ag32', 'af'].includes(x.tipo) ? MS.af : x.tipo === 'ac' ? MS.ac : x.tipo === 'cond' ? MS.cond : MS.pvc;
+    // cada tramo se parte en lo enterrado (antes de la platea) y lo que queda arriba del piso (instalación interior)
+    IN.S.forEach(x => { const runs = { b: [], a: [] }; let cur = null, k = null;
+      x.p.forEach((q, i) => { if (!i) return; const p0 = x.p[i - 1], dn = p0[2] <= .16 && q[2] <= .16 ? 'b' : 'a'; if (dn !== k) { if (cur) runs[k].push(cur); cur = [p0]; k = dn; } cur.push(q); }); if (cur) runs[k].push(cur);
+      runs.b.forEach(pts => { const par = grupo(groups.inst, A3(pts[0], x.tipo), x.info + ` · Ø${x.d}`); caño(par, pts, rS(x.d), mS3(x), x.tipo); });
+      runs.a.forEach(pts => { const par = grupo(groups.iSan, A3(pts[0], x.tipo), x.info + ` · Ø${x.d}`); caño(par, pts, rS(x.d), mS3(x), x.tipo); }); });
+    IN.cam.forEach(c => { const par = grupo(groups.inst, P3([c.u, c.v, c.h]), `${c.id} · cámara de inspección prefabricada 60 × 60 · ${c.t}`); caja(par, [c.u, c.v, (c.h - .15) / 2 + .01], .7, Math.abs(c.h - .15) + .04, .7, M(0x8a8a86)); caja(par, [c.u, c.v, .03], .74, .04, .74, c.fin ? M(0x333333) : M(0xbdb8ae)); });
+    { const par = grupo(groups.inst, P3([IN.gra[0], IN.gra[1], -.4]), 'Cámara separadora de grasas ≈ 150 l (previsión gastronomía, con tapón)'); caja(par, [IN.gra[0], IN.gra[1], -.4], 1.0, .9, .8, M(0x555555)); }
+    INS.BAJ.forEach(u => { const par = grupo(groups.inst, P3([u, -.8, -.2]), 'Boca de desagüe pluvial 40 × 40 con reja'); caja(par, [u, -.8, -.18], .44, .4, .44, M(0x5c7a66)); });
+    { const par = grupo(groups.inst, P3([33.4, INS.vAg, 0]), `Medidor de OSE y batería de ${S.n} submedidores ¾" con llaves y retención`); caja(par, [34.1, INS.vAg - .1, .3], 1.8, .6, .45, MAT.water); }
+    IN.L.forEach(R => { if (IN.eq) { const par = grupo(groups.inst, A3([R.P.pps[0], R.P.pps[1], 0]), `Local ${R.num} · pileta de patio sifonada Ø110 (baño) y pileta tapada Ø110 (kitchenette)`); [R.P.pps, R.P.ppt].forEach(p => { const m = new THREE.Mesh(new THREE.CylinderGeometry(.12, .12, .3, 12), M(0xb07a45)); m.position.copy(A3([p[0], p[1], -.08])); hijo(par, m); }); } });
+    // eléctrica enterrada: caños Ø50 a cada local, gabinete, tierra, servicios comunes
+    const EL = M(0xd6a400);
+    IN.L.forEach(R => { const pts = R.alim.p.slice(0, 7), par = grupo(groups.inst, A3(pts[0]), `Local ${R.num} · caño Ø50 enterrado con cable 3 × 10 mm² desde el gabinete (${Math.round(R.alim.len + 2.5)} m)`, EL); caño(par, pts, .03, EL); caja(par, [R.alim.p[4][0], INS.vEle, -.25], .44, .5, .44, M(0x8a8a86)); });
+    { const par = grupo(groups.inst, P3([IN.gab.u0, IN.gab.v, 0]), `Gabinete de medidores UTE · ${S.n + 1} medidores monofásicos (lugar para trifásico)`, EL); caja(par, [(IN.gab.u0 + IN.gab.u1) / 2, IN.gab.v, .95], IN.gab.u1 - IN.gab.u0, 1.6, .35, EL); caja(par, [(IN.gab.u0 + IN.gab.u1) / 2, IN.gab.v, .08], IN.gab.u1 - IN.gab.u0 + .2, .16, .5, MAT.conc); caño(par, IN.acom, .035, M(0xb23a2a)); }
+    { const par = grupo(groups.inst, P3([IN.tsc[0], IN.tsc[1], 0]), 'TSC · tablero de servicios comunes IP65 24 módulos con contactor, reloj y fotocélula', M(0x333333)); caja(par, [IN.tsc[0], IN.tsc[1], 1.1], .5, .7, .2, M(0x333333)); caja(par, [IN.tsc[0], IN.tsc[1], .4], .12, .8, .12, M(0x777777)); }
+    { const par = grupo(groups.inst, P3([IN.jab[0][0], IN.jab[0][1], 0]), 'Puesta a tierra: 3 jabalinas Ø5/8" × 1,5 m unidas con cobre desnudo 16 mm²', M(0xb87333)); IN.jab.forEach(j => caño(par, [[j[0], j[1], -.1], [j[0], j[1], -1.6]], .012, M(0xb87333))); caño(par, IN.pat, .006, M(0xb87333)); }
+    IN.ext.forEach(c => c.segs.filter(sg => sg.enc === 'ent').forEach(sg => { const par = grupo(groups.inst, A3(sg.p[0]), `${c.id} · ${c.nom}: caño Ø25 enterrado`, EL); caño(par, sg.p, .018, EL); }));
+    // ---- instalación interior: sanitaria (artefactos) y eléctrica (circuito por circuito)
+    IN.L.forEach(R => { if (!IN.eq) return; const P = R.P, par = grupo(groups.iSan, A3([P.ino[0], P.ino[1], .4]), `Local ${R.num} · inodoro accesible, lavatorio, termotanque 30 l y pileta de la kitchenette`, MAT.white);
+      caja(par, [P.ino[0], P.ino[1] + .05, .35], .4, .45, .62, MAT.white); caja(par, [P.ino[0], .12, .75], .38, .4, .18, MAT.white); caja(par, [P.lav[0], P.lav[1], .8], .55, .14, .42, MAT.white);
+      const tt = new THREE.Mesh(new THREE.CylinderGeometry(.19, .19, .62, 14), MAT.white); tt.position.copy(A3([P.termo[0], .22, 2.0])); hijo(par, tt);
+      const sb = new THREE.Mesh(new THREE.CylinderGeometry(.05, .045, .14, 10), M(0x444444)); sb.position.copy(A3([P.ven[0], P.ven[1], hRoof(.1) + B.prf + .2 + ENV[S.env].roof.e + .55])); hijo(par, sb); });
+    const ELW = M(0x8c8c8c), LUZ = new THREE.MeshStandardMaterial({ color: 0xfff3c4, emissive: 0xffe08a, emissiveIntensity: .7 }), BL3 = M(0xf4f2ee);
+    const boca = (par, b) => { const p = b.p; switch (b.t) {
+      case 'lum': caja(par, p, .1, .06, 1.2, LUZ); caño(par, [[p[0], p[1], p[2]], [p[0], p[1], IN.hc(p[1])]], .004, M(0x222222)); break;
+      case 'emer': caja(par, p, .32, .12, .1, M(0xffffff)); break;
+      case 'plaf': caja(par, p, .3, .04, .3, LUZ); break;
+      case 'reg': caja(par, p, .6, .04, .06, LUZ); break;
+      case 'extr': caja(par, p, .22, .22, .08, BL3); break;
+      case 'ce': caja(par, p, .2, .2, .12, M(0x444444)); break;
+      case 'apl': caja(par, p, .18, .08, .18, LUZ); break;
+      case 'tor': caja(par, p, .22, .14, .08, LUZ); break;
+      case 'col': caja(par, [p[0], p[1], 5.05], 1.0, .08, .1, M(0x777777)); [-.45, .45].forEach(d => caja(par, [p[0] + d, p[1], 4.95], .3, .2, .25, LUZ)); break;
+      default: caja(par, p, .09, .12, .05, BL3); } };
+    IN.L.forEach(R => { const par = grupo(groups.iEle, A3([R.P.tab[0], R.P.tab[1], INS.hT]), `Local ${R.num} · tablero de 24 módulos (general 2 × 40 A, 2 diferenciales, 7 circuitos) y subida del cable 3 × 10 mm²`, M(0x333333));
+      caja(par, [R.P.tab[0] + .06, R.P.tab[1], INS.hT], .14, .55, .4, M(0x333333)); caño(par, R.alim.p.slice(6), .02, M(0x777777));
+      R.circ.forEach(c => { const pc = grupo(groups.iEle, A3(c.segs[0].p[0]), `Local ${R.num} · ${c.id} ${c.nom} · ${String(c.sec).replace('.', ',')} mm² · 2 × ${c.prot} A`, ELW); c.segs.forEach(sg => caño(pc, sg.p, .011, sg.enc === 'corr' ? M(0xe0b84a) : ELW)); c.bocas.forEach(b => boca(pc, b)); });
+      if (R.aa) { const pa = grupo(groups.iEle, A3(R.aa.int), `Local ${R.num} · split 24.000 BTU: unidad interior sobre la puerta de servicio y exterior en el techo detrás del pretil`, BL3); caja(pa, [R.aa.int[0], R.aa.int[1] + .1, R.aa.int[2]], 1.0, .3, .22, BL3);
+        const hr = hRoof(R.aa.ext[1]) + B.prf + .16 + ENV[S.env].roof.e; caja(pa, [R.aa.ext[0], R.aa.ext[1], hr + .38], .9, .65, .35, BL3); caño(pa, [[R.aa.int[0] + .4, R.aa.int[1], R.aa.int[2]], [R.aa.int[0] + .4, R.aa.int[1], IN.hc(.03)], [R.aa.ext[0] + .3, R.aa.ext[1], hr + .2]], .02, M(0xb87333)); } });
+    IN.ext.forEach(c => { const pc = grupo(groups.iEle, A3(c.segs[c.segs.length - 1].p[0]), `${c.id} · ${c.nom}`, ELW); c.segs.filter(sg => sg.enc !== 'ent').forEach(sg => caño(pc, sg.p, sg.enc === 'col' ? .07 : .012, sg.enc === 'col' ? M(0x9a9a9a) : ELW)); c.bocas.forEach(b => boca(pc, b)); });
     // ---- 2 platea
     g = groups.plat;
     bx(g, -.3, -.3, -.25, 25.3, 10.3, B.npt, MAT.conc, 'Platea H30 15 cm con malla doble sobre tosca compactada');
@@ -1789,7 +2233,7 @@ const v3 = (() => {
     L.forEach(l => {
       if (l.i > 0) bx(g, l.a - .06, -.3, B.npt, l.a + .06, 10.3, B.hS, MAT.div, 'Divisorio steel frame + lana de roca (sector de incendio)');
       if (S.modo === 'equipado') { const x = l.s - 1; bx(g, x, -.3, B.npt, x + .06, 2.2, 2.6, MAT.bath, 'Baño accesible · Local ' + l.num); bx(g, x + 1.94, -.3, B.npt, x + 2, 2.2, 2.6, MAT.bath); bx(g, x, 2.14, B.npt, x + 1.05, 2.2, 2.6, MAT.bath); bx(g, x + 1.95, 2.14, B.npt, x + 2, 2.2, 2.6, MAT.bath); bx(g, x + 2.1, -.3, B.npt, x + 3.9, .3, 1.05, M(0xf3e7d6), 'Kitchenette'); }
-      bx(g, l.a + l.w / 2 - .5, 3, hRoof(3) + tC + er + .05, l.a + l.w / 2 + .5, 3.7, hRoof(3) + tC + er + .45, M(0xffffff), 'Equipo de aire sobre base (detrás del pretil)');
+      // los equipos de aire van con la instalación eléctrica (iEle)
     });
     // ---- 14 exteriores
     g = groups.ext;
