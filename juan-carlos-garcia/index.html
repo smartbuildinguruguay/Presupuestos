@@ -50,7 +50,7 @@ ul.c{margin:6px 0;padding-left:18px}ul.c li{margin:3px 0}
 
 <section class="pg" id="p-proy">
  <h2>El proyecto en una página</h2>
- <p class="sub">Un edificio de locales de 250 m² en planta baja, con la imagen del render: techo plano con pretil, banda de brise de madera, faja para cartelería, frente vidriado continuo y un portal vidriado blanco en el extremo; una cenefa de chapa negra baja en la esquina de la avenida y recorre todo el dintel hasta la otra esquina. Toda la nave a la misma altura, con la línea de una casa moderna. Estructura de pórticos de acero sobre platea, y todo el cerramiento en paneles (Isopanel en muros, Isoroof en el techo). Arriba se elige cuántos locales, qué panel y si se entrega en cáscara o equipado: todo el visor se recalcula.</p>
+ <p class="sub">Un edificio de locales de 250 m² en planta baja, con la imagen del render: techo plano con pretil, banda de brise de madera, faja para cartelería, frente vidriado continuo y un portal vidriado blanco en el extremo; una cenefa de chapa negra sube en la esquina del frente del terreno, recorre el dintel del frente y todo el lateral norte hasta la esquina del fondo. Toda la nave a la misma altura, con la línea de una casa moderna. Estructura de pórticos de acero sobre platea, y todo el cerramiento en paneles (Isopanel en muros, Isoroof en el techo). Arriba se elige cuántos locales, qué panel y si se entrega en cáscara o equipado: todo el visor se recalcula.</p>
  <div class="g2">
   <div class="card"><img src="img/render.jpg" alt="Render de referencia" style="width:100%;border-radius:6px;display:block"><p class="note" style="margin:6px 0 0">Render de referencia enviado por el cliente.</p></div>
   <div class="card"><div class="k" id="kProy"></div><div id="resProy"></div></div>
@@ -198,10 +198,10 @@ function acero(env) {
 
 /* ---------- superficies de envolvente ---------- */
 const SUP = (() => {
-  const vid = 19 * 2.85 + 4.4 * 4.6 + 6.5 * 2.85;   // vidrieras norte + portal oeste a piso-dintel + vidriera este
-  const muro = 25 * 6 + 10 * 6 + 19 * 3 + 5 * 1.05 + (10 * 6 - 6.5 * 2.85);
+  const vid = 20 * 2.85 + 4.4 * 4.6 + 9.3 * 2.85;   // vidrieras norte (dan la vuelta a la esquina) + portal oeste a piso-dintel + frente a la avenida
+  const muro = 25 * 6 + 10 * 6 + 20 * 3 + 5 * 1.05 + 10.3 * 3 + 1.0 * 2.85;
   const techo = 25.6 * 10.6;
-  const brise = 19 * 1.3, faja = 19, cenefa = 25 * 1.05 + 10 * 1.05 + 1.0 * 6 * 2, visor = 19.8, marco = 5 + 4.95 * 2;
+  const brise = 29.3 * 1.3, faja = 29.3, cenefa = 25.3 * 1.05 + 10.6 * 1.05 + 1.0 * 6 * 2, visor = 30, marco = 5 + 4.95 * 2;
   return { vid, muro, techo, brise, faja, cenefa, visor, marco };
 })();
 
@@ -234,7 +234,7 @@ function rubrado(st = S) {
   it('Vidrieras de aluminio línea pesada, laminado 5+5 (incluye el portal de piso a dintel)', SUP.vid, 'm²', 240);
   it('Puerta vidriada de acceso por local (cerradura y cierrapuertas)', n, 'u', 380);
   it('Puerta de servicio y escape al pasaje sur, chapa inyectada', n, 'u', 420);
-  it('Cenefa de chapa negra plegada: baja en la esquina de la avenida y corre por todo el dintel', SUP.cenefa, 'm²', 65);
+  it('Cenefa de chapa negra plegada: sube en la esquina del frente, recorre el dintel del frente y todo el lateral norte', SUP.cenefa, 'm²', 65);
   it('Brise de listones de madera tratada (eucalipto grandis)', SUP.brise, 'm²', 120);
   it('Faja de cartelería en chapa negra con soporte', SUP.faja, 'ml', 45);
   it('Visera blanca sobre la faja (chapa plegada, vuelo 60 cm)', SUP.visor, 'ml', 55);
@@ -364,7 +364,7 @@ function dImpl() {
   s += TX(t, 5, 12, 'PATIO DE SERVICIO', `font-size="11" font-weight="700" fill="#666" ${FT}`) + TX(t, 5, 10.8, 'carga y descarga · tanques', `font-size="10" fill="#666" ${FT}`);
   // edificio
   s += R_(t, B.E0, B.N0, B.E0 + B.L, B.N0 + B.A, 'fill="url(#hat)" stroke="#24211d" stroke-width="2.2"');
-  s += R_(t, B.E0 + B.L - 1, B.N0 + B.A - 1, B.E0 + B.L, B.N0 + B.A, 'fill="#1c1c1c"');
+  s += R_(t, B.E0 + B.L - .3, B.N0, B.E0 + B.L + .3, B.N0 + 1, 'fill="#1c1c1c"');
   s += TX(t, B.E0 + 15, 8.4, `EDIFICIO 25 × 10 = 250 m² · ${S.n} locales`, `font-size="13" font-weight="700" ${FT}`);
   s += TX(t, B.E0 + 2.5, 8.4, 'portal', `font-size="10" ${FT}`) + TX(t, B.E0 + 2.5, 7.6, 'vidriado', `font-size="10" ${FT}`);
   // cotas
@@ -401,14 +401,14 @@ function dPlanta() {
   const e = ENV[S.env].wall.e + .05;
   s += R_(t, 0, -e, 25, 0, 'fill="#5c5a57"') + R_(t, -e, -e, 0, 10, 'fill="#5c5a57"');
   // vidrieras norte y este
-  s += R_(t, 0, 10, 24, 10.06, 'fill="#4aa3c7"') + R_(t, 25, 2.5, 25.06, 9, 'fill="#4aa3c7"') + R_(t, 25, -e, 25 + e, 2.5, 'fill="#5c5a57"') + R_(t, 24, 9, 25.15, 10.15, 'fill="#1c1c1c"');
+  s += R_(t, 0, 10, 25.06, 10.06, 'fill="#4aa3c7"') + R_(t, 25, 1, 25.06, 10.06, 'fill="#4aa3c7"') + R_(t, 24.75, -e, 25.35, 1, 'fill="#1c1c1c"');
   for (let u = 0; u <= 25.01; u += 2.5) s += R_(t, u - .05, 9.95, u + .05, 10.1, 'fill="#24211d"');
-  for (let v = 2.5; v <= 9.01; v += 2.17) s += R_(t, 24.95, v - .05, 25.1, v + .05, 'fill="#24211d"');
+  for (let v = 1; v <= 10.01; v += 3) s += R_(t, 24.95, v - .05, 25.1, v + .05, 'fill="#24211d"');
   // columnas y ejes
   FR.forEach((u, k) => { [0, 10].forEach(v => s += R_(t, u - .14, v - .14, u + .14, v + .14, 'fill="#b5622a" stroke="#24211d" stroke-width=".6"')); s += L_(t, u, -3.2, u, 13.8, 'stroke="#b5622a" stroke-width=".6" stroke-dasharray="10 4 2 4"'); s += `<circle cx="${t.X(u)}" cy="${t.Y(14.3)}" r="10" fill="#fff" stroke="#b5622a"/>` + TX(t, u, 14.15, k + 1, `font-size="11" font-weight="700" fill="#b5622a" ${FT}`); });
   [[0, 'A'], [10, 'B']].forEach(([v, n]) => { s += L_(t, -2.4, v, 26.5, v, 'stroke="#b5622a" stroke-width=".6" stroke-dasharray="10 4 2 4"'); s += `<circle cx="${t.X(-2.9)}" cy="${t.Y(v)}" r="10" fill="#fff" stroke="#b5622a"/>` + TX(t, -2.9, v - .15, n, `font-size="11" font-weight="700" fill="#b5622a" ${FT}`); });
   // portal vidriado y pilastra
-  s += R_(t, 0, 10.06, B.uH, 10.25, 'fill="#fff" stroke="#bbb"') + TX(t, 2.5, 8.9, 'portal vidriado de piso a dintel', `font-size="9" fill="#2f6f86" ${FT}`) + TX(t, 24.5, 10.7, 'pilastra negra (cenefa)', `font-size="9" ${FT}`, 'end');
+  s += R_(t, 0, 10.06, B.uH, 10.25, 'fill="#fff" stroke="#bbb"') + TX(t, 2.5, 8.9, 'portal vidriado de piso a dintel', `font-size="9" fill="#2f6f86" ${FT}`) + TX(t, 25.5, -.6, 'la cenefa negra sube acá', `font-size="9" ${FT}`, 'start') + TX(t, 24.6, 10.7, 'esquina vidriada', `font-size="9" fill="#2f6f86" ${FT}`, 'end');
   // locales
   L.forEach(l => {
     if (l.i > 0) s += R_(t, l.a - .06, 0, l.a + .06, 10, 'fill="#8d8a84" stroke="#24211d" stroke-width=".5"');
@@ -454,30 +454,32 @@ function dFach() {
     const W = 31, H = 9.5, sc = 34, t = T(3, 1.6, sc, H); let s = '';
     s += L_(t, -1, 0, 26, 0, 'stroke="#24211d" stroke-width="1.6"');
     s += R_(t, 0, B.npt, 25, B.hPar, `fill="${GRA}"`);
-    s += R_(t, 1, B.npt, 20, 3.0, `fill="${VID}"`);
-    for (let x = 1; x <= 20.01; x += 19 / 8) s += R_(t, x - .06, B.npt, x + .06, 3.0, `fill="${BL}"`);
-    s += R_(t, 1, 2.2, 20, 2.26, `fill="${BL}"`);
-    s += R_(t, 1, 3.0, 20, 3.55, `fill="${NEG}"`);
-    s += R_(t, .6, 3.55, 20, 3.63, `fill="#fff" stroke="#ccc" stroke-width=".5"`);
-    s += R_(t, 1, 3.65, 20, B.cen, 'fill="url(#wood)"');
+    s += R_(t, 0, B.npt, 20, 3.0, `fill="${VID}"`);
+    for (let x = 0; x <= 20.01; x += 2.5) s += R_(t, x - .06, B.npt, x + .06, 3.0, `fill="${BL}"`);
+    s += R_(t, 0, 2.2, 20, 2.26, `fill="${BL}"`);
+    s += R_(t, 0, 3.0, 20, 3.55, `fill="${NEG}"`);
+    s += R_(t, 0, 3.55, 20.4, 3.63, `fill="#fff" stroke="#ccc" stroke-width=".5"`);
+    s += R_(t, 0, 3.65, 20, B.cen, 'fill="url(#wood)"');
     // portal blanco
     s += R_(t, 20, B.npt, 25, B.cen, `fill="${BL}" stroke="#ccc"`) + R_(t, 20.3, B.npt, 24.7, 4.75, `fill="${VID}"`) + R_(t, 22.47, B.npt, 22.53, 4.75, `fill="${BL}"`) + R_(t, 20.3, 2.6, 24.7, 2.66, `fill="${BL}"`);
-    // cenefa negra: baja en la esquina de la avenida y corre por el dintel hasta la otra esquina
-    s += R_(t, 0, B.npt, 1, B.hPar, `fill="${NEG}"`) + R_(t, 0, B.cen, 25, B.hPar, `fill="${NEG}"`);
+    // cenefa negra: viene del frente por la esquina y recorre todo el lateral norte hasta la esquina del fondo
+    s += R_(t, 0, B.cen, 25, B.hPar, `fill="${NEG}"`);
     L.forEach(l => { let x = 25 - (l.a + l.w / 2); if (l.portal) x = Math.min(x, 18.5); if (x < 2.5) x = 2.5; s += TX(t, x, 3.17, 'LOCAL ' + l.num, `font-size="11" font-weight="700" fill="#e9c46a" letter-spacing="2" ${FT}`); });
-    s += TX(t, .5, -.55, '← AVDA.', `font-size="10" font-weight="700" fill="#555" ${FT}`) + TX(t, 22.5, -.55, 'portal', `font-size="10" fill="#555" ${FT}`);
+    s += TX(t, .5, -.55, '← esquina del frente (avda.)', `font-size="10" font-weight="700" fill="#555" ${FT}`, 'start') + TX(t, 22.5, -.55, 'esquina del fondo · portal', `font-size="10" fill="#555" ${FT}`);
     s += niveles(t, 25.4);
-    SV($('svFN'), W, H, titulo(W, 'Fachada norte (a la plaza)', 'como el render: cenefa negra en L, brise de madera, faja de cartel con visera blanca, vidrieras y portal vidriado; todo a la misma altura', sc) + s, sc); }
+    SV($('svFN'), W, H, titulo(W, 'Fachada norte (a la plaza)', 'como el render: la cenefa negra recorre todo el dintel hasta la esquina del fondo; brise, faja con visera blanca, vidrieras y portal; todo a la misma altura', sc) + s, sc); }
   { // este, a la avenida: x = v (sur a la izquierda, norte a la derecha)
     const W = 15, H = 9.5, sc = 34, t = T(1.5, 1.6, sc, H); let s = '';
     s += L_(t, -1, 0, 11.3, 0, 'stroke="#24211d" stroke-width="1.6"');
     s += R_(t, 0, B.npt, 10.3, B.hPar, `fill="${GRA}"`);
-    s += R_(t, 2.5, B.npt, 9, 2.85 + B.npt, `fill="${VID}"`);
-    for (let x = 2.5; x <= 9.01; x += 6.5 / 3) s += R_(t, x - .06, B.npt, x + .06, 3.0, `fill="${BL}"`);
-    s += R_(t, 9, B.npt, 10.3, B.hPar, `fill="${NEG}"`) + R_(t, 0, B.cen, 10.3, B.hPar, `fill="${NEG}"`);
-    s += TX(t, 5.75, 3.6, 'LOCAL 1', `font-size="11" font-weight="700" fill="#e9c46a" letter-spacing="2" ${FT}`);
-    s += TX(t, 9.65, -.55, 'esquina', `font-size="9" ${FT}`) + niveles(t, 10.6);
-    SV($('svFE'), W, H, titulo(W, 'Fachada este (a la avenida)', 'la cenefa negra baja en esta esquina; panel grafito y vidriera del local 1', sc) + s, sc); }
+    s += R_(t, 1, B.npt, 10.3, 3.0, `fill="${VID}"`);
+    for (let x = 1; x <= 10.31; x += 9.3 / 3) s += R_(t, x - .06, B.npt, x + .06, 3.0, `fill="${BL}"`);
+    s += R_(t, 1, 2.2, 10.3, 2.26, `fill="${BL}"`) + R_(t, 1, 3.0, 10.3, 3.55, `fill="${NEG}"`) + R_(t, 1, 3.55, 10.3, 3.63, `fill="#fff" stroke="#ccc" stroke-width=".5"`) + R_(t, 1, 3.65, 10.3, B.cen, 'fill="url(#wood)"');
+    // la cenefa sube en la esquina del frente (sur) y corre por arriba
+    s += R_(t, 0, B.npt, 1, B.hPar, `fill="${NEG}"`) + R_(t, 0, B.cen, 10.3, B.hPar, `fill="${NEG}"`);
+    s += TX(t, 5.65, 3.17, 'LOCAL 1', `font-size="11" font-weight="700" fill="#e9c46a" letter-spacing="2" ${FT}`);
+    s += TX(t, .5, -.55, 'sube la cenefa', `font-size="9" ${FT}`) + TX(t, 10, -.55, 'esquina vidriada →', `font-size="9" ${FT}`, 'end') + niveles(t, 10.6);
+    SV($('svFE'), W, H, titulo(W, 'Fachada este (a la avenida)', 'frente al terreno: la cenefa sube en la esquina sur y corre por arriba; vidriera, faja y brise dan la vuelta a la esquina norte', sc) + s, sc); }
   { const W = 15.5, H = 9.5, sc = 34, t = T(2.5, 1.6, sc, H); let s = '';
     const er = ENV[S.env].roof.e;
     s += R_(t, -1.4, -.4, 11.4, B.npt, 'fill="#cfcac0"') + R_(t, -.2, -.4, 10.2, B.npt, 'fill="#bdb6aa" stroke="#24211d" stroke-width=".8"');
@@ -727,28 +729,28 @@ const v3 = (() => {
     const ew = E.wall.e, mw = E.wall.liso ? MAT.wall : M(0x55585a);
     for (let u = -.3; u < 25.3; u += 1) bx(g, u + .01, -.3 - ew, B.npt, Math.min(u + 1, 25.3) - .01, -.3, B.hPar, mw, E.wall.nom + ' · muro sur');
     for (let v = -.3; v < 10.3; v += 1) bx(g, -.3 - ew, v + .01, B.npt, -.3, Math.min(v + 1, 10.3) - .01, B.hPar, mw, E.wall.nom + ' · muro oeste');
-    bx(g, -.3, 10.3, 3.0, 24, 10.3 + ew, B.hPar, mw, E.wall.nom + ' · detrás del brise y la cenefa');
-    bx(g, 25.3, -.3, B.npt, 25.3 + ew, 2.5, B.hPar, mw, E.wall.nom + ' · este');
-    bx(g, 25.3, 2.5, 3.0, 25.3 + ew, 10.3, B.hPar, mw, E.wall.nom + ' · este');
+    bx(g, -.3, 10.3, 3.0, 25.3, 10.3 + ew, B.hPar, mw, E.wall.nom + ' · detrás del brise y la cenefa');
+    bx(g, 25.3, -.3, B.npt, 25.3 + ew, .7, B.hPar, mw, E.wall.nom + ' · este');
+    bx(g, 25.3, .7, 3.0, 25.3 + ew, 10.3 + ew, B.hPar, mw, E.wall.nom + ' · este');
     // ---- fachada
     g = groups.fach;
     const yF = 10.3 + ew;
-    bx(g, B.uH, yF, B.npt, 24, yF + .04, 3.0, MAT.glass, 'Vidriera aluminio línea pesada · laminado 5+5');
-    bx(g, 25.3 + ew, 2.5, B.npt, 25.34 + ew, 9, 3.0, MAT.glass, 'Vidriera del local 1 a la avenida');
-    for (let u = B.uH; u <= 24.01; u += 19 / 8) bx(g, u - .04, yF, B.npt, u + .04, yF + .1, 3.0, MAT.white, 'Montante de aluminio');
-    for (let v = 2.5; v <= 9.01; v += 6.5 / 3) bx(g, 25.3 + ew, v - .04, B.npt, 25.4 + ew, v + .04, 3.0, MAT.white, 'Montante de aluminio');
-    bx(g, B.uH, yF, 2.2, 24, yF + .12, 2.26, MAT.white);
-    bx(g, B.uH, yF, 3.0, 24, yF + .1, 3.55, MAT.black, 'Faja de cartelería');
-    bx(g, B.uH - .4, yF, 3.55, 24, yF + .6, 3.63, MAT.white, 'Visera blanca sobre la faja · vuelo 60 cm');
-    for (let h = 3.68; h < B.cen - .05; h += .16) bx(g, B.uH, yF + .2, h, 24, yF + .28, h + .1, MAT.wood, 'Brise de listones de madera');
-    // portal vidriado blanco (oeste), a la misma altura
+    const xE = 25.3 + ew;
+    bx(g, B.uH, yF, B.npt, xE, yF + .04, 3.0, MAT.glass, 'Vidriera aluminio línea pesada · laminado 5+5');
+    bx(g, xE, .7, B.npt, xE + .04, yF, 3.0, MAT.glass, 'Vidriera del frente (avenida): da la vuelta a la esquina');
+    for (let u = B.uH; u <= xE + .01; u += 2.5) bx(g, u - .04, yF, B.npt, u + .04, yF + .1, 3.0, MAT.white, 'Montante de aluminio');
+    for (let v = .7; v <= yF + .01; v += 3.2) bx(g, xE, v - .04, B.npt, xE + .1, v + .04, 3.0, MAT.white, 'Montante de aluminio');
+    bx(g, B.uH, yF, 2.2, xE, yF + .12, 2.26, MAT.white); bx(g, xE, .7, 2.2, xE + .12, yF, 2.26, MAT.white);
+    bx(g, B.uH, yF, 3.0, xE + .1, yF + .1, 3.55, MAT.black, 'Faja de cartelería'); bx(g, xE, .7, 3.0, xE + .1, yF + .1, 3.55, MAT.black, 'Faja de cartelería · frente');
+    bx(g, B.uH - .4, yF, 3.55, xE + .6, yF + .6, 3.63, MAT.white, 'Visera blanca · vuelo 60 cm'); bx(g, xE, .7, 3.55, xE + .6, yF + .6, 3.63, MAT.white, 'Visera blanca · vuelo 60 cm');
+    for (let h = 3.68; h < B.cen - .05; h += .16) { bx(g, B.uH, yF + .2, h, xE + .28, yF + .28, h + .1, MAT.wood, 'Brise de listones de madera'); bx(g, xE + .2, .7, h, xE + .28, yF + .28, h + .1, MAT.wood, 'Brise de listones de madera · frente'); }
+    // portal vidriado blanco (esquina del fondo, oeste), a la misma altura
     bx(g, -.3, yF, B.npt, B.uH, yF + .25, B.cen, MAT.white, 'Marco blanco del portal vidriado');
     bx(g, 0, yF + .26, B.npt, B.uH - .3, yF + .3, 4.75, MAT.glass, 'Portal vidriado de piso a dintel');
-    // cenefa negra en L: baja en la esquina de la avenida y corre por todo el dintel hasta la esquina del portal
-    bx(g, -.3 - ew, yF, B.cen, 25.3 + ew + .3, yF + .35, B.hPar, MAT.black, 'Cenefa de chapa negra · corre por todo el dintel');
-    bx(g, 25.3 + ew, -.3 - ew, B.cen, 25.3 + ew + .3, yF + .35, B.hPar, MAT.black, 'Cenefa de chapa negra · lado avenida');
-    bx(g, 24, yF, B.npt, 25.3 + ew + .3, yF + .35, B.cen, MAT.black, 'Cenefa negra que baja en la esquina de la avenida');
-    bx(g, 25.3 + ew, 9, B.npt, 25.3 + ew + .3, yF + .35, B.cen, MAT.black);
+    // cenefa negra: sube en la esquina del frente (sureste), recorre el dintel del frente y todo el lateral norte hasta la esquina del fondo
+    bx(g, -.3 - ew, yF, B.cen, xE + .35, yF + .35, B.hPar, MAT.black, 'Cenefa negra · recorre todo el lateral norte hasta la esquina del fondo');
+    bx(g, xE, -.3 - ew, B.cen, xE + .35, yF + .35, B.hPar, MAT.black, 'Cenefa negra · dintel del frente');
+    bx(g, xE, -.3 - ew, B.npt, xE + .35, .7, B.cen, MAT.black, 'Cenefa negra: sube en la esquina del frente');
     L.forEach(l => { const dc = Math.max(B.uH + 1, Math.min(23, l.a + l.w / 2)); bx(g, dc - .9, yF + .04, B.npt, dc + .9, yF + .1, 2.2, M(0x6f8f9a), 'Puerta de acceso · Local ' + l.num); });
     // ---- divisorios y baños
     g = groups.div;
@@ -764,9 +766,10 @@ const v3 = (() => {
       box(g, 0, -.01, dn === -21 ? 0 : 21, LOT.D, .005, dn === -21 ? 21 : 42, M(0xc9dcae), dn === -21 ? 'Padrón 10597 · etapa 2' : 'Padrón 10598 · etapa 3');
       const N0 = B.N0 + dn, zA = -(N0), zB = -(N0 + B.A);
       box(g, B.E0, B.npt, zB, B.E0 + B.L, B.hPar, zA, MAT.rep, dn === -21 ? 'Réplica en 10597' : 'Réplica en 10598');
-      box(g, B.E0 + B.uH, 3.65, zB - .3, B.E0 + B.L - 1, B.cen, zB, MAT.wood);
+      box(g, B.E0 + B.uH, 3.65, zB - .3, B.E0 + B.L + .3, B.cen, zB, MAT.wood);
       box(g, B.E0, B.cen, zB - .4, B.E0 + B.L + .4, B.hPar, zB, MAT.black);
-      box(g, B.E0 + B.L - 1, B.npt, zB - .4, B.E0 + B.L + .4, B.cen, zB, MAT.black);
+      box(g, B.E0 + B.L, B.npt, zA - .7, B.E0 + B.L + .4, B.cen, zA, MAT.black);
+      box(g, B.E0 + B.L, B.cen, zB - .4, B.E0 + B.L + .4, B.hPar, zA, MAT.black);
       box(g, B.E0 - 1, 0, -(dn + LOT.F - .5), B.E0 + B.L + 1, .08, zB, MAT.pav);
     });
     applyVis();
