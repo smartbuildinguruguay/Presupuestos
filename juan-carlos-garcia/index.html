@@ -191,6 +191,21 @@ tr.win td{background:#e5f1e2;font-weight:600}.tag2{display:inline-block;font-siz
  <div class="card"><h3 style="margin-top:0">Referencias de alquiler en la zona</h3><div id="refAlq"></div></div>
 </section>
 
+<section class="pg" id="p-aud">
+ <h2>Auditoría de costos y estudio de mercado</h2>
+ <p class="sub">Revisión del rubrado contra precios de referencia y avisos publicados (noviembre 2026), lo que falta cotizar y cuánto vale el edificio terminado. Se recalcula con la cantidad de locales, la envolvente y la entrega elegidas arriba.</p>
+ <div class="k" id="kAud"></div>
+ <div class="card"><h3 style="margin-top:0">1 · Lo más importante: aportes BPS de la mano de obra subcontratada</h3><div id="audBps"></div></div>
+ <div class="card"><h3 style="margin-top:0">2 · Precios unitarios que pueden quedar cortos</h3><div id="audPU"></div></div>
+ <div class="card"><h3 style="margin-top:0">3 · Lo que no está en el rubrado</h3><div id="audFal"></div></div>
+ <div class="card"><h3 style="margin-top:0">4 · Mercado: cuánto se alquila y se vende en la zona</h3><div id="audMer"></div></div>
+ <div class="card"><h3 style="margin-top:0">5 · Cuánto vale el edificio terminado</h3>
+  <div class="bar" style="position:static;border:0;padding:0 0 10px"><label>Alquiler USD/m²/mes <input type="number" id="audAlq" value="24" step="1" style="width:60px"></label>
+  <label>Tasa de capitalización % <input type="number" id="audCap" value="8" step=".5" style="width:60px"></label></div><div id="audVal"></div></div>
+ <div class="card"><h3 style="margin-top:0">6 · Qué le puede estar faltando al producto</h3><div id="audProd"></div></div>
+ <div class="card"><h3 style="margin-top:0">Fuentes</h3><div id="audSrc"></div></div>
+</section>
+
 <div class="foot">Smart Building Uruguay · Ramiro Portugau, director de obra · 098 526 226 · smartbuildinguruguay@gmail.com · Valores de referencia en dólares, sin IVA salvo que se marque, sujetos a mensura, normativa y cálculo final.</div>
 </main>
 
@@ -412,7 +427,7 @@ function rubrado(st = S) {
 const ivaK = () => S.iva ? 1.22 : 1;
 
 /* ================= UI ================= */
-const TABS = [['p-proy', 'Proyecto'], ['p-impl', 'Implantación'], ['p-planta', 'Planta'], ['p-fach', 'Fachadas'], ['p-est', 'Estructura'], ['p-3d', '3D'], ['p-env', 'Paneles'], ['p-rub', 'Rubrado'], ['p-sub', 'Subcontratos'], ['p-ped', 'Cotizar estructura'], ['p-mat', 'Cotizar materiales'], ['p-loc', 'Locales e instalaciones'], ['p-rent', 'Rentabilidad']];
+const TABS = [['p-proy', 'Proyecto'], ['p-impl', 'Implantación'], ['p-planta', 'Planta'], ['p-fach', 'Fachadas'], ['p-est', 'Estructura'], ['p-3d', '3D'], ['p-env', 'Paneles'], ['p-rub', 'Rubrado'], ['p-sub', 'Subcontratos'], ['p-ped', 'Cotizar estructura'], ['p-mat', 'Cotizar materiales'], ['p-loc', 'Locales e instalaciones'], ['p-rent', 'Rentabilidad'], ['p-aud', 'Auditoría y mercado']];
 const $ = id => document.getElementById(id);
 $('tabs').innerHTML = TABS.map(([id, t]) => `<button data-p="${id}">${t}</button>`).join('');
 function show(id) { document.querySelectorAll('.pg').forEach(p => p.classList.toggle('on', p.id === id)); document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.p === id)); history.replaceState(null, '', '#' + id.slice(2)); if (id === 'p-3d') v3.start(); }
@@ -1046,6 +1061,95 @@ function dMatCroquis() {
 }
 document.addEventListener('click', e => { const b = e.target.closest('[data-md]'); if (b) { MATDOC = b.dataset.md; renderMat(); } });
 
+/* ---------- auditoría de costos y mercado ---------- */
+function renderAud() {
+  const r = rubrado(S), n = S.n, eq = S.modo === 'equipado', R = r.R.filter(x => !x.cat), K = 1.1 * 1.25;
+  const sum = f => R.filter(f).reduce((t, x) => t + x.c, 0), item = re => R.find(x => re.test(x.t));
+  const rg = (a, b) => `${u$(a)} a ${u$(b)}`;
+  // 1 · BPS: jornales imponibles ≈ la mitad de la parte de mano de obra de cada subcontrato en obra (el resto es ganancia, gastos y equipos del subcontratista)
+  const enObra = { horm: 1, panel: 1, herr: 1, div: 1, san: 1, ele: 1, ext: 1, est: .6 };   // en estructura solo cuenta el montaje
+  const mo = R.reduce((t, x) => t + (enObra[x.pq] ? x.c * (1 - x.mat) * enObra[x.pq] : 0), 0), imp = mo * .5, bps = imp * .758;
+  $('audBps').innerHTML = `<p>En Uruguay el titular de la obra responde por el <b>aporte unificado de la construcción: 71,8 % + 4 % de Caja de Profesionales = 75,8 %</b> sobre los jornales de la gente que trabaja en la obra, también la de los subcontratistas (Ley 14.411). Los subcontratos casi siempre cotizan <b>"precio + aportes por cuenta del propietario"</b> y el rubrado no tiene esa línea.</p>
+  <table><tr><th>Concepto</th><th class="n">Estimado</th></tr>
+  <tr><td>Parte de mano de obra en los subcontratos que trabajan en la obra (sin aluminio ni fabricación en taller)</td><td class="n">${u$(mo)}</td></tr>
+  <tr><td>Jornales imponibles (≈ 50 % de esa parte)</td><td class="n">${u$(imp)}</td></tr>
+  <tr><td><b>Aportes BPS 75,8 %</b></td><td class="n"><b>${rg(bps * .8, bps * 1.2)}</b></td></tr></table>
+  <div class="warn"><b>Qué hacer:</b> pedir a cada subcontratista que cotice aparte el monto de mano de obra imponible y agregar una línea "Aportes BPS de obra (por cuenta del propietario)", como en La Armonía. Se cobra al costo, sin margen. Si algún subcontrato es una empresa con todo incluido, se descuenta su parte. Es el ajuste más grande de toda la auditoría: el rubrado mira los costos sin estos aportes.</div>`;
+  // 2 · precios unitarios
+  const ac = r.ac, kgL = ac.kg - ac.kgG, vid = item(/^Vidrieras/), ban = item(/^Baño accesible/), div = item(/^Steel frame 100/), est = item(/^Estacionamiento/);
+  const PU = [
+    ['Acero laminado fabricado, granallado, epoxi + PU, montado', '3,40 USD/kg', 'Con granallado y pintura marina, los talleres de la zona suelen cotizar 3,60 a 4,20 USD/kg montado. Se confirma con las cotizaciones de la pestaña Cotizar estructura.', kgL * .2, kgL * .8],
+    vid && ['Vidrieras de aluminio línea pesada, laminado 5+5', '240 USD/m²', 'Paños de 2,85 m de alto y un portal de 4,6 m: con laminado 5+5, perfilería pesada y anclajes al pórtico se va a 280 a 350 USD/m². Pedir cotización con planilla de aberturas.', vid.q * 40, vid.q * 110],
+    ban && ['Baño accesible UNIT 200 completo', '3.200 USD/local', 'Si incluye cerramiento de steel frame, puerta de 90, cerámica piso y pared, artefactos accesibles, barras, extractor y agua caliente, queda en 4.000 a 5.000 por baño.', ban.q * 800, ban.q * 1800],
+    div && ['Divisorios entre locales', '52 USD/m²', 'Falta la terminación (masillado y pintura de las dos caras, ≈ 7 a 10 USD/m² por cara). Bomberos puede pedir separación resistente al fuego entre locales: placa RF en vez de RH (+4 a 6 USD/m²).', div.q * 18, div.q * 26],
+    est && ['Estacionamiento en hormigón 12 cm', '32 USD/m²', 'Con malla, juntas aserradas y demarcación da 36 a 40 USD/m².', est.q * 4, est.q * 8],
+  ].filter(Boolean);
+  const puMin = PU.reduce((t, x) => t + x[3], 0), puMax = PU.reduce((t, x) => t + x[4], 0);
+  const OK = ['Platea H30 15 cm (82 USD/m²) y vigas de fundación 30 × 60 (95 USD/ml): razonables con bomba y ambiente marino.', 'Paneles: precios de lista Kingspan; se confirman con el pedido a BMC (pestaña Cotizar materiales).', 'Montaje de paneles 24 / 28 USD/m² con equipos: en línea con colocadores de la zona.', 'Obrador, estudio de suelos, sanitaria y eléctrica generales: razonables para la escala.'];
+  $('audPU').innerHTML = `<table><tr><th>Rubro</th><th>En el rubrado</th><th>Criterio</th><th class="n">Puede faltar (costo)</th></tr>` + PU.map(x => `<tr><td>${x[0]}</td><td>${x[1]}</td><td class="note">${x[2]}</td><td class="n">${rg(x[3], x[4])}</td></tr>`).join('') + `<tr><td colspan="3"><b>Total precios unitarios</b></td><td class="n"><b>${rg(puMin, puMax)}</b></td></tr></table>
+  <p class="note"><b>Están bien:</b> ${OK.join(' ')}</p>`;
+  // 3 · faltantes
+  const FA = [
+    ['Seguro todo riesgo de construcción y responsabilidad civil', 'obra', r.costo * .004, r.costo * .006],
+    ['Volquetas y retiro de residuos (6 a 10)', 'obra', 700, 1200],
+    ['Agrimensor: replanteo, niveles y mensura final', 'obra', 800, 1500],
+    ['Ajuste de laudo y materiales durante 20 semanas (≈ 1 a 2 %)', 'obra', r.costo * .01, r.costo * .02],
+    ['Cálculo de estructura con memoria y firma (rubrado 900) y prevencionista 20 semanas (rubrado 600)', 'gestión', 1500, 3500],
+    ['Tasas del permiso, timbres, conexiones UTE y OSE (se pagan contra recibo)', 'cliente', 3000, 8000],
+    ['Régimen de propiedad horizontal (solo si se venden los locales por separado): plano, escribano, Catastro', 'cliente, opcional', 4000, 8000],
+    ['Cortinas de enrollar o rejas para las vidrieras (fuera de temporada)', 'opcional', 8000, 13000],
+    ['Previsión de ducto de extracción para gastronomía', 'opcional', 1500, 2500],
+  ];
+  const sel = t => FA.filter(x => x[1] === t), s2 = (a, i) => a.reduce((t, x) => t + x[i], 0);
+  const faO = [s2(sel('obra'), 2), s2(sel('obra'), 3)], faG = [s2(sel('gestión'), 2), s2(sel('gestión'), 3)];
+  $('audFal').innerHTML = `<table><tr><th>Ítem</th><th>Va en</th><th class="n">Estimado</th></tr>` + FA.map(x => `<tr><td>${x[0]}</td><td>${x[1]}</td><td class="n">${rg(x[2], x[3])}</td></tr>`).join('') + `</table><p class="note">Los de "obra" suben el costo directo; los de "gestión" suben esa tabla; los del cliente y los opcionales se le muestran aparte para que decida.</p>`;
+  // resumen
+  const cMin = r.costo + puMin + faO[0], cMax = r.costo + puMax + faO[1], vMin = cMin * K, vMax = cMax * K;
+  $('kAud').innerHTML = [[u$(r.costo), 'costo directo del rubrado'], [rg(cMin, cMax), 'costo directo corregido'], [rg(vMin, vMax), 'precio de obra corregido sin IVA'], [`${u$(vMin / 250)} a ${u$(vMax / 250)}`, 'por m² cubierto'], [rg(bps * .8, bps * 1.2), 'aportes BPS aparte (al costo)'], [rg(vMin - r.venta + faG[0], vMax - r.venta + faG[1]), 'cuánto sube el precio al cliente']].map(([a, b]) => `<div><b>${a}</b><span>${b}</span></div>`).join('');
+  // 4 · mercado
+  const CM = [
+    ['Alquiler', 'Pedragosa Sierra', '136', '5.550/mes', '40,8 /m²', 'a', 'local chico, avenida'],
+    ['Alquiler', 'Italia esq. Pedragosa Sierra', '677', '14.000/mes', '20,7 /m²', 'b', 'local grande en esquina'],
+    ['Alquiler', 'Solanas', '97,5', '2.000/mes', '20,5 /m²', 'c', ''],
+    ['Alquiler', 'Solanas', '150', '3.000/mes', '20,0 /m²', 'c', ''],
+    ['Alquiler', 'Manantiales, Ruta 10', '220', '2.400/mes', '10,9 /m²', 'c', ''],
+    ['Alquiler', 'Calle 20 (península)', 'chicos / 300-400', '—', '35-40 / 20-25 /m²', 'd', 'según inmobiliaria Santos Dumont'],
+    ['Venta', 'Italia esq. Pedragosa Sierra', '677', '2.000.000', '2.954 /m²', 'b', 'con terreno; renta pedida ≈ 8,4 % bruta'],
+    ['Venta', 'Av. Pedragosa Sierra', '778', '1.300.000', '1.671 /m²', 'b', 'edificio viejo, terreno 1.625 m²'],
+    ['Venta', 'Pedragosa Sierra, cerca de Punta Shopping', '319', '750.000', '2.351 /m²', 'e', 'construido en 1978'],
+    ['Venta', 'Av. Roosevelt parada 5, 3 locales', '510', '2.200.000', '4.314 /m²', 'b', ''],
+    ['Venta de pozo', 'Av. Lussich (Maldonado), entrega dic. 2026', '110 y 165', '240.000 y 360.000', '2.182 /m²', 'f', 'renta ofrecida 9 % (1.800 y 2.700/mes ≈ 16,4 /m²)'],
+    ['Venta', 'Punta del Este en general', '—', '—', '3.000-4.000 /m²', 'd', 'renta ≈ 6 % anual en dólares'],
+  ];
+  $('audMer').innerHTML = `<table><tr><th>Tipo</th><th>Dónde</th><th class="n">m²</th><th class="n">USD</th><th class="n">USD/m²</th><th>Nota</th></tr>` + CM.map(x => `<tr><td>${x[0]}</td><td>${x[1]} <sup>${x[5]}</sup></td><td class="n">${x[2]}</td><td class="n">${x[3]}</td><td class="n">${x[4]}</td><td class="note">${x[6]}</td></tr>`).join('') + `</table>
+  <div class="warn"><b>Lectura:</b> los locales chicos y nuevos sobre avenida se alquilan entre 25 y 40 USD/m²; los grandes o en zonas menos comerciales, entre 15 y 21. Los de 62 m² de este proyecto, sobre Pedragosa Sierra frente al Centro de Convenciones, entran en la franja alta: 24 a 26 USD/m² es un valor prudente. La pestaña Rentabilidad usa 28,3 para 4 locales equipados: está dentro del rango. Según la inmobiliaria consultada por Forbes, en Maldonado casi no hay locales disponibles y lo que se construye se alquila rápido.</div>`;
+  // 5 · valuación
+  const alq = +$('audAlq').value || 0, cap = (+$('audCap').value || 7) / 100, bruto = alq * 250 * 12, val = bruto / cap, inv = r.total + (vMin + vMax) / 2 - r.venta + (faG[0] + faG[1]) / 2 + bps;
+  const caps = [6, 7, 8], alqs = [22, 24, 26, 30, 35];
+  $('audVal').innerHTML = `<p>Valor por renta = alquiler anual ÷ tasa de capitalización. En Punta del Este se compra a una renta bruta del 6 al 8 % (6 % lo que dice la inmobiliaria, 8,4 % lo que pide la esquina de Italia y Pedragosa Sierra, 9 % la oferta de pozo en Lussich).</p>
+  <table><tr><th>Alquiler USD/m²/mes</th>${caps.map(c => `<th class="n">renta ${c} %</th>`).join('')}<th class="n">USD/m²</th></tr>` + alqs.map(a => `<tr${a === alq ? ' class="best"' : ''}><td>${a} (${u$(a * 250)}/mes)</td>${caps.map(c => `<td class="n">${u$(a * 250 * 12 / (c / 100))}</td>`).join('')}<td class="n">${u$(a * 12 / .07)} a 7 %</td></tr>`).join('') + `</table>
+  <div class="k" style="margin-top:12px"><div><b>${u$(val)}</b><span>valor con ${alq} USD/m² y ${f1(cap * 100)} %</span></div><div><b>${u$(inv)}</b><span>inversión corregida sin IVA ni terreno (obra + gestión + BPS)</span></div><div><b>${u$(val - inv)}</b><span>valor que se crea por padrón, antes del terreno</span></div><div><b>${u$((val - inv) * 3)}</b><span>en los 3 padrones</span></div></div>
+  <div class="warn"><b>Control por comparables:</b> vendiendo por separado a 2.800-3.500 USD/m² (entre el pozo de Lussich y el promedio de Punta del Este), los 250 m² valen ${u$(700000)} a ${u$(875000)}. El cálculo por renta da más porque los locales chicos se alquilan caro por m²; para hablar con Juan Carlos conviene usar el rango prudente, <b>USD 0,7 a 1,1 millones por padrón</b>, y por defecto se toma 24 USD/m² al 8 %.</div><p class="note"> Para vender por unidad hace falta propiedad horizontal. El valor del terreno (1.000 m² por padrón) es aparte y conviene tasarlo.</p>`;
+  // 6 · producto
+  $('audProd').innerHTML = `<ul>
+  <li><b>Seguridad de las vidrieras</b> fuera de temporada: cortinas de enrollar o rejas, alarma y cámaras. Los inquilinos lo piden y es un argumento de alquiler.</li>
+  <li><b>Gastronomía:</b> sumar previsión de ducto de extracción hasta el techo y potencia trifásica. Son los inquilinos que más pagan en la zona del Centro de Convenciones.</li>
+  <li><b>Potencia UTE:</b> confirmar con UTE la potencia total con 4 locales y aire acondicionado; si pasa cierto umbral pueden pedir lugar para transformador.</li>
+  <li><b>Cartel tótem sobre la avenida</b> con los 4 locales, además de la faja. Con 4 locales chicos la visibilidad es lo que se vende.</li>
+  <li><b>Estacionamiento:</b> verificar las plazas que exige la Intendencia para comercio y marcar una accesible.</li>
+  <li><b>Venta por unidad o renta en bloque:</b> si Juan Carlos quiere vender locales, hacer el proyecto ya pensando en propiedad horizontal (medidores, servidumbres, gastos comunes).</li>
+  <li><b>Impuestos de la renta:</b> la pestaña Rentabilidad no descuenta IRPF/IRAE (12 % en persona física) ni contribución inmobiliaria e impuesto al patrimonio. Con eso, la renta neta baja cerca de 1,5 puntos.</li></ul>`;
+  $('audSrc').innerHTML = `<ol type="a" class="note">
+  <li><a href="https://inmuebles.mercadolibre.com.ar/locales/uruguay/maldonado/_OfficialStoreId_all" target="_blank">Mercado Libre: local en Pedragosa Sierra en alquiler</a></li>
+  <li><a href="https://inmuebles.mercadolibre.com.ar/locales/uruguay/maldonado/" target="_blank">Mercado Libre: locales en Maldonado (venta y alquiler)</a></li>
+  <li><a href="https://inmuebles.mercadolibre.com.ar/locales/alquiler/uruguay/maldonado/" target="_blank">Mercado Libre: locales en alquiler, Maldonado</a></li>
+  <li><a href="https://www.forbesargentina.com/negocios/cuanto-cuesta-alquilar-o-comprar-local-comercial-punta-este-barra-o-jose-ignacio-n84306" target="_blank">Forbes Argentina, enero 2026: cuánto cuesta alquilar o comprar un local en Punta del Este</a></li>
+  <li><a href="https://www.infocasas.com.uy/local-en-punta-del-este/194033566" target="_blank">InfoCasas: local sobre Pedragosa Sierra, 319 m²</a></li>
+  <li><a href="https://www.argenprop.com/local-en-venta-en-maldonado--19306284" target="_blank">Argenprop: locales de pozo en Av. Lussich</a></li>
+  <li><a href="https://www.bps.gub.uy/837/regimen_construccion.html" target="_blank">BPS: régimen de aportación de la construcción (75,8 %)</a></li></ol>
+  <p class="note">Precios unitarios de referencia: criterio de SBU con obras de la zona; se confirman con las cotizaciones pedidas. Los avisos son precios pedidos, no de cierre.</p>`;
+}
+['audAlq', 'audCap'].forEach(id => $(id).oninput = () => renderAud());
 function renderRent() {
   const k = ivaK(), base = +$('inAlq').value || 0, vac = (+$('inVac').value || 0) / 100, gas = (+$('inGas').value || 0) / 100, ter = +$('inTer').value || 0;
   const fac = { 2: 1, 3: 1.08, 4: 1.15, 5: 1.22 };
@@ -1380,7 +1484,7 @@ const v3 = (() => {
 })();
 
 /* ================= ACTUALIZAR ================= */
-function upd() { setPend(); renderTablas(); renderSub(); dPed(); renderMat(); dImpl(); dRep(); dPlanta(); dFach(); dEst(); dInst(); renderRent(); v3.rebuild(); }
+function upd() { setPend(); renderTablas(); renderSub(); dPed(); renderMat(); dImpl(); dRep(); dPlanta(); dFach(); dEst(); dInst(); renderRent(); renderAud(); v3.rebuild(); }
 upd();
 if (/pedido/.test(location.search)) document.body.classList.add('pedido');
 { const mm = /matdoc=(\w+)/.exec(location.search); if (mm) { document.body.classList.add('pmat'); MATDOC = mm[1]; renderMat(); } }
