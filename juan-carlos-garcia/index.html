@@ -1953,6 +1953,9 @@ const v3 = (() => {
       ['Interior local 1', [B.E0 + 24.4, 1.75, -(B.N0 + 9.4)], [B.E0 + 19.6, 1.6, -(B.N0 + 1.5)]],
       ['Fondo y pasaje', [B.E0 - 8, 3.0, -(B.N0 - 4)], [B.E0 + 12, 2.5, -(B.N0 + 2)]],
       ['Fundación', [B.E0 + 22, 11, -(B.N0 - 8)], [B.E0 + 12, -.4, -(B.N0 + 5)]],
+      ['Interior desde arriba', [cx + 2, 33, cz + 17], [cx, 0, cz - 1]],
+      ['En el barrio', [B.E0 + 52, 19, -(B.N0 - 24)], [B.E0 + 11, 0, -(B.N0 + 7)]],
+      ['Llegando por la avenida', [B.E0 + 56, 17, -(B.N0 + 46)], [B.E0 + 12, 1, -(B.N0 + 5)]],
     ]; };
   function irVista(i) { const v = VISTAS()[i]; salir3p(); viaje = { t: 0, s: performance.now(), p0: cam.position.clone(), t0: ctl.target.clone(), p1: new THREE.Vector3(...v[1]), t1: new THREE.Vector3(...v[2]) };
     document.querySelectorAll('#vistas [data-v]').forEach(b => b.classList.toggle('on', +b.dataset.v === i)); }
@@ -2210,8 +2213,21 @@ const v3 = (() => {
         for (let i = 0; i < xs.length - 1; i++) { const cx = (xs[i] + xs[i + 1]) / 2, cy = (ys[j] + ys[j + 1]) / 2, zan = ZA.some(z => cx > z[0] && cx < z[2] && cy > z[1] && cy < z[3]);
           const top = cx > -.3 && cx < 25.3 && cy > -.3 && cy < 10.3 ? -.3 : 0;
           if (zan) { flush(); continue; } if (run && run.top === top) run.b = xs[i + 1]; else { flush(); run = { a: xs[i], b: xs[i + 1], top }; } } flush(); } }
-    box(g, LOT.D, -.02, -LOT.F - 45, LOT.D + 1.5, .1, 30, MAT.pav, 'Vereda');
-    box(g, LOT.D + 1.5, -.04, -LOT.F - 45, LOT.D + 11, .02, 30, MAT.asph, 'Avda. Pedragosa Sierra');
+    box(g, LOT.D, -.02, -170, LOT.D + 1.5, .1, 140, MAT.pav, 'Vereda');
+    box(g, LOT.D + 1.5, -.04, -170, LOT.D + 11, .02, 140, MAT.asph, 'Avda. Pedragosa Sierra');
+    { // contexto ilustrativo: barrio de pinos, casas bajas del otro lado de la avenida, columnas de alumbrado y algún auto
+      let sd = 11; const rnd = () => (sd = sd * 16807 % 2147483647) / 2147483647, AV = LOT.D + 1.5;
+      box(g, -140, -.12, -170, 190, -.08, 140, M(0xa7c088));
+      box(g, AV + 9.5, -.02, -170, AV + 11, .1, 140, MAT.pav, 'Vereda de enfrente');
+      for (let z = -168; z < 138; z += 7) box(g, AV + 4.68, .021, z, AV + 4.82, .026, z + 3.5, MAT.white);
+      const casa = (x, z, w, d, h, col, info) => { box(g, x, 0, z, x + w, h, z + d, M(col), info); const sh = new THREE.Shape(); sh.moveTo(-w / 2 - .4, 0); sh.lineTo(w / 2 + .4, 0); sh.lineTo(0, w * .28); sh.lineTo(-w / 2 - .4, 0); const r = new THREE.Mesh(new THREE.ExtrudeGeometry(sh, { depth: d + .6, bevelEnabled: false }), M(0x8d5a44)); r.position.set(x + w / 2, h, z - .3); r.castShadow = true; g.add(r); };
+      [[AV + 16, -150], [AV + 18, -118], [AV + 15, -86], [AV + 17, -52], [AV + 16, -20], [AV + 18, 12], [AV + 15, 44], [AV + 17, 78], [AV + 16, 110], [-24, -30], [-26, 6]].forEach(([x, z], i) => casa(x, z, 9 + rnd() * 4, 7 + rnd() * 3, 3 + (i % 3 === 0 ? 2.7 : 0), [0xf1ede4, 0xe9e1d0, 0xf6f4ee, 0xdcd6c8][i % 4], 'Contexto ilustrativo'));
+      const PI_ = M(0x3f6b3a), PI2 = M(0x4f7d45), TR = M(0x6b4a2b), pino = (x, z) => { const h = 6 + rnd() * 5; box(g, x - .18, 0, z - .18, x + .18, h * .55, z + .18, TR); const c = new THREE.Mesh(new THREE.ConeGeometry(1.6 + rnd() * 1.2, h * .6, 7), rnd() < .5 ? PI_ : PI2); c.position.set(x, h * .62, z); c.castShadow = true; g.add(c); };
+      const libre = (x, z) => !(x > -2 && x < AV + 13 && z > -LOT.F - 2 && z < 2) && !(x > LOT.D - 1 && x < AV + 12) && !(z < -LOT.F - 1 && z > -LOT.F * 3 - 1 && x > -1 && x < LOT.D + 1);
+      for (let n = 0; n < 220; n++) { const x = -110 + rnd() * 270, z = -165 + rnd() * 300; if (libre(x, z) && Math.hypot(x - 30, z + 10) > 22) pino(x, z); }
+      for (let z = -160; z < 135; z += 26) { box(g, LOT.D + .6, 0, z, LOT.D + .75, 7.5, z + .15, MAT.cor); box(g, LOT.D + .6, 7.4, z, LOT.D + 3, 7.5, z + .15, MAT.cor); box(g, LOT.D + 2.6, 7.25, z - .15, LOT.D + 3.2, 7.4, z + .3, M(0xfff6d8)); }
+      [[AV + 2.3, -38, 0xb23a2a], [AV + 7.2, 6, 0xf2f2f2], [AV + 2.3, 34, 0x2f4f6f], [AV + 7.2, -95, 0x777777]].forEach(([x, z, c]) => { box(g, x - .9, .25, z - 2.1, x + .9, 1.0, z + 2.1, M(c)); box(g, x - .8, 1.0, z - 1.1, x + .8, 1.5, z + .9, MAT.glass); });
+    }
     [[0, 0, LOT.D, .05], [0, -LOT.F, LOT.D, -LOT.F + .05]].forEach(([x0, z0, x1, z1]) => box(g, x0, 0, z0, x1, .3, z1, M(0xb23a2a)));
     box(g, 0, 0, -LOT.F, .05, .3, 0, M(0xb23a2a));
     FR.forEach(u => [-1.2, 11.2].forEach(v => bx(g, u - .04, v - .04, 0, u + .04, v + .04, .9, M(0xffffff), 'Estaca de replanteo · eje ' + (FR.indexOf(u) + 1))));
@@ -2412,7 +2428,7 @@ const v3 = (() => {
   function start() {
     if (started) { resize(); return; } started = true;
     const el = $('v3'); ren = new THREE.WebGLRenderer({ antialias: true }); ren.setPixelRatio(Math.min(devicePixelRatio, 2)); ren.shadowMap.enabled = true; el.prepend(ren.domElement);
-    sc = new THREE.Scene(); sc.background = new THREE.Color(0xcfdde4);
+    sc = new THREE.Scene(); sc.background = new THREE.Color(0xcfdde4); sc.fog = new THREE.Fog(0xcfdde4, 110, 330);
     cam = new THREE.PerspectiveCamera(40, 1, .1, 600); cam.position.set(66, 24, -48);
     ctl = new OrbitControls(cam, ren.domElement); ctl.target.set(B.E0 + 13, 2.5, -(B.N0 + 6)); ctl.enableDamping = true; ctl.maxPolarAngle = Math.PI * .495;
     sc.add(new THREE.HemisphereLight(0xffffff, 0x8a8070, .9), new THREE.AmbientLight(0xffffff, .45));
