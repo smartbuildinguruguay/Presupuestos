@@ -926,6 +926,8 @@ function despInst(st = S) {
   ];
   /* eléctrica */
   const C = I.C, X = I.ext, cab = {}, cano = { rig: 0, corr: 0, ext: 0, ent: 0 }, add = (k, v) => cab[k] = (cab[k] || 0) + v;
+  const curv = { rig: 0, ext: 0, ent: 0, corr: 0, col: 0 }, ang = (a, b, c) => { const u = [b[0] - a[0], b[1] - a[1], b[2] - a[2]], w = [c[0] - b[0], c[1] - b[1], c[2] - b[2]], lu = Math.hypot(...u), lw = Math.hypot(...w); return lu < .01 || lw < .01 ? 0 : Math.acos(Math.max(-1, Math.min(1, (u[0] * w[0] + u[1] * w[1] + u[2] * w[2]) / lu / lw))) * 180 / Math.PI; };
+  [...C, ...X].forEach(c => c.segs.forEach(sg => { const p = sg.p.filter((q, i) => !i || Math.hypot(q[0] - sg.p[i - 1][0], q[1] - sg.p[i - 1][1], q[2] - sg.p[i - 1][2]) > .01); for (let i = 1; i < p.length - 1; i++) if (ang(p[i - 1], p[i], p[i + 1]) > 15) curv[sg.enc]++; }));
   [...C, ...X].forEach(c => { c.segs.forEach(s => { cano[s.enc] = (cano[s.enc] || 0) + s.len; }); const L = c.len * 1.12 + c.bocas.length * .6; if (c.loc) { add(c.sec + '|F', L); add(c.sec + '|N', L); add(c.sec + '|T', L); if (c.ret) add(c.sec + '|R', c.ret * 1.15); } else add('ext', L); });
   const cnt = t => I.L.reduce((s, R) => s + R.bocas.filter(b => b.t === t).length, 0), alimL = I.L.reduce((t, R) => t + R.alim.len + 2.5, 0), alimE = I.L.reduce((t, R) => t + R.alim.ent, 0), zanja = Math.max(...I.L.map(R => R.alim.ent));
   const lum = cnt('lum'), r5 = v => Math.ceil(v / 5) * 5, MEC = /^(td|ts|l1|l2|taa|tt)$/, sobre = (R, b) => b.p[1] <= .2 || (R.l.i === 0 && Math.abs(b.p[0] - R.P.wa) < .01);
@@ -953,7 +955,11 @@ function despInst(st = S) {
       ['Termomagnético 2 × 20 A (C6 aire acondicionado)', 'u', n],
       ['Reloj programable modular para el cartel', 'u', n],
       ['## D · Canalizaciones, cables y mecanismos dentro de los locales'],
-      ['Caño PVC rígido Ø20 gris y curvas: a la vista en el techo y en los muros de panel', 'ml', r5(cano.rig * 1.1)],
+      ['Caño PVC rígido Ø20 gris, en tiras de 3 m: a la vista en el techo y en los muros de panel', 'ml', r5(cano.rig * 1.1)],
+      [`Curva PVC Ø20 de 90°, contada en cada cambio de dirección del trazado (${Math.ceil(curv.rig / n)} por local) + 10 %`, 'u', Math.ceil(curv.rig * 1.1)],
+      ['Cupla (unión) PVC Ø20', 'u', Math.ceil(cano.rig * 1.1 / 3 * 1.1)],
+      ['Conector caño a caja Ø20', 'u', Math.ceil(I.L.reduce((t, R) => t + R.bocas.length, 0) * 1.3 + n * 8)],
+      ['Grampa omega Ø20 con tarugo o tornillo autoperforante, cada 0,8 m', 'u', r5(cano.rig * 1.1 / .8)],
       ['Caño corrugado ignífugo Ø20: embutido en los divisorios de steel frame', 'ml', r5(cano.corr * 1.1)],
       ...[[1.5, 'C1 y C2, luces'], [2.5, 'C3, C4, C5 y C7, tomas, termotanque y cartel'], [4, 'C6, aire']].flatMap(([sec, q]) => [['F', 'marrón (fase)'], ['N', 'celeste (neutro)'], ['T', 'verde-amarillo (tierra)'], ...(sec === 1.5 ? [['R', 'negro (retornos de llaves)']] : [])].map(([k, col]) => [`Cable ${String(sec).replace('.', ',')} mm² ${col} · ${q}`, 'ml', r5(cab[sec + '|' + k] || 0)])),
       ['Cable tipo taller 3 × 1,5 mm² (bajada de cada luminaria colgante)', 'ml', r5(lum * 1.3)],
@@ -966,7 +972,7 @@ function despInst(st = S) {
       ['Salida para termotanque: módulo de llave bipolar 16 A con salida de cable', 'u', cnt('tt')],
       ['Llave de 1 punto (kitchenette)', 'u', cnt('l1')],
       ['Llave de 2 puntos (salón: una tecla por fila de luminarias; baño: luz y extractor)', 'u', cnt('l2')],
-      ['Grampas, conectores, cuplas, borneras y cinta aisladora', 'gl', 1],
+      ['Borneras, terminales y cinta aisladora', 'gl', 1],
       ['## E · Iluminación de los locales'],
       [`Luminaria LED lineal colgante 1,20 m, 40 W, ≈ 4.800 lm, 4000 K, con kit de suspensión de cable de acero: ${I.L[0].filas.length} filas de 5 por local, colgadas a 3,2 m`, 'u', lum],
       ['Plafón LED 18 W IP44 (baño)', 'u', cnt('plaf')],
@@ -996,9 +1002,10 @@ function despInst(st = S) {
     ['Toma exterior IP65 con tapa', 'u', 2],
     ['Caño PVC rígido Ø25 enterrado (circuitos exteriores)', 'ml', r5(cano.ent * 1.05)],
     ['Caño PVC rígido Ø20 gris IP65 a la vista (bajo la visera y en el muro sur)', 'ml', r5(cano.ext * 1.1)],
+    ['Curva PVC Ø20 / Ø25 (circuitos exteriores, a la vista y enterrados)', 'u', `${Math.ceil(curv.ext * 1.1)} / ${Math.ceil(curv.ent * 1.1)}`],
     ['Cable subterráneo 0,6/1 kV 3 × 2,5 mm² (circuitos exteriores, incluye las columnas)', 'ml', r5(cab.ext || 0)],
   ];
-  return { I, san, ele, cab, cano };
+  return { I, san, ele, cab, cano, curv };
 }
 
 /* ---- planos de sanitaria y eléctrica (se usan en la pestaña y en los pedidos de cotización) ---- */
@@ -2311,6 +2318,6 @@ upd();
 if (/pedido/.test(location.search)) document.body.classList.add('pedido');
 { const mm = /matdoc=(\w+)/.exec(location.search); if (mm) { document.body.classList.add('pmat'); MATDOC = mm[1]; renderMat(); } }
 const h0 = location.hash.slice(1); show(TABS.find(t => t[0] === 'p-' + h0) ? 'p-' + h0 : 'p-proy');
-window.__jcg = { S, rubrado, acero, piezas, locales, correas, upd, show, PROPIO };
+window.__jcg = { despInst, S, rubrado, acero, piezas, locales, correas, upd, show, PROPIO };
 </script>
 </body></html>
