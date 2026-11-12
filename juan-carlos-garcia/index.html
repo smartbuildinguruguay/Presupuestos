@@ -28,8 +28,9 @@ tr.best td{background:#e5f1e2}.note{font-size:.82rem;color:var(--mut)}.pill{disp
 #v3{position:relative;height:min(72vh,700px);background:#cfd9de;border-radius:10px;overflow:hidden;border:1px solid var(--ln)}
 #v3 canvas{display:block}#lay{position:absolute;left:10px;top:10px;background:rgba(255,253,249,.94);border:1px solid var(--ln);border-radius:9px;padding:9px 11px;font-size:.8rem;max-width:230px}
 #lay label{display:flex;gap:6px;align-items:center;margin:2px 0;cursor:pointer}#lay b{display:block;margin:0 0 4px}
-#etapa{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(255,253,249,.94);border:1px solid var(--ln);border-radius:9px;padding:7px 12px;font-size:.8rem;display:flex;gap:10px;align-items:center;width:min(94%,620px)}
-#etapa input{flex:1}#tip{position:absolute;pointer-events:none;background:#26231f;color:#fff;padding:5px 8px;border-radius:6px;font-size:.78rem;display:none;max-width:260px}
+#etapa{position:absolute;left:50%;transform:translateX(-50%);bottom:10px;background:rgba(255,253,249,.96);border:1px solid var(--ln);border-radius:9px;padding:8px 12px;font-size:.8rem;display:grid;grid-template-columns:auto auto auto 1fr;gap:6px 8px;align-items:center;width:min(96%,760px)}
+#etapa button{border:1px solid var(--ln);background:#fff;border-radius:6px;padding:4px 10px;font:700 .8rem system-ui;cursor:pointer;min-width:38px}#etapa button:hover{border-color:var(--acc)}#etPlay{background:var(--acc)!important;color:#fff}
+#etapa input{width:100%}#txEt{grid-column:1/-1;line-height:1.35}#txEt b{display:block}#txEt span{color:var(--mut);font-size:.78rem}#lay label.fut{opacity:.4}#tip{position:absolute;pointer-events:none;background:#26231f;color:#fff;padding:5px 8px;border-radius:6px;font-size:.78rem;display:none;max-width:260px}
 #hud{position:absolute;right:10px;top:10px;background:rgba(255,253,249,.94);border:1px solid var(--ln);border-radius:9px;padding:9px 11px;font-size:.8rem;max-width:260px}
 .lg{display:flex;flex-wrap:wrap;gap:6px 14px;font-size:.8rem;margin:6px 0}.lg i{display:inline-block;width:14px;height:4px;vertical-align:middle;margin-right:5px;border-radius:2px}
 ul.c{margin:6px 0;padding-left:18px}ul.c li{margin:3px 0}
@@ -83,7 +84,7 @@ ul.c{margin:6px 0;padding-left:18px}ul.c li{margin:3px 0}
 
 <section class="pg" id="p-fach">
  <h2>Fachadas y corte</h2>
- <p class="sub">Alturas: piso terminado +0,15; vidriera hasta +3,00; faja de cartelería +3,00 a +3,50; visera blanca a +3,55; brise de +3,65 a +4,95; cenefa negra de +4,95 a +6,00, que es también el pretil. Toda la nave a la misma altura; el portal vidriado del extremo oeste va de piso a dintel. El techo cae al 3 % hacia el sur, a una canaleta interna escondida detrás del pretil.</p>
+ <p class="sub">Alturas: piso terminado +0,15; vidriera hasta +3,00; faja de cartelería +3,00 a +3,50; visera blanca a +3,55; brise de +3,65 a +4,95; cenefa negra de +4,95 a +6,00, que es también el pretil. Toda la nave a la misma altura; el portal vidriado del extremo oeste va de piso a dintel. El techo cae hacia el sur (3 % engrafado o 7 % trapezoidal), a una canaleta interna escondida detrás del pretil.</p>
  <div class="card"><svg class="dw" id="svFN"></svg></div>
  <div class="g2"><div class="card"><svg class="dw" id="svFE"></svg></div><div class="card"><svg class="dw" id="svCorte"></svg></div></div>
 </section>
@@ -98,13 +99,13 @@ ul.c{margin:6px 0;padding-left:18px}ul.c li{margin:3px 0}
 
 <section class="pg" id="p-3d">
  <h2>3D estructural por capas</h2>
- <p class="sub">Mové la barra de etapas para ver el armado en orden, o prendé y apagá capas. Pasando el mouse por una pieza se ve qué es. Cambiá arriba la envolvente: cambian el espesor y la separación de correas.</p>
- <div id="v3"><div id="lay"></div><div id="hud"></div><div id="etapa"><b>Etapa</b><input type="range" id="rgEt" min="0" max="8" value="8"><span id="txEt"></span></div><div id="tip"></div></div>
+ <p class="sub">El armado en 16 etapas, en el orden de obra. Se avanza con las flechitas ◀ ▶▶, con ▶ se reproduce solo, con la rueda del mouse sobre la barra de etapas (o Shift + rueda sobre el 3D) y con las flechas del teclado. Pasando el mouse por una pieza se ve qué es. Cambiá arriba la envolvente: cambian el color, el espesor, la pendiente y las correas.</p>
+ <div id="v3"><div id="lay"></div><div id="hud"></div><div id="etapa"><button id="etPrev" title="Etapa anterior (←)">◀</button><button id="etPlay" title="Reproducir (espacio)">▶</button><button id="etNext" title="Etapa siguiente (→)">▶▶</button><input type="range" id="rgEt" min="0" max="15" value="15"><div id="txEt"></div></div><div id="tip"></div></div>
 </section>
 
 <section class="pg" id="p-env">
  <h2>Opciones de paneles</h2>
- <p class="sub">Todo el cerramiento en panel sándwich. El techo siempre en Isoroof (trapezoidal, el que escurre bien con poca pendiente); en muros, Isopanel liso (como el render) o Isoroof acanalado. Precios de referencia de material, a cotizar con fábrica.</p>
+ <p class="sub">Todo el cerramiento en panel sándwich de Kingspan Bromyros. Muros lisos: Isopanel EPS (blanco) o panel liso PIR (grafito). Techo: engrafado Isodec (anda con 3 % de pendiente) o Isoroof 3G trapezoidal PIR grafito (pide 7 %). Precios de material publicados en octubre y noviembre de 2026; falta confirmar si incluyen IVA y cotizar con Bromyros por volumen.</p>
  <div class="card"><div id="tEnv"></div></div>
  <div class="warn"><b>Bomberos y paneles con EPS:</b> en locales con público, la Dirección Nacional de Bomberos mira el comportamiento al fuego de la envolvente. Con EPS hay que pedir núcleo con retardante de llama y certificado; con PIR el trámite es más simple. Los divisorios entre locales conviene hacerlos con lana de roca para separar sectores de incendio.</div>
 </section>
@@ -150,11 +151,11 @@ const LOT = { D: 47.6, F: 21 };                 // profundidad E-O, frente N-S
 const B = { E0: 10.6, N0: 3, L: 25, A: 10, hS: 4.0, hN: 4.3, prf: 0.30, hPar: 6.0, cen: 4.95, uH: 5, npt: 0.15 };  // uH: ancho del portal vidriado (oeste); cen: arranque de la cenefa negra
 const FR = [0, 5, 10, 15, 20, 25];              // ejes 1..6 (u desde el oeste)
 const STUB = [2.5, 7.5, 12.5, 17.5, 22.5];      // previsiones sanitarias universales
-const ENV = {
-  A: { t: 'Isopanel EPS 100 + Isoroof EPS 50', wall: { nom: 'Isopanel EPS 100 mm', usd: 38, U: 0.36, e: .10, liso: true }, roof: { nom: 'Isoroof EPS 50 mm', usd: 36, U: 0.69, luz: 1.8, e: .05 }, nota: 'La más económica. El techo aísla poco: en verano los locales calientan y gastan más aire. Más correas.' },
-  B: { t: 'Isopanel EPS 100 + Isoroof EPS 100 (recomendada)', wall: { nom: 'Isopanel EPS 100 mm', usd: 38, U: 0.36, e: .10, liso: true }, roof: { nom: 'Isoroof EPS 100 mm', usd: 48, U: 0.36, luz: 2.5, e: .10 }, nota: 'Techo grueso: aísla el doble y permite correas cada 2,5 m (menos acero y menos montaje). Es la que recomendamos.' },
-  C: { t: 'Isopanel PIR 80 + Isoroof PIR 80', wall: { nom: 'Isopanel PIR 80 mm', usd: 56, U: 0.27, e: .08, liso: true }, roof: { nom: 'Isoroof PIR 80 mm', usd: 62, U: 0.27, luz: 2.3, e: .08 }, nota: 'La mejor aislación y el mejor comportamiento al fuego (núcleo PIR): Bomberos y seguros más simples. La más cara.' },
-  D: { t: 'Todo Isoroof EPS 80 (muro acanalado)', wall: { nom: 'Isoroof EPS 80 mm en muro', usd: 43, U: 0.45, e: .08, liso: false }, roof: { nom: 'Isoroof EPS 80 mm', usd: 43, U: 0.45, luz: 2.2, e: .08 }, nota: 'Un solo producto, estética industrial. El muro queda acanalado, menos prolijo que el render.' },
+const ENV = { // precios de material USD/m² publicados (BMC Uruguay 4/10/2026 y MercadoLibre, nov. 2026); IVA sin confirmar: se cotizan con Kingspan Bromyros
+  A: { t: 'Muros EPS blancos + techo engrafado EPS (económica)', wall: { nom: 'Isopanel EPS 100 mm, blanco', usd: 40, U: 0.36, e: .10, pir: false }, roof: { nom: 'Isodec EPS 100 mm engrafado, gris claro', usd: 46.07, U: 0.36, luz: 2.5, e: .10, pend: .03, trap: false, pir: false }, nota: 'La más barata. El EPS se ablanda con calor: para Bomberos hay que pedir núcleo con retardante. Techo engrafado: anda con 3 % de pendiente.' },
+  B: { t: 'Muros EPS blancos + techo engrafado PIR (recomendada)', wall: { nom: 'Isopanel EPS 100 mm, blanco', usd: 40, U: 0.36, e: .10, pir: false }, roof: { nom: 'Isodec PIR 80 mm engrafado, grafito', usd: 52.44, U: 0.32, luz: 2.5, e: .08, pend: .03, trap: false, pir: true }, nota: 'El techo, que es lo que más sufre sol y fuego, en PIR; los muros en EPS, que quedan detrás del brise y la cenefa. Pendiente 3 %, oculta detrás del pretil.' },
+  C: { t: 'Todo PU/PIR: muros lisos + Isoroof 3G 80 grafito', wall: { nom: 'Panel liso PIR 80 mm (Isowall), grafito', usd: 55, U: 0.28, e: .08, pir: true }, roof: { nom: 'Isoroof 3G PIR 80 mm trapezoidal, grafito', usd: 63.11, U: 0.277, luz: 2.5, e: .08, pend: .07, trap: true, pir: true }, nota: 'La mejor aislación y comportamiento al fuego en todo el edificio. El trapezoidal pide 7 % mínimo: el techo sube 70 cm de sur a norte, igual queda oculto. El muro liso PIR hay que cotizarlo.' },
+  D: { t: 'Muros EPS blancos + Isoroof 3G 50 grafito', wall: { nom: 'Isopanel EPS 100 mm, blanco', usd: 40, U: 0.36, e: .10, pir: false }, roof: { nom: 'Isoroof 3G PIR 50 mm trapezoidal, grafito', usd: 53.68, U: 0.434, luz: 2.0, e: .05, pend: .07, trap: true, pir: true }, nota: 'Techo trapezoidal clásico más fino: aísla menos que B y pide 7 % y más correas. Sirve si se consigue mejor precio en Isoroof.' },
 };
 const S = { n: 4, env: 'B', modo: 'equipado', iva: false };
 const K = 1.1 * 1.25, rd = v => Math.round(v / 100) * 100;
@@ -174,13 +175,14 @@ function locales(n) {
   return out;
 }
 function correas(env) { const luz = ENV[env].roof.luz, k = Math.ceil(B.A / luz); const out = []; for (let j = 0; j <= k; j++) out.push(j * B.A / k); return out; }
+const setPend = () => { B.hN = B.hS + ENV[S.env].roof.pend * B.A; };
 const hRoof = v => B.hS + (B.hN - B.hS) * v / B.A;  // altura inferior de viga en v
 
 /* ---------- acero ---------- */
 function acero(env) {
   const nC = correas(env).length, P = [];
   const add = (pos, perfil, kgm, n, L) => P.push({ pos, perfil, kgm, n, L, kg: kgm * n * L });
-  add('Columnas de pórtico (ejes 1 a 6)', 'IPE 270', 36.1, 12, (B.hS + B.hN) / 2);
+  add('Columnas de pórtico (ejes 1 a 6)', 'IPE 270', 36.1, 12, B.hS + ENV[env].roof.pend * B.A / 2);
   add('Vigas de pórtico', 'IPE 300', 42.2, 6, 10.4);
   add('Viga carrera norte (rígida, sobre vidriera)', 'IPE 200', 22.4, 1, 25);
   add('Viga carrera sur', 'IPE 160', 15.8, 1, 25);
@@ -198,10 +200,10 @@ function acero(env) {
 
 /* ---------- superficies de envolvente ---------- */
 const SUP = (() => {
-  const vid = 20 * 2.85 + 4.4 * 4.6 + 9.3 * 2.85;   // vidrieras norte (dan la vuelta a la esquina) + portal oeste a piso-dintel + frente a la avenida
+  const vid = 20 * 2.85 + 3.7 * 4.6 + 9.3 * 2.85;   // vidrieras norte (dan la vuelta a la esquina) + portal oeste a piso-dintel + frente a la avenida
   const muro = 25 * 6 + 10 * 6 + 20 * 3 + 5 * 1.05 + 10.3 * 3 + 1.0 * 2.85;
   const techo = 25.6 * 10.6;
-  const brise = 29.3 * 1.3, faja = 29.3, cenefa = 25.3 * 1.05 + 10.6 * 1.05 + 1.0 * 6 * 2, visor = 30, marco = 5 + 4.95 * 2;
+  const brise = 29.3 * 1.3, faja = 29.3, cenefa = 25.3 * 1.05 + 10.6 * 1.05 + 1.0 * 6 * 4, visor = 30, marco = 5 + 4.95 * 2;
   return { vid, muro, techo, brise, faja, cenefa, visor, marco };
 })();
 
@@ -234,11 +236,12 @@ function rubrado(st = S) {
   it('Vidrieras de aluminio línea pesada, laminado 5+5 (incluye el portal de piso a dintel)', SUP.vid, 'm²', 240);
   it('Puerta vidriada de acceso por local (cerradura y cierrapuertas)', n, 'u', 380);
   it('Puerta de servicio y escape al pasaje sur, chapa inyectada', n, 'u', 420);
-  it('Cenefa de chapa negra plegada: sube en la esquina del frente, recorre el dintel del frente y todo el lateral norte', SUP.cenefa, 'm²', 65);
+  it('Cenefa de chapa negra plegada: sube en la esquina del frente, recorre el dintel del frente y el lateral norte y baja en la esquina del fondo', SUP.cenefa, 'm²', 65);
   it('Brise de listones de madera tratada (eucalipto grandis)', SUP.brise, 'm²', 120);
   it('Faja de cartelería en chapa negra con soporte', SUP.faja, 'ml', 45);
   it('Visera blanca sobre la faja (chapa plegada, vuelo 60 cm)', SUP.visor, 'ml', 55);
   it('Marco blanco del portal vidriado (chapa plegada)', SUP.marco, 'ml', 45);
+  if (E.roof.trap) it('Cumbrera, tapajuntas y cierres de onda del techo trapezoidal', 25.6, 'ml', 22);
   cat('6 · Divisorios entre locales');
   it('Steel frame 100 mm, doble placa de yeso RH por cara y lana de roca', (n - 1) * 10 * 4.4, 'm²', 52, n - 1 + ' divisorio' + (n > 2 ? 's' : ''));
   cat('7 · Sanitaria general (se deja siempre)');
@@ -364,7 +367,7 @@ function dImpl() {
   s += TX(t, 5, 12, 'PATIO DE SERVICIO', `font-size="11" font-weight="700" fill="#666" ${FT}`) + TX(t, 5, 10.8, 'carga y descarga · tanques', `font-size="10" fill="#666" ${FT}`);
   // edificio
   s += R_(t, B.E0, B.N0, B.E0 + B.L, B.N0 + B.A, 'fill="url(#hat)" stroke="#24211d" stroke-width="2.2"');
-  s += R_(t, B.E0 + B.L - .3, B.N0, B.E0 + B.L + .3, B.N0 + 1, 'fill="#1c1c1c"');
+  s += R_(t, B.E0 + B.L - .3, B.N0, B.E0 + B.L + .3, B.N0 + 1, 'fill="#1c1c1c"') + R_(t, B.E0 - .3, B.N0 + B.A - .7, B.E0 + .7, B.N0 + B.A + .3, 'fill="#1c1c1c"');
   s += TX(t, B.E0 + 15, 8.4, `EDIFICIO 25 × 10 = 250 m² · ${S.n} locales`, `font-size="13" font-weight="700" ${FT}`);
   s += TX(t, B.E0 + 2.5, 8.4, 'portal', `font-size="10" ${FT}`) + TX(t, B.E0 + 2.5, 7.6, 'vidriado', `font-size="10" ${FT}`);
   // cotas
@@ -408,7 +411,7 @@ function dPlanta() {
   FR.forEach((u, k) => { [0, 10].forEach(v => s += R_(t, u - .14, v - .14, u + .14, v + .14, 'fill="#b5622a" stroke="#24211d" stroke-width=".6"')); s += L_(t, u, -3.2, u, 13.8, 'stroke="#b5622a" stroke-width=".6" stroke-dasharray="10 4 2 4"'); s += `<circle cx="${t.X(u)}" cy="${t.Y(14.3)}" r="10" fill="#fff" stroke="#b5622a"/>` + TX(t, u, 14.15, k + 1, `font-size="11" font-weight="700" fill="#b5622a" ${FT}`); });
   [[0, 'A'], [10, 'B']].forEach(([v, n]) => { s += L_(t, -2.4, v, 26.5, v, 'stroke="#b5622a" stroke-width=".6" stroke-dasharray="10 4 2 4"'); s += `<circle cx="${t.X(-2.9)}" cy="${t.Y(v)}" r="10" fill="#fff" stroke="#b5622a"/>` + TX(t, -2.9, v - .15, n, `font-size="11" font-weight="700" fill="#b5622a" ${FT}`); });
   // portal vidriado y pilastra
-  s += R_(t, 0, 10.06, B.uH, 10.25, 'fill="#fff" stroke="#bbb"') + TX(t, 2.5, 8.9, 'portal vidriado de piso a dintel', `font-size="9" fill="#2f6f86" ${FT}`) + TX(t, 25.5, -.6, 'la cenefa negra sube acá', `font-size="9" ${FT}`, 'start') + TX(t, 24.6, 10.7, 'esquina vidriada', `font-size="9" fill="#2f6f86" ${FT}`, 'end');
+  s += R_(t, -e, 9.3, .7, 10.35, 'fill="#1c1c1c"') + R_(t, .7, 10.06, B.uH, 10.25, 'fill="#fff" stroke="#bbb"') + TX(t, 2.5, 8.9, 'portal vidriado de piso a dintel', `font-size="9" fill="#2f6f86" ${FT}`) + TX(t, 25.5, -.6, 'la cenefa negra sube acá', `font-size="9" ${FT}`, 'start') + TX(t, 24.6, 10.7, 'esquina vidriada', `font-size="9" fill="#2f6f86" ${FT}`, 'end');
   // locales
   L.forEach(l => {
     if (l.i > 0) s += R_(t, l.a - .06, 0, l.a + .06, 10, 'fill="#8d8a84" stroke="#24211d" stroke-width=".5"');
@@ -461,13 +464,13 @@ function dFach() {
     s += R_(t, 0, 3.55, 20.4, 3.63, `fill="#fff" stroke="#ccc" stroke-width=".5"`);
     s += R_(t, 0, 3.65, 20, B.cen, 'fill="url(#wood)"');
     // portal blanco
-    s += R_(t, 20, B.npt, 25, B.cen, `fill="${BL}" stroke="#ccc"`) + R_(t, 20.3, B.npt, 24.7, 4.75, `fill="${VID}"`) + R_(t, 22.47, B.npt, 22.53, 4.75, `fill="${BL}"`) + R_(t, 20.3, 2.6, 24.7, 2.66, `fill="${BL}"`);
-    // cenefa negra: viene del frente por la esquina y recorre todo el lateral norte hasta la esquina del fondo
-    s += R_(t, 0, B.cen, 25, B.hPar, `fill="${NEG}"`);
+    s += R_(t, 20, B.npt, 24, B.cen, `fill="${BL}" stroke="#ccc"`) + R_(t, 20.3, B.npt, 23.7, 4.75, `fill="${VID}"`) + R_(t, 21.97, B.npt, 22.03, 4.75, `fill="${BL}"`) + R_(t, 20.3, 2.6, 23.7, 2.66, `fill="${BL}"`);
+    // cenefa negra: viene del frente, recorre todo el lateral norte y baja en la esquina del fondo
+    s += R_(t, 0, B.cen, 25, B.hPar, `fill="${NEG}"`) + R_(t, 24, B.npt, 25, B.hPar, `fill="${NEG}"`);
     L.forEach(l => { let x = 25 - (l.a + l.w / 2); if (l.portal) x = Math.min(x, 18.5); if (x < 2.5) x = 2.5; s += TX(t, x, 3.17, 'LOCAL ' + l.num, `font-size="11" font-weight="700" fill="#e9c46a" letter-spacing="2" ${FT}`); });
-    s += TX(t, .5, -.55, '← esquina del frente (avda.)', `font-size="10" font-weight="700" fill="#555" ${FT}`, 'start') + TX(t, 22.5, -.55, 'esquina del fondo · portal', `font-size="10" fill="#555" ${FT}`);
+    s += TX(t, .5, -.55, '← esquina del frente (avda.)', `font-size="10" font-weight="700" fill="#555" ${FT}`, 'start') + TX(t, 22.5, -.55, 'portal · baja la cenefa →', `font-size="10" fill="#555" ${FT}`);
     s += niveles(t, 25.4);
-    SV($('svFN'), W, H, titulo(W, 'Fachada norte (a la plaza)', 'como el render: la cenefa negra recorre todo el dintel hasta la esquina del fondo; brise, faja con visera blanca, vidrieras y portal; todo a la misma altura', sc) + s, sc); }
+    SV($('svFN'), W, H, titulo(W, 'Fachada norte (a la plaza)', 'como el render: la cenefa negra recorre todo el dintel y baja en la esquina del fondo; brise, faja con visera blanca, vidrieras y portal; todo a la misma altura', sc) + s, sc); }
   { // este, a la avenida: x = v (sur a la izquierda, norte a la derecha)
     const W = 15, H = 9.5, sc = 34, t = T(1.5, 1.6, sc, H); let s = '';
     s += L_(t, -1, 0, 11.3, 0, 'stroke="#24211d" stroke-width="1.6"');
@@ -497,7 +500,7 @@ function dFach() {
     s += R_(t, 10.45, 3.65, 10.55, B.cen, 'fill="url(#wood)"') + R_(t, 10.2, B.cen, 10.5, B.hPar, 'fill="#1c1c1c"') + R_(t, 10.2, 3.0, 10.5, 3.55, 'fill="#1c1c1c"') + R_(t, 10.2, 3.55, 10.85, 3.63, 'fill="#ddd"');
     // canaleta
     s += `<path d="M${t.X(-.2)} ${t.Y(B.hS + .5)}L${t.X(.3)} ${t.Y(B.hS + .5)}L${t.X(.3)} ${t.Y(B.hS + .2)}L${t.X(-.2)} ${t.Y(B.hS + .2)}" fill="#7fb3c9" stroke="#24211d" stroke-width=".6"/>`;
-    s += TX(t, 5, 4.95, 'pendiente 3 % →', `font-size="10" ${FT}`) + TX(t, -.3, 5.6, 'canaleta interna', `font-size="9" ${FT}`, 'start');
+    s += TX(t, 5, B.hN + 1.0, `pendiente ${Math.round(ENV[S.env].roof.pend * 100)} % →`, `font-size="10" ${FT}`) + TX(t, -.3, 5.6, 'canaleta interna', `font-size="9" ${FT}`, 'start');
     s += TX(t, 5, 2.0, 'LOCAL', `font-size="12" font-weight="700" fill="#888" ${FT}`) + TX(t, 1.3, .6, 'SUR', `font-size="10" ${FT}`) + TX(t, 8.7, .6, 'NORTE', `font-size="10" ${FT}`);
     s += cotaV(t, B.npt, B.hS, 11.5 - 12.4, 'libre 3,85') + cotaV(t, 0, B.hPar, 11.8, '6,00') + cotaH(t, 0, 10, -1.0, '10,00 entre ejes');
     SV($('svCorte'), W, H, titulo(W, 'Corte transversal A-B', ENV[S.env].roof.nom + ' sobre correas · pórtico IPE', sc) + s, sc); }
@@ -538,9 +541,9 @@ function dEst() {
     s += R_(t, -.135, 0, .135, B.hS, 'fill="#b5622a"') + R_(t, 9.865, 0, 10.135, B.hN, 'fill="#b5622a"');
     s += `<polygon points="${t.X(-.135)},${t.Y(B.hS)} ${t.X(10.135)},${t.Y(B.hN)} ${t.X(10.135)},${t.Y(B.hN + .3)} ${t.X(-.135)},${t.Y(B.hS + .3)}" fill="#c9773d"/>`;
     s += `<polygon points="${t.X(.135)},${t.Y(B.hS)} ${t.X(1.4)},${t.Y(B.hS + .038)} ${t.X(.135)},${t.Y(B.hS - .45)}" fill="#b5622a"/><polygon points="${t.X(9.865)},${t.Y(B.hN)} ${t.X(8.6)},${t.Y(B.hN - .038)} ${t.X(9.865)},${t.Y(B.hN - .45)}" fill="#b5622a"/>`;
-    s += TX(t, 5, B.hS + .75, 'IPE 300 · L = 10,40 · pendiente 3 %', `font-size="11" ${FT}`) + TX(t, .5, 2, 'IPE 270', `font-size="10" ${FT}`, 'start') + TX(t, 9.5, 2, 'IPE 270', `font-size="10" ${FT}`, 'end');
+    s += TX(t, 5, B.hS + .75, `IPE 300 · L = 10,40 · pendiente ${Math.round(ENV[S.env].roof.pend * 100)} %`, `font-size="11" ${FT}`) + TX(t, .5, 2, 'IPE 270', `font-size="10" ${FT}`, 'start') + TX(t, 9.5, 2, 'IPE 270', `font-size="10" ${FT}`, 'end');
     s += TX(t, 1.2, B.hS - .9, 'cartela', `font-size="9" fill="#666" ${FT}`, 'start') + TX(t, 5, -.95, 'unión rígida con cartela en ambos nudos · base articulada con 4 pernos Ø20', `font-size="9" fill="#666" ${FT}`);
-    s += cotaV(t, 0, B.hS, -1.2, '4,00') + cotaV(t, 0, B.hN, 11.3, '4,30') + cotaH(t, 0, 10, 5.7, '10,00');
+    s += cotaV(t, 0, B.hS, -1.2, '4,00') + cotaV(t, 0, B.hN, 11.3, f2(B.hN)) + cotaH(t, 0, 10, 5.7, '10,00');
     SV($('svPort'), W, H, s, sc); }
   $('tAcero').innerHTML = `<table><tr><th>Posición</th><th>Perfil</th><th class="n">Cant.</th><th class="n">Largo</th><th class="n">kg</th></tr>` + ac.P.map(p => `<tr><td>${p.pos}</td><td>${p.perfil}</td><td class="n">${p.n || ''}</td><td class="n">${p.L ? f2(p.L) : ''}</td><td class="n">${Math.round(p.kg).toLocaleString('es-UY')}</td></tr>`).join('') + `<tr class="tt"><td colspan="4">Total acero · ${f1(ac.kg / 250)} kg/m²</td><td class="n">${Math.round(ac.kg).toLocaleString('es-UY')}</td></tr></table>`;
   $('crit').innerHTML = [
@@ -548,7 +551,7 @@ function dEst() {
     'La fachada norte es toda vidrio, así que ahí no puede haber cruces. La estabilidad longitudinal la dan las cruces del muro sur y del techo (paños extremos), más la viga carrera norte rígida sobre la vidriera.',
     'La vidriera no carga: los parantes de tubo 100 × 100 cada 2,5 m toman el viento y sostienen la faja de cartel y el brise. Los perfiles de aluminio quedan libres para dilatar.',
     `Correas según el panel: ${Object.entries(ENV).map(([k, e]) => k + ' cada ' + f2(B.A / Math.ceil(B.A / e.roof.luz)) + ' m').join(' · ')}. El Isoroof grueso ahorra líneas de correas.`,
-    'Techo al 3 % hacia el sur, a una canaleta interna detrás del pretil: desde la plaza no se ve ni el techo ni las bajadas, como en el render. Los equipos de aire quedan escondidos detrás del pretil.',
+    'Techo hacia el sur, a una canaleta interna detrás del pretil: 3 % con panel engrafado (Isodec) o 7 % con Isoroof trapezoidal, que es el mínimo que pide Kingspan Bromyros para ese panel. En los dos casos desde la plaza no se ven ni el techo ni las bajadas, como en el render. Los equipos de aire quedan escondidos detrás del pretil.',
     'Viento: Punta del Este es zona de viento fuerte (UNIT 50-84). El ingeniero verifica succión en el techo y en el pretil, y la fijación del panel (tornillos por correa).',
     'Platea con engrosamiento bajo columnas: no hace falta excavar zapatas en suelo arenoso; antes de hormigonar se dejan todas las previsiones sanitarias (ver pestaña Locales).',
   ].map(x => `<li>${x}</li>`).join('');
@@ -611,7 +614,7 @@ function renderTablas() {
   // superficies
   $('tSup').innerHTML = `<table><tr><th>Área</th><th class="n">m²</th><th class="n">% del terreno</th></tr>` + [['Edificio (locales)', 250], ['Plaza peatonal', 216], ['Estacionamiento y circulación', 252], ['Patio de servicio', 205], ['Retiros y verde', 77]].map(([a, m]) => `<tr><td>${a}</td><td class="n">${m}</td><td class="n">${f1(m / 10)} %</td></tr>`).join('') + `<tr class="tt"><td>Terreno</td><td class="n">1.000</td><td class="n">100 %</td></tr></table>`;
   // envolventes
-  $('tEnv').innerHTML = `<table><tr><th>Opción</th><th>Muros</th><th>Techo</th><th class="n">U techo W/m²K</th><th class="n">Correas</th><th class="n">Obra ${lbl}</th><th class="n">Dif.</th><th>Comentario</th></tr>` + Object.entries(ENV).map(([key, e]) => { const rr = rubrado({ ...S, env: key }), rb = rubrado({ ...S, env: 'A' }); return `<tr${key === S.env ? ' class="best"' : ''}><td><b>${key}</b></td><td>${e.wall.nom}</td><td>${e.roof.nom}</td><td class="n">${f2(e.roof.U)}</td><td class="n">${correas(key).length} × ${f2(B.A / (correas(key).length - 1))} m</td><td class="n">${u$(rr.venta * k)}</td><td class="n">${key === 'A' ? '—' : '+' + u$((rr.venta - rb.venta) * k)}</td><td class="note">${e.nota}</td></tr>`; }).join('') + `</table><p class="note">U = transmitancia (cuanto más bajo, mejor aísla). Panel de 100 mm de EPS ≈ 0,36 · 50 mm ≈ 0,69. Precios de material de referencia: Isopanel EPS 100 ≈ USD 38/m², Isoroof EPS 50/80/100 ≈ 36/43/48, PIR 80 ≈ 56-62. Se confirman con cotización de fábrica.</p>`;
+  $('tEnv').innerHTML = `<table><tr><th>Opción</th><th>Muros</th><th>Techo</th><th class="n">U techo W/m²K</th><th class="n">Pendiente</th><th class="n">Correas</th><th class="n">Obra ${lbl}</th><th class="n">Dif.</th><th>Comentario</th></tr>` + Object.entries(ENV).map(([key, e]) => { const rr = rubrado({ ...S, env: key }), rb = rubrado({ ...S, env: 'A' }); return `<tr${key === S.env ? ' class="best"' : ''}><td><b>${key}</b></td><td>${e.wall.nom}</td><td>${e.roof.nom}</td><td class="n">${f2(e.roof.U)}</td><td class="n">${Math.round(e.roof.pend * 100)} %</td><td class="n">${correas(key).length} × ${f2(B.A / (correas(key).length - 1))} m</td><td class="n">${u$(rr.venta * k)}</td><td class="n">${key === 'A' ? '—' : '+' + u$((rr.venta - rb.venta) * k)}</td><td class="note">${e.nota}</td></tr>`; }).join('') + `</table><p class="note">U = transmitancia (cuanto más bajo, mejor aísla); Isoroof 3G según Kingspan Bromyros: 50 mm 0,434 · 80 mm 0,277. Precios de material publicados (USD/m²): Isoroof 3G PIR 50 / 80 mm 53,68 / 63,11 · Isodec PIR 80 mm 52,44 · Isodec EPS 100 mm 46,07 (BMC Uruguay, 4/10/2026) · Isopanel EPS 100 mm ≈ 40 (MercadoLibre). El muro liso PIR no tiene precio publicado: 55 es estimado. Colores: EPS blanco o gris claro; PU/PIR grafito. Antes de cerrar, cotizar con Kingspan Bromyros (planta en Canelones) y confirmar IVA.</p>`;
   // rubrado
   let h = `<table><tr><th>Ítem</th><th class="n">Cant.</th><th>Un.</th><th class="n">P. unit.</th><th class="n">Costo</th><th class="n">Venta ${lbl}</th></tr>`; let sub = 0, subV = 0, curCat = null;
   const close = () => { if (curCat) h += `<tr><td colspan="4" class="note" style="text-align:right">subtotal</td><td class="n">${u$(sub)}</td><td class="n"><b>${u$(sub * K * k)}</b></td></tr>`; };
@@ -652,45 +655,52 @@ function renderRent() {
 
 /* ================= 3D ================= */
 const v3 = (() => {
-  let ren, sc, cam, ctl, started = false, groups = {}, ray = new THREE.Raycaster(), mouse = new THREE.Vector2(), hov = [];
-  const LAYERS = [['ext', 'Terreno y exteriores', 0], ['plat', 'Platea', 1], ['inst', 'Previsiones bajo platea', 1], ['est', 'Pórticos', 2], ['cor', 'Correas, largueros y cruces', 3], ['techo', 'Techo de panel', 4], ['muro', 'Muros de panel', 5], ['fach', 'Vidrieras, faja y brise', 6], ['div', 'Divisorios y baños', 7], ['rep', 'Réplica en 10597 y 10598', 8]];
-  const ET = ['Terreno', 'Platea y previsiones', 'Pórticos', 'Correas y cruces', 'Techo', 'Muros', 'Fachada', 'Divisorios y baños', 'Completo + réplica'];
-  const vis = Object.fromEntries(LAYERS.map(l => [l[0], true]));
+  let ren, sc, cam, ctl, started = false, groups = {}, ray = new THREE.Raycaster(), mouse = new THREE.Vector2(), play = null;
+  // etapas de obra en orden: [clave, título, qué se hace]
+  const ST = [
+    ['ter', 'Terreno y replanteo', 'Limpieza, desmonte de 20 cm, relleno de tosca compactada y replanteo de ejes 1 a 6 y A-B. Cerco de obra y obrador.'],
+    ['inst', 'Previsiones bajo platea', 'Antes de hormigonar: un ramal sanitario por módulo de 5 m (los que no se usan quedan con tapón), colector por el pasaje sur con cámaras, agua desde el medidor de OSE y caños eléctricos vacíos desde el gabinete de UTE.'],
+    ['plat', 'Platea', 'Platea H25 de 15 cm con malla doble, viga de borde 30 × 40 y engrosamiento bajo cada columna con 4 pernos Ø20. Queda llaneada: es el piso de los locales.'],
+    ['est', 'Pórticos', '6 pórticos: columnas IPE 270 y vigas IPE 300 con cartela. Vigas carrera norte (rígida, sobre la vidriera) y sur.'],
+    ['cru', 'Arriostramiento', 'Cruces Ø16 con tensor en los paños extremos del techo y en el muro sur. Recién acá la nave queda estable para seguir.'],
+    ['cor', 'Correas de techo', 'Correas C160 sobre las vigas, a la separación que pide el panel elegido.'],
+    ['lar', 'Largueros y montantes de pretil', 'Largueros C120 en los muros sur y oeste, y montantes sobre columnas y vigas carrera hasta +6,00: sostienen el pretil, la cenefa y el borde superior de los paneles.'],
+    ['bas', 'Parantes y bastidores de fachada', 'Tubos 100 × 100 de piso a +6,00 cada 2,5 m en el norte y el frente, pilastras de esquina donde baja la cenefa, y bastidores C100 para la faja, el brise y la cenefa: todo apoyado en los parantes.'],
+    ['techo', 'Techo de panel', 'Paneles de techo sobre las correas, canaleta interna al sur y babetas contra el pretil.'],
+    ['muro', 'Muros de panel', 'Paneles lisos verticales en los muros sur, oeste y frente, y en la franja alta del norte detrás del brise y la cenefa.'],
+    ['vid', 'Vidrieras y portal', 'Vidrieras de aluminio que dan la vuelta a la esquina del frente, y el portal blanco de piso a dintel en la esquina del fondo.'],
+    ['faja', 'Faja, visera y brise', 'Faja negra de cartelería, visera blanca de 60 cm y brise de listones de madera, fijados a los bastidores.'],
+    ['cen', 'Cenefa negra', 'Chapa negra plegada: sube en la esquina del frente, corre por el dintel del frente y todo el lateral norte, y baja en la esquina del fondo.'],
+    ['div', 'Divisorios, baños y equipos', 'Divisorios con lana de roca entre locales, baños y kitchenettes (si la entrega es equipada) y bases de los equipos de aire detrás del pretil.'],
+    ['ext', 'Exteriores', 'Plaza peatonal, estacionamiento con 6 lugares, vereda, canteros y patio de servicio.'],
+    ['rep', 'Réplica en 10597 y 10598', 'El mismo proyecto en los otros dos padrones.'],
+  ];
+  const vis = Object.fromEntries(ST.map(l => [l[0], true]));
   const M = c => new THREE.MeshStandardMaterial({ color: c, roughness: .8, metalness: .05 });
-  const MAT = { steel: new THREE.MeshStandardMaterial({ color: 0xb5622a, roughness: .5, metalness: .3 }), cor: new THREE.MeshStandardMaterial({ color: 0x8c8f93, roughness: .4, metalness: .5 }), conc: M(0xc8c2b6), roof: M(0xd9dcdf), wall: M(0x4b4a48), wallIn: M(0xeeeeee), glass: new THREE.MeshStandardMaterial({ color: 0x9fcfe0, transparent: true, opacity: .35, roughness: .1, metalness: .1, depthWrite: false }), white: M(0xf2f0ec), black: M(0x1c1c1c), wood: M(0xa8693a), grass: M(0x9fbf7a), asph: M(0x8a8a88), pav: M(0xe6dfcf), park: M(0xcfcfcc), div: M(0xd8d4cc), bath: M(0xe8f1f5), pvc: M(0xd2691e), water: M(0x2f6f86), elec: M(0xd6a400), rep: new THREE.MeshStandardMaterial({ color: 0xd8c3ad, transparent: true, opacity: .55 }) };
-  // coord: X = E, Y = altura, Z = -N
+  const MAT = { steel: new THREE.MeshStandardMaterial({ color: 0xb5622a, roughness: .5, metalness: .3 }), cor: new THREE.MeshStandardMaterial({ color: 0x8c8f93, roughness: .4, metalness: .5 }), conc: M(0xc8c2b6), glass: new THREE.MeshStandardMaterial({ color: 0x9fcfe0, transparent: true, opacity: .35, roughness: .1, metalness: .1, depthWrite: false }), white: M(0xf2f0ec), black: M(0x1c1c1c), wood: M(0xa8693a), grass: M(0x9fbf7a), asph: M(0x8a8a88), pav: M(0xe6dfcf), park: M(0xcfcfcc), div: M(0xd8d4cc), bath: M(0xe8f1f5), pvc: M(0xd2691e), water: M(0x2f6f86), elec: M(0xd6a400), brace: M(0x2f6f86), rep: new THREE.MeshStandardMaterial({ color: 0xd8d4cc, transparent: true, opacity: .6 }) };
   const W = (u, v) => [B.E0 + u, -(B.N0 + v)];
   function box(g, x0, y0, z0, x1, y1, z1, mat, info) { const m = new THREE.Mesh(new THREE.BoxGeometry(Math.abs(x1 - x0) || .01, Math.abs(y1 - y0) || .01, Math.abs(z1 - z0) || .01), mat); m.position.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); m.castShadow = m.receiveShadow = true; if (info) m.userData.info = info; g.add(m); return m; }
-  // caja en coords de edificio (u, v, h)
   const bx = (g, u0, v0, h0, u1, v1, h1, mat, info) => { const [x0, z0] = W(u0, v0), [x1, z1] = W(u1, v1); return box(g, x0, h0, z0, x1, h1, z1, mat, info); };
-  function beam(g, p0, p1, w, h, mat, info) { // viga entre dos puntos (u,v,h)
-    const a = new THREE.Vector3(B.E0 + p0[0], p0[2], -(B.N0 + p0[1])), b = new THREE.Vector3(B.E0 + p1[0], p1[2], -(B.N0 + p1[1]));
-    const len = a.distanceTo(b), m = new THREE.Mesh(new THREE.BoxGeometry(w, h, len), mat); m.position.copy(a).lerp(b, .5); m.lookAt(b); m.castShadow = true; if (info) m.userData.info = info; g.add(m); return m; }
-  function cyl(g, p0, p1, r, mat, info) { const a = new THREE.Vector3(B.E0 + p0[0], p0[2], -(B.N0 + p0[1])), b = new THREE.Vector3(B.E0 + p1[0], p1[2], -(B.N0 + p1[1])); const len = a.distanceTo(b); const m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, len, 10), mat); m.position.copy(a).lerp(b, .5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize()); if (info) m.userData.info = info; g.add(m); return m; }
+  const P3 = p => new THREE.Vector3(B.E0 + p[0], p[2], -(B.N0 + p[1]));
+  function beam(g, p0, p1, w, h, mat, info) { const a = P3(p0), b = P3(p1), m = new THREE.Mesh(new THREE.BoxGeometry(w, h, a.distanceTo(b)), mat); m.position.copy(a).lerp(b, .5); m.lookAt(b); m.castShadow = true; if (info) m.userData.info = info; g.add(m); return m; }
+  function cyl(g, p0, p1, r, mat, info) { const a = P3(p0), b = P3(p1), m = new THREE.Mesh(new THREE.CylinderGeometry(r, r, a.distanceTo(b), 10), mat); m.position.copy(a).lerp(b, .5); m.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), b.clone().sub(a).normalize()); if (info) m.userData.info = info; g.add(m); return m; }
+  const post = (g, u, v, h0, h1, s, mat, info) => bx(g, u - s / 2, v - s / 2, h0, u + s / 2, v + s / 2, h1, mat, info);
   function build() {
     Object.values(groups).forEach(g => sc.remove(g)); groups = {};
-    LAYERS.forEach(([k]) => { groups[k] = new THREE.Group(); sc.add(groups[k]); });
+    ST.forEach(([k]) => { groups[k] = new THREE.Group(); sc.add(groups[k]); });
     const E = ENV[S.env], cs = correas(S.env), L = locales(S.n);
-    // ---- exteriores
-    let g = groups.ext;
+    const roofCol = E.roof.pir ? 0x55595e : 0xe1e4e6, wallCol = E.wall.pir ? 0x5a5d61 : 0xeef0f0;
+    const MR = M(roofCol), MW = M(wallCol), ew = E.wall.e, er = E.roof.e, yF = 10.3 + ew, xE = 25.3 + ew, tC = B.prf + .16;
+    // ---- 0 terreno
+    let g = groups.ter;
     box(g, -20, -.06, -LOT.F - 45, LOT.D, -.02, 30, MAT.grass);
     box(g, 0, -.02, -LOT.F, LOT.D, 0, 0, M(0xb8d197), 'Padrón 10596 · 1.000 m²');
     box(g, LOT.D, -.02, -LOT.F - 45, LOT.D + 1.5, .1, 30, MAT.pav, 'Vereda');
     box(g, LOT.D + 1.5, -.04, -LOT.F - 45, LOT.D + 11, .02, 30, MAT.asph, 'Avda. Pedragosa Sierra');
-    box(g, B.E0 - 1, 0, -(B.N0 + B.A), B.E0 + B.L + 1, .08, -(LOT.F - .5), MAT.pav, 'Plaza peatonal · 216 m²');
-    box(g, B.E0 + B.L + 1, 0, -LOT.F + .5, LOT.D, .05, -.5, MAT.park, 'Estacionamiento · 6 lugares');
-    for (let k = 0; k <= 7; k++) { const y = 1 + k * 2.5; if (y > LOT.F - .3) break; box(g, B.E0 + B.L + 1, .05, -y - .05, B.E0 + B.L + 6, .07, -y + .05, MAT.white); }
-    box(g, .5, 0, -LOT.F + .5, B.E0 - 1, .04, -.5, M(0xc9c3b6), 'Patio de servicio · carga y descarga');
-    // bordes de lote
     [[0, 0, LOT.D, .05], [0, -LOT.F, LOT.D, -LOT.F + .05]].forEach(([x0, z0, x1, z1]) => box(g, x0, 0, z0, x1, .3, z1, M(0xb23a2a)));
     box(g, 0, 0, -LOT.F, .05, .3, 0, M(0xb23a2a));
-    // árboles plaza
-    [[B.E0 + 2, 19], [B.E0 + 23, 19]].forEach(([x, n]) => { const t = new THREE.Mesh(new THREE.SphereGeometry(1.4, 12, 10), M(0x6f9a4f)); t.position.set(x, 2.6, -n); g.add(t); box(g, x - .1, 0, -n - .1, x + .1, 1.6, -n + .1, M(0x6b4a2b)); });
-    // ---- platea
-    g = groups.plat;
-    bx(g, -.3, -.3, -.25, 25.3, 10.3, B.npt, MAT.conc, 'Platea H25 15 cm sobre tosca compactada · viga de borde 30 × 40');
-    FR.forEach(u => [0, 10].forEach(v => bx(g, u - .6, v - .6, -.6, u + .6, v + .6, -.25, MAT.conc, 'Engrosamiento 1,2 × 1,2 × 0,5 bajo columna')));
-    // ---- previsiones
+    FR.forEach(u => [-1.2, 11.2].forEach(v => bx(g, u - .04, v - .04, 0, u + .04, v + .04, .9, M(0xffffff), 'Estaca de replanteo · eje ' + (FR.indexOf(u) + 1))));
+    // ---- 1 previsiones
     g = groups.inst;
     STUB.forEach(u => { const used = L.some(l => l.s === u); cyl(g, [u, .9, -.35], [u, .9, B.npt + .3], .055, used ? MAT.pvc : M(0x999999), used ? 'Previsión sanitaria en uso: ramal Ø110 + Ø40 + agua' : 'Previsión sanitaria con tapón (sirve si se divide distinto)'); cyl(g, [u, .9, -.35], [u, -1.5, -.45], .055, MAT.pvc, 'Ramal Ø110 al colector'); });
     cyl(g, [-1, -1.5, -.5], [36.3, -1.5, -.6], .07, MAT.pvc, 'Colector cloacal Ø110 por el pasaje sur');
@@ -701,68 +711,87 @@ const v3 = (() => {
     bx(g, 33.4, -3, 0, 35.2, -2.4, .6, MAT.water, 'Medidor OSE y colector de submedidores');
     [-1, 10, 22.5, 36.3].forEach(u => bx(g, u - .35, -1.85, -.7, u + .35, -1.15, .02, M(0x777777), 'Cámara de inspección 60 × 60'));
     bx(g, -2.2, -2.2, -.9, -1.5, -.8, .02, M(0x555555), 'Cámara separadora de grasas');
-    // ---- estructura
+    // ---- 2 platea
+    g = groups.plat;
+    bx(g, -.3, -.3, -.25, 25.3, 10.3, B.npt, MAT.conc, 'Platea H25 15 cm sobre tosca compactada · viga de borde 30 × 40');
+    FR.forEach(u => [0, 10].forEach(v => { bx(g, u - .6, v - .6, -.6, u + .6, v + .6, -.25, MAT.conc, 'Engrosamiento 1,2 × 1,2 × 0,5 bajo columna'); bx(g, u - .15, v - .15, B.npt, u + .15, v + .15, B.npt + .016, M(0x777777), 'Placa base 300 × 300 × 16 con 4 pernos Ø20'); }));
+    // ---- 3 pórticos
     g = groups.est;
     FR.forEach((u, i) => {
-      bx(g, u - .135, -.135, B.npt, u + .135, .135, B.hS, MAT.steel, 'Columna IPE 270');
-      bx(g, u - .135, 9.865, B.npt, u + .135, 10.135, B.hN, MAT.steel, 'Columna IPE 270');
+      bx(g, u - .135, -.135, B.npt, u + .135, .135, B.hS, MAT.steel, 'Columna IPE 270 · eje ' + (i + 1) + ' A');
+      bx(g, u - .135, 9.865, B.npt, u + .135, 10.135, B.hN, MAT.steel, 'Columna IPE 270 · eje ' + (i + 1) + ' B');
       beam(g, [u, -.1, B.hS + .15], [u, 10.1, B.hN + .15], .15, .3, MAT.steel, `Viga de pórtico IPE 300 · eje ${i + 1}`);
     });
-    beam(g, [0, 10, 3.6], [25, 10, 3.6], .1, .2, MAT.steel, 'Viga carrera norte IPE 200 (rígida, sobre la vidriera)');
-    beam(g, [0, 0, 3.8], [25, 0, 3.8], .08, .16, MAT.steel, 'Viga carrera sur IPE 160');
-    // ---- correas, largueros, cruces
+    beam(g, [0, 10, B.hN - .15], [25, 10, B.hN - .15], .1, .2, MAT.steel, 'Viga carrera norte IPE 200 (rígida, sobre la vidriera)');
+    beam(g, [0, 0, B.hS - .1], [25, 0, B.hS - .1], .08, .16, MAT.steel, 'Viga carrera sur IPE 160');
+    // ---- 4 arriostramiento
+    g = groups.cru;
+    [[0, 5], [20, 25]].forEach(([a, b]) => { const ha = hRoof(0) + B.prf, hb = hRoof(10) + B.prf; cyl(g, [a, 0, ha], [b, 10, hb], .02, MAT.brace, 'Cruz de arriostramiento de techo Ø16 con tensor'); cyl(g, [a, 10, hb], [b, 0, ha], .02, MAT.brace, 'Cruz de arriostramiento de techo Ø16 con tensor'); });
+    [[0, 5], [20, 25]].forEach(([a, b]) => { cyl(g, [a, -.15, .4], [b, -.15, B.hS - .2], .02, MAT.brace, 'Cruz en muro sur'); cyl(g, [a, -.15, B.hS - .2], [b, -.15, .4], .02, MAT.brace, 'Cruz en muro sur'); });
+    // ---- 5 correas
     g = groups.cor;
     cs.forEach(v => beam(g, [-.3, v, hRoof(v) + B.prf + .08], [25.3, v, hRoof(v) + B.prf + .08], .06, .16, MAT.cor, `Correa C160 · ${cs.length} líneas cada ${f2(cs[1] - cs[0])} m`));
-    [1.5, 3.0, 4.4, 5.6].forEach(h => { beam(g, [0, -.2, h], [25, -.2, h], .05, .12, MAT.cor, 'Larguero C120 · muro sur'); beam(g, [-.2, 0, h], [-.2, 10, h], .05, .12, MAT.cor, 'Larguero C120 · muro oeste'); });
-    [3.3, 4.4, 5.6].forEach(h => { beam(g, [0, 10.2, h], [25, 10.2, h], .05, .12, MAT.cor, 'Bastidor de faja, brise y cenefa'); beam(g, [25.2, 0, h], [25.2, 10, h], .05, .12, MAT.cor, 'Bastidor de cenefa · este'); });
-    for (let u = 0; u <= 25.01; u += 2.5) bx(g, u - .05, 10.15, B.npt, u + .05, 10.25, 3.6, MAT.cor, 'Parante tubo 100 × 100 · sostiene vidriera, faja y brise');
-    bx(g, 24.95, 9.95, B.npt, 25.25, 10.25, B.hPar, MAT.cor, 'Pilastra de esquina · tubo 100 × 100 (estructura de la cenefa)');
-    [[0, 5], [20, 25]].forEach(([a, b]) => { const ha = hRoof(0) + B.prf, hb = hRoof(10) + B.prf; cyl(g, [a, 0, ha], [b, 10, hb], .02, M(0x2f6f86), 'Cruz de arriostramiento Ø16 con tensor'); cyl(g, [a, 10, hb], [b, 0, ha], .02, M(0x2f6f86), 'Cruz de arriostramiento Ø16 con tensor'); });
-    [[10, 15], [20, 25]].forEach(([a, b]) => { cyl(g, [a, -.25, .3], [b, -.25, 3.8], .02, M(0x2f6f86), 'Cruz en muro sur'); cyl(g, [a, -.25, 3.8], [b, -.25, .3], .02, M(0x2f6f86), 'Cruz en muro sur'); });
-    // ---- techo
+    // ---- 6 largueros y montantes de pretil (sur y oeste)
+    g = groups.lar;
+    for (let u = 0; u <= 25.01; u += 2.5) post(g, u, -.22, u % 5 === 0 ? B.hS : B.hS - .2, B.hPar, .05, MAT.cor, 'Montante de pretil tubo 50 × 50 · sobre columna o viga carrera');
+    for (let v = 2.5; v <= 7.51; v += 2.5) post(g, -.22, v, B.npt, B.hPar, .08, MAT.cor, 'Montante intermedio de muro oeste');
+    [1.5, 3.0, B.hS - .4, 5.0, 5.9].forEach(h => { beam(g, [-.22, -.22, h], [25, -.22, h], .05, .12, MAT.cor, 'Larguero C120 · muro sur'); beam(g, [-.22, -.22, h], [-.22, 10.22, h], .05, .12, MAT.cor, 'Larguero C120 · muro oeste'); });
+    // ---- 7 parantes y bastidores de fachada (norte y frente), apoyados
+    g = groups.bas;
+    for (let u = 0; u <= 25.01; u += 2.5) post(g, u, 10.22, B.npt, B.hPar, .1, MAT.cor, 'Parante tubo 100 × 100 · de piso a +6,00: vidriera, faja, brise y cenefa');
+    for (let v = .7; v <= 10.01; v += 3.1) post(g, 25.22, v, B.npt, B.hPar, .1, MAT.cor, 'Parante tubo 100 × 100 · frente a la avenida');
+    post(g, 25.22, -.22, B.npt, B.hPar, .12, MAT.cor, 'Pilastra de esquina del frente (donde sube la cenefa)');
+    post(g, -.22, 10.22, B.npt, B.hPar, .12, MAT.cor, 'Pilastra de esquina del fondo (donde baja la cenefa)');
+    [3.0, 3.55, 4.3, B.cen, 5.5, 5.95].forEach(h => { beam(g, [-.22, 10.22, h], [25.22, 10.22, h], .05, .1, MAT.cor, 'Bastidor C100 de faja, brise y cenefa · atornillado a los parantes'); beam(g, [25.22, -.22, h], [25.22, 10.22, h], .05, .1, MAT.cor, 'Bastidor C100 · frente'); });
+    // ---- 8 techo
     g = groups.techo;
-    const er = E.roof.e, tC = B.prf + .16;
-    for (let u = -.3; u < 25.3; u += 1) { const u1 = Math.min(u + 1, 25.3); beam(g, [(u + u1) / 2, -.3, hRoof(-.3) + tC + er / 2], [(u + u1) / 2, 10.3, hRoof(10.3) + tC + er / 2], (u1 - u) - .02, er, MAT.roof, `${E.roof.nom} · U ${f2(E.roof.U)} W/m²K`); for (let r = 0; r < 3; r++) beam(g, [u + .17 + r * .333, -.3, hRoof(-.3) + tC + er + .02], [u + .17 + r * .333, 10.3, hRoof(10.3) + tC + er + .02], .05, .04, MAT.roof, E.roof.nom); }
+    for (let u = -.3; u < 25.3; u += 1) { const u1 = Math.min(u + 1, 25.3); beam(g, [(u + u1) / 2, -.3, hRoof(-.3) + tC + er / 2], [(u + u1) / 2, 10.3, hRoof(10.3) + tC + er / 2], (u1 - u) - .02, er, MR, `${E.roof.nom} · U ${f2(E.roof.U)} W/m²K · pendiente ${Math.round(E.roof.pend * 100)} %`); if (E.roof.trap) for (let r = 0; r < 3; r++) beam(g, [u + .17 + r * .333, -.3, hRoof(-.3) + tC + er + .02], [u + .17 + r * .333, 10.3, hRoof(10.3) + tC + er + .02], .05, .04, MR, E.roof.nom); }
     bx(g, -.3, -.4, B.hS + .15, 25.3, .1, B.hS + .45, M(0x7fb3c9), 'Canaleta interna sur · chapa galvanizada');
-    // ---- muros
+    // ---- 9 muros
     g = groups.muro;
-    const ew = E.wall.e, mw = E.wall.liso ? MAT.wall : M(0x55585a);
-    for (let u = -.3; u < 25.3; u += 1) bx(g, u + .01, -.3 - ew, B.npt, Math.min(u + 1, 25.3) - .01, -.3, B.hPar, mw, E.wall.nom + ' · muro sur');
-    for (let v = -.3; v < 10.3; v += 1) bx(g, -.3 - ew, v + .01, B.npt, -.3, Math.min(v + 1, 10.3) - .01, B.hPar, mw, E.wall.nom + ' · muro oeste');
-    bx(g, -.3, 10.3, 3.0, 25.3, 10.3 + ew, B.hPar, mw, E.wall.nom + ' · detrás del brise y la cenefa');
-    bx(g, 25.3, -.3, B.npt, 25.3 + ew, .7, B.hPar, mw, E.wall.nom + ' · este');
-    bx(g, 25.3, .7, 3.0, 25.3 + ew, 10.3 + ew, B.hPar, mw, E.wall.nom + ' · este');
-    // ---- fachada
-    g = groups.fach;
-    const yF = 10.3 + ew;
-    const xE = 25.3 + ew;
+    for (let u = -.3; u < 25.3; u += 1) bx(g, u + .01, -.3 - ew, B.npt, Math.min(u + 1, 25.3) - .01, -.3, B.hPar, MW, E.wall.nom + ' · muro sur');
+    for (let v = -.3; v < 10.3; v += 1) bx(g, -.3 - ew, v + .01, B.npt, -.3, Math.min(v + 1, 10.3) - .01, B.hPar, MW, E.wall.nom + ' · muro oeste');
+    bx(g, .7, 10.3, 3.0, 25.3, yF, B.hPar, MW, E.wall.nom + ' · franja alta norte (detrás del brise y la cenefa)');
+    bx(g, 25.3, -.3, 3.0, xE, 10.3, B.hPar, MW, E.wall.nom + ' · franja alta del frente');
+    // ---- 10 vidrieras y portal
+    g = groups.vid;
     bx(g, B.uH, yF, B.npt, xE, yF + .04, 3.0, MAT.glass, 'Vidriera aluminio línea pesada · laminado 5+5');
-    bx(g, xE, .7, B.npt, xE + .04, yF, 3.0, MAT.glass, 'Vidriera del frente (avenida): da la vuelta a la esquina');
+    bx(g, xE, .7, B.npt, xE + .04, yF, 3.0, MAT.glass, 'Vidriera del frente: da la vuelta a la esquina');
     for (let u = B.uH; u <= xE + .01; u += 2.5) bx(g, u - .04, yF, B.npt, u + .04, yF + .1, 3.0, MAT.white, 'Montante de aluminio');
     for (let v = .7; v <= yF + .01; v += 3.2) bx(g, xE, v - .04, B.npt, xE + .1, v + .04, 3.0, MAT.white, 'Montante de aluminio');
     bx(g, B.uH, yF, 2.2, xE, yF + .12, 2.26, MAT.white); bx(g, xE, .7, 2.2, xE + .12, yF, 2.26, MAT.white);
+    bx(g, .7, yF, B.npt, B.uH, yF + .25, B.cen, MAT.white, 'Marco blanco del portal vidriado');
+    bx(g, 1, yF + .26, B.npt, B.uH - .3, yF + .3, 4.75, MAT.glass, 'Portal vidriado de piso a dintel');
+    L.forEach(l => { const dc = Math.max(B.uH + 1, Math.min(23, l.a + l.w / 2)); bx(g, dc - .9, yF + .04, B.npt, dc + .9, yF + .1, 2.2, M(0x6f8f9a), 'Puerta de acceso · Local ' + l.num); });
+    // ---- 11 faja, visera, brise
+    g = groups.faja;
     bx(g, B.uH, yF, 3.0, xE + .1, yF + .1, 3.55, MAT.black, 'Faja de cartelería'); bx(g, xE, .7, 3.0, xE + .1, yF + .1, 3.55, MAT.black, 'Faja de cartelería · frente');
     bx(g, B.uH - .4, yF, 3.55, xE + .6, yF + .6, 3.63, MAT.white, 'Visera blanca · vuelo 60 cm'); bx(g, xE, .7, 3.55, xE + .6, yF + .6, 3.63, MAT.white, 'Visera blanca · vuelo 60 cm');
     for (let h = 3.68; h < B.cen - .05; h += .16) { bx(g, B.uH, yF + .2, h, xE + .28, yF + .28, h + .1, MAT.wood, 'Brise de listones de madera'); bx(g, xE + .2, .7, h, xE + .28, yF + .28, h + .1, MAT.wood, 'Brise de listones de madera · frente'); }
-    // portal vidriado blanco (esquina del fondo, oeste), a la misma altura
-    bx(g, -.3, yF, B.npt, B.uH, yF + .25, B.cen, MAT.white, 'Marco blanco del portal vidriado');
-    bx(g, 0, yF + .26, B.npt, B.uH - .3, yF + .3, 4.75, MAT.glass, 'Portal vidriado de piso a dintel');
-    // cenefa negra: sube en la esquina del frente (sureste), recorre el dintel del frente y todo el lateral norte hasta la esquina del fondo
-    bx(g, -.3 - ew, yF, B.cen, xE + .35, yF + .35, B.hPar, MAT.black, 'Cenefa negra · recorre todo el lateral norte hasta la esquina del fondo');
+    // ---- 12 cenefa negra: sube en la esquina del frente, dintel del frente y lateral norte, baja en la esquina del fondo
+    g = groups.cen;
+    bx(g, -.3 - ew, yF, B.cen, xE + .35, yF + .35, B.hPar, MAT.black, 'Cenefa negra · todo el lateral norte');
     bx(g, xE, -.3 - ew, B.cen, xE + .35, yF + .35, B.hPar, MAT.black, 'Cenefa negra · dintel del frente');
     bx(g, xE, -.3 - ew, B.npt, xE + .35, .7, B.cen, MAT.black, 'Cenefa negra: sube en la esquina del frente');
-    L.forEach(l => { const dc = Math.max(B.uH + 1, Math.min(23, l.a + l.w / 2)); bx(g, dc - .9, yF + .04, B.npt, dc + .9, yF + .1, 2.2, M(0x6f8f9a), 'Puerta de acceso · Local ' + l.num); });
-    // ---- divisorios y baños
+    bx(g, -.3 - ew, yF, B.npt, .7, yF + .35, B.cen, MAT.black, 'Cenefa negra: baja en la esquina del fondo');
+    bx(g, -.3 - ew - .35, 9.3, B.npt, -.3 - ew, yF + .35, B.hPar, MAT.black, 'Cenefa negra · vuelta sobre el muro oeste');
+    // ---- 13 divisorios, baños, equipos
     g = groups.div;
     L.forEach(l => {
-      if (l.i > 0) bx(g, l.a - .06, -.3, B.npt, l.a + .06, 10.3, 4.2, MAT.div, 'Divisorio steel frame + lana de roca (sector de incendio)');
+      if (l.i > 0) bx(g, l.a - .06, -.3, B.npt, l.a + .06, 10.3, B.hS, MAT.div, 'Divisorio steel frame + lana de roca (sector de incendio)');
       if (S.modo === 'equipado') { const x = l.s - 1; bx(g, x, -.3, B.npt, x + .06, 2.2, 2.6, MAT.bath, 'Baño accesible · Local ' + l.num); bx(g, x + 1.94, -.3, B.npt, x + 2, 2.2, 2.6, MAT.bath); bx(g, x, 2.14, B.npt, x + 1.05, 2.2, 2.6, MAT.bath); bx(g, x + 1.95, 2.14, B.npt, x + 2, 2.2, 2.6, MAT.bath); bx(g, x + 2.1, -.3, B.npt, x + 3.9, .3, 1.05, M(0xf3e7d6), 'Kitchenette'); }
-      bx(g, l.a + l.w / 2 - .5, 3, hRoof(3) + B.prf + .5, l.a + l.w / 2 + .5, 3.7, hRoof(3) + B.prf + .9, M(0xffffff), 'Base para equipo de aire (detrás del pretil)');
+      bx(g, l.a + l.w / 2 - .5, 3, hRoof(3) + tC + er + .05, l.a + l.w / 2 + .5, 3.7, hRoof(3) + tC + er + .45, M(0xffffff), 'Equipo de aire sobre base (detrás del pretil)');
     });
-    // ---- réplica
+    // ---- 14 exteriores
+    g = groups.ext;
+    box(g, B.E0 - 1, 0, -(B.N0 + B.A) - ew - .7, B.E0 + B.L + 1, .08, -(LOT.F - .5), MAT.pav, 'Plaza peatonal · 216 m²');
+    box(g, B.E0 + B.L + 1, 0, -LOT.F + .5, LOT.D, .05, -.5, MAT.park, 'Estacionamiento · 6 lugares');
+    for (let k = 0; k <= 7; k++) { const y = 1 + k * 2.5; if (y > LOT.F - .3) break; box(g, B.E0 + B.L + 1, .05, -y - .05, B.E0 + B.L + 6, .07, -y + .05, MAT.white); }
+    box(g, .5, 0, -LOT.F + .5, B.E0 - 1, .04, -.5, M(0xc9c3b6), 'Patio de servicio · carga y descarga');
+    [[B.E0 + 2, 19], [B.E0 + 23, 19]].forEach(([x, n]) => { const t = new THREE.Mesh(new THREE.SphereGeometry(1.4, 12, 10), M(0x6f9a4f)); t.position.set(x, 2.6, -n); g.add(t); box(g, x - .1, 0, -n - .1, x + .1, 1.6, -n + .1, M(0x6b4a2b)); });
+    // ---- 15 réplica
     g = groups.rep;
     [-21, -42].forEach(dn => {
-      const z = n => -(n);
       box(g, 0, -.01, dn === -21 ? 0 : 21, LOT.D, .005, dn === -21 ? 21 : 42, M(0xc9dcae), dn === -21 ? 'Padrón 10597 · etapa 2' : 'Padrón 10598 · etapa 3');
       const N0 = B.N0 + dn, zA = -(N0), zB = -(N0 + B.A);
       box(g, B.E0, B.npt, zB, B.E0 + B.L, B.hPar, zA, MAT.rep, dn === -21 ? 'Réplica en 10597' : 'Réplica en 10598');
@@ -770,12 +799,18 @@ const v3 = (() => {
       box(g, B.E0, B.cen, zB - .4, B.E0 + B.L + .4, B.hPar, zB, MAT.black);
       box(g, B.E0 + B.L, B.npt, zA - .7, B.E0 + B.L + .4, B.cen, zA, MAT.black);
       box(g, B.E0 + B.L, B.cen, zB - .4, B.E0 + B.L + .4, B.hPar, zA, MAT.black);
-      box(g, B.E0 - 1, 0, -(dn + LOT.F - .5), B.E0 + B.L + 1, .08, zB, MAT.pav);
+      box(g, B.E0, B.npt, zB - .4, B.E0 + 1, B.cen, zB, MAT.black);
+      box(g, B.E0 - 1, 0, -(dn + LOT.F - .5), B.E0 + B.L + 1, .08, zB - .4, MAT.pav);
     });
     applyVis();
   }
-  function applyVis() { const et = +$('rgEt').value; LAYERS.forEach(([k, , e]) => { groups[k].visible = vis[k] && e <= et; }); $('txEt').textContent = ET[et]; }
-  function hud() { const E = ENV[S.env], ac = acero(S.env); $('hud').innerHTML = `<b>${S.n} locales · opción ${S.env}</b><br>Muros: ${E.wall.nom}<br>Techo: ${E.roof.nom}<br>Correas: ${correas(S.env).length} líneas<br>Acero: ${Math.round(ac.kg).toLocaleString('es-UY')} kg`; }
+  const et = () => +$('rgEt').value;
+  function applyVis() { const e = et(); ST.forEach(([k], i) => { groups[k] && (groups[k].visible = vis[k] && i <= e); });
+    $('txEt').innerHTML = `<b>${e + 1}/${ST.length} · ${ST[e][1]}</b><span>${ST[e][2]}</span>`;
+    document.querySelectorAll('#lay label').forEach((l, i) => l.classList.toggle('fut', i > e)); }
+  function ir(d) { const r = $('rgEt'); const v = Math.max(0, Math.min(ST.length - 1, et() + d)); if (v !== et()) { r.value = v; applyVis(); } return v; }
+  function toggle() { if (play) { clearInterval(play); play = null; $('etPlay').textContent = '▶'; return; } if (et() >= ST.length - 1) { $('rgEt').value = 0; applyVis(); } $('etPlay').textContent = '❚❚'; play = setInterval(() => { if (ir(1) >= ST.length - 1) toggle(); }, 1800); }
+  function hud() { const E = ENV[S.env], ac = acero(S.env); $('hud').innerHTML = `<b>${S.n} locales · opción ${S.env}</b><br>Muros: ${E.wall.nom}<br>Techo: ${E.roof.nom} · ${Math.round(E.roof.pend * 100)} %<br>Correas: ${correas(S.env).length} líneas<br>Acero: ${Math.round(ac.kg).toLocaleString('es-UY')} kg`; }
   function start() {
     if (started) { resize(); return; } started = true;
     const el = $('v3'); ren = new THREE.WebGLRenderer({ antialias: true }); ren.setPixelRatio(Math.min(devicePixelRatio, 2)); ren.shadowMap.enabled = true; el.prepend(ren.domElement);
@@ -784,19 +819,24 @@ const v3 = (() => {
     ctl = new OrbitControls(cam, ren.domElement); ctl.target.set(B.E0 + 13, 2.5, -(B.N0 + 6)); ctl.enableDamping = true; ctl.maxPolarAngle = Math.PI * .495;
     sc.add(new THREE.HemisphereLight(0xffffff, 0x8a8070, .9));
     const sun = new THREE.DirectionalLight(0xffffff, 1.5); sun.position.set(30, 50, -60); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -50, right: 50, top: 50, bottom: -50, far: 200 }); sun.target.position.set(25, 0, -10); sc.add(sun, sun.target);
-    $('lay').innerHTML = '<b>Capas</b>' + LAYERS.map(([k, t]) => `<label><input type="checkbox" data-k="${k}" checked>${t}</label>`).join('');
+    $('rgEt').max = ST.length - 1; $('rgEt').value = ST.length - 1;
+    $('lay').innerHTML = '<b>Capas</b>' + ST.map(([k, t], i) => `<label><input type="checkbox" data-k="${k}" checked>${i + 1}. ${t}</label>`).join('');
     $('lay').onchange = e => { vis[e.target.dataset.k] = e.target.checked; applyVis(); };
     $('rgEt').oninput = applyVis;
+    $('etPrev').onclick = () => ir(-1); $('etNext').onclick = () => ir(1); $('etPlay').onclick = toggle;
+    $('etapa').addEventListener('wheel', e => { e.preventDefault(); ir(e.deltaY > 0 ? 1 : -1); }, { passive: false });
+    ren.domElement.addEventListener('wheel', e => { if (e.shiftKey) { e.preventDefault(); e.stopImmediatePropagation(); ir(e.deltaY > 0 ? 1 : -1); } }, { passive: false, capture: true });
+    addEventListener('keydown', e => { if ($('p-3d').classList.contains('on') && !/INPUT|SELECT|TEXTAREA/.test(document.activeElement.tagName) || document.activeElement === $('rgEt')) { if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); ir(1); } else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); ir(-1); } else if (e.key === ' ') { e.preventDefault(); toggle(); } } });
     ren.domElement.addEventListener('pointermove', e => { const r = ren.domElement.getBoundingClientRect(); mouse.set((e.clientX - r.left) / r.width * 2 - 1, -(e.clientY - r.top) / r.height * 2 + 1); ray.setFromCamera(mouse, cam); const objs = []; Object.values(groups).forEach(g => g.visible && g.traverse(o => o.isMesh && objs.push(o))); const hit = ray.intersectObjects(objs, false).find(h => h.object.userData.info); const tip = $('tip'); if (hit) { tip.style.display = 'block'; tip.textContent = hit.object.userData.info; tip.style.left = (e.clientX - r.left + 14) + 'px'; tip.style.top = (e.clientY - r.top + 10) + 'px'; } else tip.style.display = 'none'; });
     addEventListener('resize', resize); resize(); build(); hud();
     (function loop() { requestAnimationFrame(loop); ctl.update(); ren.render(sc, cam); })();
   }
   function resize() { if (!ren) return; const el = $('v3'); ren.setSize(el.clientWidth, el.clientHeight); cam.aspect = el.clientWidth / el.clientHeight; cam.updateProjectionMatrix(); }
-  return { start, rebuild: () => { if (started) { build(); hud(); } } };
+  return { start, rebuild: () => { if (started) { build(); hud(); } }, ir, ST };
 })();
 
 /* ================= ACTUALIZAR ================= */
-function upd() { renderTablas(); dImpl(); dRep(); dPlanta(); dFach(); dEst(); dInst(); renderRent(); v3.rebuild(); }
+function upd() { setPend(); renderTablas(); dImpl(); dRep(); dPlanta(); dFach(); dEst(); dInst(); renderRent(); v3.rebuild(); }
 upd();
 const h0 = location.hash.slice(1); show(TABS.find(t => t[0] === 'p-' + h0) ? 'p-' + h0 : 'p-proy');
 window.__jcg = { S, rubrado, acero, locales, correas, upd, show };
