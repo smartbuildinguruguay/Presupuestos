@@ -964,23 +964,26 @@ document.addEventListener('input', e => { const c = e.target.closest('.prov[data
 const DOCS_MAT = [['paneles', 'Paneles y accesorios · BMC / Kingspan Bromyros'], ['hormigon', 'Hormigón, hierro y tosca'], ['sanitaria', 'Materiales de sanitaria'], ['electrica', 'Materiales de eléctrica']];
 let MATDOC = 'paneles';
 function despiece() {
-  const E = ENV[S.env], aR = E.roof.trap ? 1.0 : 1.0, aW = 1.10, hW = B.hPar - B.npt, lR = Math.ceil(10.6 / Math.cos(Math.atan(E.roof.pend)) * 100) / 100;
-  const L = [], add = (m, desc, prod, n, largo, ancho, nota = '') => L.push({ m, desc, prod, n, largo, ancho, m2: n * largo * ancho, nota });
-  add('T1–T' + Math.ceil(25.6 / aR), 'Techo, paneles de sur a norte (en el sentido de la pendiente)', E.roof.nom, Math.ceil(25.6 / aR), lR, aR, `pendiente ${Math.round(E.roof.pend * 100)} %, sin empalmes`);
-  add('MS1–MS' + Math.ceil(25.8 / aW), 'Muro sur, verticales de platea a +6,00', E.wall.nom, Math.ceil(25.8 / aW), f2n(hW), aW);
-  add('MO1–MO' + Math.ceil(10.8 / aW), 'Muro oeste, verticales', E.wall.nom, Math.ceil(10.8 / aW), f2n(hW), aW);
-  add('MN1–MN' + Math.ceil(24.6 / aW), 'Franja alta norte (de +3,00 a +6,00, detrás del brise y la cenefa)', E.wall.nom, Math.ceil(24.6 / aW), 3.0, aW);
-  add('ME1–ME' + Math.ceil(10.6 / aW), 'Franja alta del frente a la avenida (de +3,00 a +6,00)', E.wall.nom, Math.ceil(10.6 / aW), 3.0, aW);
-  add('ME0', 'Frente, tramo junto a la esquina sur (de platea a +6,00)', E.wall.nom, 1, f2n(hW), aW);
-  const cs = correas(S.env).length, nT = L[0].n, nW = L.slice(1).reduce((t, x) => t + x.n, 0);
+  const E = ENV[S.env], aR = 1.0, aW = 1.10, hW = f2n(B.hPar - B.npt), lR = Math.ceil(10.6 / Math.cos(Math.atan(E.roof.pend)) * 100) / 100;
+  const run = (pre, n0, Lr, a, largo, x0, y0, prod) => { const n = Math.ceil(Lr / a - .01), ult = f2n(Lr - (n - 1) * a); return { pre, n0, n, largo, a, x0, y0, prod, ult, Lr }; };
+  const F = [
+    { id: 'T', nom: 'Techo (vista en planta)', ver: 'paneles de sur a norte, en el sentido de la pendiente; el canalón va al sur', W: 25.6, H: 10.6, runs: [run('T', 1, 25.6, aR, lR, 0, 0, E.roof.nom)], huecos: [] },
+    { id: 'MS', nom: 'Fachada sur (vista desde el pasaje de servicio)', ver: 'oeste a la izquierda · paneles verticales de platea (+0,15) a +6,00', W: 25.8, H: hW, runs: [run('MS', 1, 25.8, aW, hW, 0, 0, E.wall.nom)], huecos: [] },
+    { id: 'MO', nom: 'Fachada oeste (vista desde el patio de servicio)', ver: 'norte a la izquierda · paneles verticales de platea a +6,00', W: 10.8, H: hW, runs: [run('MO', 1, 10.8, aW, hW, 0, 0, E.wall.nom)], huecos: [] },
+    { id: 'MN', nom: 'Fachada norte (vista desde la plaza)', ver: 'avenida a la izquierda · solo la franja alta: abajo van las vidrieras; queda detrás del brise y la cenefa', W: 25.3, H: hW, runs: [run('MN', 1, 20.3, aW, 3.0, 0, 2.85, E.wall.nom), run('MN', 20, 4.3, aW, 1.05, 20.3, 4.8, E.wall.nom)], huecos: [[0, 0, 20.3, 2.85, 'vidrieras (no lleva panel)'], [20.3, 0, 4.3, 4.8, 'portal vidriado'], [24.6, 0, .7, 5.85, 'cenefa']] },
+    { id: 'ME', nom: 'Fachada este (vista desde la avenida)', ver: 'sur a la izquierda · un panel entero en la esquina sur y la franja alta sobre la vidriera', W: 10.7, H: hW, runs: [run('ME', 0, 1.1, aW, hW, 0, 0, E.wall.nom), run('ME', 1, 9.6, aW, 3.0, 1.1, 2.85, E.wall.nom)], huecos: [[1.1, 0, 9.6, 2.85, 'vidriera (no lleva panel)']] },
+  ];
+  F.forEach(f => f.runs.forEach(r => { r.desde = r.pre + r.n0; r.hasta = r.pre + (r.n0 + r.n - 1); }));
+  const L = []; F.forEach(f => f.runs.forEach(r => L.push({ f: f.id, m: r.n > 1 ? `${r.desde}–${r.hasta}` : r.desde, desc: f.nom.split(' (')[0], prod: r.prod, n: r.n, largo: r.largo, ancho: r.a, ult: r.ult, m2: r.n * r.largo * r.a })));
+  const cs = correas(S.env).length, nT = F[0].runs[0].n, nW = L.filter(x => x.f !== 'T').reduce((t, x) => t + x.n, 0);
   const A = [
     ['Canalón interno (techo al sur), chapa prepintada desarrollo 1.000 mm', 'ml', 26.0], ['Babeta / cupertina de pretil, desarrollo 400 mm', 'ml', 73], ['Babeta techo contra muro (norte, este y oeste)', 'ml', 47],
     ['Cierre de cabeza y gotero del panel de techo', 'ml', 26], ['Esquinero exterior de muro', 'ml', 4 * 6], ['Esquinero interior', 'ml', 2 * 6], ['Perfil U de arranque (zócalo) con sellador', 'ml', 25.8 + 10.8 + 1.1],
-    ['Remates de vanos: dinteles y jambas de vidrieras y puertas de servicio', 'ml', 20 + 9.3 + 14 + 4 * 3.2], ['Tapajuntas / cierre superior de muro bajo cenefa', 'ml', 36],
+    ['Remates de vanos: dinteles y jambas de vidrieras, portal y puertas de servicio', 'ml', 20.3 + 9.6 + 14 + 4 * 3.2], ['Tapajuntas / cierre superior de muro bajo cenefa', 'ml', 36],
     [`Tornillos autoperforantes de techo con arandela de neopreno (${nT} paneles × ${cs} correas × 3)`, 'u', Math.ceil(nT * cs * 3 * 1.1)], [`Tornillos de muro con arandela (${nW} paneles × 2 por larguero)`, 'u', Math.ceil(nW * 4 * 2 * 1.1)],
     ['Remaches y tornillos de costura de remates', 'u', 900], ['Sellador de poliuretano (cartucho 300 ml)', 'u', 48], ['Cinta butílica (rollo 15 m)', 'u', 12], ['Espuma de cierre / burletes', 'ml', 60],
   ];
-  return { L, A, m2T: L[0].m2, m2W: L.slice(1).reduce((t, x) => t + x.m2, 0) };
+  return { F, L, A, m2T: L.filter(x => x.f === 'T').reduce((t, x) => t + x.m2, 0), m2W: L.filter(x => x.f !== 'T').reduce((t, x) => t + x.m2, 0) };
 }
 const f2n = x => Math.round(x * 100) / 100;
 function cantidades() {
@@ -1005,18 +1008,21 @@ function renderMat() {
   let h = '';
   if (MATDOC === 'paneles') {
     const D = despiece(), t = 'Paneles y accesorios';
+    const tabF = f => `<table><tr><th>Marca</th><th class="n">Cantidad</th><th class="n">Largo de cada panel</th><th>Nota</th></tr>${f.runs.map(r => `<tr><td><b>${r.n > 1 ? r.desde + ' a ' + r.hasta : r.desde}</b></td><td class="n"><b>${r.n}</b></td><td class="n"><b>${f2(r.largo)} m</b></td><td class="note">${r.n > 1 && r.ult < r.a - .02 ? `el último va cortado a ${f2(r.ult)} m de ancho` : r.n === 1 && r.ult < r.a - .02 ? `cortado a ${f2(r.ult)} m de ancho` : ''}</td></tr>`).join('')}</table>`;
+    const res = {}; D.L.forEach(x => { const k = x.prod + '|' + f2(x.largo); res[k] = (res[k] || 0) + x.n; });
+    const resumen = `<table><tr><th>Producto</th><th class="n">Largo</th><th class="n">Cantidad</th></tr>${Object.entries(res).map(([k, n]) => { const [pr, lg] = k.split('|'); return `<tr><td>${pr}</td><td class="n"><b>${lg} m</b></td><td class="n"><b>${n}</b></td></tr>`; }).join('')}<tr class="tt"><td colspan="2">Total de paneles</td><td class="n">${D.L.reduce((a, x) => a + x.n, 0)}</td></tr></table>`;
     h += `<div class="hoja">${cab(t)}<h1>Paneles sándwich y accesorios · pedido de cotización</h1>
-    <p>Edificio de locales de una planta, 25,00 × 10,00 m, estructura metálica con correas C200 cada ${f2(10 / (correas(S.env).length - 1))} m y largueros C160/C120. Todo el cerramiento en paneles Kingspan Bromyros. Se pide cotización de paneles cortados a medida, accesorios y fijaciones, puestos en obra.</p>
-    <h2>1 · Paneles</h2><table><tr><th>Uso</th><th>Producto</th><th>Colores</th><th class="n">m²</th></tr>
+    <p>Edificio de locales de una planta, 25,00 × 10,00 m, estructura metálica con correas C200 cada ${f2(10 / (correas(S.env).length - 1))} m y largueros C160/C120. Todo el cerramiento en paneles Kingspan Bromyros, cortados a medida y puestos en obra. Abajo, el resumen; en las hojas siguientes, el despiece fachada por fachada con cada panel numerado.</p>
+    <h2>1 · Productos</h2><table><tr><th>Uso</th><th>Producto</th><th>Colores</th><th class="n">m² aprox.</th></tr>
      <tr><td>Techo</td><td><b>${E.roof.nom}</b></td><td>${E.roof.pir ? 'exterior gris grafito' : 'exterior gris claro'} · interior blanco</td><td class="n">${f1(D.m2T)}</td></tr>
      <tr><td>Muros</td><td><b>${E.wall.nom}</b></td><td>${E.wall.pir ? 'grafito' : 'blanco'} / interior blanco</td><td class="n">${f1(D.m2W)}</td></tr></table>
-    <p class="note">Ancho útil tomado: techo 1,00 m; muro 1,10 m (confirmar según el producto). Largos a medida según la planilla. Con film protector.</p>
-    <h2>2 · Alternativas a cotizar aparte</h2><ul class="c"><li>Techo en <b>Isoroof 3G PIR 80 mm trapezoidal, grafito</b> (pendiente 7 %) en lugar del engrafado.</li><li>Techo en <b>Isodec EPS 100 mm</b> (más económico).</li><li>Muros en <b>panel liso PIR 80 mm (Isowall o similar), grafito</b>, por comportamiento al fuego.</li><li>Núcleo EPS con retardante de llama y certificado para la habilitación de Bomberos.</li></ul>
-    <h2>3 · Lo que se pide además</h2><ul class="c"><li>Asistencia técnica de montaje y detalles de remates de Kingspan Bromyros.</li><li>Fichas técnicas y certificado de comportamiento al fuego de cada producto.</li><li>Plazo de fabricación y si entregan por etapas (techo primero, muros después).</li></ul><h2>4 · Croquis de despiece</h2><svg id="mk1"></svg>${pie(t, '1/3')}</div>`;
-    h += `<div class="hoja">${cab(t)}<h2 style="margin-top:0">5 · Planilla de paneles (marcas del croquis)</h2><table><tr><th>Marca</th><th>Dónde</th><th>Producto</th><th class="n">Cant.</th><th class="n">Largo m</th><th class="n">Ancho útil</th><th class="n">m²</th></tr>${D.L.map(x => `<tr><td><b>${x.m}</b></td><td>${x.desc}${x.nota ? `<div class="note">${x.nota}</div>` : ''}</td><td>${x.prod}</td><td class="n">${x.n}</td><td class="n">${f2(x.largo)}</td><td class="n">${f2(x.ancho)}</td><td class="n">${f1(x.m2)}</td></tr>`).join('')}<tr class="tt"><td colspan="3">Total</td><td class="n">${D.L.reduce((a, x) => a + x.n, 0)}</td><td colspan="2"></td><td class="n">${f1(D.m2T + D.m2W)}</td></tr></table>
-    <h2>6 · Accesorios y fijaciones</h2><table><tr><th>#</th><th>Pieza</th><th>Unidad</th><th class="n">Cantidad</th></tr>${D.A.map((a, i) => `<tr><td>${i + 1}</td><td>${a[0]}</td><td>${a[1]}</td><td class="n">${Math.round(a[2]).toLocaleString('es-UY')}</td></tr>`).join('')}</table><p class="note">Remates en chapa prepintada del color del panel; los de la fachada norte y del frente quedan detrás de la cenefa negra.</p>
-    ${pie(t, '2/3')}</div>`;
-    h += `<div class="hoja">${cab(t)}<h2 style="margin-top:0">7 · Formulario de cotización (completar)</h2>${datos}${form([[E.roof.nom + ' (techo, a medida)', 'm²', Math.round(D.m2T)], [E.wall.nom + ' (muros, a medida)', 'm²', Math.round(D.m2W)], ...D.A.map(a => [a[0], a[1], Math.round(a[2])]), ['Alternativa: Isoroof 3G PIR 80 mm trapezoidal grafito (techo)', 'm²', Math.round(D.m2T)], ['Alternativa: panel liso PIR 80 mm grafito (muros)', 'm²', Math.round(D.m2W)]])}${cond('<tr><td>Precio por m² según largo (si cambia)</td><td></td></tr>')}${pie(t, '3/3')}</div>`;
+    <h2>2 · Resumen: cantidad por largo</h2>${resumen}<p class="note">Ancho útil tomado: techo 1,00 m, muro 1,10 m (confirmar con el producto). Con film protector.</p>
+    <h2>3 · Alternativas a cotizar aparte</h2><ul class="c"><li>Techo en <b>Isoroof 3G PIR 80 mm trapezoidal, grafito</b> (pendiente 7 %).</li><li>Techo en <b>Isodec EPS 100 mm</b>.</li><li>Muros en <b>panel liso PIR 80 mm (Isowall o similar), grafito</b>.</li><li>Núcleo EPS con retardante de llama y certificado para Bomberos.</li></ul>
+    <h2>4 · Lo que se pide además</h2><ul class="c"><li>Asistencia técnica de montaje y detalles de remates; fichas técnicas y certificado de fuego.</li><li>Plazo de fabricación y entrega por etapas (techo primero, muros después).</li></ul>${pie(t, '1/5')}</div>`;
+    h += `<div class="hoja">${cab(t)}<h2 style="margin-top:0">5 · ${D.F[0].nom}</h2><p class="note">${D.F[0].ver}</p><svg id="mkT"></svg>${tabF(D.F[0])}<h2>6 · ${D.F[1].nom}</h2><p class="note">${D.F[1].ver}</p><svg id="mkMS"></svg>${tabF(D.F[1])}${pie(t, '2/5')}</div>`;
+    h += `<div class="hoja">${cab(t)}<h2 style="margin-top:0">7 · ${D.F[2].nom}</h2><p class="note">${D.F[2].ver}</p><svg id="mkMO"></svg>${tabF(D.F[2])}<h2>8 · ${D.F[3].nom}</h2><p class="note">${D.F[3].ver}</p><svg id="mkMN"></svg>${tabF(D.F[3])}${pie(t, '3/5')}</div>`;
+    h += `<div class="hoja">${cab(t)}<h2 style="margin-top:0">9 · ${D.F[4].nom}</h2><p class="note">${D.F[4].ver}</p><svg id="mkME"></svg>${tabF(D.F[4])}<h2>10 · Accesorios y fijaciones</h2><table><tr><th>#</th><th>Pieza</th><th>Unidad</th><th class="n">Cantidad</th></tr>${D.A.map((a, i) => `<tr><td>${i + 1}</td><td>${a[0]}</td><td>${a[1]}</td><td class="n">${Math.round(a[2]).toLocaleString('es-UY')}</td></tr>`).join('')}</table><p class="note">Remates en chapa prepintada del color del panel; los de la fachada norte y del frente quedan detrás de la cenefa negra.</p>${pie(t, '4/5')}</div>`;
+    h += `<div class="hoja">${cab(t)}<h2 style="margin-top:0">11 · Formulario de cotización (completar)</h2>${datos}${form([...Object.entries(res).map(([k, n]) => { const [pr, lg] = k.split('|'); return [`${pr} · largo ${lg} m`, 'paneles', n]; }), ...D.A.map(a => [a[0], a[1], Math.round(a[2])]), ['Alternativa: Isoroof 3G PIR 80 mm trapezoidal grafito (techo)', 'm²', Math.round(D.m2T)], ['Alternativa: panel liso PIR 80 mm grafito (muros)', 'm²', Math.round(D.m2W)]])}${cond('<tr><td>Precio por m² o por panel según largo</td><td></td></tr>')}${pie(t, '5/5')}</div>`;
   } else {
     const C = cantidades(), M = { hormigon: ['Hormigón, hierro y tosca', 'hormigonera y barraca', C.horm, 'Platea H30 de 15 cm con malla doble, 8 vigas de fundación 30 × 60 (115 ml) con nudos bajo columnas, relleno de tosca compactada y estacionamiento en hormigón. Ambiente marino: hormigón H30 con cemento adecuado y recubrimientos de 3 y 4 cm.'], sanitaria: ['Materiales de sanitaria', 'barraca o sanitaria', C.san, `Colector cloacal por el pasaje sur con cámaras, previsiones universales cada 5 m (5 puntos), pluviales a cuneta, agua con medidor general y submedidores por local${S.modo === 'equipado' ? ' y baño accesible y kitchenette en cada local' : ''}. ${S.n} locales.`], electrica: ['Materiales de eléctrica', 'casa de electricidad', C.ele, `Gabinete de medidores UTE en el frente (uno por local), alimentación enterrada a cada local, puesta a tierra, iluminación exterior y cartelería${S.modo === 'equipado' ? ', y tablero, iluminación LED y tomas en cada local' : ''}. ${S.n} locales.`] }[MATDOC];
     h += `<div class="hoja">${cab(M[0])}<h1>${M[0]} · pedido de cotización</h1><p>${M[3]} Pedido a ${M[1]}.</p><h2>Lista de materiales y formulario</h2>${datos}${form(M[2])}${cond()}${pie(M[0], '1/1')}</div>`;
@@ -1025,17 +1031,18 @@ function renderMat() {
   if (MATDOC === 'paneles') dMatCroquis();
 }
 function dMatCroquis() {
-  const D = despiece(), W = 32, H = 16.6, sc = 30, t = T(1.2, 1.2, sc, H); let s = '';
-  const lab = (x, y, txt, fs = 9, col = '#24211d', anc = 'middle') => TX(t, x, y, txt, `font-size="${fs * 1.35}" font-weight="700" fill="${col}" ${FT}`, anc);
-  // techo en planta (arriba)
-  const y0 = 4.6, nT = D.L[0].n; s += lab(0, y0 + 11.2, 'TECHO (planta) · paneles de sur a norte', 10, '#24211d', 'start');
-  for (let i = 0; i < nT; i++) { s += R_(t, i * 25.6 / nT, y0, (i + 1) * 25.6 / nT, y0 + 10.6, `fill="${i % 2 ? '#e8ebee' : '#dfe3e6'}" stroke="#999" stroke-width=".6"`); if (i % 3 === 0 || i === nT - 1) s += lab((i + .5) * 25.6 / nT, y0 + 5.3, 'T' + (i + 1), 7, '#555'); }
-  s += lab(26.2, y0 + 5.3, `${f2(D.L[0].largo)} m`, 8, '#b5622a', 'start') + lab(12.8, y0 - .5, 'canalón interno (sur) ↓', 8, '#2f6f86');
-  // muros en elevación (abajo): sur y oeste
-  const yb = 0; s += lab(0, yb + 3.6, 'MURO SUR (desde el pasaje) · MS', 9, '#24211d', 'start');
-  const nS = D.L[1].n; for (let i = 0; i < nS; i++) { s += R_(t, i * 25.8 / nS, yb, (i + 1) * 25.8 / nS, yb + 3.0, `fill="${i % 2 ? '#f4f4f2' : '#eceae4'}" stroke="#999" stroke-width=".6"`); if (i % 4 === 0) s += lab((i + .5) * 25.8 / nS, yb + 1.4, 'MS' + (i + 1), 7, '#555'); }
-  s += lab(26.2, yb + 1.5, `${f2(D.L[1].largo)} m`, 8, '#b5622a', 'start') + lab(12.9, yb - .6, 'escala vertical reducida a la mitad · MO, MN y ME igual criterio (ver planilla)', 7.5, '#777');
-  SV($('mk1'), W, H, s, sc);
+  const D = despiece();
+  D.F.forEach(f => { const el = $('mk' + f.id); if (!el) return;
+    const W = Math.max(f.W, 12) + 3, H = f.H + 2.6, sc = f.id === 'T' ? 30 : (f.W > 20 ? 30 : 44), t = T(1.6, 1.4, sc, H); let s = '';
+    const lab = (x, y, txt, fs = 9, col = '#24211d', anc = 'middle', rot) => `<text x="${t.X(x)}" y="${t.Y(y)}" text-anchor="${anc}" font-size="${fs * (sc / 30) * 1.25}" font-weight="700" fill="${col}" ${FT}${rot ? ` transform="rotate(-90 ${t.X(x)} ${t.Y(y)})"` : ''}>${txt}</text>`;
+    if (f.id !== 'T') s += L_(t, -.5, 0, f.W + .5, 0, 'stroke="#24211d" stroke-width="1.4"');
+    f.huecos.forEach(([x, y, w, hh, n]) => { s += R_(t, x, y, x + w, y + hh, n === 'cenefa' ? 'fill="#1c1c1c"' : 'fill="#d6ebf3" stroke="#9cc" stroke-dasharray="4 3"'); if (n !== 'cenefa' && w > 3) s += lab(x + w / 2, y + hh / 2, n, 8, '#5a8a99'); });
+    f.runs.forEach(r => { for (let i = 0; i < r.n; i++) { const x0 = r.x0 + i * r.a, x1 = Math.min(r.x0 + (i + 1) * r.a, r.x0 + r.Lr); s += R_(t, x0, r.y0, x1, r.y0 + r.largo, `fill="${i % 2 ? '#f1f1ee' : '#e6e6e1'}" stroke="#777" stroke-width=".7"`);
+      const nm = r.pre + (r.n0 + i); const vert = (x1 - x0) * sc < 40; s += lab((x0 + x1) / 2, r.y0 + r.largo / 2, nm, 7.5, '#24211d', 'middle', vert || f.id !== 'T' ? true : false); } });
+    f.runs.forEach(r => { s += cotaV(t, r.y0, r.y0 + r.largo, r.x0 + r.Lr + .5, f2(r.largo)); });
+    s += cotaH(t, 0, f.W, f.id === 'T' ? -1.0 : -.9, f2(f.W) + ' m');
+    if (f.id === 'T') s += lab(f.W / 2, -.45, 'canalón interno (sur)', 8, '#2f6f86') + lab(f.W / 2, f.H + .4, 'norte (plaza)', 8, '#555');
+    SV(el, W, H, s, sc); });
 }
 document.addEventListener('click', e => { const b = e.target.closest('[data-md]'); if (b) { MATDOC = b.dataset.md; renderMat(); } });
 
