@@ -37,12 +37,17 @@ ul.c{margin:6px 0;padding-left:18px}ul.c li{margin:3px 0}
 .foot{color:var(--mut);font-size:.8rem;border-top:1px solid var(--ln);margin-top:24px;padding-top:10px}
 @media print{header .tabs,.bar,#lay,#etapa{display:none}section.pg{display:block!important;page-break-after:always}}
 body.pedido header,body.pedido .bar,body.pedido .foot,body.pedido .noprint{display:none}body.pedido main{max-width:none;padding:0}body.pedido section.pg{display:none!important}body.pedido #p-ped{display:block!important}
+.pedbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:0 0 10px}.btn2{display:inline-block;border:1px solid var(--ln);background:#fff;color:var(--ink);border-radius:7px;padding:7px 12px;font:600 .84rem system-ui;cursor:pointer;text-decoration:none}.btn2:hover{border-color:var(--acc)}.btn2.pri{background:var(--acc);color:#fff;border-color:var(--acc)}
+.pedtabs{display:flex;gap:4px;border-bottom:2px solid var(--ln);margin:0 0 12px}.pedtabs button{border:0;background:none;padding:8px 14px;font:600 .88rem system-ui;color:var(--mut);cursor:pointer;border-bottom:3px solid transparent;margin-bottom:-2px}.pedtabs button.on{color:var(--ink);border-color:var(--acc)}
+.prov{background:var(--pn);border:1px solid var(--ln);border-radius:10px;padding:12px 14px;margin:0 0 12px}.prov h4{margin:0 0 8px;display:flex;gap:8px;align-items:center;flex-wrap:wrap}.prov h4 input{font:700 1rem system-ui;border:1px solid var(--ln);border-radius:6px;padding:4px 8px;flex:1;min-width:180px}
+.pg2{display:grid;grid-template-columns:repeat(auto-fit,minmax(min(100%,230px),1fr));gap:6px 12px}.pg2 label{display:flex;flex-direction:column;font-size:.76rem;color:var(--mut);gap:2px}.pg2 input,.pg2 select,.pg2 textarea,.prov td input{font:inherit;font-size:.86rem;color:var(--ink);border:1px solid var(--ln);border-radius:5px;padding:4px 6px;background:#fff;width:100%}.prov td input{text-align:right}
+tr.win td{background:#e5f1e2;font-weight:600}.tag2{display:inline-block;font-size:.7rem;font-weight:700;border-radius:99px;padding:1px 8px;background:#efe6d9;color:#7a4a22}
 .hoja{background:#fff;border:1px solid var(--ln);border-radius:8px;padding:14mm 13mm;margin:0 auto 14px;max-width:210mm;font-size:9.5pt;line-height:1.4;color:#1d1b18}
 .hoja h1{font-size:15pt;margin:0 0 2mm}.hoja h2{font-size:11.5pt;margin:5mm 0 2mm;border-bottom:1.5px solid #1d1b18;padding-bottom:1mm}.hoja h3{font-size:10pt;margin:3mm 0 1mm}
 .hoja table{font-size:8.3pt}.hoja th,.hoja td{padding:1.6px 4px;line-height:1.25}.hoja td .note{font-size:7.4pt}.hoja .meta{display:flex;justify-content:space-between;gap:10px;color:#6c655c;font-size:8.5pt;border-bottom:1px solid #ccc;padding-bottom:2mm;margin-bottom:3mm}
 .hoja .fill td{height:7mm}.hoja .pie{margin-top:4mm;color:#6c655c;font-size:7.8pt;border-top:1px solid #ccc;padding-top:1.5mm;display:flex;justify-content:space-between}
 .hoja svg{width:100%;height:auto;display:block;border:1px solid #ddd;border-radius:4px;margin:1mm 0}
-@media print{@page{size:A4;margin:0}body{background:#fff}.hoja{border:0;border-radius:0;margin:0;max-width:none;width:210mm;min-height:297mm;page-break-after:always}}
+@media print{.noprint,#resp{display:none!important}@page{size:A4;margin:0}body{background:#fff}.hoja{border:0;border-radius:0;margin:0;max-width:none;width:210mm;min-height:297mm;page-break-after:always}}
 </style></head><body>
 <header><h1>Locales comerciales · Avda. Pedragosa Sierra</h1>
 <p>Juan Carlos García · padrones 10596 · 10597 · 10598, Punta del Este, Maldonado · proyecto tipo de 250 m² sobre el 10596, replicable en los otros dos · Smart Building Uruguay</p>
@@ -143,8 +148,11 @@ body.pedido header,body.pedido .bar,body.pedido .foot,body.pedido .noprint{displ
 
 <section class="pg" id="p-ped">
  <div class="noprint"><h2>Pedido de cotización · estructura metálica</h2>
- <p class="sub">Documento para mandar a talleres: alcance, materiales, protección, planilla de piezas con marcas, croquis y formulario para que coticen todos igual. <a href="SBU-Pedido-cotizacion-estructura-Pedragosa.pdf" target="_blank" rel="noopener">Descargar el PDF</a> · se imprime igual desde el navegador (Ctrl + P).</p></div>
+ <p class="sub">Para mandar a los talleres: alcance, materiales, protección, planilla de piezas con marcas, croquis y formulario para que coticen todos igual. En la otra solapa, el panel para cargar lo que responde cada uno y compararlos.</p>
+ <div class="pedbar"><a class="btn2" href="SBU-Pedido-cotizacion-estructura-Pedragosa.pdf" download>⬇ Descargar PDF</a><a class="btn2" href="SBU-Pedido-cotizacion-estructura-Pedragosa.pdf" target="_blank" rel="noopener">Abrir PDF</a><button class="btn2" id="pedWa">Copiar mensaje para mandar</button><button class="btn2" id="pedPrint">Imprimir</button><span class="note" id="pedMsg"></span></div>
+ <div class="pedtabs"><button data-pv="doc" class="on">Documento</button><button data-pv="resp">Respuestas de proveedores <span id="nResp"></span></button></div></div>
  <div id="ped"></div>
+ <div id="resp" class="noprint" hidden></div>
 </section>
 
 <section class="pg" id="p-loc">
@@ -303,10 +311,11 @@ function rubrado(st = S) {
   it('Nudos bajo columnas: ensanche 1,2 × 1,2 en el cruce de vigas, colocación de pernos con plantilla', 12, 'u', 160);
   it('Terminación llaneado mecánico (queda como piso de local)', 250, 'm²', 4);
   cat('3 · Estructura de acero');
-  pq('est'); it('Acero laminado y tubos: fabricado, granallado, epoxi + poliuretano (ambiente marino) y montado', Math.round(ac.kg - ac.kgG), 'kg', 3.4, 'ver planilla de piezas');
+  pq('est'); if (EST_OVR && EST_OVR.t > 0) { R.push({ t: 'Estructura metálica completa según cotización de ' + EST_OVR.nom + ' (fabricación, protección, transporte y montaje)', q: 1, un: 'gl', pu: EST_OVR.t, c: EST_OVR.t, nota: 'cotización recibida', pq: 'est', mat: .55, ovr: true }); } else {
+  it('Acero laminado y tubos: fabricado, granallado, epoxi + poliuretano (ambiente marino) y montado', Math.round(ac.kg - ac.kgG), 'kg', 3.4, 'ver planilla de piezas');
   it('Perfiles conformados galvanizados (correas, largueros, bastidores) montados', Math.round(ac.kgG), 'kg', 2.6);
   it('Pernos de anclaje Ø24 con plantilla (48 u)', 48, 'u', 18);
-  it('Grúa / manitou para el montaje', 1, 'gl', 2400);
+  it('Grúa / manitou para el montaje', 1, 'gl', 2400); }
   cat('4 · Techo');
   pq('panmat'); it(E.roof.nom + ' (material)', SUP.techo, 'm²', E.roof.usd);
   pq('panel'); it('Montaje de techo, fijaciones y sellado de juntas', SUP.techo, 'm²', 10, '', 0.15);
@@ -880,6 +889,51 @@ function dPedCroquis(hN, cs) {
     s += R_(t, 26.9, .9, 27.5, 7.6, 'fill="#6f4222"') + R_(t, 25.0, 5.0, 26.9, 5.6, 'fill="#b5622a"') + lab(t, 26.0, 5.9, 'VCN', 8, '#b5622a') + R_(t, 26.6, 4.85, 27.8, 5.75, 'fill="none" stroke="#24211d" stroke-width="1.5"') + lab(t, 28.0, 5.3, 'clip con agujero colisado', 7.5, '#24211d', 'start') + lab(t, 28.0, 4.8, '(dilatación vertical)', 7.5, '#24211d', 'start') + lab(t, 27.6, 2.0, 'PN 120×120×4', 8, '#6f4222', 'start') + R_(t, 26.7, .9, 27.7, 1.05, 'fill="#24211d"') + lab(t, 27.2, .5, 'placa 200×200×12 + 4 brocas', 7.5, '#24211d');
     SV($('pk5'), W, H, s, sc); }
 }
+
+/* ================= RESPUESTAS DE PROVEEDORES (estructura) ================= */
+const RG = [['1', 'Laminados y tubos', 'kg'], ['2', 'Conformados galvanizados', 'kg'], ['3', 'Accesorios', 'kg'], ['4', 'Pernos de anclaje', 'u'], ['5', 'Protección epoxi + poliuretano', 'gl'], ['5b', 'Alternativa galvanizado en caliente', 'gl'], ['6', 'Planos de taller', 'gl'], ['7', 'Transporte', 'gl'], ['8', 'Montaje con grúa', 'gl']];
+let PROV = []; try { PROV = JSON.parse(localStorage.getItem('jcg-cotiz-est') || '[]') } catch (e) {}
+let EST_OVR = null; try { EST_OVR = JSON.parse(localStorage.getItem('jcg-est-ovr') || 'null') } catch (e) {}
+const guardarProv = () => { try { localStorage.setItem('jcg-cotiz-est', JSON.stringify(PROV)); localStorage.setItem('jcg-est-ovr', JSON.stringify(EST_OVR)) } catch (e) {} };
+const num = v => { const x = parseFloat(String(v || '').replace(/\./g, '').replace(',', '.')); return isFinite(x) ? x : 0 };
+function totProv(p) { const pr = p.prot === 'galv' ? '5b' : '5'; const base = RG.filter(r => r[0] !== '5' && r[0] !== '5b').reduce((t, r) => t + num(p.r[r[0]]), 0) + num(p.r[pr]); return p.totalManual ? num(p.totalManual) : base }
+function renderResp() {
+  const el = $('resp'); if (!el) return;
+  const P = piezas(S.env), kg = P.reduce((t, p) => t + p.kg, 0), sv = EST_OVR; EST_OVR = null; const r = rubrado({ ...S }); EST_OVR = sv; const estRub = r.R.filter(x => x.pq === 'est').reduce((t, x) => t + x.c, 0);
+  const cant = { '1': Math.round(P.filter(p => /lam|tub/.test(p.grupo)).reduce((a, p) => a + p.kg, 0)), '2': Math.round(P.filter(p => p.grupo === 'gal').reduce((a, p) => a + p.kg, 0)), '3': Math.round(P.filter(p => p.grupo === 'acc').reduce((a, p) => a + p.kg, 0)), '4': 48 };
+  $('nResp').textContent = PROV.length ? `(${PROV.length})` : '';
+  const vals = PROV.map(totProv), conTot = vals.filter(v => v > 0), min = conTot.length ? Math.min(...conTot) : 0;
+  let h = `<div class="pedbar"><button class="btn2 pri" id="rpAdd">+ Agregar proveedor</button><button class="btn2" id="rpExp">Copiar respaldo</button><button class="btn2" id="rpImp">Pegar respaldo</button><button class="btn2" id="rpRes">Copiar comparativo para WhatsApp</button><span class="note" id="rpMsg">Se guarda en este navegador. Con "Copiar respaldo" lo pasás a otro equipo o me lo mandás.</span></div>
+  <div id="rpBox" hidden class="prov"><textarea id="rpTxt" rows="4" style="width:100%" placeholder="Pegá acá el respaldo y tocá Importar"></textarea><button class="btn2" id="rpOk">Importar</button></div>`;
+  // comparativo
+  h += `<div class="card"><h3 style="margin-top:0">Comparativo</h3>`;
+  if (!PROV.length) h += `<p class="note">Todavía no cargaste respuestas. Referencia de SBU para comparar: <b>${u$(estRub)}</b> sin IVA (${Math.round(kg).toLocaleString('es-UY')} kg, ${f2(estRub / kg)} USD/kg con montaje y protección).</p>`;
+  else h += `<table><tr><th>Proveedor</th><th class="n">Total sin IVA</th><th class="n">USD/kg</th><th class="n">vs. estimado SBU</th><th>Protección</th><th class="n">Fabricación</th><th class="n">Montaje</th><th class="n">Edificio repetido</th><th>Estado</th><th></th></tr>
+    <tr><td><i>Estimado SBU (rubrado)</i></td><td class="n">${u$(estRub)}</td><td class="n">${f2(estRub / kg)}</td><td class="n">—</td><td>epoxi + PU</td><td class="n">—</td><td class="n">—</td><td class="n">—</td><td></td><td></td></tr>` + PROV.map((p, i) => { const t = vals[i]; return `<tr class="${t && t === min ? 'win' : ''}"><td>${p.nom || 'Proveedor ' + (i + 1)}${t && t === min ? ' <span class="tag2">más barato</span>' : ''}</td><td class="n">${t ? u$(t) : '—'}</td><td class="n">${t ? f2(t / kg) : '—'}</td><td class="n">${t ? (t > estRub ? '+' : '−') + u$(Math.abs(t - estRub)) + ` (${f1((t / estRub - 1) * 100)} %)` : '—'}</td><td>${p.prot === 'galv' ? 'galvanizado' : 'epoxi + PU'}</td><td class="n">${p.fab || '—'}</td><td class="n">${p.mon || '—'}</td><td class="n">${p.rep ? u$(num(p.rep)) : '—'}</td><td>${p.est || 'recibida'}</td><td>${t ? `<button class="btn2" data-usar="${i}">${EST_OVR && EST_OVR.i === i ? '✓ en el rubrado' : 'Usar en el rubrado'}</button>` : ''}</td></tr>`; }).join('') + `</table>${EST_OVR ? `<p class="note">El rubrado usa la cotización de <b>${EST_OVR.nom}</b> (${u$(EST_OVR.t)}) en lugar del estimado. <button class="btn2" data-usar="-1">Volver al estimado</button></p>` : '<p class="note">"Usar en el rubrado" reemplaza el estimado de estructura por esa cotización y recalcula precio, subcontratos y rentabilidad.</p>'}`;
+  h += `</div>`;
+  // fichas
+  h += PROV.map((p, i) => `<div class="prov" data-i="${i}"><h4><input data-f="nom" value="${(p.nom || '').replace(/"/g, '&quot;')}" placeholder="Nombre del taller"><select data-f="est"><option${p.est === 'pedida' ? ' selected' : ''}>pedida</option><option${!p.est || p.est === 'recibida' ? ' selected' : ''}>recibida</option><option${p.est === 'en revisión' ? ' selected' : ''}>en revisión</option><option${p.est === 'descartada' ? ' selected' : ''}>descartada</option><option${p.est === 'elegida' ? ' selected' : ''}>elegida</option></select><button class="btn2" data-del="${i}">Borrar</button></h4>
+   <div class="pg2"><label>Contacto<input data-f="con" value="${p.con || ''}"></label><label>Teléfono / mail<input data-f="tel" value="${p.tel || ''}"></label><label>Fecha de la oferta<input type="date" data-f="fec" value="${p.fec || ''}"></label><label>Protección que cotiza<select data-f="prot"><option value="epoxi"${p.prot !== 'galv' ? ' selected' : ''}>epoxi + poliuretano (renglón 5)</option><option value="galv"${p.prot === 'galv' ? ' selected' : ''}>galvanizado en caliente (5b)</option></select></label></div>
+   <table style="margin-top:8px"><tr><th>#</th><th>Renglón</th><th class="n">Cantidad</th><th class="n" style="width:150px">Total USD sin IVA</th><th class="n">Unitario</th></tr>${RG.map(g => `<tr><td>${g[0]}</td><td>${g[1]}</td><td class="n">${cant[g[0]] ? cant[g[0]].toLocaleString('es-UY') + ' ' + g[2] : g[2]}</td><td><input data-r="${g[0]}" value="${p.r[g[0]] || ''}" inputmode="decimal"></td><td class="n">${num(p.r[g[0]]) && cant[g[0]] ? f2(num(p.r[g[0]]) / cant[g[0]]) + ' /' + g[2] : ''}</td></tr>`).join('')}
+   <tr class="tt"><td></td><td>Total sin IVA ${p.totalManual ? '(cargado a mano)' : '(suma de renglones)'}</td><td></td><td><input data-f="totalManual" value="${p.totalManual || ''}" placeholder="${u$(totProv({ ...p, totalManual: '' }))}"></td><td class="n">${totProv(p) ? f2(totProv(p) / kg) + ' /kg' : ''}</td></tr></table>
+   <div class="pg2" style="margin-top:8px"><label>Precio por kg adicional (renglón 9)<input data-f="kgad" value="${p.kgad || ''}"></label><label>Plazo de fabricación<input data-f="fab" value="${p.fab || ''}" placeholder="ej. 30 días"></label><label>Días de montaje<input data-f="mon" value="${p.mon || ''}"></label><label>Precio por edificio repetido<input data-f="rep" value="${p.rep || ''}"></label><label>Forma de pago<input data-f="pag" value="${p.pag || ''}"></label><label>Validez<input data-f="val" value="${p.val || ''}"></label><label>Link al PDF o foto de la oferta<input data-f="lnk" value="${p.lnk || ''}" placeholder="Drive, WhatsApp…"></label></div>
+   <label style="display:block;margin-top:6px;font-size:.76rem;color:var(--mut)">Excluye / observaciones / alternativas que propone<textarea data-f="obs" rows="2" style="width:100%;font:inherit;border:1px solid var(--ln);border-radius:5px;padding:5px">${p.obs || ''}</textarea></label></div>`).join('');
+  el.innerHTML = h;
+}
+document.addEventListener('click', async e => {
+  const b = e.target.closest('button'); if (!b) return;
+  if (b.dataset.pv) { document.querySelectorAll('.pedtabs button').forEach(x => x.classList.toggle('on', x === b)); $('ped').hidden = b.dataset.pv !== 'doc'; $('resp').hidden = b.dataset.pv !== 'resp'; if (b.dataset.pv === 'resp') renderResp(); return; }
+  if (b.id === 'rpAdd') { PROV.push({ r: {}, est: 'pedida', fec: new Date().toISOString().slice(0, 10) }); guardarProv(); renderResp(); return; }
+  if (b.dataset.del != null) { if (b.dataset.ok) { PROV.splice(+b.dataset.del, 1); if (EST_OVR && EST_OVR.i === +b.dataset.del) EST_OVR = null; guardarProv(); upd(); renderResp() } else { b.dataset.ok = 1; b.textContent = '¿Seguro?' } return; }
+  if (b.dataset.usar != null) { const i = +b.dataset.usar; EST_OVR = i < 0 ? null : { i, nom: PROV[i].nom || 'Proveedor ' + (i + 1), t: totProv(PROV[i]) }; guardarProv(); upd(); renderResp(); return; }
+  if (b.id === 'rpExp') { try { await navigator.clipboard.writeText(JSON.stringify(PROV)); $('rpMsg').textContent = 'Respaldo copiado.' } catch (x) { $('rpBox').hidden = false; $('rpTxt').value = JSON.stringify(PROV); $('rpTxt').select() } return; }
+  if (b.id === 'rpImp') { $('rpBox').hidden = false; return; }
+  if (b.id === 'rpOk') { try { const a = JSON.parse($('rpTxt').value); if (Array.isArray(a)) { PROV = a; guardarProv(); renderResp() } } catch (x) { $('rpMsg').textContent = 'No se pudo leer el respaldo.' } return; }
+  if (b.id === 'rpRes') { const kg = piezas(S.env).reduce((t, p) => t + p.kg, 0); const txt = 'Comparativo estructura metálica · Locales Pedragosa Sierra (' + Math.round(kg).toLocaleString('es-UY') + ' kg)\n' + PROV.map((p, i) => { const t = totProv(p); return `• ${p.nom || 'Proveedor ' + (i + 1)}: ${t ? u$(t) + ' sin IVA · ' + f2(t / kg) + ' USD/kg' : 'sin precio'}${p.fab ? ' · fabricación ' + p.fab : ''}${p.mon ? ' · montaje ' + p.mon + ' días' : ''}${p.prot === 'galv' ? ' · galvanizado' : ''} · ${p.est || ''}` }).join('\n'); try { await navigator.clipboard.writeText(txt); $('rpMsg').textContent = 'Comparativo copiado.' } catch (x) { $('rpBox').hidden = false; $('rpTxt').value = txt } return; }
+  if (b.id === 'pedPrint') { window.print(); return; }
+  if (b.id === 'pedWa') { const url = location.href.split('#')[0].replace(/[^/]*$/, '') + 'SBU-Pedido-cotizacion-estructura-Pedragosa.pdf'; const txt = `Hola, ¿cómo andás? Te paso un pedido de cotización de estructura metálica para un edificio de locales en Punta del Este (Avda. Pedragosa Sierra): 6 pórticos de 10 m de luz, unos ${Math.round(piezas(S.env).reduce((t, p) => t + p.kg, 0) / 100) * 100} kg, fabricada, pintada para ambiente marino y montada. Adentro está la planilla de piezas, los croquis y un formulario para que coticemos todos igual: ${url}\nGracias. Ramiro Portugau · Smart Building Uruguay · 098 526 226`; try { await navigator.clipboard.writeText(txt); $('pedMsg').textContent = 'Mensaje copiado: pegalo en WhatsApp o en un mail.' } catch (x) { $('pedMsg').textContent = txt } return; }
+});
+document.addEventListener('input', e => { const c = e.target.closest('.prov[data-i]'); if (!c) return; const p = PROV[+c.dataset.i]; if (e.target.dataset.f) p[e.target.dataset.f] = e.target.value; if (e.target.dataset.r) p.r[e.target.dataset.r] = e.target.value; guardarProv(); clearTimeout(window.__rpT); window.__rpT = setTimeout(() => { const foc = document.activeElement, sel = foc && foc.dataset ? [foc.dataset.f, foc.dataset.r] : null; const ci = +c.dataset.i; if (EST_OVR && EST_OVR.i === ci) { EST_OVR.t = totProv(p); EST_OVR.nom = p.nom || EST_OVR.nom; guardarProv(); upd(); } renderResp(); if (sel) { const q = document.querySelector(`.prov[data-i="${ci}"] [data-${sel[0] ? 'f' : 'r'}="${sel[0] || sel[1]}"]`); if (q) { q.focus(); const v = q.value; if (q.setSelectionRange && q.type !== 'date') q.setSelectionRange(v.length, v.length) } } }, 700); });
 
 function renderRent() {
   const k = ivaK(), base = +$('inAlq').value || 0, vac = (+$('inVac').value || 0) / 100, gas = (+$('inGas').value || 0) / 100, ter = +$('inTer').value || 0;
