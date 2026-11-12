@@ -2328,7 +2328,7 @@ const v3 = (() => {
    (23/12/2026–9/1/2027 y 22–27/3/2027, IGTSS). Lo usan la pestaña de cronograma y la animación. */
 const LIC = [['2026-12-23', '2027-01-09', 'Licencia de la construcción, 1.er período'], ['2027-03-22', '2027-03-27', 'Licencia de la construcción, 2.º período (Turismo)']];
 const FER = ['2026-12-25', '2027-01-01', '2027-01-06', '2027-02-08', '2027-02-09', '2027-05-01'];
-const CR = { ini: '2026-12-07', meta: '2027-04-16', firma: '2026-11-20' };
+const CR = { ini: '2026-12-07', meta: '2027-04-16', firma: '2026-11-20', estAnt: 'ini' };
 const dS = d => `${d.getFullYear()}-${String(d.getMonth() + 1).padStart(2, '0')}-${String(d.getDate()).padStart(2, '0')}`, D0 = s => new Date(s + 'T12:00:00');
 const addD = (d, n) => { const x = new Date(d); x.setDate(x.getDate() + n); return x; };
 const habil = d => { const s = dS(d), w = d.getDay(); return w > 0 && w < 6 && !FER.includes(s) && !LIC.some(([a, b]) => s >= a && s <= b); };
@@ -2337,7 +2337,7 @@ const masHab = (d, n) => { let x = sigHab(d); for (let i = 1; i < n; i++) x = si
 const fFe = (d, y) => d.toLocaleDateString('es-UY', { weekday: 'short', day: 'numeric', month: 'short', ...(y ? { year: 'numeric' } : {}) });
 const fCo = d => d.toLocaleDateString('es-UY', { day: 'numeric', month: 'short' });
 const SUELO_D = { S0: 2, S1: 3, S2: 4, S3: 5, S4: 7 };
-const ETAPAS = [['Proyecto, permisos e inicio anticipado', '#6c655c', 'Pablo Alcoba dibuja y presenta; el ingeniero calcula la fundación primero para poder arrancar con inicio anticipado.'],
+const ETAPAS = [['Proyecto, permisos y acopios', '#6c655c', 'Pablo Alcoba dibuja y presenta; el ingeniero calcula la fundación primero para poder arrancar con inicio anticipado. Fabricación de la estructura, los paneles y las vidrieras fuera de la obra.'],
   ['Etapa 1 · Suelo, fundación, previsiones y platinas', '#8b5a2b', 'Lo que se hace este año: movimiento de suelos, vigas de fundación, todo lo que va bajo la platea, pernos y platinas de las 12 columnas y la platea llaneada. Cura durante la licencia.'],
   ['Etapa 2 · Estructura metálica', '#b5622a', 'Al volver de la licencia: pórticos, arriostramiento, correas, largueros y bastidores de fachada. El taller fabrica desde diciembre.'],
   ['Etapa 3 · Envolvente y fachada', '#2f6f86', 'Techo de panel y canalón, muros, vidrieras y portal, faja, visera, brise y cenefa: el edificio queda cerrado.'],
@@ -2350,11 +2350,9 @@ function plan(st = S) {
   add('pej', 0, 'Pablo Alcoba + ingeniero: implantación, fundación, sanitaria bajo platea y cálculo de fundación', 8, { fijo: '2026-11-18' });
   add('firma', 0, 'Firma del contrato con Juan Carlos', 1, { fijo: CR.firma, hito: true });
   add('bps', 0, 'Registro de obra en BPS y permiso con pedido de inicio anticipado en la Intendencia', 2, { fijo: '2026-11-30' });
-  add('tal', 0, 'Encargo de la estructura al taller (planos de taller y fabricación)', 1, { fijo: '2026-12-01', hito: true });
   add('exc', 0, 'Límite para pedir excepción a la IGTSS si hay que trabajar en la licencia', 1, { fijo: '2026-12-04', hito: true });
   add('ia', 0, 'Inicio anticipado autorizado (a confirmar)', 1, { fijo: '2026-12-04', hito: true });
   add('pc', 0, 'Resto del proyecto ejecutivo y permiso completo: arquitectura, estructura, sanitaria, eléctrica, Bomberos', 25, { fijo: '2026-12-01' });
-  add('ped', 0, 'Pedido de paneles y vidrieras (llegan en enero)', 1, { fijo: '2026-12-14', hito: true });
   add('fRep', 1, 'Obrador, cerco y replanteo de ejes', 1, { ini: 1 });
   add('suelo', 1, 'Movimiento de suelos: ' + (SUELO[st.suelo] || SUELO.S0).n.toLowerCase(), SUELO_D[st.suelo] || 2, { fs: 'fRep' });
   add('fExc', 1, 'Excavación de zanjas y pozos de nudos', 2, { fs: 'suelo' });
@@ -2365,41 +2363,48 @@ function plan(st = S) {
   add('fTos', 1, 'Relleno de tosca compactada', 2, { fs: 'fHv' });
   add('fMal', 1, 'Nylon, separadores y malla doble', 1, { fs: 'fTos' });
   add('fHp', 1, 'Hormigonado de platea con bomba y llaneado (cura 7 días)', 1, { fs: 'fMal', espera: 7 });
-  add('est', 2, 'Montaje de pórticos', 3, { fs: 'fHp' }); add('cru', 2, 'Arriostramiento', 1, { fs: 'est' }); add('cor', 2, 'Correas, tensores y tornapuntas', 2, { fs: 'cru' }); add('lar', 2, 'Largueros y montantes de pretil', 2, { fs: 'cor' }); add('bas', 2, 'Parantes y bastidores de fachada', 3, { fs: 'lar' });
-  add('techo', 3, 'Techo de panel y canalón', 5, { fs: 'bas' }); add('muro', 3, 'Muros de panel', 7, { ss: 'techo', lag: 3 }); add('vid', 3, 'Vidrieras y portal', 5, { ss: 'muro', lag: 4 }); add('faja', 3, 'Faja, visera y brise', 4, { ss: 'vid', lag: 3 }); add('cen', 3, 'Cenefa negra', 2, { fs: 'faja' });
+  add('tal', 0, 'Anticipo y encargo de la estructura al taller', 1, { hito: true, at: CR.estAnt === 'ini' ? 'fRep' : 'fHp', atF: CR.estAnt !== 'ini' });
+  add('fab', 0, 'Planos de taller, fabricación, granallado y pintura de la estructura', 15, { fs: 'tal' });
+  add('est', 2, 'Montaje de pórticos', 3, { fs: ['fHp', 'fab'] }); add('cru', 2, 'Arriostramiento', 1, { fs: 'est' }); add('cor', 2, 'Correas, tensores y tornapuntas', 2, { fs: 'cru' }); add('lar', 2, 'Largueros y montantes de pretil', 2, { fs: 'cor' }); add('bas', 2, 'Parantes y bastidores de fachada', 3, { fs: 'lar' });
+  add('ped', 0, 'Pedido de paneles y vidrieras con seña', 1, { hito: true, at: 'est' });
+  add('pent', 0, 'Fabricación y entrega de paneles (BMC)', 12, { fs: 'ped' }); add('alu', 0, 'Fabricación de vidrieras y portal', 20, { fs: 'ped' });
+  add('techo', 3, 'Techo de panel y canalón', 5, { fs: ['bas', 'pent'] }); add('muro', 3, 'Muros de panel', 7, { ss: 'techo', lag: 3 }); add('vid', 3, 'Vidrieras y portal', 5, { ss: 'muro', lag: 4, fs: 'alu' }); add('faja', 3, 'Faja, visera y brise', 4, { ss: 'vid', lag: 3 }); add('cen', 3, 'Cenefa negra', 2, { fs: 'faja' });
   add('div', 4, 'Divisorios y cerramientos de baño', 4, { fs: 'techo' }); add('iSan', 4, 'Sanitaria interior', 3, { ss: 'div', lag: 2 }); add('iEle', 4, 'Eléctrica e iluminación', 4, { ss: 'iSan', lag: 1 }); add('ter', 4, 'Terminaciones: masillado y pintura, cerámica de baños, artefactos, luminarias y tableros', 12, { fs: 'iEle' });
   add('ext', 5, 'Exteriores: plaza, estacionamiento, vereda y canteros', 8, { fs: 'cen' }); add('con', 5, 'Conexiones de UTE y OSE, pruebas y limpieza final', 5, { fs: ['ter', 'ext'] }); add('mar', 5, 'Margen por lluvia, atrasos de proveedores y trámites', 10, { fs: 'con', margen: true }); add('hab', 5, 'Inspección de Bomberos, final de obra y entrega', 4, { fs: 'mar' });
   T.forEach(t => { let s;
     if (t.fijo) { s = D0(t.fijo); t.s = s; t.f = t.d > 1 ? masHab(s, t.d) : s; return; }
-    if (t.ini) s = D0(CR.ini); else if (t.ss) s = masHab(by[t.ss].s, 1 + (t.lag || 0)); else s = [].concat(t.fs).reduce((a, k) => { const p = by[k], x = addD(p.f, 1 + (p.espera || 0)); return x > a ? x : a; }, new Date(0));
+    if (t.ini) s = D0(CR.ini); else if (t.at) s = t.atF ? by[t.at].f : by[t.at].s; else { s = new Date(0); if (t.ss) s = masHab(by[t.ss].s, 1 + (t.lag || 0)); if (t.fs) [].concat(t.fs).forEach(k => { const p = by[k], x = addD(p.f, 1 + (p.espera || 0)); if (x > s) s = x; }); }
     t.s = sigHab(s); t.f = masHab(t.s, t.d); });
   const o0 = by.fRep.s, idx = d => { let n = 0, x = new Date(o0); while (x <= d) { if (habil(x)) n++; x = addD(x, 1); } return n; };
   T.forEach(t => { if (t.e > 0) { t.d0 = idx(t.s); t.d1 = idx(t.f); } });
   const E = ETAPAS.map((x, i) => { const ts = T.filter(t => t.e === i); return { i, n: x[0], c: x[1], q: x[2], s: new Date(Math.min(...ts.map(t => t.s))), f: new Date(Math.max(...ts.map(t => t.f))), ts }; });
   return { T, by, E, idx, total: by.hab.d1, fin: by.hab.f, antes: by.fHp.f < D0(LIC[0][0]) };
 }
-/* pagos: el cliente paga por hito; SBU paga materiales y subcontratos según avance y acopios */
+/* pagos: el cliente paga por etapa, con anticipo para acopiar y saldo contra entrega; SBU paga según avance y acopios */
+const FASEP = /^Proyecto ejecutivo|^Ingeniero|^Agrimensor|^Registro de obra/;
 function pagos(st = S) {
-  const P = plan(st), r = rubrado(st), k = ivaK(), B = P.by; let cn = 0; const IT = [];
+  const P = plan(st), r = rubrado(st), k = ivaK(), B = P.by, KV = r.venta / r.costo; let cn = 0; const IT = [];
   r.R.forEach(x => { if (x.cat) cn = parseInt(x.cat); else IT.push({ ...x, cn }); });
-  const fE = i => P.E[i].f, mid = i => new Date((P.E[i].s.getTime() + P.E[i].f.getTime()) / 2);
-  const et = x => /Previsión universal|^Colector|^Cámaras|^Pluviales|^Conexión a saneamiento|^Cámara separadora/.test(x.t) ? 1 : x.cn <= 2 ? 1 : x.cn === 3 ? 2 : x.cn <= 5 ? 3 : x.cn <= 10 ? 4 : x.cn === 11 ? 5 : 0;
-  const G = []; IT.forEach(x => { const e = et(x);
+  const et = x => x.pq === 'suelos' ? 0 : /Previsión universal|^Colector|^Cámaras|^Pluviales|^Conexión a saneamiento|^Cámara separadora/.test(x.t) ? 1 : x.cn <= 2 ? 1 : x.cn === 3 ? 2 : x.cn <= 5 ? 3 : x.cn <= 10 ? 4 : x.cn === 11 ? 5 : -1;
+  const cE = [0, 0, 0, 0, 0, 0], G = [], fE = i => P.E[i].f, mid = i => new Date((P.E[i].s.getTime() + P.E[i].f.getTime()) / 2);
+  IT.forEach(x => { const e = et(x); if (e >= 0) cE[e] += x.c; else for (let i = 1; i <= 5; i++) cE[i] += x.c / 5;
     if (x.cn === 3) { G.push([B.tal.s, x.c * .5]); G.push([fE(2), x.c * .5]); }
     else if (x.pq === 'panmat' || x.pq === 'alu') { G.push([B.ped.s, x.c * .5]); G.push([x.pq === 'alu' ? B.vid.f : B.techo.s, x.c * .5]); }
-    else if (e === 0) [1, 2, 3, 4, 5].forEach(i => G.push([mid(i), x.c / 5]));
-    else G.push([fE(e), x.c]); });
-  const v = r.venta, g = r.gest;
-  const H = [['Firma del contrato', B.firma.s, .25, .5, 'anticipo: proyecto, cálculo, estudio de suelos, acopio de la estructura y de la fundación'],
-    ['Inicio de obra con inicio anticipado', B.fRep.s, .15, 0, 'obrador, movimiento de suelos y fundación'],
-    ['Platea, previsiones y platinas terminadas', B.fHp.f, .15, 0, 'antes de la licencia; cubre el acopio de paneles y vidrieras'],
-    ['Estructura metálica montada', fE(2), .15, .3, 'y permiso de construcción completo presentado'],
-    ['Edificio cerrado: techo, muros y vidrieras', B.vid.f > B.muro.f ? B.vid.f : B.muro.f, .15, 0, 'envolvente terminada'],
-    ['Instalaciones y terminaciones', B.ter.f, .1, 0, 'divisorios, baños, sanitaria, eléctrica, pintura'],
-    ['Entrega con habilitaciones', B.hab.f, .05, .2, 'final de obra, Bomberos y conexiones']];
-  const hit = H.map(h => ({ n: h[0], d: h[1], po: h[2], pg: h[3], q: h[4], usd: (v * h[2] + g * h[3]) * k }));
-  let acC = 0, acP = 0; hit.forEach(h => { acP += h.usd; acC = G.filter(([d]) => d <= h.d).reduce((t, x) => t + x[1], 0) * k; h.acP = acP; h.acC = acC; });
-  return { P, hit, r, k, G };
+    else if (e === 0) G.push([B.suel.f, x.c]); else if (e < 0) [1, 2, 3, 4, 5].forEach(i => G.push([mid(i), x.c / 5])); else G.push([fE(e), x.c]); });
+  const gP = r.G.filter(g => FASEP.test(g[0])).reduce((t, g) => t + g[1], 0) + cE[0] * KV, gR = r.gest - r.G.filter(g => FASEP.test(g[0])).reduce((t, g) => t + g[1], 0), v = i => cE[i] * KV, eA = CR.estAnt === 'ini';
+  const H = [['Firma: proyecto ejecutivo y permiso con inicio anticipado', B.firma.s, gP, 'estudio de suelos, cálculo y planos de estructura del ingeniero, planos de sanitaria y eléctrica y ajuste del plano general (Pablo Alcoba), agrimensor, registro en BPS y presentación en la Intendencia'],
+    ['Inicio de obra: anticipo de la etapa 1', B.fRep.s, v(1) * .5 + (eA ? v(2) * .4 : 0), 'movimiento de suelos, hormigón, hierro y previsiones de sanitaria y eléctrica' + (eA ? ' + anticipo de la estructura para que el taller fabrique en diciembre' : '')],
+    ['Platea terminada: saldo de la etapa 1' + (eA ? '' : ' + anticipo de la estructura'), B.fHp.f, v(1) * .5 + (eA ? 0 : v(2) * .4), 'contra entrega de fundación, previsiones, platinas y platea' + (eA ? '' : '; el anticipo es para acopiar la estructura metálica')],
+    ['Estructura montada: saldo de estructura + acopio de envolvente', B.bas.f, v(2) * .6 + v(3) * .4 + gR * .5, 'seña de paneles y vidrieras, y la mitad de la gestión restante'],
+    ['Edificio cerrado: saldo de la envolvente', B.vid.f > B.cen.f ? B.vid.f : B.cen.f, v(3) * .6, 'techo, muros, vidrieras, faja, brise y cenefa'],
+    ['Interior terminado', B.ter.f, v(4), 'divisorios, baños, sanitaria, eléctrica y terminaciones'],
+    ['Entrega con habilitaciones', B.hab.f, v(5) + gR * .5, 'exteriores, conexiones, Bomberos y final de obra']];
+  const tot = r.venta + r.gest, hit = H.map(h => ({ n: h[0], d: h[1], usd: h[2] * k, pct: h[2] / tot, q: h[3] }));
+  let acP = 0; hit.forEach(h => { acP += h.usd; h.acP = acP; h.acC = G.filter(([d]) => d <= h.d).reduce((t, x) => t + x[1], 0) * k; h.min = Math.min(...G.filter(([d]) => d <= h.d).map(([d]) => d)); });
+  // peor momento de caja: justo antes de cada cobro
+  const fechas = [...new Set(G.map(([d]) => +d))].sort((a, b) => a - b); let peor = 0, cuando = null;
+  fechas.forEach(f => { const c = G.filter(([d]) => +d <= f).reduce((t, x) => t + x[1], 0) * k, p = hit.filter(h => +h.d <= f).reduce((t, h) => t + h.usd, 0), sal = p - c; if (sal < peor) { peor = sal; cuando = new Date(f); } });
+  return { P, hit, r, k, G, peor, cuando };
 }
 function renderCrono() {
   const el = $('crGantt'); if (!el) return; const P = plan(), { hit, r, k } = pagos(), lbl = S.iva ? 'con IVA' : 'sin IVA';
@@ -2428,18 +2433,21 @@ function renderCrono() {
   const C = r.costo; let ac = 0; const cE = [0, 0, 0, 0, 0, 0]; { let cn = 0; r.R.forEach(x => { if (x.cat) { cn = parseInt(x.cat); return; } const e = /Previsión universal|^Colector|^Cámaras|^Pluviales|^Conexión a saneamiento|^Cámara separadora/.test(x.t) || cn <= 2 ? 1 : cn === 3 ? 2 : cn <= 5 ? 3 : cn <= 10 ? 4 : cn === 11 ? 5 : 0; if (e) cE[e] += x.c; else for (let i = 1; i <= 5; i++) cE[i] += x.c / 5; }); }
   const ANI = { 1: 'fRep', 2: 'est', 3: 'techo', 4: 'div', 5: 'fin' };
   $('crEt').innerHTML = `<table><tr><th>Etapa</th><th>Fechas</th><th class="n">Días hábiles</th><th>Qué incluye</th><th class="n">Avance de obra</th><th></th></tr>${P.E.map(E => { if (E.i) ac += cE[E.i]; const dh = E.i ? P.idx(E.f) - P.idx(E.s) + 1 : '—';
-    return `<tr><td><b style="color:${E.c}">${E.n}</b></td><td>${fCo(E.s)} → ${fCo(E.f)}</td><td class="n">${dh}</td><td class="note">${E.q}</td><td class="n">${E.i ? Math.round(ac / C * 100) + ' %' : '—'}</td><td>${E.i ? `<button class="btn2" data-anim="${ANI[E.i]}">▶ en la animación</button>` : ''}</td></tr>`; }).join('')}</table>`;
+    return `<tr><td><b style="color:${E.c}">${E.n}</b></td><td>${fCo(E.s)} → ${fCo(E.f)}</td><td class="n">${dh}</td><td class="note">${E.i === 2 ? E.q.replace('El taller fabrica desde diciembre.', CR.estAnt === 'ini' ? 'El taller fabrica en diciembre, con el anticipo del inicio de obra.' : 'El taller fabrica recién en enero, con el anticipo de la platea.') : E.q}</td><td class="n">${E.i ? Math.round(ac / C * 100) + ' %' : '—'}</td><td>${E.i ? `<button class="btn2" data-anim="${ANI[E.i]}">▶ en la animación</button>` : ''}</td></tr>`; }).join('')}</table>`;
   // pagos
-  $('crPag').innerHTML = `<table><tr><th>#</th><th>Hito</th><th>Fecha estimada</th><th class="n">% obra</th><th class="n">% gestión</th><th class="n">Pago ${lbl}</th><th class="n">Acumulado cobrado</th><th class="n">Acumulado gastado por SBU</th><th class="n">Caja</th></tr>${hit.map((h, i) => `<tr><td>${i + 1}</td><td><b>${h.n}</b><br><span class="note">${h.q}</span></td><td>${fFe(h.d, true)}</td><td class="n">${Math.round(h.po * 100)} %</td><td class="n">${h.pg ? Math.round(h.pg * 100) + ' %' : '—'}</td><td class="n"><b>${u$(h.usd)}</b></td><td class="n">${u$(h.acP)}</td><td class="n">${u$(h.acC)}</td><td class="n ${h.acP >= h.acC ? 'ok' : 'bad'}">${h.acP >= h.acC ? '+' : '−'}${u$(Math.abs(h.acP - h.acC))}</td></tr>`).join('')}<tr class="tt"><td></td><td colspan="4">Total obra + gestión ${lbl}</td><td class="n">${u$(hit.reduce((t, h) => t + h.usd, 0))}</td><td colspan="3"></td></tr></table>
-  <p class="note">Aparte, los <b>aportes BPS de la obra (${u$(r.bps)})</b> los paga Juan Carlos al costo, mes a mes, según los jornales que se declaren: unos ${u$(r.bps / 5)} por mes de obra. "Gastado por SBU" es el costo directo con el momento real de pago: la estructura y los paneles se pagan mitad al encargar y mitad al recibir. La columna Caja muestra que con estos hitos SBU nunca pone plata propia.</p>`;
+  const pg = pagos(); $('crPag').innerHTML = `<div class="bar" style="position:static;border:0;padding:0 0 8px"><label>Anticipo de la estructura metálica <select id="crEstAnt"><option value="ini">con el inicio de obra (recomendado)</option><option value="plat">con la platea terminada</option></select></label><span class="note">El taller necesita unas 3 semanas de fabricación desde que cobra el anticipo; también para en la licencia.</span></div>
+  <table><tr><th>#</th><th>Hito</th><th>Fecha estimada</th><th class="n">% del total</th><th class="n">Pago ${lbl}</th><th class="n">Acumulado cobrado</th><th class="n">Acumulado gastado por SBU</th><th class="n">Caja</th></tr>${pg.hit.map((h, i) => `<tr><td>${i + 1}</td><td><b>${h.n}</b><br><span class="note">${h.q}</span></td><td>${fFe(h.d, true)}</td><td class="n">${f1(h.pct * 100)} %</td><td class="n"><b>${u$(h.usd)}</b></td><td class="n">${u$(h.acP)}</td><td class="n">${u$(h.acC)}</td><td class="n ${h.acP >= h.acC ? 'ok' : 'bad'}">${h.acP >= h.acC ? '+' : '−'}${u$(Math.abs(h.acP - h.acC))}</td></tr>`).join('')}<tr class="tt"><td></td><td colspan="3">Total obra + gestión ${lbl}</td><td class="n">${u$(pg.hit.reduce((t, h) => t + h.usd, 0))}</td><td colspan="3"></td></tr></table>
+  ${pg.peor < -500 ? `<div class="warn">En algún momento SBU adelanta plata: hasta <b>${u$(-pg.peor)}</b> el ${fFe(pg.cuando, true)}, porque paga la seña de paneles y vidrieras o el saldo del taller antes del cobro siguiente.</div>` : '<p class="note ok">Con estos hitos SBU no adelanta plata propia en ningún momento.</p>'}
+  <p class="note">Cada etapa se cobra por lo que cuesta, con el mismo margen del presupuesto: la mitad como anticipo para acopiar y el saldo contra entrega. Aparte, los <b>aportes BPS de la obra (${u$(r.bps)})</b> los paga Juan Carlos al costo, mes a mes, según los jornales declarados. "Gastado por SBU" es el costo directo en el momento real de pago: el taller y los paneles se pagan mitad al encargar y mitad al recibir.</p>`;
+  $('crEstAnt').value = CR.estAnt;
   $('crRie').innerHTML = `<ul class="c">
    <li><b>Inicio anticipado.</b> La Intendencia de Maldonado lo permite: se pide junto con el permiso y lleva la constancia de inscripción de la obra en BPS. Para presentar la primera semana de diciembre, el estudio de suelos y el cálculo de fundación tienen que estar a fin de noviembre.</li>
    <li><b>La platea antes de la licencia</b> sale justo con suelo firme. Con sustitución de 0,60 a 1,00 m se agregan 1 a 3 días: o se arranca antes, o se pide excepción a la IGTSS para trabajar los primeros días de la licencia (vence el 4 de diciembre). Lo dice el estudio de suelos: cambiá la opción de suelo arriba y el cronograma se recalcula.</li>
-   <li><b>Taller y paneles.</b> La estructura se encarga el 1 de diciembre y los paneles y vidrieras a mediados de diciembre, para tenerlos al volver de la licencia. Los talleres y BMC también paran del 23/12 al 9/1.</li>
+   <li><b>Taller y paneles.</b> La estructura se encarga cuando Juan Carlos paga su anticipo: con la platea terminada el taller arranca recién en enero, porque también para en la licencia; con el inicio de obra fabrica en diciembre. Paneles y vidrieras se señan al empezar el montaje (los paneles tardan unas 2 semanas y medio, las vidrieras unas 4).</li>
    <li><b>Carnaval y Turismo.</b> Contamos sin trabajar el 8 y 9 de febrero y la semana del 22 al 27 de marzo (segundo período de licencia).</li><li><b>Margen.</b> Hay 10 días hábiles de reserva por lluvia, atrasos de proveedores o trámites antes de la inspección final: con el plan base la entrega queda en ${fFe(P.fin, true)}, antes de la meta del 16 de abril.</li>
    <li><b>Lo que puede atrasar la entrega:</b> la habilitación de Bomberos y las conexiones de UTE y OSE, que no dependen de nosotros. Conviene pedirlas en marzo, con la obra cerrada.</li></ul>`;
 }
-document.addEventListener('change', e => { if (e.target.id === 'crIni' && e.target.value) { CR.ini = e.target.value; renderCrono(); v3.rebuild(); } });
+document.addEventListener('change', e => { if (e.target.id === 'crIni' && e.target.value) { CR.ini = e.target.value; renderCrono(); v3.rebuild(); } if (e.target.id === 'crEstAnt') { CR.estAnt = e.target.value; renderCrono(); v3.rebuild(); } });
 document.addEventListener('click', e => { const b = e.target.closest('[data-anim]'); if (b) { show('p-3d'); setTimeout(() => v3.animIr(b.dataset.anim), 400); } });
 
 /* ================= ACTUALIZAR ================= */
