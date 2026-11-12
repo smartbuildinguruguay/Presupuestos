@@ -55,6 +55,12 @@ ul.c{margin:6px 0;padding-left:18px}ul.c li{margin:3px 0}
   <div class="card"><img src="img/render.jpg" alt="Render de referencia" style="width:100%;border-radius:6px;display:block"><p class="note" style="margin:6px 0 0">Render de referencia enviado por el cliente.</p></div>
   <div class="card"><div class="k" id="kProy"></div><div id="resProy"></div></div>
  </div>
+ <div class="card"><h3 style="margin-top:0">Los padrones según Catastro (cédulas del 11/11/2026)</h3>
+  <table><tr><th>Padrón</th><th>Carpeta</th><th>Manzana</th><th class="n">Área del predio</th><th class="n">Edificado</th><th class="n">Valor catastral 2025</th><th>Nota</th></tr>
+  <tr><td><b>10596</b></td><td>99</td><td>1744</td><td class="n">1.000 m²</td><td class="n">0</td><td class="n">$ 1.324.703</td><td>proyecto tipo</td></tr>
+  <tr><td><b>10597</b></td><td>99</td><td>1744</td><td class="n">1.000 m²</td><td class="n">0</td><td class="n">$ 1.396.696</td><td>réplica etapa 2</td></tr>
+  <tr><td><b>10598</b></td><td>99</td><td>1744</td><td class="n">1.050 m²</td><td class="n">0</td><td class="n">$ 1.466.536</td><td>réplica etapa 3 · viene del padrón 9919 · DJCU 19/04/2024, ing. agrim. Fernando Pazos</td></tr></table>
+  <p class="note">Régimen común, localidad catastral Punta del Este. Los tres tienen la declaración jurada de caracterización urbana (art. 178, Ley 17.296) vigente hasta 2029. <b>Las cédulas no dan frente ni fondo:</b> las medidas de 21 × 47,6 m de este visor siguen siendo estimadas a partir del gráfico catastral. Para fijarlas hace falta el plano de mensura o de fraccionamiento (el del padrón madre 9919) o una mensura nueva. El valor catastral (en pesos) es el que se usa para Contribución, Primaria y Patrimonio; no es valor de mercado.</p></div>
  <div class="card"><h3 style="margin-top:0">Supuestos de normativa (a confirmar con la Intendencia de Maldonado)</h3><div id="norma"></div></div>
 </section>
 
@@ -370,12 +376,12 @@ function dRep() {
   const W = 66, H = 72, sc = 9, t = T(3, 5, sc, H);
   let s = '';
   s += R_(t, 48.6, -1, 58, 66, 'fill="#d8d6d2"') + `<text transform="translate(${t.X(54)} ${t.Y(32)}) rotate(-90)" text-anchor="middle" font-size="13" font-weight="700" fill="#555" ${FT}>AVDA. PEDRAGOSA SIERRA</text>`;
-  [[42, '10596', 'etapa 1'], [21, '10597', 'etapa 2'], [0, '10598', 'etapa 3']].forEach(([y0, n, e], i) => {
+  [[42, '10596 · 1.000 m²', 'etapa 1'], [21, '10597 · 1.000 m²', 'etapa 2'], [0, '10598 · 1.050 m²', 'etapa 3']].forEach(([y0, n, e], i) => {
     s += R_(t, 0, y0, LOT.D, y0 + LOT.F, `fill="${i ? '#f6f4ee' : '#eef3e6'}" stroke="#b23a2a" stroke-width="1.5"`);
     s += R_(t, B.E0 - 1, y0 + B.N0 + B.A, B.E0 + B.L + 1, y0 + LOT.F - .5, 'fill="#efe9dc"');
     s += R_(t, B.E0 + B.L + 1, y0 + .5, LOT.D, y0 + LOT.F - .5, 'fill="#e2e2e0"');
     s += R_(t, B.E0, y0 + B.N0, B.E0 + B.L, y0 + B.N0 + B.A, `fill="${i ? '#d8c3ad' : 'url(#hat)'}" stroke="#24211d" stroke-width="1.4"`);
-    s += TX(t, 5, y0 + 11, n, `font-size="14" font-weight="700" fill="#b23a2a" ${FT}`) + TX(t, 5, y0 + 8.6, e, `font-size="11" fill="#666" ${FT}`);
+    s += TX(t, 1, y0 + 11, n, `font-size="12" font-weight="700" fill="#b23a2a" ${FT}`) + TX(t, 1, y0 + 8.6, e, `font-size="11" fill="#666" ${FT}`, 'start');
   });
   s += cotaV(t, 0, 63, -1.3, '3 × 21 = 63 m de frente');
   s += norte(t.X(44), t.Y(67.5), .8);
@@ -596,7 +602,7 @@ function renderTablas() {
    <li>Retiros tomados para el anteproyecto: frontal 4 m y laterales 3 m, como en la normativa de avenidas de Maldonado. Con frente de 21 m no aplica la exoneración de un lateral, que es para frentes menores a 18 m.</li>
    <li>Estacionamiento: 1 lugar cada 100 m² de uso comercial (3 para 250 m²). Proyectamos 6, uno accesible, en el retiro frontal sin techar.</li>
    <li>FOS 25 % (250 / 1.000 m²), muy por debajo de cualquier límite de la zona: queda lugar para ampliar al fondo o sumar planta alta más adelante.</li>
-   <li><b>Antes del proyecto ejecutivo:</b> pedir la cédula catastral y el informe de normativa del padrón en la Intendencia de Maldonado (retiros, altura, FOS, usos, saneamiento), y la mensura para las medidas exactas.</li></ul>`;
+   <li><b>Antes del proyecto ejecutivo:</b> ya tenemos las cédulas catastrales; falta el informe de normativa del padrón en la Intendencia de Maldonado (retiros, altura, FOS, usos, saneamiento), y la mensura para las medidas exactas.</li></ul>`;
   // superficies
   $('tSup').innerHTML = `<table><tr><th>Área</th><th class="n">m²</th><th class="n">% del terreno</th></tr>` + [['Edificio (locales)', 250], ['Plaza peatonal', 216], ['Estacionamiento y circulación', 252], ['Patio de servicio', 205], ['Retiros y verde', 77]].map(([a, m]) => `<tr><td>${a}</td><td class="n">${m}</td><td class="n">${f1(m / 10)} %</td></tr>`).join('') + `<tr class="tt"><td>Terreno</td><td class="n">1.000</td><td class="n">100 %</td></tr></table>`;
   // envolventes
