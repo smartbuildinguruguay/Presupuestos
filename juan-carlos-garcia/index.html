@@ -1277,6 +1277,7 @@ const v3 = (() => {
       ['Estructura de cerca', [B.E0 + 30, 7.5, -(B.N0 - 6)], [B.E0 + 15, 3.5, -(B.N0 + 6)]],
       ['Interior local 1', [B.E0 + 24.4, 1.75, -(B.N0 + 9.4)], [B.E0 + 19.6, 1.6, -(B.N0 + 1.5)]],
       ['Fondo y pasaje', [B.E0 - 8, 3.0, -(B.N0 - 4)], [B.E0 + 12, 2.5, -(B.N0 + 2)]],
+      ['Fundación', [B.E0 + 22, 11, -(B.N0 - 8)], [B.E0 + 12, -.4, -(B.N0 + 5)]],
     ]; };
   function irVista(i) { const v = VISTAS()[i]; salir3p(); viaje = { t: 0, s: performance.now(), p0: cam.position.clone(), t0: ctl.target.clone(), p1: new THREE.Vector3(...v[1]), t1: new THREE.Vector3(...v[2]) };
     document.querySelectorAll('#vistas [data-v]').forEach(b => b.classList.toggle('on', +b.dataset.v === i)); }
@@ -1292,8 +1293,8 @@ const v3 = (() => {
     document.querySelectorAll('#vistas [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === '3p')); }
   function salir3p() { if (modo !== '3p') return; modo = 'orbit'; ctl.enabled = true; $('pad').hidden = true; if (avatar) { ctl.target.copy(avatar.position).add(new THREE.Vector3(0, 1.4, 0)); } }
   /* ===== animación del montaje: pieza por pieza, con manitou, tijeras y cuadrilla ===== */
-  const ANIM_ST = { fRep: ['piso', 1, 'Replanteo de ejes con estacas e hilos'], fExc: ['exc', 2, 'Excavación de zanjas de vigas y pozos de nudos'], fArm: ['piso', 2, 'Armado de hierros de vigas y nudos, pernos con plantilla'], inst: ['piso', 1, 'Previsiones sanitarias y eléctricas bajo platea'], fHv: ['horm', 1, 'Hormigonado de vigas y nudos con bomba'], fTos: ['piso', 2, 'Relleno de tosca compactada'], fMal: ['piso', 1, 'Nylon, separadores y malla doble'], fHp: ['horm', 1, 'Hormigonado de platea con bomba y llaneado', 6], fPb: ['piso', 1, 'Placas base sobre los pernos (después del curado)'], est: ['grua', 3, 'Montaje de pórticos'], cru: ['tij', 1, 'Arriostramiento'], cor: ['tij', 2, 'Correas, tensores y tornapuntas'], lar: ['tij', 2, 'Largueros y montantes de pretil'], bas: ['grua', 3, 'Parantes y bastidores de fachada'], techo: ['grua', 5, 'Techo de panel'], muro: ['grua', 7, 'Muros de panel'], vid: ['tij', 5, 'Vidrieras y portal'], faja: ['tij', 4, 'Faja, visera y brise'], cen: ['tij', 2, 'Cenefa negra'], div: ['mano', 4, 'Divisorios, baños y equipos'] };
-  const QUIEN = { fRep: 'horm', fExc: 'horm', fArm: 'horm', inst: 'san', fHv: 'horm', fTos: 'horm', fMal: 'horm', fHp: 'horm', fPb: 'est', est: 'est', cru: 'est', cor: 'est', lar: 'est', bas: 'est', techo: 'panel', muro: 'panel', vid: null, faja: 'herr', cen: 'herr', div: 'div' };
+  const ANIM_ST = { fRep: ['piso', 1, 'Replanteo de ejes con estacas e hilos'], fExc: ['exc', 2, 'Excavación de zanjas de vigas y pozos de nudos'], fArm: ['baja', 2, 'Armado de jaulas de hierro en el piso y bajada a la zanja'], fPn: ['baja', 1, 'Pernos Ø24 y platinas con plantilla en cada columna'], inst: ['piso', 1, 'Previsiones sanitarias y eléctricas bajo platea'], fHv: ['horm', 1, 'Hormigonado de vigas y nudos con bomba'], fTos: ['piso', 2, 'Relleno de tosca compactada'], fMal: ['piso', 1, 'Nylon, separadores y malla doble'], fHp: ['horm', 1, 'Hormigonado de platea con bomba y llaneado (luego 6 días de curado)', 6], est: ['grua', 3, 'Montaje de pórticos'], cru: ['tij', 1, 'Arriostramiento'], cor: ['tij', 2, 'Correas, tensores y tornapuntas'], lar: ['tij', 2, 'Largueros y montantes de pretil'], bas: ['grua', 3, 'Parantes y bastidores de fachada'], techo: ['grua', 5, 'Techo de panel'], muro: ['grua', 7, 'Muros de panel'], vid: ['tij', 5, 'Vidrieras y portal'], faja: ['tij', 4, 'Faja, visera y brise'], cen: ['tij', 2, 'Cenefa negra'], div: ['mano', 4, 'Divisorios, baños y equipos'] };
+  const QUIEN = { fRep: 'horm', fExc: 'horm', fArm: 'horm', inst: 'san', fHv: 'horm', fTos: 'horm', fMal: 'horm', fHp: 'horm', fPn: 'horm', est: 'est', cru: 'est', cor: 'est', lar: 'est', bas: 'est', techo: 'panel', muro: 'panel', vid: null, faja: 'herr', cen: 'herr', div: 'div' };
   let UNITS = [], AN = null, maq = null;
   const CAM = (() => { const v = ((6 * 10.6 + 2 * 25.6) * .3 * .6 + 12 * 1.2 * 1.2 * .45) * 1.05, p = 266 * .15 * 1.05; return { v: Math.ceil(v / 7), p: Math.ceil(p / 7), mv: v, mp: p }; })();
   function hacerUnidades() {
@@ -1320,6 +1321,8 @@ const v3 = (() => {
     for (let i = 0; i < 2; i++) sx.push(b(new THREE.BoxGeometry(2.3, .08, .08), D, 0, 1, i ? .5 : -.5, tij));
     b(new THREE.BoxGeometry(2.6, .12, 1.3), Y, 0, 0, 0, plat); [[-1.25, -.6], [-1.25, .6], [1.25, -.6], [1.25, .6]].forEach(([x, z]) => b(new THREE.BoxGeometry(.05, 1.1, .05), Y, x, .55, z, plat)); b(new THREE.BoxGeometry(2.6, .05, .05), Y, 0, 1.1, -.6, plat); b(new THREE.BoxGeometry(2.6, .05, .05), Y, 0, 1.1, .6, plat);
     const w1 = persona(0xb5622a), w2 = persona(0x6f8f9a); w1.position.set(-.6, .06, 0); w2.position.set(.6, .06, 0); plat.add(w1, w2);
+    const brazo = new THREE.Mesh(new THREE.BoxGeometry(.09, 1, .09), M(0xb5622a)); plat.add(brazo); const torcha = new THREE.Mesh(new THREE.CylinderGeometry(.018, .025, .22, 6), M(0x222222)); plat.add(torcha);
+    const careta = new THREE.Mesh(new THREE.BoxGeometry(.2, .2, .04), M(0x1a1a1a)); careta.position.set(0, 1.55, -.14); w1.add(careta);
     const suelo = persona(0x3d8b3d);
     // soldadora inverter sobre ruedas al pie de la tijera, con el cable hasta la pinza del soldador
     const sold = new THREE.Group(), R = M(0xc0392b), G = M(0x555555);
@@ -1355,7 +1358,11 @@ const v3 = (() => {
     [retro, bomba, mixer, h2, h3].forEach(o => { o.visible = false; sc.add(o); });
     const fund = { retro, rArm, rA2, bomba, pl1, pl2, pl3, mang, mixer, tambor, h2, h3, mixN: 0, mixT: 0, mixPrev: null };
     [mani, tij, suelo, sold].forEach(o => { o.visible = false; sc.add(o); }); cab.visible = chis.visible = false;
-    return { fund, sold, cab, chis, pinza, mani, boom, bm, fork, tij, plat, sx, suelo, w1, w2, mPos: new THREE.Vector3(B.E0 - 4, 0, -(B.N0 + 14)), tPos: new THREE.Vector3(B.E0 - 4, 0, -(B.N0 + 16)), tH: .5 };
+    const NCH = 60, chG = new THREE.BufferGeometry(); chG.setAttribute('position', new THREE.BufferAttribute(new Float32Array(NCH * 3), 3));
+    const chispas = new THREE.Points(chG, new THREE.PointsMaterial({ color: 0xffd27a, size: .07, transparent: true, opacity: .95, depthWrite: false })); chispas.frustumCulled = false; chispas.visible = false; sc.add(chispas);
+    const chV = Array.from({ length: NCH }, () => ({ p: new THREE.Vector3(), v: new THREE.Vector3(), life: 0 }));
+    const luz = new THREE.PointLight(0x9fd8ff, 0, 4); sc.add(luz);
+    return { brazo, torcha, chispas, chV, luz, fund, sold, cab, chis, pinza, mani, boom, bm, fork, tij, plat, sx, suelo, w1, w2, mPos: new THREE.Vector3(B.E0 - 4, 0, -(B.N0 + 14)), tPos: new THREE.Vector3(B.E0 - 4, 0, -(B.N0 + 16)), tH: .5 };
   }
   const lado = c => { const u = c.x - B.E0, v = -c.z - B.N0; if (v > 9) return 'N'; if (v < 1) return 'S'; if (u < 1) return 'O'; if (u > 24) return 'E'; return 'N'; };
   function spot(c, d) { const u = c.x - B.E0, v = -c.z - B.N0, s = lado(c), cl = (x, a, b) => Math.max(a, Math.min(b, x));
@@ -1389,42 +1396,53 @@ const v3 = (() => {
     m.plat.position.y = .6 + m.tH; m.sx.forEach((x, i) => { const hh = m.tH + .4; x.position.y = .6 + hh / 2; x.rotation.z = (i ? 1 : -1) * Math.atan2(hh, 2.3); x.scale.x = Math.hypot(hh, 2.3) / 2.3; });
     m.suelo.position.copy(spot(tgt, 2.4)).add(new THREE.Vector3(1.2, 0, 0)); m.suelo.lookAt(tgt.x, 0, tgt.z);
     // soldadura: correas, arriostres, largueros y bastidores se sueldan o abulonan desde la tijera
-    const suelda = ['cru', 'cor', 'lar', 'bas'].includes(U.k); m.sold.visible = m.cab.visible = suelda; m.chis.visible = suelda && Math.random() < .55;
+    const suelda = ['cru', 'cor', 'lar', 'bas'].includes(U.k), now = performance.now() / 1000, ciclo = (now % 1.3) / 1.3, arco = suelda && ciclo < .62;
+    m.sold.visible = m.cab.visible = m.brazo.visible = m.torcha.visible = suelda; m.chis.visible = arco && Math.random() < .8; m.luz.intensity = arco ? 1.5 + Math.random() * 2.5 : 0;
+    // la mano va de punto en punto: suelda (cordón corto con chispas) y se corre al siguiente
+    if (suelda) { const k = Math.floor(now / 1.3) % 4, base = new THREE.Vector3(-.62 + (k % 2) * .18, 1.25 + (k > 1 ? .12 : 0), -.5), mov = arco ? ciclo / .62 * .12 : (1 - (ciclo - .62) / .38) * .12;
+      m.pinza.copy(base).add(new THREE.Vector3(mov, Math.sin(now * 30) * .006, 0)); const hombro = new THREE.Vector3(-.45, 1.38, -.08), v = m.pinza.clone().sub(hombro);
+      m.brazo.position.copy(hombro).addScaledVector(v, .5); m.brazo.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), v.clone().normalize()); m.brazo.scale.y = v.length();
+      m.torcha.position.copy(m.pinza).add(new THREE.Vector3(0, -.04, -.06)); m.torcha.rotation.x = .9; }
+    { const P = m.chispas.geometry.attributes.position, dtc = .016 * (AN ? Math.min(AN.vel, 2) : 1); let vivo = false;
+      m.chV.forEach((c, i) => { if (c.life <= 0 && arco && Math.random() < .35) { m.plat.updateMatrixWorld(true); c.p.copy(m.plat.localToWorld(m.pinza.clone().add(new THREE.Vector3(0, -.06, -.12)))); c.v.set((Math.random() - .5) * 2.2, Math.random() * 1.6, (Math.random() - .5) * 2.2); c.life = .4 + Math.random() * .5; }
+        if (c.life > 0) { c.life -= dtc; c.v.y -= 9.8 * dtc; c.p.addScaledVector(c.v, dtc); vivo = true; P.setXYZ(i, c.p.x, c.p.y, c.p.z); } else P.setXYZ(i, 0, -50, 0); });
+      P.needsUpdate = true; m.chispas.visible = vivo && suelda; if (arco) { m.plat.updateMatrixWorld(true); m.luz.position.copy(m.plat.localToWorld(m.pinza.clone())); } }
     if (suelda) { const off = new THREE.Vector3(-1.9, 0, 1.0).applyAxisAngle(new THREE.Vector3(0, 1, 0), m.tij.rotation.y); m.sold.position.copy(m.tPos).add(off); m.sold.rotation.y = m.tij.rotation.y;
       m.tij.updateMatrixWorld(true); const a = m.sold.localToWorld(new THREE.Vector3(.3, .5, 0)), base = m.tij.localToWorld(new THREE.Vector3(-1.2, .5, .62)), top = m.plat.localToWorld(new THREE.Vector3(-1.2, .3, .62)), h = m.plat.localToWorld(m.pinza.clone());
       const pts = [], P = m.cab.geometry.attributes.position, seg = [[a, base, .25], [base, top, 0], [top, h, .15]];
       for (let i = 0; i < 16; i++) { const t = i / 15 * 3, j = Math.min(2, Math.floor(t)), f = t - j, [p0, p1, sag] = seg[j], q = p0.clone().lerp(p1, f); q.y -= Math.sin(f * Math.PI) * sag; P.setXYZ(i, q.x, q.y, q.z); }
       P.needsUpdate = true; m.chis.position.copy(h).add(new THREE.Vector3(0, .05, -.15)); }
   }
-  function verHasta(i) { UNITS.forEach((U, j) => U.ms.forEach(m => { m.visible = j < i; m.position.copy(m.userData.p0); m.scale.set(1, 1, 1); })); }
+  function verHasta(i) { UNITS.forEach((U, j) => U.ms.forEach(m => { m.visible = U.tipo === 'exc' ? j >= i : j < i; m.position.copy(m.userData.p0); m.scale.set(1, 1, 1); })); }
   function animar(on) {
     if (on) { if (modo === '3p') salir3p(); if (play) toggle(); if (!maq) maq = hacerMaquinas(); hacerUnidades();
       AN = { i: 0, t: 0, run: true, vel: 1, seguir: true }; ST.forEach(([k]) => { groups[k].visible = k === 'ter' || !!ANIM_ST[k]; }); Object.keys(ANIM_ST).forEach(k => { if (groups[k]) groups[k].visible = true; });
-      verHasta(0); [maq.mani, maq.tij, maq.suelo].forEach(o => o.visible = true); $('anim').hidden = false; $('etapa').hidden = true; $('anDia').hidden = false; $('lay').classList.add('min'); $('hud').hidden = true; $('anRg').max = UNITS.length; diasNav(); irVista(6); }
-    else { AN = null; if (maq) [maq.mani, maq.tij, maq.suelo].forEach(o => o.visible = false); verHasta(1e9); $('anim').hidden = true; $('etapa').hidden = false; $('anDia').hidden = true; $('hud').hidden = false; if (maq) { maq.sold.visible = maq.cab.visible = maq.chis.visible = false; const f = maq.fund; [f.retro, f.bomba, f.pl1, f.pl2, f.pl3, f.mang, f.mixer, f.h2, f.h3].forEach(o => o.visible = false); } ['fRep', 'fExc', 'fArm', 'fHv', 'fTos', 'fMal', 'fHp', 'fPb'].forEach(k => groups[k] && (groups[k].visible = false)); applyVis(); }
+      verHasta(0); [maq.mani, maq.tij, maq.suelo].forEach(o => o.visible = true); $('anim').hidden = false; $('etapa').hidden = true; $('anDia').hidden = false; $('lay').classList.add('min'); $('hud').hidden = true; $('anRg').max = UNITS.length; diasNav(); irVista(9); }
+    else { AN = null; if (maq) [maq.mani, maq.tij, maq.suelo].forEach(o => o.visible = false); verHasta(1e9); $('anim').hidden = true; $('etapa').hidden = false; $('anDia').hidden = true; $('hud').hidden = false; if (maq) { maq.sold.visible = maq.cab.visible = maq.chis.visible = maq.brazo.visible = maq.torcha.visible = maq.chispas.visible = false; maq.luz.intensity = 0; const f = maq.fund; [f.retro, f.bomba, f.pl1, f.pl2, f.pl3, f.mang, f.mixer, f.h2, f.h3].forEach(o => o.visible = false); } ['fRep', 'fExc', 'fArm', 'fPn', 'fHv', 'fTos', 'fMal', 'fHp'].forEach(k => groups[k] && (groups[k].visible = false)); applyVis(); }
   }
   function diasNav() { const ini = {}; UNITS.forEach((u, i) => { if (!(u.dia in ini)) ini[u.dia] = i; });
     $('anDias').innerHTML = '<span>Ir al día</span>' + Array.from({ length: UNITS.total }, (_, i) => i + 1).map(d => `<button data-dia="${d}" data-i="${ini[d] ?? ''}" ${d in ini ? '' : 'disabled'}>${d}</button>`).join('') + `<button data-dia="fin" data-i="${UNITS.length}">✓</button>`;
     $('anDias').onclick = e => { const b = e.target.closest('[data-dia]'); if (!b || !AN) return; AN.i = +b.dataset.i; AN.t = 0; verHasta(AN.i); groups.ext.visible = AN.i >= UNITS.length; }; }
   function tickAnim(dt) {
     if (!AN || !UNITS.length) return; const U = UNITS[Math.min(AN.i, UNITS.length - 1)];
-    if (AN.run && AN.i < UNITS.length) { const dur = U.tipo === 'grua' ? 1.4 : U.tipo === 'tij' ? .55 : U.tipo === 'horm' ? 1.6 : U.tipo === 'exc' ? .7 : U.tipo === 'piso' ? .35 : .45; AN.t += dt * AN.vel / dur; }
-    { const ks = Object.keys(ANIM_ST), at = ks.indexOf(UNITS[Math.min(AN.i, UNITS.length - 1)].k), fin = AN.i >= UNITS.length; if (groups.fRep) { groups.fRep.visible = !fin && at <= ks.indexOf('fMal'); groups.fExc.visible = !fin && at <= ks.indexOf('fHv'); groups.fArm.visible = !fin && at <= ks.indexOf('fHv'); } }
+    if (AN.run && AN.i < UNITS.length) { const dur = U.tipo === 'grua' ? 1.4 : U.tipo === 'tij' ? .55 : U.tipo === 'horm' ? 1.6 : U.tipo === 'exc' ? .7 : U.tipo === 'baja' ? .9 : U.tipo === 'piso' ? .35 : .45; AN.t += dt * AN.vel / dur; }
+    { const ks = Object.keys(ANIM_ST), at = ks.indexOf(UNITS[Math.min(AN.i, UNITS.length - 1)].k), fin = AN.i >= UNITS.length; if (groups.fRep) { groups.fRep.visible = !fin && at <= ks.indexOf('fMal'); groups.fArm.visible = !fin && at <= ks.indexOf('fHv'); } }
     if (AN.i < UNITS.length) {
       const t = Math.min(1, AN.t); U.ms.forEach(m => m.visible = true);
       let off = new THREE.Vector3(), sc2 = 1;
       if (U.tipo === 'grua') { const st = spot(U.c, 2.4).add(new THREE.Vector3(0, .6, 0)), up = st.clone().add(new THREE.Vector3(0, Math.max(2, U.c.y + 1.2 - .6), 0)), hi = U.c.clone().add(new THREE.Vector3(0, 1.3, 0));
         let p; if (t < .25) p = st.clone().lerp(up, t / .25); else if (t < .8) { const k = (t - .25) / .55; p = up.clone().lerp(hi, k); p.y += Math.sin(k * Math.PI) * .6; } else p = hi.clone().lerp(U.c, (t - .8) / .2);
         off.subVectors(p, U.c); maq.cargo = p; }
-      else if (['piso', 'exc', 'horm'].includes(U.tipo)) { maq.cargo = null; const k = Math.max(.03, t); U.ms.forEach(m => { m.position.copy(m.userData.p0); if (!m.userData.raiz) m.position.y -= (1 - k) * (m.userData.h || 0) / 2; m.scale.set(1, 1, 1); if (m.userData.raiz) m.scale.y = k; else m.scale.y = k; }); off = null; }
+      else if (U.tipo === 'baja') { maq.cargo = null; const up = t < .5 ? 1.1 : 1.1 * (1 - (t - .5) / .5), k = t < .5 ? Math.max(.05, t * 2) : 1; U.ms.forEach(m => { m.position.copy(m.userData.p0); m.position.y += up; m.scale.set(1, k, 1); }); off = null; }
+      else if (['piso', 'exc', 'horm'].includes(U.tipo)) { maq.cargo = null; const k = U.tipo === 'exc' ? Math.max(.02, 1 - t) : Math.max(.03, t); U.ms.forEach(m => { m.position.copy(m.userData.p0); if (!m.userData.raiz) m.position.y -= (1 - k) * (m.userData.h || 0) / 2; m.scale.set(1, 1, 1); if (m.userData.raiz) m.scale.y = k; else m.scale.y = k; }); off = null; }
       else { off.set(0, -(1 - t) * 1.2, 0); sc2 = .5 + .5 * t; maq.cargo = null; }
       if (off) U.ms.forEach(m => { m.position.copy(m.userData.p0).add(off); m.scale.setScalar(sc2); });
       ponerMaquinas(U);
-      if (AN.t >= 1) { U.ms.forEach(m => { m.position.copy(m.userData.p0); m.scale.set(1, 1, 1); }); AN.i++; AN.t = 0; if (AN.i >= UNITS.length) { AN.run = false; groups.ext.visible = true; } }
+      if (AN.t >= 1) { U.ms.forEach(m => { m.position.copy(m.userData.p0); m.scale.set(1, 1, 1); if (U.tipo === 'exc') m.visible = false; }); AN.i++; AN.t = 0; if (AN.i >= UNITS.length) { AN.run = false; groups.ext.visible = true; } }
       if (AN.seguir && !viaje) { const d = U.c.clone().sub(ctl.target).multiplyScalar(Math.min(1, dt * 1.5)); ctl.target.add(d); cam.position.add(d); }
     }
     const V = UNITS[Math.min(AN.i, UNITS.length - 1)], q = QUIEN[V.k], prop = q && PROPIO[q], quien = !q ? 'aluminiero' : prop ? 'SBU con cuadrilla propia' : PAQ[q].quien;
-    $('anTx').innerHTML = AN.i >= UNITS.length ? `<b>Día ${UNITS.total} de ${UNITS.total} · estructura y envolvente terminadas</b><span>${UNITS.length} piezas · quedan exteriores, instalaciones y terminaciones</span>` : `<b>Día ${V.dia} de ${UNITS.total} · ${V.tarea}</b><span>${V.info || ''} · pieza ${AN.i + 1}/${UNITS.length} · ${V.tipo === 'grua' ? 'la sube el manitou con operario; dos en la tijera la reciben y fijan' : V.tipo === 'tij' ? 'dos operarios desde la tijera de 8 m' : V.tipo === 'horm' ? `camión ${V.cam} de ${V.nCam} (7 m³ c/u, ${f1(V.k === 'fHv' ? CAM.mv : CAM.mp)} m³ en total) · bomba con pluma · regla y vibrador` : V.tipo === 'exc' ? 'retroexcavadora chica con operario y dos peones' : 'cuadrilla de fundaciones'} · ${quien}</span>`;
+    $('anTx').innerHTML = AN.i >= UNITS.length ? `<b>Día ${UNITS.total} de ${UNITS.total} · estructura y envolvente terminadas</b><span>${UNITS.length} piezas · quedan exteriores, instalaciones y terminaciones</span>` : `<b>Día ${V.dia} de ${UNITS.total} · ${V.tarea}</b><span>${V.info || ''} · pieza ${AN.i + 1}/${UNITS.length} · ${V.tipo === 'grua' ? 'la sube el manitou con operario; dos en la tijera la reciben y fijan' : V.tipo === 'tij' ? 'dos operarios desde la tijera de 8 m' : V.tipo === 'horm' ? `camión ${V.cam} de ${V.nCam} (7 m³ c/u, ${f1(V.k === 'fHv' ? CAM.mv : CAM.mp)} m³ en total) · bomba con pluma · regla y vibrador` : V.tipo === 'exc' ? 'retroexcavadora chica con operario y dos peones' : V.tipo === 'baja' ? 'se arma en el piso y se baja a la zanja sobre separadores' : 'cuadrilla de fundaciones'} · ${quien}</span>`;
     $('anRg').value = AN.i; $('anPl').textContent = AN.run ? '❚❚' : '▶';
     { const fin = AN.i >= UNITS.length, d = fin ? UNITS.total : V.dia, key = d + '|' + fin; if ($('anDia').dataset.k !== key) { $('anDia').dataset.k = key; $('anDia').innerHTML = `<b>Día ${d} de ${UNITS.total}</b><span>${fin ? 'estructura y envolvente terminadas' : V.tarea}</span>`; $('anDias').querySelectorAll('[data-dia]').forEach(b => b.classList.toggle('hoy', fin ? b.dataset.dia === 'fin' : +b.dataset.dia === d)); } }
   }
@@ -1480,8 +1498,18 @@ const v3 = (() => {
     const MR = M(roofCol), MW = M(wallCol), ew = E.wall.e, er = E.roof.e, yF = 10.3 + ew, xE = 25.3 + ew, tC = B.prf + .16;
     // ---- 0 terreno
     let g = groups.ter;
-    box(g, -20, -.06, -LOT.F - 45, LOT.D, -.02, 30, MAT.grass);
-    box(g, 0, -.02, -LOT.F, LOT.D, 0, 0, M(0xb8d197), 'Padrón 10596 · 1.000 m²');
+    { // terreno con un hueco en la huella del edificio: ahí va la tierra recortada por zanjas y pozos (se ven al excavar y llenar)
+      const [hx0, hz1] = W(-.7, -.7), [hx1, hz0] = W(25.7, 10.7), hueco = (y0, y1, x0, z0, x1, z1, mat, info) => {
+        [[x0, z0, x1, hz0], [x0, hz1, x1, z1], [x0, hz0, hx0, hz1], [hx1, hz0, x1, hz1]].forEach(([a, b, c, d]) => { if (c - a > .01 && d - b > .01) box(g, a, y0, b, c, y1, d, mat, info); }); };
+      hueco(-.06, -.02, -20, -LOT.F - 45, LOT.D, 30, MAT.grass); hueco(-.02, 0, 0, -LOT.F, LOT.D, 0, M(0xb8d197), 'Padrón 10596 · 1.000 m²');
+      const TI = M(0xb39368), FO = M(0x3a2b1f);
+      bx(g, -.7, -.7, -.75, 25.7, 10.7, -.65, FO, 'Fondo de zanjas a −0,65');
+      const ZA = [...FR.map(u => [u - .25, -.25, u + .25, 10.25]), [-.25, -.25, 25.25, .25], [-.25, 9.75, 25.25, 10.25], ...FR.flatMap(u => [0, 10].map(v => [u - .65, v - .65, u + .65, v + .65]))];
+      const xs = [...new Set([-.7, 25.7, -.3, 25.3, ...ZA.flatMap(z => [z[0], z[2]])].map(x => Math.round(x * 100) / 100))].sort((a, b) => a - b), ys = [...new Set([-.7, 10.7, -.3, 10.3, ...ZA.flatMap(z => [z[1], z[3]])].map(x => Math.round(x * 100) / 100))].sort((a, b) => a - b);
+      for (let j = 0; j < ys.length - 1; j++) { let run = null; const flush = () => { if (run) bx(g, run.a, ys[j], -.65, run.b, ys[j + 1], run.top, TI, 'Terreno: desmonte de 20 cm dentro de la huella'); run = null; };
+        for (let i = 0; i < xs.length - 1; i++) { const cx = (xs[i] + xs[i + 1]) / 2, cy = (ys[j] + ys[j + 1]) / 2, zan = ZA.some(z => cx > z[0] && cx < z[2] && cy > z[1] && cy < z[3]);
+          const top = cx > -.3 && cx < 25.3 && cy > -.3 && cy < 10.3 ? -.3 : 0;
+          if (zan) { flush(); continue; } if (run && run.top === top) run.b = xs[i + 1]; else { flush(); run = { a: xs[i], b: xs[i + 1], top }; } } flush(); } }
     box(g, LOT.D, -.02, -LOT.F - 45, LOT.D + 1.5, .1, 30, MAT.pav, 'Vereda');
     box(g, LOT.D + 1.5, -.04, -LOT.F - 45, LOT.D + 11, .02, 30, MAT.asph, 'Avda. Pedragosa Sierra');
     [[0, 0, LOT.D, .05], [0, -LOT.F, LOT.D, -LOT.F + .05]].forEach(([x0, z0, x1, z1]) => box(g, x0, 0, z0, x1, .3, z1, M(0xb23a2a)));
@@ -1505,8 +1533,8 @@ const v3 = (() => {
     [0, 10].forEach(v => bx(g, -.15, v - .15, -.6, 25.15, v + .15, -.25, M(0xb9b2a4), 'Viga de fundación longitudinal 30 × 60'));
     FR.forEach(u => [0, 10].forEach(v => { bx(g, u - .6, v - .6, -.6, u + .6, v + .6, -.26, MAT.conc, 'Nudo de fundación 1,2 × 1,2 bajo columna'); bx(g, u - .2, v - .225, B.npt, u + .2, v + .225, B.npt + .025, M(0x777777), 'PB · placa base 400 × 450 × 25 con rigidizadores y 4 pernos Ø24'); }));
     // ---- fundación paso a paso (solo para la animación del montaje)
-    { const FK = ['fRep', 'fExc', 'fArm', 'fHv', 'fTos', 'fMal', 'fHp', 'fPb']; FK.forEach(k => { groups[k] = new THREE.Group(); groups[k].visible = false; sc.add(groups[k]); });
-      const HIE = new THREE.MeshStandardMaterial({ color: 0x6e4a32, roughness: .7, metalness: .4 }), HIW = new THREE.MeshBasicMaterial({ color: 0x5a3a26, wireframe: true });
+    { const FK = ['fRep', 'fExc', 'fArm', 'fPn', 'fHv', 'fTos', 'fMal', 'fHp']; FK.forEach(k => { groups[k] = new THREE.Group(); groups[k].visible = false; sc.add(groups[k]); });
+      const HIE = new THREE.MeshStandardMaterial({ color: 0xc2611f, roughness: .6, metalness: .3 }), HIW = new THREE.MeshBasicMaterial({ color: 0xd2742f, wireframe: true });
       const TIE = M(0x5b4632), TOS = M(0xd6c393), NYL = new THREE.MeshStandardMaterial({ color: 0x9fb4c0, transparent: true, opacity: .55, roughness: .3 }), HIL = new THREE.MeshBasicMaterial({ color: 0xffffff });
       // replanteo: hilos entre estacas por los ejes
       FR.forEach((u, i) => bx(groups.fRep, u - .01, -1.2, .3, u + .01, 11.2, .32, HIL, `Hilo de replanteo · eje ${i + 1}`));
@@ -1514,28 +1542,30 @@ const v3 = (() => {
       [-1.2, 26.2].forEach(u => [0, 10].forEach(v => bx(groups.fRep, u - .04, v - .04, 0, u + .04, v + .04, .9, M(0xffffff), 'Estaca de replanteo')));
       // excavación: zanjas de 0,50 para vigas y pozos de 1,30 para nudos
       const VIG = [...FR.map(u => [[u, 0], [u, 10], 'transversal']), ...[0, 10].map(v => [[0, v], [25, v], 'longitudinal'])];
-      VIG.forEach(([a, b, t]) => { const w = .25; bx(groups.fExc, Math.min(a[0], b[0]) - w, Math.min(a[1], b[1]) - w, .005, Math.max(a[0], b[0]) + w, Math.max(a[1], b[1]) + w, .03, TIE, `Zanja de viga de fundación ${t} · 0,50 × 0,65`); });
-      FR.forEach(u => [0, 10].forEach(v => bx(groups.fExc, u - .65, v - .65, .006, u + .65, v + .65, .035, TIE, 'Pozo de nudo 1,30 × 1,30 bajo columna')));
+      VIG.forEach(([a, b, t]) => { const w = .25; bx(groups.fExc, Math.min(a[0], b[0]) - w, Math.min(a[1], b[1]) - w, -.65, Math.max(a[0], b[0]) + w, Math.max(a[1], b[1]) + w, -.3, M(0xb39368), `Zanja de viga de fundación ${t} · 0,50 × 0,65 (se excava)`); });
+      FR.forEach(u => [0, 10].forEach(v => bx(groups.fExc, u - .65, v - .65, -.65, u + .65, v + .65, -.31, M(0xb39368), 'Pozo de nudo 1,30 × 1,30 bajo columna (se excava)')));
       // armaduras: cada viga y cada nudo es una jaula (barras + estribos) que aparece entera
       const jaula = (a, b, info, nudo) => { const A = P3([a[0], a[1], 0]), Bp = P3([b[0], b[1], 0]), c = A.clone().lerp(Bp, .5), par = new THREE.Mesh(new THREE.BoxGeometry(.001, .001, .001), HIE); par.position.copy(c); par.userData.info = info; par.userData.raiz = true; groups.fArm.add(par);
-        const dir = Bp.clone().sub(A), L = Math.max(.01, dir.length()), d = dir.clone().normalize(), n = new THREE.Vector3(-d.z, 0, d.x), wv = nudo ? .5 : .1, hv = nudo ? [.04, .12] : [.03, .24];
-        if (nudo) { [-1, 1].forEach(i => [-1, 1].forEach(j => { const r = new THREE.Mesh(new THREE.BoxGeometry(1.0, .02, .02), HIE); r.position.set(0, hv[0] + .04 * (i + 1), j * .45 * (i > 0 ? 1 : 0)); r.rotation.y = i > 0 ? 0 : Math.PI / 2; par.add(r); }));
-          [[-.12, -.12], [.12, -.12], [-.12, .12], [.12, .12]].forEach(([x, z]) => { const pr = new THREE.Mesh(new THREE.CylinderGeometry(.012, .012, .9, 6), M(0x9a9a9a)); pr.position.set(x, .25, z); par.add(pr); });
-          const pl = new THREE.Mesh(new THREE.BoxGeometry(.45, .02, .45), M(0xcccccc)); pl.position.set(0, .5, 0); par.add(pl); return; }
-        [hv[0], hv[1]].forEach(h => [-wv, wv].forEach(o => { const r = new THREE.Mesh(new THREE.CylinderGeometry(.009, .009, L, 5), HIE); r.position.copy(n.clone().multiplyScalar(o)).setY(h); r.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d); par.add(r); }));
+        const dir = Bp.clone().sub(A), L = Math.max(.01, dir.length()), d = dir.clone().normalize(), n = new THREE.Vector3(-d.z, 0, d.x), wv = nudo ? .5 : .1, hv = nudo ? [-.52, -.44] : [-.53, -.32];
+        if (nudo) { [-1, 1].forEach(i => [-1, 1].forEach(j => { const r = new THREE.Mesh(new THREE.BoxGeometry(1.0, .03, .03), HIE); r.position.set(0, hv[0] + .04 * (i + 1), j * .45 * (i > 0 ? 1 : 0)); r.rotation.y = i > 0 ? 0 : Math.PI / 2; par.add(r); }));
+          return; }
+        [hv[0], hv[1]].forEach(h => [-wv, wv].forEach(o => { const r = new THREE.Mesh(new THREE.CylinderGeometry(.016, .016, L, 5), HIE); r.position.copy(n.clone().multiplyScalar(o)).setY(h); r.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d); par.add(r); }));
         for (let x = -L / 2 + .3; x < L / 2; x += .6) { const e = new THREE.Mesh(new THREE.BoxGeometry(.22, .2, .01), HIW); e.position.copy(d.clone().multiplyScalar(x)).setY((hv[0] + hv[1]) / 2); e.rotation.y = Math.atan2(d.x, d.z); par.add(e); } };
       VIG.forEach(([a, b, t]) => jaula(a, b, `Armadura de viga de fundación ${t}: 8 Ø16 + estribos Ø8 c/15`));
-      FR.forEach(u => [0, 10].forEach(v => jaula([u, v], [u, v], 'Armadura del nudo (parrilla Ø10) y 4 pernos Ø24 con plantilla', true)));
+      FR.forEach(u => [0, 10].forEach(v => jaula([u, v], [u, v], 'Armadura del nudo: parrilla Ø10 en dos capas', true)));
+      // pernos Ø24 y platina con plantilla en cada columna: quedan a la vista después del llenado
+      FR.forEach((u, i) => [0, 10].forEach(v => { const pl = bx(groups.fPn, u - .2, v - .225, B.npt - .004, u + .2, v + .225, B.npt + .01, new THREE.MeshStandardMaterial({ color: 0x8d9297, metalness: .6, roughness: .35 }), `Platina y 4 pernos Ø24 con plantilla · columna C${i + 1}${v ? 'B' : 'A'}`);
+        [[-.13, -.14], [.13, -.14], [-.13, .14], [.13, .14]].forEach(([x, z]) => { const pr = new THREE.Mesh(new THREE.CylinderGeometry(.012, .012, .75, 6), M(0xb0b0b0)); pr.position.set(x, -.3, z); pl.add(pr); const tu = new THREE.Mesh(new THREE.CylinderGeometry(.022, .022, .03, 6), M(0x666666)); tu.position.set(x, .06, z); pl.add(tu); }); }));
       // hormigón de vigas y nudos (lo de la platea final pero por partes)
-      VIG.forEach(([a, b, t]) => bx(groups.fHv, Math.min(a[0], b[0]) - .15, Math.min(a[1], b[1]) - .15, .0, Math.max(a[0], b[0]) + .15, Math.max(a[1], b[1]) + .15, .045, M(0xb9b2a4), `Hormigón H30 de viga de fundación ${t}`));
-      FR.forEach(u => [0, 10].forEach(v => bx(groups.fHv, u - .6, v - .6, .0, u + .6, v + .6, .05, MAT.conc, 'Hormigón H30 del nudo')));
+      VIG.forEach(([a, b, t]) => bx(groups.fHv, Math.min(a[0], b[0]) - .15, Math.min(a[1], b[1]) - .15, -.6, Math.max(a[0], b[0]) + .15, Math.max(a[1], b[1]) + .15, -.28, M(0xb9b2a4), `Hormigón H30 de viga de fundación ${t}`));
+      FR.forEach(u => [0, 10].forEach(v => bx(groups.fHv, u - .6, v - .6, -.6, u + .6, v + .6, -.27, MAT.conc, 'Hormigón H30 del nudo')));
       // tosca, nylon + malla y platea, por paños de oeste a este
       for (let i = 0; i < 5; i++) for (let j = 0; j < 2; j++) { const u0 = -.3 + i * 5.12, u1 = u0 + 5.12, v0 = -.3 + j * 5.3, v1 = v0 + 5.3;
-        bx(groups.fTos, u0, v0, -.01, u1, v1, .035, TOS, 'Relleno de tosca compactada al 95 % Proctor, en capas de 15 cm');
-        const ny = bx(groups.fMal, u0, v0, .05, u1, v1, .055, NYL, 'Nylon 200 µ + separadores + malla doble Ø6 c/15'); ny.userData.raiz = true; const w = Math.abs(u1 - u0), d = Math.abs(v1 - v0);
+        bx(groups.fTos, u0, v0, -.3, u1, v1, -.06, TOS, 'Relleno de tosca compactada al 95 % Proctor, en capas de 15 cm');
+        const ny = bx(groups.fMal, u0, v0, -.058, u1, v1, -.052, NYL, 'Nylon 200 µ + separadores + malla doble Ø6 c/15'); ny.userData.raiz = true; const w = Math.abs(u1 - u0), d = Math.abs(v1 - v0);
         [.0, .08].forEach(h => { const mg = new THREE.Mesh(new THREE.PlaneGeometry(w, d, Math.round(w / .3), Math.round(d / .3)), HIW); mg.rotation.x = -Math.PI / 2; mg.position.y = .03 + h; ny.add(mg); }); }
       for (let i = 0; i < 10; i++) { const u0 = -.3 + i * 2.56; bx(groups.fHp, u0, -.3, -.05, u0 + 2.56, 10.3, B.npt, MAT.conc, `Platea H30 15 cm · paño ${i + 1} de 10, llaneado mecánico`); }
-      FR.forEach(u => [0, 10].forEach(v => bx(groups.fPb, u - .2, v - .225, B.npt, u + .2, v + .225, B.npt + .025, M(0x777777), 'PB · placa base 400 × 450 × 25 sobre los pernos, nivelada con grout'))); }
+      }
     // ---- 3 pórticos
     g = groups.est;
     FR.forEach((u, i) => {
