@@ -967,10 +967,10 @@ const v3 = (() => {
       ['Aérea', [B.E0 + 46, 34, -(B.N0 + 40)], [cx, 0, cz]],
       ['Planta', [cx, 70, cz - .01], [cx, 0, cz]],
       ['Estructura de cerca', [B.E0 + 30, 7.5, -(B.N0 - 6)], [B.E0 + 15, 3.5, -(B.N0 + 6)]],
-      ['Interior', [B.E0 + 23.5, 1.7, -(B.N0 + 8.5)], [B.E0 + 4, 2.4, -(B.N0 + 2)]],
+      ['Interior local 1', [B.E0 + 24.4, 1.75, -(B.N0 + 9.4)], [B.E0 + 19.6, 1.6, -(B.N0 + 1.5)]],
       ['Fondo y pasaje', [B.E0 - 8, 3.0, -(B.N0 - 4)], [B.E0 + 12, 2.5, -(B.N0 + 2)]],
     ]; };
-  function irVista(i) { const v = VISTAS()[i]; salir3p(); viaje = { t: 0, p0: cam.position.clone(), t0: ctl.target.clone(), p1: new THREE.Vector3(...v[1]), t1: new THREE.Vector3(...v[2]) };
+  function irVista(i) { const v = VISTAS()[i]; salir3p(); viaje = { t: 0, s: performance.now(), p0: cam.position.clone(), t0: ctl.target.clone(), p1: new THREE.Vector3(...v[1]), t1: new THREE.Vector3(...v[2]) };
     document.querySelectorAll('#vistas [data-v]').forEach(b => b.classList.toggle('on', +b.dataset.v === i)); }
   function hacerAvatar() { const g = new THREE.Group(), piel = M(0xd9a07a), ropa = M(0x2f6f86), pant = M(0x3b3b3b);
     const add = (geo, mat, x, y, z) => { const m = new THREE.Mesh(geo, mat); m.position.set(x, y, z); m.castShadow = true; g.add(m); return m; };
@@ -984,7 +984,7 @@ const v3 = (() => {
     document.querySelectorAll('#vistas [data-v]').forEach(b => b.classList.toggle('on', b.dataset.v === '3p')); }
   function salir3p() { if (modo !== '3p') return; modo = 'orbit'; ctl.enabled = true; $('pad').hidden = true; if (avatar) { ctl.target.copy(avatar.position).add(new THREE.Vector3(0, 1.4, 0)); } }
   function tick() { const dt = Math.min(.05, clock.getDelta());
-    if (viaje) { viaje.t = Math.min(1, viaje.t + dt / .9); const k = viaje.t < .5 ? 2 * viaje.t * viaje.t : 1 - Math.pow(-2 * viaje.t + 2, 2) / 2; cam.position.lerpVectors(viaje.p0, viaje.p1, k); ctl.target.lerpVectors(viaje.t0, viaje.t1, k); if (viaje.t >= 1) viaje = null; }
+    if (viaje) { viaje.t = Math.min(1, (performance.now() - viaje.s) / 900); const k = viaje.t < .5 ? 2 * viaje.t * viaje.t : 1 - Math.pow(-2 * viaje.t + 2, 2) / 2; cam.position.lerpVectors(viaje.p0, viaje.p1, k); ctl.target.lerpVectors(viaje.t0, viaje.t1, k); if (viaje.t >= 1) viaje = null; }
     if (modo === '3p' && avatar) {
       const f = (keys.w || keys.arrowup || padK.f ? 1 : 0) - (keys.s || keys.arrowdown || padK.b ? 1 : 0), r = (keys.d || keys.arrowright || padK.r ? 1 : 0) - (keys.a || keys.arrowleft || padK.l ? 1 : 0);
       const vel = (keys.shift ? 5.5 : 2.4) * dt; if (keys.q) yaw += 1.8 * dt; if (keys.e) yaw -= 1.8 * dt;
@@ -1163,7 +1163,7 @@ const v3 = (() => {
     sc = new THREE.Scene(); sc.background = new THREE.Color(0xcfdde4);
     cam = new THREE.PerspectiveCamera(40, 1, .1, 600); cam.position.set(66, 24, -48);
     ctl = new OrbitControls(cam, ren.domElement); ctl.target.set(B.E0 + 13, 2.5, -(B.N0 + 6)); ctl.enableDamping = true; ctl.maxPolarAngle = Math.PI * .495;
-    sc.add(new THREE.HemisphereLight(0xffffff, 0x8a8070, .9));
+    sc.add(new THREE.HemisphereLight(0xffffff, 0x8a8070, .9), new THREE.AmbientLight(0xffffff, .45));
     const sun = new THREE.DirectionalLight(0xffffff, 1.5); sun.position.set(30, 50, -60); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -50, right: 50, top: 50, bottom: -50, far: 200 }); sun.target.position.set(25, 0, -10); sc.add(sun, sun.target);
     $('vistas').innerHTML = VISTAS().map((v, i) => `<button data-v="${i}">${v[0]}</button>`).join('') + '<button data-v="3p">🚶 Tercera persona</button><button class="fs" id="fsBtn" title="Pantalla completa (F)">⛶ Pantalla completa</button>';
     $('vistas').onclick = e => { const b = e.target.closest('button'); if (!b) return; if (b.id === 'fsBtn') { fs(); return; } if (b.dataset.v === '3p') entrar3p(); else irVista(+b.dataset.v); };
