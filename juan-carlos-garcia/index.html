@@ -62,7 +62,7 @@ body.pedido header,body.pedido .bar,body.pedido .foot,body.pedido .noprint{displ
 tr.win td{background:#e5f1e2;font-weight:600}.tag2{display:inline-block;font-size:.7rem;font-weight:700;border-radius:99px;padding:1px 8px;background:#efe6d9;color:#7a4a22}
 .sfots{display:grid;grid-template-columns:repeat(5,1fr);gap:.6em}.sfot{display:flex;flex-direction:column;gap:.2em}.sfot img{width:100%;aspect-ratio:4/3;object-fit:cover;border-radius:.4em}.sfot b{font-size:.82em;margin-top:.2em}.sfot i{font-style:normal;font-weight:700;color:#b5622a;font-size:.8em}.sfot span{font-size:.68em;color:#555;line-height:1.35}.sfot button{align-self:flex-start;font-size:.6em!important;padding:2px 8px!important}
 .scad{display:flex;align-items:center;gap:.5em;margin:.2em 0 .8em}.scad div{background:#f6f2ec;border-radius:.5em;padding:.45em .8em;border-left:.25em solid #8b5a2b}.scad b{display:block;font-size:.85em}.scad span{font-size:.7em;color:#555}.scad i{font-style:normal;color:#b5622a;font-weight:800}
-.s2b{display:grid;grid-template-columns:1fr 1fr;gap:1.6em}.sfach svg{width:100%;height:auto;max-height:11.5em}.sfach .s2b svg{max-height:9.5em}.sfach>.s2b{margin-top:.4em}.sfoto{width:100%;border-radius:.5em;display:block;aspect-ratio:16/10;object-fit:cover}.sbig{font-size:1.6em!important;font-weight:800;color:#2f6f86;margin:.1em 0!important}.stab tr.sel td{background:#fbf3ea}.stab.sm{font-size:.72em}
+.s2b{display:grid;grid-template-columns:1fr 1fr;gap:1.6em}.sfach svg{width:100%;height:auto;max-height:11.5em}.sfach .s2b svg{max-height:9.5em}.sfach>.s2b{margin-top:.4em}.sopc{display:grid;grid-template-columns:.62fr 1fr .62fr 1fr;gap:.9em;align-items:start}.sopcp svg{width:100%;height:auto;max-height:22em}.sopl{list-style:none;margin:0;padding:0;font-size:.7em}.sopl li{display:grid;grid-template-columns:1.5em 1fr auto;gap:.4em;align-items:center;padding:.22em 0;border-bottom:1px solid #eee}.sopl i{font-style:normal;width:1.4em;height:1.4em;border-radius:50%;color:#fff;font-weight:800;display:flex;align-items:center;justify-content:center;font-size:.85em}.sopl i.d{background:#b5622a}.sopl i.i{background:#2f6f86}.sopl b{white-space:nowrap}.sfoto{width:100%;border-radius:.5em;display:block;aspect-ratio:16/10;object-fit:cover}.sbig{font-size:1.6em!important;font-weight:800;color:#2f6f86;margin:.1em 0!important}.stab tr.sel td{background:#fbf3ea}.stab.sm{font-size:.72em}
 body.presp .sfot button{display:none}
 #presBar{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin:0 0 10px}#deck{position:relative;font-family:system-ui,sans-serif;color:#24211d}
 .sl{display:none;aspect-ratio:16/9;background:#fff;border:1px solid var(--ln);border-radius:12px;padding:2.6em 3.2em 2.4em;position:relative;overflow:hidden;box-sizing:border-box}.sl.on{display:block}
@@ -628,7 +628,7 @@ function dPlanta() {
   s += R_(t, 0, -e, 25, 0, 'fill="#5c5a57"') + R_(t, -e, -e, 0, 10, 'fill="#5c5a57"');
   // vidrieras norte y este
   s += R_(t, 0, 10, 25.06, 10.06, 'fill="#4aa3c7"') + R_(t, 25, 1, 25.06, 10.06, 'fill="#4aa3c7"') + R_(t, 24.75, -e, 25.35, 1, 'fill="#1c1c1c"');
-  for (let u = 0; u <= 25.01; u += 2.5) s += R_(t, u - .05, 9.95, u + .05, 10.1, 'fill="#24211d"');
+  vidrN().forEach(V => V.mont.forEach(u => s += R_(t, u - .05, 9.95, u + .05, 10.1, 'fill="#24211d"')));
   for (let v = 1; v <= 10.01; v += 3) s += R_(t, 24.95, v - .05, 25.1, v + .05, 'fill="#24211d"');
   // columnas y ejes
   FR.forEach((u, k) => { [0, 10].forEach(v => s += R_(t, u - .14, v - .14, u + .14, v + .14, 'fill="#b5622a" stroke="#24211d" stroke-width=".6"')); s += L_(t, u, -3.2, u, 13.8, 'stroke="#b5622a" stroke-width=".6" stroke-dasharray="10 4 2 4"'); s += `<circle cx="${t.X(u)}" cy="${t.Y(14.3)}" r="10" fill="#fff" stroke="#b5622a"/>` + TX(t, u, 14.15, k + 1, `font-size="11" font-weight="700" fill="#b5622a" ${FT}`); });
@@ -651,8 +651,7 @@ function dPlanta() {
     const dp = ksp[0] > bx ? Math.min(l.b - 1.3, ksp[1] + .3) : Math.min(l.b - 1.3, bx + 2.3);
     s += R_(t, dp, -e - .02, dp + .9, .02, 'fill="#fff"') + `<path d="M${t.X(dp)} ${t.Y(0)}L${t.X(dp)} ${t.Y(-.9)}A${.9 * sc} ${.9 * sc} 0 0 0 ${t.X(dp + .9)} ${t.Y(0)}" fill="none" stroke="#24211d" stroke-width=".7"/>`;
     // puerta de vidriera
-    const dc = l.a + l.w / 2;
-    s += R_(t, dc - .9, 9.94, dc + .9, 10.12, 'fill="#fff"') + `<path d="M${t.X(dc - .9)} ${t.Y(10)}L${t.X(dc - .9)} ${t.Y(9.1)}A${.9 * sc} ${.9 * sc} 0 0 1 ${t.X(dc)} ${t.Y(10)}M${t.X(dc + .9)} ${t.Y(10)}L${t.X(dc + .9)} ${t.Y(9.1)}A${.9 * sc} ${.9 * sc} 0 0 0 ${t.X(dc)} ${t.Y(10)}" fill="none" stroke="#24211d" stroke-width=".7"/>`;
+    { const V = vidrN().find(x => x.num === l.num); if (V && V.puerta) { const [a, b] = V.puerta; s += R_(t, a, 9.94, b, 10.12, 'fill="#fff"') + R_(t, a - .04, 9.95, a + .04, 10.1, 'fill="#24211d"') + R_(t, b - .04, 9.95, b + .04, 10.1, 'fill="#24211d"') + `<path d="M${t.X(a)} ${t.Y(10)}L${t.X(a)} ${t.Y(11)}A${1 * sc} ${1 * sc} 0 0 0 ${t.X(b)} ${t.Y(10)}" fill="none" stroke="#24211d" stroke-width=".7"/>`; } }
     // rótulo
     s += TX(t, l.a + l.w / 2, 6.3, 'LOCAL ' + l.num, `font-size="${S.n > 4 ? 13 : 15}" font-weight="800" ${FT}`) + TX(t, l.a + l.w / 2, 5.5, f1(l.m2) + ' m²', `font-size="12" ${FT}`) + TX(t, l.a + l.w / 2, 4.85, f2(l.w) + ' × 10,00', `font-size="10" fill="#666" ${FT}`);
     if (l.esq) s += TX(t, l.a + l.w / 2, 4.2, 'esquina a la avenida', `font-size="9" fill="#2f6f86" ${FT}`);
@@ -683,6 +682,7 @@ function dFach() {
     s += R_(t, 0, B.npt, 20, 3.0, `fill="${VID}"`);
     aberturas().filter(a => /^VN/.test(a.cod)).forEach(a => { for (let i = 0; i <= a.k; i++) { const x = Math.min(20, a.x0 + i * a.pw); s += R_(t, x - .06, B.npt, x + .06, 3.0, `fill="${BL}"`); } });
     s += R_(t, 0, 2.2, 20, 2.26, `fill="${BL}"`);
+    vidrN().forEach(V => { if (!V.puerta) return; const x0 = B.L - V.puerta[1], x1 = B.L - V.puerta[0]; s += R_(t, x0, B.npt, x1, 2.2, `fill="#9fc3d1" stroke="${BL}" stroke-width="3"`) + R_(t, x0 + .12, 1.0, x0 + .17, 1.25, 'fill="#555"'); });
     s += R_(t, 0, 3.0, 20, 3.55, `fill="${NEG}"`);
     s += R_(t, 0, 3.55, 20.4, 3.63, `fill="#fff" stroke="#ccc" stroke-width=".5"`);
     s += R_(t, 0, 3.65, 20, B.cen, 'fill="url(#wood)"');
@@ -1543,6 +1543,8 @@ const DOCS_MAT = [
   ['sanitaria', 'Materiales de sanitaria', 'M'], ['banos', 'Baños y kitchenettes', 'M'], ['electrica', 'Materiales de eléctrica', 'M'], ['exteriores', 'Exteriores', 'M'], ['incendio', 'Seguridad contra incendio', 'M'], ['equipos', 'Alquileres y servicios de obra', 'M'], ['aire', 'Aire acondicionado: VRF o splits', 'M'],
   ['s_ing', 'Cálculo estructural y firma', 'S'], ['s_suelos', 'Estudio de suelos', 'S'], ['s_horm', 'Fundaciones y platea', 'S'], ['s_panel', 'Montaje de paneles y zinguería', 'S'], ['s_div', 'Divisorios y cerramientos de baño', 'S'], ['s_san', 'Sanitaria', 'S'], ['s_ele', 'Eléctrica', 'S'], ['s_ext', 'Exteriores y pavimentos', 'S']];
 /* aberturas del proyecto: salen de la fachada y de la división en locales */
+function vidrN(n = S.n) { return locales(n).map(l => { const u0 = Math.max(l.a, B.uH), u1 = Math.min(l.b, B.L), len = u1 - u0; if (len <= .3) return null; const k = Math.max(1, Math.round(len / 2.5)), pw = len / k, mont = []; for (let i = 0; i <= k; i++) mont.push(u0 + i * pw);
+  let puerta = null; if (!l.portal) { const ok = m => FR.every(c => Math.abs(m - c) > .5 + .12 + .3), cand = [...Array(k).keys()].map(i => u0 + (i + .5) * pw).sort((x, y) => Math.abs(x - (l.a + l.b) / 2) - Math.abs(y - (l.a + l.b) / 2)), m = cand.find(ok) ?? cand[0]; puerta = [m - .5, m + .5]; } return { num: l.num, u0, u1, k, pw, mont, puerta, portal: l.portal }; }).filter(Boolean); }
 function aberturas() {
   const L = locales(S.n), eq = S.modo === 'equipado', A = [], ov = (a, b, c, d) => Math.max(0, Math.min(b, d) - Math.max(a, c));
   L.slice().sort((x, y) => x.num - y.num).forEach(l => {
@@ -2455,7 +2457,7 @@ const v3 = (() => {
     [1.5, 3.0, B.hS - .4, 5.0, 5.9].forEach(h => { beam(g, [-.54, -.54, h], [25.3, -.54, h], .05, .12, MAT.cor, 'Larguero C120 · muro sur, sobre parantes separados'); beam(g, [-.22, -.54, h], [-.22, 10.22, h], .05, .12, MAT.cor, 'Larguero C120 · muro oeste'); });
     // ---- 7 parantes y bastidores de fachada (norte y frente), apoyados
     g = groups.bas;
-    for (let u = 0; u <= 25.01; u += 2.5) post(g, u, 10.22, B.npt, B.hPar, .12, MAT.cor, 'PN · parante tubo 120×120×4 de platea a +6,00: vidriera, faja, brise y cenefa');
+    { const pn = new Set([0, 2.5, B.uH, B.L]); vidrN().forEach(V => V.mont.forEach(u => pn.add(Math.round(u * 100) / 100))); pn.forEach(u => post(g, u, 10.22, B.npt, B.hPar, .12, MAT.cor, 'PN · parante tubo 120×120×4 de platea a +6,00, detrás de cada montante de la vidriera: vidriera, faja, brise y cenefa')); }
     for (let v = .7; v <= 10.01; v += 3.1) post(g, 25.22, v, B.npt, B.hPar, .12, MAT.cor, 'PE · parante tubo 120×120×4 · frente a la avenida');
     post(g, 25.22, -.54, B.npt, B.hPar, .15, MAT.cor, 'PI1 · pilastra tubo 150×150×5 (sube la cenefa)');
     post(g, -.22, 10.22, B.npt, B.hPar, .15, MAT.cor, 'PI2 · pilastra tubo 150×150×5 (baja la cenefa)');
@@ -2481,12 +2483,12 @@ const v3 = (() => {
     g = groups.vid;
     bx(g, B.uH, yF, B.npt, xE, yF + .04, 3.0, MAT.glass, 'Vidriera aluminio línea pesada · laminado 5+5');
     bx(g, xE, .7, B.npt, xE + .04, yF, 3.0, MAT.glass, 'Vidriera del frente: da la vuelta a la esquina');
-    for (let u = B.uH; u <= xE + .01; u += 2.5) bx(g, u - .04, yF, B.npt, u + .04, yF + .1, 3.0, MAT.white, 'Montante de aluminio');
+    { const mt = new Set(); vidrN().forEach(V => { V.mont.forEach(u => mt.add(Math.round(u * 100) / 100)); if (V.puerta) V.puerta.forEach(u => mt.add(Math.round(u * 100) / 100)); }); mt.forEach(u => bx(g, u - .04, yF, B.npt, u + .04, yF + .1, 3.0, MAT.white, 'Montante de aluminio')); }
     for (let v = .7; v <= yF + .01; v += 3.2) bx(g, xE, v - .04, B.npt, xE + .1, v + .04, 3.0, MAT.white, 'Montante de aluminio');
     bx(g, B.uH, yF, 2.2, xE, yF + .12, 2.26, MAT.white); bx(g, xE, .7, 2.2, xE + .12, yF, 2.26, MAT.white);
     bx(g, .7, yF, B.npt, B.uH, yF + .25, B.cen, MAT.white, 'Marco blanco del portal vidriado');
     bx(g, 1, yF + .26, B.npt, B.uH - .3, yF + .3, 4.75, MAT.glass, 'Portal vidriado de piso a dintel');
-    L.forEach(l => { const dc = Math.max(B.uH + 1, Math.min(23, l.a + l.w / 2)); bx(g, dc - .9, yF + .04, B.npt, dc + .9, yF + .1, 2.2, M(0x6f8f9a), 'Puerta de acceso · Local ' + l.num); });
+    vidrN().forEach(V => { if (V.puerta) { const [a, b] = V.puerta; bx(g, a + .03, yF + .04, B.npt, b - .03, yF + .1, 2.2, M(0x6f8f9a), `PA${V.num} · puerta de acceso de 1 hoja, 1,00 m · Local ${V.num}`); bx(g, b - .16, yF + .1, 1.0, b - .1, yF + .2, 1.2, MAT.steel, 'Manijón'); } });
     // ---- 11 faja, visera, brise
     g = groups.faja;
     bx(g, B.uH, yF, 3.0, xE + .1, yF + .1, 3.55, MAT.black, 'Faja de cartelería'); bx(g, xE, .7, 3.0, xE + .1, yF + .1, 3.55, MAT.black, 'Faja de cartelería · frente');
@@ -2731,6 +2733,33 @@ const AIRE = [
 const INQ = { com: [['Iluminación del salón (≈ 10 luminarias LED)', 600, 1200], ['Aire acondicionado (split piso-techo 36.000 BTU instalado)', 2500, 3500], ['Pintura, terminaciones y piso (si no deja la platea a la vista)', 1000, 3500], ['Cartel, vinilos y mobiliario básico', 2000, 5000], ['Técnico y trámites de Bomberos y habilitación comercial', 600, 1300]],
   gas: [['Campana, extractor y ducto interior (el ducto exterior lo deja el dueño si se eligió)', 3000, 6000], ['Cocina: revestimientos, piletas, mesadas de acero inoxidable', 3000, 7000], ['Equipamiento de cocina y heladeras', 8000, 25000], ['Aire, iluminación, mobiliario y cartel', 6000, 12000], ['Técnico, Bomberos, habilitación comercial y bromatológica (RUNAEV)', 900, 1800]] };
 const rgo = (a, b) => `USD ${a.toLocaleString('es-UY')} a ${b.toLocaleString('es-UY')}`, sumR = L => [L.reduce((t, x) => t + x[1], 0), L.reduce((t, x) => t + x[2], 0)];
+// planta de un local tipo según el destino, con las mejoras numeradas (naranja: las deja el dueño en la obra; azul: las pone el inquilino)
+const OPC = () => ({ com: { tit: 'Comercio, servicios u oficina', it: [['Iluminación del salón', ...INQ.com[0].slice(1), 'i'], ['Aire acondicionado split', ...INQ.com[1].slice(1), 'i'], ['Pintura, piso y terminaciones', ...INQ.com[2].slice(1), 'i'], ['Cartel, vinilos y mobiliario', ...INQ.com[3].slice(1), 'i'], ['Técnico, Bomberos y habilitación', ...INQ.com[4].slice(1), 'i']] },
+  gas: { tit: 'Gastronomía', it: [['Grasera individual en el pasaje', ...GASTRO[0].slice(1, 3), 'd'], ['Ducto de humos por el techo', ...GASTRO[1].slice(1, 3), 'd'], ['Toma de aire de reposición', ...GASTRO[2].slice(1, 3), 'd'], ['Trifásica y tablero', ...GASTRO[3].slice(1, 3), 'd'], ['Campana y extractor', ...INQ.gas[0].slice(1), 'i'], ['Cocina: revestimiento, piletas, mesadas', ...INQ.gas[1].slice(1), 'i'], ['Equipamiento y heladeras', ...INQ.gas[2].slice(1), 'i'], ['Aire, luces, mobiliario y cartel', ...INQ.gas[3].slice(1), 'i'], ['Técnico, Bomberos, habilitación y bromatología', ...INQ.gas[4].slice(1), 'i']] } });
+function planOpc(tipo) { const w = 25 / S.n, sc = 34, ox = 16, oy = 34, X = x => ox + x * sc, Y = v => oy + (10 - v) * sc, Wd = X(w) + 16, Hd = Y(-1.6), F = 'font-family="Inter,Arial,sans-serif"';
+  const r = (x0, v0, x1, v1, st) => `<rect x="${X(Math.min(x0, x1))}" y="${Y(Math.max(v0, v1))}" width="${Math.abs(x1 - x0) * sc}" height="${Math.abs(v1 - v0) * sc}" ${st}/>`, tx = (x, v, t, st = '') => `<text x="${X(x)}" y="${Y(v)}" text-anchor="middle" ${F} ${st}>${t}</text>`;
+  const tag = (n, x, v, d) => `<circle cx="${X(x)}" cy="${Y(v)}" r="10" fill="${d ? '#b5622a' : '#2f6f86'}" stroke="#fff" stroke-width="2"/>` + `<text x="${X(x)}" y="${Y(v) + 4}" text-anchor="middle" font-size="11" font-weight="800" fill="#fff" ${F}>${n}</text>`;
+  let g = r(0, 0, w, 10, 'fill="#faf8f4"');
+  g += r(-.12, -.12, 0, 10, 'fill="#9a948a"') + r(w, -.12, w + .12, 10, 'fill="#9a948a"') + r(-.12, -.18, w + .12, 0, 'fill="#5c5a57"') + r(-.12, 10, w + .12, 10.1, 'fill="#4aa3c7"');
+  const dm = w / 2; g += r(dm - .5, 9.98, dm + .5, 10.12, 'fill="#fff"') + `<path d="M${X(dm - .5)} ${Y(10)}V${Y(11)}A${sc} ${sc} 0 0 0 ${X(dm + .5)} ${Y(10)}" fill="none" stroke="#24211d" stroke-width=".8"/>`;
+  g += r(w - 1.3, -.2, w - .4, .02, 'fill="#fff"') + tx(w - .85, -.55, 'servicio', 'font-size="8" fill="#888"');
+  g += r(.1, 0, 2.1, 2.2, 'fill="#eef2f4" stroke="#8aa" stroke-width="1"') + tx(1.1, 1.0, 'baño', 'font-size="9" fill="#678"') + `<circle cx="${X(.55)}" cy="${Y(.45)}" r="6" fill="#fff" stroke="#8aa"/>`;
+  g += tx(w * .27, 10.45, 'vidriera a la plaza', 'font-size="9" fill="#2f6f86"') + tx(w * .72, -1.25, 'pasaje de servicio', 'font-size="9" fill="#888"');
+  let t = [];
+  if (tipo === 'com') {
+    for (let x = .9; x < w - .5; x += 1.6) for (let v = 3.5; v < 9.6; v += 2) g += `<circle cx="${X(x)}" cy="${Y(v)}" r="3" fill="#f2b705"/>`;
+    g += r(.15, 2.6, .55, 9.2, 'fill="#d9cfbf"') + r(w - .55, 2.6, w - .15, 7.2, 'fill="#d9cfbf"') + r(1.6, 4.0, 2.1, 7.0, 'fill="#e6dccb"') + r(3.0, 4.0, 3.5, 7.0, 'fill="#e6dccb"');
+    g += r(w - 2.4, 7.6, w - .3, 8.2, 'fill="#c8a98a"') + tx(w - 1.35, 7.0, 'mostrador', 'font-size="9" fill="#7a5a3a"') + r(w - .2, 8.6, w, 9.6, 'fill="#cfd8dc"') + tx(w / 2, 5.5, 'salón', 'font-size="12" fill="#bbb"');
+    t = [[1, w / 2 - .9, 8.6], [2, w - .55, 9.1], [3, 2.6, 2.9], [4, w / 2 + 1.0, 10.6], [5, .55, 3.0]]; }
+  else {
+    [[1.2, 8.4], [3.0, 8.4], [w - 1.2, 8.4], [1.2, 6.2], [3.0, 6.2]].filter(([x]) => x < w - .6).forEach(([x, v]) => { g += `<circle cx="${X(x)}" cy="${Y(v)}" r="${.38 * sc}" fill="#e6dccb"/>`; [[-.55, 0], [.55, 0], [0, .55], [0, -.55]].forEach(([a, b]) => g += `<circle cx="${X(x + a)}" cy="${Y(v + b)}" r="4" fill="#c8a98a"/>`); });
+    g += r(w - .7, 4.6, w - .2, 7.4, 'fill="#c8a98a"') + tx(w - 1.2, 6.0, 'barra', 'font-size="9" fill="#7a5a3a"');
+    g += r(2.3, 0, w, 4.2, 'fill="#f0ece4" stroke="#b5622a" stroke-dasharray="4 3"') + tx(2.3 + (w - 2.3) / 2, 2.6, 'cocina', 'font-size="11" fill="#b5622a"');
+    g += r(2.4, .05, w - .1, .7, 'fill="#cfd5d8"') + r(w - 1.4, .1, w - .5, .6, 'fill="#9fb4c0"') + r(2.5, .1, 3.9, 1.2, 'fill="none" stroke="#24211d" stroke-width="1.4"') + `<circle cx="${X(3.2)}" cy="${Y(.65)}" r="${.15 * sc}" fill="#b5622a"/>`;
+    g += r(w - .7, 1.6, w - .1, 3.4, 'fill="#cfd8dc"') + `<circle cx="${X(2.4)}" cy="${Y(-.9)}" r="${.35 * sc}" fill="none" stroke="#b5622a" stroke-width="1.5"/>`;
+    t = [[1, 2.4, -.9], [2, 3.2, 1.9], [3, 4.0, -.45], [4, .55, 3.0], [5, 2.6, 1.6], [6, w - .95, .9], [7, w - .4, 3.8], [8, 2.0, 7.3], [9, .55, 4.2]]; }
+  const L = OPC()[tipo].it; t.forEach(([n, x, v]) => g += tag(n, x, v, L[n - 1][3] === 'd'));
+  return `<svg viewBox="0 0 ${Wd} ${Hd}" xmlns="http://www.w3.org/2000/svg">${g}</svg>`; }
 function renderExtras() { const el = $('exGas'); if (!el) return; const n = S.n, m2 = 250 / n, gD = GASTRO.filter(x => /^dueño/.test(x[3])), [gd0, gd1] = sumR(gD), [gt0, gt1] = sumR(GASTRO); dVrf($('svVrf'));
   el.innerHTML = `<table><tr><th>Ítem</th><th class="n">Estimado por local</th><th>Quién</th></tr>${GASTRO.map(x => `<tr><td>${x[0]}</td><td class="n">${rgo(x[1], x[2])}</td><td class="note">${x[3]}</td></tr>`).join('')}<tr class="tt"><td>Lo que conviene dejar hecho en la obra (grasera, ducto y toma de aire)</td><td class="n">${rgo(gd0, gd1)}</td><td></td></tr><tr><td>Todo lo gastronómico de un local, entre dueño e inquilino</td><td class="n">${rgo(gt0, gt1)}</td><td></td></tr></table>
   <p class="note">Bromatología pide extracción de humos y olores con campana, extractor y ducto, piletas con agua fría y caliente y paredes de la zona de elaboración revestidas hasta 2 m. Conviene definir en la obra cuáles locales pueden ser gastronómicos (por ejemplo el del portal, que da a la plaza) y dejarles grasera y ducto: hacerlo después obliga a romper la platea y perforar el techo.</p>`;
@@ -2809,6 +2838,7 @@ function renderPres() {
       <h3>Para decidir en la firma</h3><ul class="sbul"><li>¿4 o 5 locales?</li><li>¿Qué locales quedan preparados para gastronomía?</li><li>¿Aire por cuenta de cada inquilino o VRF del edificio?</li></ul>
       <h3>Condiciones</h3><ul class="sbul"><li>Precio sobre el anteproyecto del ${fCo(addD(D0(CR.firma), -1))}; los cambios posteriores se cotizan aparte. Precio ${lbl}, en dólares; aportes de BPS al costo. Validez: 15 días.</li><li>El proyecto y la gestión quedan firmes con la firma; la obra arranca con el inicio anticipado aprobado. La misma obra se puede repetir en los padrones 10597 y 10598.</li></ul>`],
     ['ent', `${logo}<h2>Para el inquilino: qué recibe</h2><p>Cáscara + baño: el local queda listo para que el inquilino ponga lo suyo, sin obra pesada ni trámites de instalaciones:</p><div class="s2b">${[tm.slice(0, 7), tm.slice(7)].map(L => `<table class="stab"><tr><th>Ítem</th><th>Lo deja el dueño</th></tr>${L.map(x => `<tr><td>${x[0]}</td><td>${x[2] === '✔' ? '<b>✔</b>' : x[2]}</td></tr>`).join('')}</table>`).join('')}</div>`],
+    ['opc', `${logo}<h2>Cómo puede quedar cada local</h2><div class="sopc">${['com', 'gas'].map(tp => { const O = OPC()[tp], d = O.it.filter(x => x[3] === 'd'), i2 = O.it.filter(x => x[3] === 'i'), [d0, d1] = sumR(d), [i0, i1] = sumR(i2); return `<div class="sopcp">${planOpc(tp)}</div><div><h3 style="margin-top:0">${O.tit}</h3><ol class="sopl">${O.it.map((x, j) => `<li><i class="${x[3]}">${j + 1}</i><span>${x[0]}</span><b>${rgo(x[1], x[2]).replace('USD ', '')}</b></li>`).join('')}</ol>${d.length ? `<p class="sdim"><b style="color:#b5622a">Dueño, en la obra:</b> ${rgo(d0, d1)} por local</p>` : ''}<p class="sdim"><b style="color:#2f6f86">Inquilino:</b> ${rgo(i0, i1)}</p></div>`; }).join('')}</div><p class="sdim">Planta de un local tipo de ${f2(25 / S.n)} × 10 m. Naranja: lo deja hecho el dueño durante la obra, si se elige gastronomía (más barato que romper después). Azul: lo pone el inquilino. Precios estimados en USD sin IVA.</p>`],
     ['inq', `${logo}<h2>Lo que pone el inquilino para abrir</h2><div class="s2b"><div><h3 style="margin-top:0">Comercio, servicios u oficina</h3><p class="sbig">${rgo(ic0, ic1)}</p><p class="sdim">Iluminación, aire, terminaciones, cartel, mobiliario y habilitaciones.</p></div><div><h3 style="margin-top:0">Gastronomía</h3><p class="sbig">${rgo(ig0, ig1)}</p><p class="sdim">Campana y extracción, cocina, equipamiento, aire, mobiliario y habilitaciones (incluida bromatología).</p></div></div>
       <h3>Habilitaciones</h3><ul class="sbul"><li>Cada local se habilita en Bomberos por separado del edificio, a nombre del inquilino, y hace su habilitación comercial en la Intendencia. Gastronomía suma la habilitación bromatológica (RUNAEV).</li><li>El dueño hace la habilitación de Bomberos del edificio y el final de obra, y le entrega a cada inquilino un <b>kit de habilitación</b>: planos del local, memoria de instalaciones y certificados de UTE y OSE. Le ahorra tiempo y plata, y ayuda a alquilar.</li></ul>`],
   ];
