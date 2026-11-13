@@ -2104,14 +2104,30 @@ const v3 = (() => {
       const mv = f.mixer.position.clone().sub(prev); if (mv.lengthSq() > 1e-6) f.mixer.rotation.y = t < .45 ? Math.atan2(-mv.z, mv.x) : 0; else if (t >= .7) f.mixer.rotation.y = 0;
       f.tambor.rotation.x += t >= .7 ? .08 : .02; }
   }
+  // anillo alrededor del edificio: las máquinas se mueven por afuera, rodeando las esquinas, nunca a través de la estructura
+  const RG = (() => { const x0 = -.6, x1 = 25.6, y0 = -.6, y1 = 10.6, Lu = x1 - x0, Lv = y1 - y0, CL = 3, h = Math.PI / 2;
+    const SG = [{ a: [x0, y0], b: [x1, y0], n: -h, L: Lu }, { c: [x1, y0], n0: -h, n1: 0, L: CL }, { a: [x1, y0], b: [x1, y1], n: 0, L: Lv }, { c: [x1, y1], n0: 0, n1: h, L: CL },
+      { a: [x1, y1], b: [x0, y1], n: h, L: Lu }, { c: [x0, y1], n0: h, n1: 2 * h, L: CL }, { a: [x0, y1], b: [x0, y0], n: 2 * h, L: Lv }, { c: [x0, y0], n0: 2 * h, n1: 3 * h, L: CL }];
+    const P = SG.reduce((q, g) => q + g.L, 0);
+    const pt = (sv, d) => { let r = ((sv % P) + P) % P; for (const g of SG) { if (r <= g.L) { const f = r / g.L; let u, v, an; if (g.c) { [u, v] = g.c; an = g.n0 + (g.n1 - g.n0) * f; } else { u = g.a[0] + (g.b[0] - g.a[0]) * f; v = g.a[1] + (g.b[1] - g.a[1]) * f; an = g.n; } return new THREE.Vector3(B.E0 + u + d * Math.cos(an), 0, -(B.N0 + v + d * Math.sin(an))); } r -= g.L; } };
+    const par = w => { const u = w.x - B.E0, v = -w.z - B.N0, cl = (x, a, b) => Math.max(a, Math.min(b, x));
+      if (v < y0) return cl(u, x0, x1) - x0; if (u > x1) return Lu + CL + cl(v, y0, y1) - y0; if (v > y1) return Lu + Lv + 2 * CL + x1 - cl(u, x0, x1); return 2 * Lu + Lv + 3 * CL + y1 - cl(v, y0, y1); };
+    const dist = w => { const u = w.x - B.E0, v = -w.z - B.N0; return v < y0 ? y0 - v : u > x1 ? u - x1 : v > y1 ? v - y1 : x0 - u; };
+    // avanza el parámetro s hacia el objetivo por el lado más corto; devuelve {p, mov}
+    const ir = (st, want, vmax) => { const sT = par(want), dT = dist(want); if (st.s == null) { st.s = sT; st.d = dT; } let df = ((sT - st.s) % P + 1.5 * P) % P - P / 2; const stp = Math.sign(df) * Math.min(Math.abs(df), Math.max(.15, Math.abs(df) * .07), vmax);
+      st.s += stp; st.d += (dT - st.d) * .08; const p0 = pt(st.s - Math.sign(stp || 1) * .5, st.d), p = pt(st.s, st.d); return { p, mov: Math.abs(df) > .6, dir: p.clone().sub(p0) }; };
+    return { ir }; })();
+  // pluma recogida: baja y corta, mirando hacia adelante (cuando viaja o no está izando)
+  function recoge(m) { const piv = m.boom.position, L = 3.4, an = .22; m.boom.rotation.set(0, 0, an); m.bm.scale.x = L; m.bm.position.x = L / 2; m.fork.position.set(piv.x + L * Math.cos(an), piv.y + L * Math.sin(an) - .35, piv.z); }
   function ponerMaquinas(U, k) {
     const m = maq, tgt = U.c; ponerFund(U); const fund = /^(f|s[A-Z])/.test(U.k) || U.k === 'inst'; m.mani.visible = m.tij.visible = !fund;
-    if (U.tipo === 'grua') { const want = spot(tgt, U.k === 'techo' || U.k === 'cor' ? 4.2 : 5.2); m.mPos.lerp(want, .08); m.mani.position.copy(m.mPos);
-      const dir = new THREE.Vector3().subVectors(tgt, m.mPos); m.mani.rotation.y = Math.atan2(-dir.z, dir.x);
+    if (U.tipo === 'grua') { const want = spot(tgt, U.k === 'techo' || U.k === 'cor' ? 4.2 : 5.2), r = RG.ir(m.mR = m.mR || {}, want, .9); m.mPos.copy(r.p); m.mani.position.copy(m.mPos);
+      const dir = r.mov ? r.dir : new THREE.Vector3().subVectors(tgt, m.mPos), ang = Math.atan2(-dir.z, dir.x); let da = ((ang - m.mani.rotation.y) % (2 * Math.PI) + 3 * Math.PI) % (2 * Math.PI) - Math.PI; m.mani.rotation.y += da * .15;
       const tip = m.cargo || tgt, local = m.mani.worldToLocal(tip.clone()), piv = m.boom.position, dx = local.x - piv.x, dy = local.y - piv.y + .3, dz = local.z - piv.z, L = Math.hypot(dx, dy, dz);
-      m.boom.rotation.set(0, Math.atan2(-dz, dx), Math.atan2(dy, Math.hypot(dx, dz))); m.bm.scale.x = Math.max(1, L); m.bm.position.x = Math.max(1, L) / 2; m.fork.position.set(local.x, local.y - .35, local.z); }
+      if (r.mov) recoge(m); else { m.boom.rotation.set(0, Math.atan2(-dz, dx), Math.atan2(dy, Math.hypot(dx, dz))); m.bm.scale.x = Math.max(1, L); m.bm.position.x = Math.max(1, L) / 2; m.fork.position.set(local.x, local.y - .35, local.z); } }
+    else recoge(m);
     const tw = spot(tgt, 1.1), roof = /techo|cor|cru/.test(U.k), h = roof ? Math.max(.3, tgt.y - 1.3) : Math.max(.2, Math.min(5.0, tgt.y - 1.4));
-    m.tPos.lerp(tw, .1); m.tH += (h - m.tH) * .1; m.tij.position.copy(m.tPos); const s = lado(tgt); m.tij.rotation.y = s === 'N' || s === 'S' ? 0 : Math.PI / 2;
+    { const r = RG.ir(m.tR = m.tR || {}, tw, .7); m.tPos.copy(r.p); } m.tH += (h - m.tH) * .1; m.tij.position.copy(m.tPos); const s = lado(tgt); { const ta = s === 'N' || s === 'S' ? 0 : Math.PI / 2; let da = ((ta - m.tij.rotation.y) % Math.PI + 1.5 * Math.PI) % Math.PI - Math.PI / 2; m.tij.rotation.y += da * .15; }
     m.plat.position.y = .6 + m.tH; m.sx.forEach((x, i) => { const hh = m.tH + .4; x.position.y = .6 + hh / 2; x.rotation.z = (i ? 1 : -1) * Math.atan2(hh, 2.3); x.scale.x = Math.hypot(hh, 2.3) / 2.3; });
     m.suelo.position.copy(spot(tgt, 2.4)).add(new THREE.Vector3(1.2, 0, 0)); m.suelo.lookAt(tgt.x, 0, tgt.z);
     // soldadura: correas, arriostres, largueros y bastidores se sueldan o abulonan desde la tijera
@@ -2164,7 +2180,7 @@ const v3 = (() => {
       else { off.set(0, -(1 - t) * 1.2, 0); sc2 = .5 + .5 * t; maq.cargo = null; }
       if (off) U.ms.forEach(m => { m.position.copy(m.userData.p0).add(off); m.scale.setScalar(sc2); });
       ponerMaquinas(U);
-      if (AN.t >= 1) { U.ms.forEach(m => { m.position.copy(m.userData.p0); m.scale.set(1, 1, 1); if (U.tipo === 'exc') m.visible = false; }); AN.i++; AN.t = 0; if (AN.i >= UNITS.length) { AN.run = false; groups.ext.visible = true; } }
+      if (AN.t >= 1) { U.ms.forEach(m => { m.position.copy(m.userData.p0); m.scale.set(1, 1, 1); if (U.tipo === 'exc') m.visible = false; }); AN.i++; AN.t = 0; if (AN.i >= UNITS.length) { AN.run = false; groups.ext.visible = true; [maq.mani, maq.tij, maq.sold].forEach(o => o.visible = false); } }
       if (AN.seguir && !viaje) { const d = U.c.clone().sub(ctl.target).multiplyScalar(Math.min(1, dt * 1.5)); ctl.target.add(d); cam.position.add(d); }
     }
     const V = UNITS[Math.min(AN.i, UNITS.length - 1)], q = QUIEN[V.k], prop = q && PROPIO[q], quien = !q ? 'aluminiero' : prop ? 'SBU con cuadrilla propia' : PAQ[q].quien;
@@ -2488,8 +2504,8 @@ const v3 = (() => {
     (function loop() { requestAnimationFrame(loop); tick(); ren.render(sc, cam); })();
   }
   function resize() { if (!ren) return; const el = $('v3'); ren.setSize(el.clientWidth, el.clientHeight); cam.aspect = el.clientWidth / el.clientHeight; cam.updateProjectionMatrix(); }
-  function animIr(k, o = {}) { start(); if (!AN) animar(true); let i = k === 'fin' ? UNITS.length : Math.max(0, UNITS.findIndex(u => u.k === k)); if (o.ultimo) { const ks = UNITS.map((u, j) => u.k === k ? j : -1).filter(j => j >= 0); i = ks[ks.length - 1] + 1; } i += o.off || 0; AN.i = i; AN.t = 0; AN.run = !o.quieto; if (o.seguir === false) AN.seguir = false; verHasta(i); groups.ext.visible = i >= UNITS.length; if (o.vista != null) irVista(o.vista); }
-  return { start, animIr, _an: () => ({ AN, n: UNITS.length, ks: UNITS.map(u => u.k) }), _g: () => groups, vista: i => irVista(i), rebuild: () => { if (started) { if (AN) animar(false); build(); hud(); } }, ir, ST };
+  function animIr(k, o = {}) { start(); if (!AN) animar(true); let i = k === 'fin' ? UNITS.length : Math.max(0, UNITS.findIndex(u => u.k === k)); if (o.ultimo) { const ks = UNITS.map((u, j) => u.k === k ? j : -1).filter(j => j >= 0); i = ks[ks.length - 1] + 1; } i += o.off || 0; AN.i = i; if (maq) { maq.mR = maq.tR = null; if (i >= UNITS.length) [maq.mani, maq.tij, maq.sold].forEach(q => q.visible = false); } AN.t = 0; AN.run = !o.quieto; if (o.seguir === false) AN.seguir = false; verHasta(i); groups.ext.visible = i >= UNITS.length; if (o.vista != null) irVista(o.vista); }
+  return { start, animIr, _an: () => ({ AN, n: UNITS.length, ks: UNITS.map(u => u.k), maq }), _g: () => groups, vista: i => irVista(i), rebuild: () => { if (started) { if (AN) animar(false); build(); hud(); } }, ir, ST };
 })();
 
 /* ================= CRONOGRAMA, PAGOS Y AVANCES =================
