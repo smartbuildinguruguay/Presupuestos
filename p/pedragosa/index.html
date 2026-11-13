@@ -57,9 +57,9 @@ document.addEventListener('keydown', e => { const k = e.key.toLowerCase(); if ((
 document.getElementById('wm').innerHTML = Array(30).fill(Array(8).fill('SBU · Propuesta para Juan Carlos García ·').join(' ')).join('<br>');
 
 const ETAPAS = [
-  { n: 'Etapa 1 · Suelo y fundación', f: '7 dic. → 22 dic. 2026', d: 'Movimiento de suelos, previsiones de sanitaria y eléctrica, vigas, platinas y platea.', k: ['inst', 'plat'], v: 'Estructura', c: '#8a6a3f' },
+  { n: 'Etapa 1 · Suelo y fundación', f: '7 dic. → 22 dic. 2026', d: 'Movimiento de suelos, colectores cloacal y pluvial separados, previsiones de sanitaria y eléctrica, vigas, platinas y platea.', k: ['inst', 'plat'], v: 'Estructura', c: '#8a6a3f' },
   { n: 'Etapa 2 · Estructura', f: '15 ene. → 29 ene. 2027', d: 'Pórticos, arriostramientos, correas y bastidores de fachada, fabricados en taller durante diciembre.', k: ['est', 'cru', 'cor', 'lar', 'bas'], v: 'Estructura', c: '#b5622a' },
-  { n: 'Etapa 3 · Envolvente', f: '3 feb. → 1 mar. 2027', d: 'Techo y muros de panel, vidrieras, faja, brise y cenefa: el edificio queda cerrado.', k: ['techo', 'muro', 'vid', 'faja', 'cen'], v: 'Plaza', c: '#2f6f86' },
+  { n: 'Etapa 3 · Envolvente', f: '3 feb. → 1 mar. 2027', d: 'Techo y muros de panel PIR blanco (no lo atacan las hormigas, aísla más), vidrieras, faja, brise y cenefa: el edificio queda cerrado.', k: ['techo', 'muro', 'vid', 'faja', 'cen'], v: 'Plaza', c: '#2f6f86' },
   { n: 'Etapa 4 · Interior', f: '12 feb. → 10 mar. 2027', d: 'Divisorios entre locales, baños, sanitaria, eléctrica e iluminación.', k: ['div', 'iSan', 'iEle'], v: 'Interior', c: '#6c8a3f' },
   { n: 'Etapa 5 · Entrega', f: '2 mar. → 14 abr. 2027', d: 'Plaza, estacionamiento, conexiones, Bomberos y final de obra. Locales listos para alquilar.', k: ['ext'], v: 'Avenida', c: '#6a4f8a' }];
 const VISTAS = { 'Aérea': [[56.6, 34, -46], [23.1, 0, -8]], 'En el barrio': [[62.6, 19, 21], [21.6, 0, -10]], 'Avenida': [[66.6, 17, -49], [22.6, 1, -8]], 'Plaza': [[24, 2.2, -27], [22.6, 3, -12]], 'Estructura': [[44, 9, 6], [24.6, 2.5, -9]], 'Interior': [[25.1, 33, 9], [23.1, 0, -9]] };
