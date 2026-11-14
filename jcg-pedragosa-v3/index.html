@@ -32,7 +32,12 @@ table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:6px 8px;b
 .g2{display:grid;grid-template-columns:1.15fr 1fr;gap:16px;align-items:start}#plan svg{width:100%;height:auto;background:#fff;border:1px solid var(--ln);border-radius:10px}
 .warn{background:#fff6ea;border-left:4px solid var(--ac);padding:8px 12px;border-radius:6px;font-size:13px;margin:10px 0}.note{font-size:12.5px;color:#6c655c}
 .gantt{font-size:12.5px}.gantt .r{display:grid;grid-template-columns:270px 1fr;gap:8px;align-items:center;margin:4px 0}.gantt .bar{height:16px;border-radius:4px}.gantt .tr{position:relative;height:16px;background:#f4f1ec;border-radius:4px}
-@media (max-width:1100px){#wrap{grid-template-columns:1fr}.g2{grid-template-columns:1fr}}
+#chip{position:absolute;right:10px;bottom:10px;background:rgba(255,253,249,.95);border-radius:9px;padding:7px 12px;text-align:right;font-size:12px;box-shadow:0 2px 10px #0002}#chip b{display:block;font-size:19px}
+#pre .fix{position:sticky;top:-11px;background:var(--bg);margin:-11px -11px 4px;padding:11px 11px 6px;z-index:2;border-bottom:1px solid var(--ln)}
+#oEst{display:grid;grid-template-columns:1fr 1fr;gap:5px}#oEst .op{margin:0;padding:7px 8px}#oEst .op small{display:none}
+.pan details{border-top:1px solid var(--ln);margin-top:8px;padding-top:2px}.pan summary{cursor:pointer;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8a7a68;font-weight:700;padding:6px 0;list-style:none;display:flex;justify-content:space-between}.pan summary::after{content:'▾'}.pan details:not([open]) summary::after{content:'▸'}.pan summary::-webkit-details-marker{display:none}
+@media (min-width:1101px){#pcfg.on{height:calc(100vh - var(--top,150px));padding-bottom:12px;overflow:hidden}#wrap{height:100%;grid-template-rows:minmax(0,1fr)}#wrap .pan{max-height:100%;overflow-y:auto;overscroll-behavior:contain}#v3{height:100%;min-height:0}}
+@media (max-width:1100px){#wrap{display:flex;flex-direction:column;gap:10px}#v3{order:-1;position:sticky;top:var(--navh,44px);height:44vh;min-height:280px;z-index:5;box-shadow:0 6px 14px #0003}#tag{max-width:48%;padding:6px 9px}#tag b{font-size:12.5px}#tag span{display:none}#info{display:none}#vistas button{padding:4px 6px;font-size:11px}#chip b{font-size:15px}.g2{grid-template-columns:1fr}}
 @media print{nav,#ctl,#vistas{display:none}main section{display:block!important}#wrap{display:block}}
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
@@ -46,19 +51,20 @@ table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:6px 8px;b
   <div class="pan" id="ctl">
    <h3>Arquitectura</h3><div id="oEst"></div>
    <h3>Color de paneles y cenefas</h3><div class="sw" id="oPal"></div>
-   <h3>Materiales</h3>
+   <details open><summary>Materiales</summary>
    <label class="lb">Madera del frente y de la galería</label><select id="sMad"></select>
    <label class="lb">Piedra en franjas y zócalo</label><select id="sPie"></select>
    <label class="lb" id="lTec">Techo a la vista</label><select id="sTec"></select>
    <label class="ck"><input type="checkbox" id="cCar" checked> Carpintería de aluminio negra</label>
-   <label class="ck"><input type="checkbox" id="cTer" checked> Terraza con deck al frente (3 m)</label>
-   <h3>Programa</h3>
+   <label class="ck"><input type="checkbox" id="cTer" checked> Terraza con deck al frente (3 m)</label></details>
+   <details open><summary>Programa</summary>
    <label class="lb">Segunda planta</label><select id="sPa"><option value="prev">Prevista: se arma después por dentro</option><option value="ya">Construida ahora</option></select>
    <label class="lb">Locales preparados para gastronomía</label><select id="sGas"></select>
    <label class="lb">Suelo (según el estudio)</label><select id="sSue"></select>
-   <label class="ck"><input type="checkbox" id="cInt"> Ver interior (sin techo)</label>
+   </details>
+   <label class="ck" style="margin-top:8px"><input type="checkbox" id="cInt"> Ver interior (sin techo)</label>
   </div>
-  <div id="v3"><div id="info"><b>Tocá un material</b>para ver qué es.</div><div id="vistas"></div><div id="tag"></div></div>
+  <div id="v3"><div id="info"><b>Tocá un material</b>para ver qué es.</div><div id="vistas"></div><div id="tag"></div><div id="chip"></div></div>
   <div class="pan" id="pre"></div>
  </div>
 </section>
@@ -229,10 +235,11 @@ function build() { ED.traverse(o => { if (o.isMesh) { o.geometry.dispose(); if (
   if (st === 'naves') { for (let i = 0; i < 3; i++) { const a = i * 10, r = G0.r; techo([[a, e, -.5], [a, e, D + .1], [a + 5, e + r, D + .1], [a + 5, e + r, -.5]], TI + ' · 35°'); techo([[a + 10, e, -.5], [a + 5, e + r, -.5], [a + 5, e + r, D + .1], [a + 10, e, D + .1]], TI); poly([[a, e, D + .08], [a + 5, e + r, D + .08], [a + 10, e, D + .08]], 'seam', [0, 1], 'Hastial del fondo'); TT.push(bx(a + 4.9, e + r - .05, -.5, a + 5.1, e + r + .08, D + .1, DK, 'Cumbrera')); if (i) bx(a - .25, e - .12, -.3, a + .25, e + .02, D, M(0x7fb3c9), 'Limahoya · canaleta interna entre dos naves, con desborde y doble bajada'); } [0, W].forEach(x => bx(x - .12, e - .12, -.5, x + .12, e + .06, D + .1, DK, 'Remate de alero')); }
   if (st === 'nave') { const r = G0.r, zc = D / 2; techo([[-.4, e, -.7], [W + .4, e, -.7], [W + .4, e + r, zc], [-.4, e + r, zc]], TI + ' · 20° · se ve desde la avenida'); techo([[-.4, e + r, zc], [W + .4, e + r, zc], [W + .4, e, D + .5], [-.4, e, D + .5]], TI); [0, W].forEach(x => poly([[x, e, 0], [x, e, D], [x, e + r, zc]], 'seam', [2, 1], 'Hastial lateral')); TT.push(bx(-.4, e + r - .05, zc - .1, W + .4, e + r + .08, zc + .1, DK, 'Cumbrera')); bx(-.4, e - .1, -.75, W + .4, e + .06, -.6, DK, 'Canaleta y alero del frente'); for (let i = 0; i < 3; i++) TT.push(bx(4 + i * 9, e + 1.2, 3.2, 8 + i * 9, e + 1.26, 6.6, GLASS, 'Lucernario')); }
   TT.forEach(m => m.visible = !S.int);
-  $('tag').innerHTML = `<b>${EST[st][0]}${no ? ' · ' + S.pal : ''}</b>${EST[st][1]} ${nf(W * D)} m² de planta · altura ${f1(alt())} m · ${S.pa === 'ya' ? 'planta alta construida' : 'planta alta prevista'}.`; }
+  $('tag').innerHTML = `<b>${EST[st][0]}${no ? ' · ' + S.pal : ''}</b><span>${EST[st][1]} ${nf(W * D)} m² de planta · altura ${f1(alt())} m · ${S.pa === 'ya' ? 'planta alta construida' : 'planta alta prevista'}.</span>`; }
 // ======================= RENDERS =======================
 function renderPrecio() { const c = cotiza(), N = norma(), ob = c.venta + c.gest;
-  $('pre').innerHTML = `<h3>Precio de la etapa 1</h3><div class="big">${u$(ob)}</div><div class="mut">obra + gestión, sin IVA · ${u$(ob / c.hu)} por m² de planta</div>
+  $('chip').innerHTML = `<b>${u$(ob)}</b>obra + gestión, sin IVA · <span class="${N.ok ? 'ok' : 'no'}">${N.ok ? '✔ norma' : '✖ norma'}</span>`;
+  $('pre').innerHTML = `<div class="fix"><h3>Precio de la etapa 1</h3><div class="big">${u$(ob)}</div><div class="mut">obra + gestión, sin IVA · ${u$(ob / c.hu)} por m² de planta</div></div>
    <h3>Cómo se arma</h3><div class="pr"><span>Bloque base de ${nf(c.hu)} m²<br><small>panel blanco, techo plano, preparado para la planta alta</small></span><b>${u$(c.base)}</b></div>
    ${c.img ? `<div class="pr"><span>+ Paquete de imagen<br><small>${EST[S.est][0]}: lo que cambia de la caja blanca a este diseño</small></span><b>${u$(c.img)}</b></div>` : ''}${c.gas ? `<div class="pr"><span>+ ${S.gas} locales para gastronomía</span><b>${u$(c.gas)}</b></div>` : ''}${c.pah ? `<div class="pr"><span>+ Planta alta ahora (${nf(c.pa.area)} m²)</span><b>${u$(c.pah)}</b></div>` : ''}
    <div class="pr"><span>+ Gestión<br><small>mensura, consulta previa, proyecto, cálculo, Bomberos, habilitaciones</small></span><b>${u$(c.gest)}</b></div><div class="pr t"><span>Obra + gestión</span><b>${u$(ob)}</b></div>
@@ -284,7 +291,7 @@ $('tAnt').innerHTML = `<p class="sub">El anteproyecto que recibimos (una planta 
 <p class="note">Las referencias normativas salen del análisis del 14/11/2026 sobre el Decreto Departamental 3718/1997 (TONE) y resoluciones de la Intendencia de Maldonado. Son lecturas nuestras de la norma, no un dictamen: se confirman por escrito en la consulta previa. Conviene presentarle estos puntos a la arquitecta como observaciones a corregir, con el artículo al lado.</p>`;
 // ======================= CONTROLES =======================
 const fill = (id, o, f) => $(id).innerHTML = Object.entries(o).map(([k, v]) => `<option value="${k}">${f(v)}</option>`).join('');
-$('oEst').innerHTML = Object.keys(EST).map(k => `<button class="op" data-e="${k}"><b>${EST[k][0]}</b><small>${EST[k][1]}</small></button>`).join(''); $('oPal').innerHTML = ['grafito', 'negro'].map(k => `<button class="op" data-p="${k}"><b>${k === 'negro' ? 'Negro' : 'Gris grafito'}</b></button>`).join('');
+$('oEst').innerHTML = Object.keys(EST).map(k => `<button class="op" data-e="${k}" title="${EST[k][1]}"><b>${EST[k][0].replace('Referencia · ', '')}</b><small>${EST[k][1]}</small></button>`).join(''); $('oPal').innerHTML = ['grafito', 'negro'].map(k => `<button class="op" data-p="${k}"><b>${k === 'negro' ? 'Negro' : 'Gris grafito'}</b></button>`).join('');
 fill('sMad', MAD, v => `${v[0]} · USD ${v[1]}/m²`); fill('sPie', PIE, v => v[0] + (v[1] ? ` · USD ${v[1]}/m²` : '')); fill('sTec', TEC, v => v[0] + (v[1] ? ` · + USD ${v[1]}/m²` : '')); fill('sSue', SUELO, v => v[0]); $('sGas').innerHTML = [0, 1, 2, 3, 4, 5, 6].map(n => `<option value="${n}">${n ? n + (n > 1 ? ' locales' : ' local') : 'Ninguno'}</option>`).join('');
 const sync = () => { document.querySelectorAll('[data-e]').forEach(b => b.classList.toggle('on', b.dataset.e === S.est)); document.querySelectorAll('[data-p]').forEach(b => b.classList.toggle('on', b.dataset.p === S.pal)); $('sMad').value = S.mad; $('sPie').value = S.pie; $('sTec').value = S.tec; $('sPa').value = S.pa; $('sGas').value = S.gas; $('sSue').value = S.suelo; $('sAre').value = S.area; $('nPla').value = S.pla; $('cCes').checked = S.ces; const d = S.est === 'base'; ['sMad', 'sPie', 'cCar', 'cTer'].forEach(i => $(i).disabled = d); $('sTec').disabled = d || S.est === 'caja'; };
 const upd = () => { build(); renderPrecio(); renderNorma(); renderCot(); renderCrono(); sync(); };
@@ -295,8 +302,8 @@ const VIS = { 'Desde la avenida': [[-14, 5.5, -34], [15, 4.2, 6]], 'Frente': [[1
 $('vistas').innerHTML = Object.keys(VIS).map(n => `<button data-v="${n}">${n}</button>`).join(''); let viaje = null; const irV = n => { const [p, t] = VIS[n]; viaje = { s: performance.now(), p0: cam.position.clone(), t0: ctl.target.clone(), p1: new THREE.Vector3(...p), t1: new THREE.Vector3(...t) }; }; $('vistas').onclick = e => { const n = e.target.dataset.v; if (n) irV(n); };
 cam.position.set(...VIS['Desde la avenida'][0]); ctl.target.set(...VIS['Desde la avenida'][1]);
 const ray = new THREE.Raycaster(), mp = new THREE.Vector2(); ren.domElement.addEventListener('click', ev => { const r = ren.domElement.getBoundingClientRect(); mp.set((ev.clientX - r.left) / r.width * 2 - 1, -(ev.clientY - r.top) / r.height * 2 + 1); ray.setFromCamera(mp, cam); const h = ray.intersectObjects(sc.children, true).find(q => q.object.visible && q.object.userData.info); if (h) { const t = h.object.userData.info.split(' · '); $('info').innerHTML = `<b>${t[0]}</b>${t.slice(1).join(' · ')}`; } });
-function resize() { const w = box.clientWidth, h = box.clientHeight; if (!w) return; ren.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); } addEventListener('resize', resize); resize(); upd();
-$('tabs').onclick = e => { const t = e.target.dataset.t; if (!t) return; document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.t === t)); document.querySelectorAll('main section').forEach(s => s.classList.toggle('on', s.id === t)); if (t === 'pcfg') resize(); };
+function resize() { const w = box.clientWidth, h = box.clientHeight; if (!w) return; ren.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); } const fit = () => { const st = document.documentElement.style; st.setProperty('--navh', $('tabs').offsetHeight + 'px'); st.setProperty('--top', (document.querySelector('header').offsetHeight + $('tabs').offsetHeight) + 'px'); resize(); }; addEventListener('resize', fit); fit(); upd(); fit();
+$('tabs').onclick = e => { const t = e.target.dataset.t; if (!t) return; document.querySelectorAll('nav button').forEach(b => b.classList.toggle('on', b.dataset.t === t)); document.querySelectorAll('main section').forEach(s => s.classList.toggle('on', s.id === t)); scrollTo(0, 0); fit(); };
 (function loop() { requestAnimationFrame(loop); if (viaje) { const k = Math.min(1, (performance.now() - viaje.s) / 1300), e = k < .5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2; cam.position.lerpVectors(viaje.p0, viaje.p1, e); ctl.target.lerpVectors(viaje.t0, viaje.t1, e); if (k >= 1) viaje = null; } ctl.update(); ren.render(sc, cam); })();
 window.__v3 = { S, upd, cotiza, norma, plan, cam, ctl, VIS, etapa2 };
 </script>
