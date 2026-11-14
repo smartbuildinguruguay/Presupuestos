@@ -166,7 +166,7 @@ def svg(path):
     s.append(f'<text x="{minx + 1.2}" y="{by + 3.4}" font-size=".42" fill="#444">Locales y consultorios · cliente Juan Carlos García · Punta del Este · escala 1:200 en A3</text>')
     s.append(f'<text x="{minx + 1.2}" y="{by + 4.3}" font-size=".38" fill="#b5622a">Redibujado desde fotos del plano impreso. Cotas en negro: leídas del plano. Cotas y elementos marcados con *: estimados por proporción, a verificar con el original.</text>')
     s.append(f'<text x="{maxx - 1.2}" y="{by + 1.4}" font-size=".38" text-anchor="end">Áreas del plano original</text>')
-    for i, t in enumerate(['Consultorios · PB 199,03 m² · PA 234,54 m²', 'Locales · PB 562,95 m² · PA 596 m²', 'Total · PB 761,98 m² · PA 830,54 m² · 1.592,52 m²']):
+    for i, t in enumerate(['Consultorios · PB 199,03 m² · PA 234,54 m²', 'Locales · PB 562,95 m² · PA 596 m²', 'Se construye la PB (huella ≈ 830 m²); la PA queda como entrepiso opcional']):
         s.append(f'<text x="{maxx - 1.2}" y="{by + 2.2 + i * .65}" font-size=".38" text-anchor="end" {"font-weight=\"700\"" if i == 2 else ""}>{t}</text>')
     s.append(f'<text x="{maxx - 1.2}" y="{by + 4.6}" font-size=".32" text-anchor="end" fill="#777">SBU · Ramiro Portugau, director de obra · 098 526 226</text>')
     s.append('</svg>')
