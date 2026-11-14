@@ -1,0 +1,345 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Pedragosa Sierra · Opción U con tres naves independientes</title>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<style>
+:root{--ink:#1d2630;--mut:#5b6670;--line:#dfe3e7;--acc:#2b3a4a;--bg:#fafaf7}
+*{box-sizing:border-box}
+body{margin:0;font:15px/1.55 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:var(--ink);background:var(--bg)}
+main{max-width:1180px;margin:0 auto;padding:26px 20px 80px}
+h1{font-size:26px;margin:0 0 4px;color:var(--acc)}
+h2{font-size:20px;margin:40px 0 10px;padding-top:12px;border-top:2px solid var(--acc);color:var(--acc)}
+h3{font-size:16px;margin:22px 0 6px}
+.sub{color:var(--mut);margin:0 0 16px}
+.lead{background:#fff;border:1px solid var(--line);border-radius:10px;padding:14px 18px}
+.lead li{margin:4px 0}
+nav{font-size:13px;margin:12px 0 4px}nav a{color:var(--acc);margin-right:12px}
+.viz{display:grid;grid-template-columns:250px 1fr;gap:12px;align-items:start}
+@media (max-width:860px){.viz{grid-template-columns:1fr}}
+.panel{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 14px;font-size:13px}
+.panel h4{margin:8px 0 4px;font-size:12px;text-transform:uppercase;letter-spacing:.04em;color:var(--mut)}
+.panel label{display:block;margin:3px 0;cursor:pointer}
+.panel button{display:block;width:100%;margin:4px 0;padding:6px 8px;border:1px solid #c9ced4;background:#f6f7f8;border-radius:6px;cursor:pointer;text-align:left;font:inherit}
+.panel button:hover{background:#eef1f4}
+#cv{width:100%;height:min(66vh,640px);min-height:420px;display:block;border-radius:10px;border:1px solid var(--line);background:#f3f1ea}
+table{border-collapse:collapse;width:100%}
+.grid th,.grid td{border:1px solid var(--line);padding:6px 8px;text-align:left;vertical-align:top;font-size:13px}
+.grid th{background:#eef1f4}
+.n{text-align:right;white-space:nowrap}
+.tot td{font-weight:700;background:#f2f5f7}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:14px}
+@media (max-width:760px){.cols{grid-template-columns:1fr}}
+.card{background:#fff;border:1px solid var(--line);border-radius:10px;padding:12px 16px}
+.rec{background:#eef4f0;border:1px solid #bfd6c8;border-radius:10px;padding:12px 16px}
+details{background:#fff;border:1px solid var(--line);border-radius:8px;margin:6px 0;padding:6px 10px}
+summary{cursor:pointer;display:flex;justify-content:space-between;gap:10px;font-weight:600;padding:4px 0}
+summary span{color:var(--acc)}
+small,.mut{color:var(--mut)}
+.k{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:12px 0}
+@media (max-width:760px){.k{grid-template-columns:1fr 1fr}}
+.k div{background:#fff;border:1px solid var(--line);border-radius:8px;padding:8px 10px}
+.k span{display:block;font-size:12px;color:var(--mut)}
+.k b{font-size:15px}
+</style></head><body><main>
+<h1>Pedragosa Sierra · Opción U con tres naves independientes</h1>
+<p class="sub">Padrones 10596, 10597 y 10598 · 3.050 m² · cliente Juan Carlos García · SBU · Ramiro Portugau (director de obra) · Ricardo Portugau (cálculo) · documento de trabajo, 14/11/2026</p>
+<div class="lead"><b>Resumen.</b>
+<ul>
+<li>Tres naves a dos aguas de acero, estilo de la referencia de Bertolotti Vial (cubierta de panel PIR, muros de panel, pórticos de 12 m). Cada una está dentro de su padrón y queda separada de las otras por 6 m, así que no se tocan.</li>
+<li>La nave del fondo (10597) usa un techo de un agua escondido detrás de un parapeto de 7,20 m. Así el conjunto se simplifica sin que se vea desde la avenida.</li>
+<li>Parque en el centro de la U, abierto a la avenida. Espacio libre de 1.915 m² (63 %). FOS de 23,2 % sobre el total.</li>
+<li>Obra + gestión: <b>USD 901.000</b> sin IVA (≈ USD 1.273 por m² de planta). Con IVA y BPS: <b>USD 1.163.920</b>.</li>
+</ul></div>
+<div class="k">
+<div><span>Planta ocupada</span><b>708 m²</b></div>
+<div><span>Locales · plazas</span><b>9 · 9</b></div>
+<div><span>Columnas de acero</span><b>32</b></div>
+<div><span>Techo PIR</span><b>728 m²</b></div>
+</div>
+<nav><a href="#visor">Visor 3D</a><a href="#norma">Normativa</a><a href="#estructura">Estructura en capas</a><a href="#aguas">Aguas y desagües</a><a href="#presupuesto">Presupuesto</a><a href="#hipo">Hipótesis</a></nav>
+
+<h2 id="visor">1. Modelo 3D en capas</h2>
+<p class="mut">Arrastrar para girar, rueda para acercar. Las capas se prenden y apagan a la izquierda. El botón de sol muestra la sombra de cada hora y estación sobre el parque.</p>
+<div class="viz">
+<div class="panel">
+<h4>Capas</h4>
+<label><input type="checkbox" data-l="lote" checked> Terreno, padrones y avenida</label>
+<label><input type="checkbox" data-l="parque" checked> Parque, pavimento y estacionamiento</label>
+<label><input type="checkbox" data-l="naves" checked> Muros PIR y vidrieras</label>
+<label><input type="checkbox" data-l="techos" checked> Techos a dos aguas y techo escondido</label>
+<label><input type="checkbox" data-l="estructura" checked> Estructura de acero (pórticos)</label>
+<label><input type="checkbox" data-l="luces" checked> Luces y ejes</label>
+<label><input type="checkbox" data-l="desagues" checked> Desagües pluviales</label>
+<label><input type="checkbox" data-l="piedra" checked> Piedra en la base</label>
+<label><input type="checkbox" data-l="madera" checked> Cenefa de madera o simil</label>
+<h4>Vistas</h4>
+<button data-v="planta">Planta (norte arriba)</button>
+<button data-v="avenida">Desde la avenida</button>
+<button data-v="portico">Pórticos desde el oeste</button>
+<button data-v="iso">Isométrica</button>
+<h4>Sol</h4>
+<div id="suns"></div>
+</div>
+<canvas id="cv"></canvas>
+</div>
+
+<h2 id="norma">2. Normativa: cada nave dentro de su padrón</h2>
+<table class="grid"><thead><tr><th>Criterio</th><th>Resultado</th><th>Límite y fuente</th><th>Estado</th></tr></thead><tbody>
+<tr><td>FOS por padrón · nave sur (10598)</td><td>252 m² · 24,0 %</td><td>25 % de 1.050 m² = 262 m²</td><td>Cumple</td></tr>
+<tr><td>FOS por padrón · nave norte (10596)</td><td>240 m² · 24,0 %</td><td>25 % de 1.000 m² = 250 m²</td><td>Cumple</td></tr>
+<tr><td>FOS por padrón · nave del fondo (10597)</td><td>216 m² · 21,6 %</td><td>25 % de 1.000 m² = 250 m²</td><td>Cumple</td></tr>
+<tr><td>FOS total</td><td>708 m² · 23,2 %</td><td>25 % de 3.050 m² = 762 m²</td><td>Cumple</td></tr>
+<tr><td>Espacio libre (parque y accesos)</td><td>1.915 m² · 63 %</td><td>≥ 60 % = 1.830 m²</td><td>Cumple</td></tr>
+<tr><td>Círculo Ø 42,5 m por bloque</td><td>Sur Ø 24,2 m · norte Ø 23,3 m · fondo Ø 21,6 m</td><td>Cada bloque inscrito en Ø 42,5 m</td><td>Cumple</td></tr>
+<tr><td>Separación entre naves</td><td>6 m (sur–fondo) · 6 m (fondo–norte)</td><td>≥ 5 m entre bloques separados</td><td>Cumple</td></tr>
+<tr><td>Altura</td><td>9,65 m a la cumbrera (naves laterales)</td><td>Máx. 12 m (PB + 3)</td><td>Cumple</td></tr>
+<tr><td>Retiros usados</td><td>Frente 10 m · laterales 3 m · fondo 10 m</td><td>Frente 10 · laterales ≥ 3 (suma &gt; 8) · fondo 4 (ver hipótesis)</td><td>Cumple con el fondo más estricto</td></tr>
+<tr><td>Estacionamiento</td><td>9 plazas en el retiro frontal</td><td>1 por local = 9</td><td>Cumple</td></tr>
+</tbody></table>
+<p class="mut"><small>Como las tres naves no se tocan, no hay bloque conectado ni galería que una los padrones. Ese punto, que era el de consulta en la opción E5, queda resuelto por diseño. La única condición que sigue abierta es si la intendencia acepta el FOS por padrón o pide el total unificado; en ambos casos esta opción cumple.</small></p>
+
+<h2 id="estructura">3. Estructura en capas (pórticos, luces y cargas)</h2>
+<p>Pórticos de acero a dos aguas con <b>luz de 12 m</b> en las naves laterales, y pórticos de 12 m en la nave del fondo. Separación de los pórticos de 4,2 a 5 m. Los valores de perfil son de anteproyecto y los dimensiona el ingeniero calculista.</p>
+<div class="cols">
+<div class="card"><b>Capa 1 · Fundación</b>
+<p class="mut">Platea H30 de 15 cm con malla doble, vigas bajo los pórticos y pernos en cada columna. No hay sótano: la platea apoya en el terreno.</p>
+<b>Capa 2 · Columnas y pórticos de las naves laterales</b>
+<p class="mut">Columna de 6,00 m al alero y cabio hasta la cumbrera a 9,65 m, con pendiente de 16°. El cabio mide unos 7,0 m por faldón. Tirante de alero a 6,00 m en cada pórtico.</p>
+</div>
+<div class="card"><b>Capa 3 · Pórticos de la nave del fondo</b>
+<p class="mut">Columnas de 6,40 m y dintel recto a esa altura. El techo de un agua baja hacia el fondo, y el parapeto de 7,20 m lo esconde desde el parque.</p>
+<b>Capa 4 · Correas y panel</b>
+<p class="mut">Correas galvanizadas sobre cabios, con panel Isodec PIR de 80 mm engrafado blanco. Los muros usan el mismo panel, en gris grafito con la base de piedra.</p>
+</div>
+<div class="card"><b>Capa 5 · Cargas que mandan el diseño</b>
+<p class="mut">Succión de viento sobre el techo, sobre todo con tormentas del sur y suroeste. Dimensionar correas, anclajes y tirantes a succión. Sobrecarga de nieve: a verificar con la normativa vigente.</p>
+<b>Capa 6 · Luces y ejes</b>
+<p class="mut">Ejes cada 4,2 a 5 m a lo largo de las naves. Luz de 12 m entre columnas de la misma nave. Así la luz es igual a la de la opción B estudiada antes, y el costo del acero sale de la misma tarifa.</p>
+</div>
+</div>
+<p class="mut"><small>Columnas totales: 32 (12 en la nave sur, 10 en la norte, 10 en la del fondo). Acero laminado estimado en 32 kg/m² de planta, como en la estimación v3.</small></p>
+
+<h2 id="aguas">4. Aguas y desagües</h2>
+<div class="cols">
+<div class="card"><b>Naves a dos aguas</b>
+<ul>
+<li>Cada faldón drena a su alero. Canaleta de chapa a lo largo de los dos laterales, con pendiente de 1 %.</li>
+<li>Bajadas en los extremos de cada pórtico: 4 por nave lateral, con la pluvial hacia el colector.</li>
+<li>Las bajadas van junto a la columna, por fuera del panel, con codo embutido en el muro.</li>
+</ul></div>
+<div class="card"><b>Nave del fondo (techo escondido)</b>
+<ul>
+<li>El agua baja hacia el fondo. Canaleta interna junto al muro de fondo y una bajada escondida en la esquina.</li>
+<li>El parapeto no tiene canaleta a la vista: el techo drena hacia dentro, y eso mantiene limpia la fachada hacia el parque.</li>
+</ul></div>
+</div>
+<p><b>Colector y destino.</b> Las bajadas se conectan a un colector pluvial enterrado sobre la vereda, a 8,6 m de la línea de avenida, que llega al desagüe de la calle. Separado de la sanitaria, como en la estimación v3. La conexión final la confirma la Intendencia.</p>
+<p><b>Agua de lluvia.</b> El techo suma unos 728 m². Cada 10 mm de lluvia aportan unos 7,3 m³. Una cisterna de 20 m³ alimentaría el riego del parque y la limpieza, y no está incluida en el presupuesto.</p>
+
+<h2 id="presupuesto">5. Presupuesto general</h2>
+<p class="mut">Tarifas unitarias de la estimación v3 (Patagónico y Escandinavo) aplicadas a las cantidades de esta opción. Margen SBU y 10 % de imprevistos en el mismo criterio: costo directo × 1,1 × 1,25, redondeado a 100. Sin IVA salvo donde se indica.</p>
+<table class="grid"><tbody>
+<tr><td>Costo directo</td><td class="n">USD 599.966</td></tr>
+<tr><td>Ajuste de laudo y materiales (1,5 %)</td><td class="n">USD 8.999</td></tr>
+<tr><td>Imprevistos 10 % y margen SBU 25 %</td><td class="n">USD 228.335</td></tr>
+<tr class="tot"><td>Precio de obra sin IVA</td><td class="n">USD 837.300</td></tr>
+<tr class="tot"><td>Gestión y aportes (tabla siguiente)</td><td class="n"><tr><td>Mensura de los 3 padrones (sin fusión) y niveles</td><td class='n'>USD 6.000</td></tr><tr><td>Consulta previa de edificación y localización en la Intendencia</td><td class='n'>USD 900</td></tr><tr><td>Proyecto ejecutivo y permisos (Arq. Pablo Alcoba): arquitectura, sanitaria, eléctrica y trámites en OSE y UTE</td><td class='n'>USD 33.500</td></tr><tr><td>Ingeniero calculista Ricardo Portugau: cálculo, memoria, planos y firma</td><td class='n'>USD 5.500</td></tr><tr><td>Técnico registrado en Bomberos: define el panel y el revestimiento (Dec. 372/023)</td><td class='n'>USD 1.500</td></tr><tr><td>Registro de obra en BPS</td><td class='n'>USD 700</td></tr><tr><td>Plan de seguridad y técnico prevencionista durante la obra</td><td class='n'>USD 3.600</td></tr><tr><td>Habilitación de Bomberos del edificio</td><td class='n'>USD 4.800</td></tr><tr><td>Habilitación comercial por local × 9</td><td class='n'>USD 7.200</td></tr>TOT__</td></tr>
+<tr class="tot"><td>Obra + gestión sin IVA</td><td class="n">USD 901.000</td></tr>
+<tr><td>Aportes BPS (50 % de la mano de obra, costo)</td><td class="n">USD 64.700</td></tr>
+<tr class="tot"><td>Total con IVA 22 % y BPS</td><td class="n">USD 1.163.920</td></tr>
+</tbody></table>
+<h3>Cuánto cuesta cada rubro (costo directo, con margen)</h3>
+<details><summary><span>1 · Preliminares y suelo</span><b>USD 28.816</b></summary><table class='grid'><thead><tr><th>Rubro</th><th class='n'>Cantidad</th><th class='n'>Unitario USD</th><th class='n'>Costo directo USD</th></tr></thead><tbody><tr><td>Obrador, cerco de obra, baños químicos y replanteo</td><td class='n'>1 gl</td><td class='n'>6.500</td><td class='n'>6.500</td></tr><tr><td>Estudio de suelos: sondeos con informe</td><td class='n'>1 gl</td><td class='n'>2.600</td><td class='n'>2.600</td></tr><tr><td>Desmonte 20 cm y tosca compactada 30 cm al 95 % Proctor (suelo firme, hipótesis)</td><td class='n'>847 m²</td><td class='n'>14</td><td class='n'>11.858</td></tr></tbody></table></details><details><summary><span>2 · Fundación</span><b>USD 123.083</b></summary><table class='grid'><thead><tr><th>Rubro</th><th class='n'>Cantidad</th><th class='n'>Unitario USD</th><th class='n'>Costo directo USD</th></tr></thead><tbody><tr><td>Platea H30 15 cm con malla doble, nylon y bomba</td><td class='n'>728 m²</td><td class='n'>82</td><td class='n'>59.696</td></tr><tr><td>Vigas de fundación bajo pórticos y de borde</td><td class='n'>190 ml</td><td class='n'>105</td><td class='n'>19.950</td></tr><tr><td>Nudos bajo columnas con pernos</td><td class='n'>32 u</td><td class='n'>220</td><td class='n'>7.040</td></tr><tr><td>Llaneado mecánico (queda como piso de local)</td><td class='n'>708 m²</td><td class='n'>4</td><td class='n'>2.832</td></tr></tbody></table></details><details><summary><span>3 · Estructura de acero</span><b>USD 148.768</b></summary><table class='grid'><thead><tr><th>Rubro</th><th class='n'>Cantidad</th><th class='n'>Unitario USD</th><th class='n'>Costo directo USD</th></tr></thead><tbody><tr><td>Acero laminado: pórticos y columnas, fabricado, pintado y montado (32 kg/m² de planta)</td><td class='n'>22.656 kg</td><td class='n'>3,70</td><td class='n'>83.827</td></tr><tr><td>Perfiles conformados galvanizados: correas y bastidores (9 kg/m²)</td><td class='n'>6.372 kg</td><td class='n'>2,60</td><td class='n'>16.567</td></tr><tr><td>Pernos de anclaje con plantilla (4 por columna)</td><td class='n'>128 u</td><td class='n'>18</td><td class='n'>2.304</td></tr><tr><td>Grúa para el montaje</td><td class='n'>1 gl</td><td class='n'>5.500</td><td class='n'>5.500</td></tr></tbody></table></details><details><summary><span>4 · Techo</span><b>USD 86.455</b></summary><table class='grid'><thead><tr><th>Rubro</th><th class='n'>Cantidad</th><th class='n'>Unitario USD</th><th class='n'>Costo directo USD</th></tr></thead><tbody><tr><td>Isodec PIR 80 mm engrafado blanco (material)</td><td class='n'>728 m²</td><td class='n'>52,44</td><td class='n'>38.176</td></tr><tr><td>Montaje de techo, fijaciones y sellado</td><td class='n'>728 m²</td><td class='n'>24</td><td class='n'>17.472</td></tr><tr><td>Canaleta de chapa en alero (100 ml), 8 bajadas y canaleta interna del fondo</td><td class='n'>1 gl</td><td class='n'>7.230</td><td class='n'>7.230</td></tr></tbody></table></details><details><summary><span>5 · Muros y aberturas</span><b>USD 194.718</b></summary><table class='grid'><thead><tr><th>Rubro</th><th class='n'>Cantidad</th><th class='n'>Unitario USD</th><th class='n'>Costo directo USD</th></tr></thead><tbody><tr><td>Panel liso PIR 80 mm (material)</td><td class='n'>1.066 m²</td><td class='n'>55</td><td class='n'>58.630</td></tr><tr><td>Montaje de muros, remates y zócalo</td><td class='n'>1.066 m²</td><td class='n'>28</td><td class='n'>29.848</td></tr><tr><td>Vidriera de frente y del parque en aluminio línea pesada, laminado 5+5</td><td class='n'>134 m²</td><td class='n'>290</td><td class='n'>38.860</td></tr><tr><td>Puertas vidriadas de locales (1 por local, estimado)</td><td class='n'>9 u</td><td class='n'>420</td><td class='n'>3.780</td></tr><tr><td>Cenefa de madera o simil en los aleros y el parapeto</td><td class='n'>100 ml</td><td class='n'>105</td><td class='n'>10.500</td></tr></tbody></table></details><details><summary><span>6 · Divisorios e interiores</span><b>USD 109.812</b></summary><table class='grid'><thead><tr><th>Rubro</th><th class='n'>Cantidad</th><th class='n'>Unitario USD</th><th class='n'>Costo directo USD</th></tr></thead><tbody><tr><td>Divisorios entre locales: steel frame, doble placa y lana de roca (altura 6 m)</td><td class='n'>432 m²</td><td class='n'>52</td><td class='n'>22.464</td></tr><tr><td>Masillado y pintura de divisorios</td><td class='n'>864 m²</td><td class='n'>8</td><td class='n'>6.912</td></tr><tr><td>Baño accesible terminado por local</td><td class='n'>9 u</td><td class='n'>5.610</td><td class='n'>50.490</td></tr></tbody></table></details><details><summary><span>7 · Instalaciones generales</span><b>USD 42.816</b></summary><table class='grid'><thead><tr><th>Rubro</th><th class='n'>Cantidad</th><th class='n'>Unitario USD</th><th class='n'>Costo directo USD</th></tr></thead><tbody><tr><td>Sanitaria: colector cloacal, pluvial separado con bocas y agua con submedidores</td><td class='n'>1 gl</td><td class='n'>9.700</td><td class='n'>9.700</td></tr><tr><td>Conexión a saneamiento de OSE</td><td class='n'>1 gl</td><td class='n'>1.500</td><td class='n'>1.500</td></tr><tr><td>Eléctrica: gabinete de UTE con una medición por local y servicios comunes</td><td class='n'>1 gl</td><td class='n'>10.190</td><td class='n'>10.190</td></tr><tr><td>Iluminación exterior y de estacionamiento</td><td class='n'>1 gl</td><td class='n'>5.000</td><td class='n'>5.000</td></tr><tr><td>Incendio: extintores, emergencia y señalización</td><td class='n'>1 gl</td><td class='n'>4.750</td><td class='n'>4.750</td></tr></tbody></table></details><details><summary><span>8 · Exteriores</span><b>USD 42.471</b></summary><table class='grid'><thead><tr><th>Rubro</th><th class='n'>Cantidad</th><th class='n'>Unitario USD</th><th class='n'>Costo directo USD</th></tr></thead><tbody><tr><td>Pavimento de hormigón: plazas, maniobra y acceso</td><td class='n'>427 m²</td><td class='n'>37</td><td class='n'>15.799</td></tr><tr><td>Vereda municipal frente a los 3 padrones</td><td class='n'>120 m²</td><td class='n'>30</td><td class='n'>3.600</td></tr><tr><td>Jardín: nivelación, césped y plantación básica del parque</td><td class='n'>1.915 m²</td><td class='n'>6</td><td class='n'>11.490</td></tr></tbody></table></details><details><summary><span>9 · Imagen</span><b>USD 31.624</b></summary><table class='grid'><thead><tr><th>Rubro</th><th class='n'>Cantidad</th><th class='n'>Unitario USD</th><th class='n'>Costo directo USD</th></tr></thead><tbody><tr><td>Franja de piedra granítica de Maldonado, 1,20 m en frente y parque (con piedrero)</td><td class='n'>100 m²</td><td class='n'>230</td><td class='n'>23.000</td></tr></tbody></table></details><details><summary><span>10 · Cierre de obra</span><b>USD 16.362</b></summary><table class='grid'><thead><tr><th>Rubro</th><th class='n'>Cantidad</th><th class='n'>Unitario USD</th><th class='n'>Costo directo USD</th></tr></thead><tbody><tr><td>Andamios, fletes, limpieza, volquetas y seguros de obra</td><td class='n'>1 gl</td><td class='n'>11.900</td><td class='n'>11.900</td></tr></tbody></table></details><details><summary><span>Ajuste</span><b>USD 12.374</b></summary><table class='grid'><thead><tr><th>Rubro</th><th class='n'>Cantidad</th><th class='n'>Unitario USD</th><th class='n'>Costo directo USD</th></tr></thead><tbody><tr><td>Ajuste de laudo y materiales durante la obra (1,5 %)</td><td class='n'>1 gl</td><td class='n'>8.999,49</td><td class='n'>8.999</td></tr></tbody></table></details>
+<h3>Gestión y aportes</h3>
+<table class="grid"><thead><tr><th>Concepto</th><th class="n">USD</th></tr></thead><tbody><tr><td>Mensura de los 3 padrones (sin fusión) y niveles</td><td class='n'>USD 6.000</td></tr><tr><td>Consulta previa de edificación y localización en la Intendencia</td><td class='n'>USD 900</td></tr><tr><td>Proyecto ejecutivo y permisos (Arq. Pablo Alcoba): arquitectura, sanitaria, eléctrica y trámites en OSE y UTE</td><td class='n'>USD 33.500</td></tr><tr><td>Ingeniero calculista Ricardo Portugau: cálculo, memoria, planos y firma</td><td class='n'>USD 5.500</td></tr><tr><td>Técnico registrado en Bomberos: define el panel y el revestimiento (Dec. 372/023)</td><td class='n'>USD 1.500</td></tr><tr><td>Registro de obra en BPS</td><td class='n'>USD 700</td></tr><tr><td>Plan de seguridad y técnico prevencionista durante la obra</td><td class='n'>USD 3.600</td></tr><tr><td>Habilitación de Bomberos del edificio</td><td class='n'>USD 4.800</td></tr><tr><td>Habilitación comercial por local × 9</td><td class='n'>USD 7.200</td></tr></tbody></table>
+<p class="mut"><small>Los montos por rubro en las tablas son costo directo, sin margen. El margen y los imprevistos se aplican sobre el total, así que el precio de cada rubro es costo × 1,375.</small></p>
+
+<h2 id="hipo">6. Hipótesis y pendientes</h2>
+<ul>
+<li>Norte arriba y avenida al este, según el visor SNIG. Falta el plano de mensura.</li>
+<li>Suelo firme (desmonte 20 cm y tosca 30 cm). Si el suelo es blando, la tabla cambia; el estudio de suelos lo confirma.</li>
+<li>Retiro de fondo de 10 m para la nave del fondo. El fondo de 4 m de la presentación dejaría más espacio hacia el fondo, sin cambiar la opción.</li>
+<li>Vidriera de 134 m² (frente de las naves laterales y cara del parque en la nave del fondo) y 9 puertas de local a USD 420 cada una (estimado).</li>
+<li>Franja de piedra de 1,20 m: 100 m² de piedra colocada en frente y parque, a USD 230 por m² (estimado, a confirmar con un piedrero).</li>
+<li>Cálculo estructural no hecho: los perfiles, las correas y los anclajes son de anteproyecto. Antes del permiso, el ingeniero los dimensiona con las cargas de viento a succión.</li>
+<li>Gestión: mensura de los tres padrones sin fusión, con 9 habilitaciones comerciales (una por local).</li>
+<li>No incluye cisterna de agua de lluvia, pavimento de la vereda más allá de los 120 m² del frente, ni equipamiento de locales.</li>
+</ul>
+</main>
+
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+import { RoomEnvironment } from 'three/addons/environments/RoomEnvironment.js';
+const B = [{"id": "S", "n": "Nave sur · 10598", "x0": -37, "x1": -16, "y0": 3, "y1": 15, "ridge": "x", "roof": "dos", "e": 6.0, "r": 9.65, "pad": "10598", "pad_area": 1050, "parkSide": "y1"}, {"id": "N", "n": "Nave norte · 10596", "x0": -37, "x1": -17, "y0": 45, "y1": 57, "ridge": "x", "roof": "dos", "e": 6.0, "r": 9.65, "pad": "10596", "pad_area": 1000, "parkSide": "y0"}, {"id": "B", "n": "Nave del fondo · 10597", "x0": -37, "x1": -25, "y0": 21, "y1": 39, "ridge": "y", "roof": "escondido", "e": 6.0, "r": 6.4, "hp": 7.2, "pad": "10597", "pad_area": 1000, "parkSide": "x1"}];
+const SUN = [{"n": "Invierno · 9:00", "alt": 11.57147661325724, "az": 50.33829735101115}, {"n": "Invierno · 12:40", "alt": 31.629784544795733, "az": 0.2552271071007603}, {"n": "Invierno · 16:00", "alt": 14.988183030298009, "az": 313.5713484587275}, {"n": "Equinoccio · 12:40", "alt": 55.61691830051413, "az": 356.2018984373366}, {"n": "Verano · 12:40", "alt": 78.5024856857306, "az": 357.83311047416214}];
+const cv = document.getElementById('cv');
+const ren = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
+ren.setPixelRatio(Math.min(devicePixelRatio, 2));
+ren.shadowMap.enabled = true; ren.shadowMap.type = THREE.PCFSoftShadowMap;
+ren.toneMapping = THREE.ACESFilmicToneMapping; ren.toneMappingExposure = 0.95;
+const sc = new THREE.Scene(); sc.background = new THREE.Color(0xf3f1ea);
+sc.environment = new THREE.PMREMGenerator(ren).fromScene(new RoomEnvironment(), 0.04).texture;
+const cam = new THREE.PerspectiveCamera(36, 1, 0.5, 900);
+const ctl = new OrbitControls(cam, cv); ctl.enableDamping = true;
+const TGT = new THREE.Vector3(-22, 2, -30);
+const sun = new THREE.DirectionalLight(0xfff4e0, 2.4);
+sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048);
+Object.assign(sun.shadow.camera, { left: -80, right: 80, top: 80, bottom: -80, near: 1, far: 500 });
+sun.shadow.camera.updateProjectionMatrix();
+sun.shadow.bias = -0.0004; sun.shadow.normalBias = 0.02;
+sc.add(sun, sun.target); sun.target.position.copy(TGT);
+sc.add(new THREE.HemisphereLight(0xffffff, 0x80796a, 0.65));
+const LAY = ['lote','parque','naves','techos','estructura','luces','desagues','piedra','madera'];
+const G = {}; LAY.forEach(k => { G[k] = new THREE.Group(); sc.add(G[k]); });
+const mat = (c, o = {}) => new THREE.MeshStandardMaterial({ color: c, roughness: o.r ?? .7, metalness: o.m ?? .1, side: o.s ?? THREE.FrontSide, transparent: !!o.t, opacity: o.op ?? 1 });
+const MAT = {
+  wall: mat(0x3b4046, { r: .55 }), roof: mat(0x2f353b, { r: .5, s: THREE.DoubleSide }),
+  steel: mat(0x7d8790, { r: .4, m: .6 }), gutter: mat(0x9aa3ab, { r: .4, m: .5 }),
+  stone: mat(0x9d9386, { r: .95 }), wood: mat(0x8f6a3e, { r: .8 }),
+  glass: mat(0x9cc3d2, { r: .15, m: .2, t: true, op: .55 }), park: mat(0x8fb06f, { r: .95 }),
+  pave: mat(0xbdbdb8, { r: .9 }), plaza: mat(0xf5f5f2, { r: .8 }),
+  avenue: mat(0x8c9298, { r: .9 }), blue: mat(0x2c6fa3, { r: .5, m: .2 }),
+  line: new THREE.LineBasicMaterial({ color: 0x222222 }), dim: new THREE.LineBasicMaterial({ color: 0xb03a2e })
+};
+const V = (X, h, Y) => new THREE.Vector3(X, h, -Y);
+const add = (grp, m) => { m.castShadow = true; m.receiveShadow = true; grp.add(m); return m; };
+function slab(x0, x1, y0, y1, h0, h1, m, grp) {
+  const mesh = new THREE.Mesh(new THREE.BoxGeometry(x1 - x0, h1 - h0, y1 - y0), m);
+  mesh.position.set((x0 + x1) / 2, (h0 + h1) / 2, -(y0 + y1) / 2);
+  return add(grp, mesh);
+}
+function poly(pts, m, grp) {
+  const pos = [];
+  for (let i = 1; i < pts.length - 1; i++) [pts[0], pts[i], pts[i + 1]].forEach(p => pos.push(p.x, p.y, p.z));
+  const g = new THREE.BufferGeometry();
+  g.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+  g.computeVertexNormals();
+  return add(grp, new THREE.Mesh(g, m));
+}
+function rod(a, b, r, m, grp) {
+  const d = new THREE.Vector3().subVectors(b, a); const L = d.length();
+  const mesh = new THREE.Mesh(new THREE.CylinderGeometry(r, r, L, 8), m);
+  mesh.position.copy(a).add(b).multiplyScalar(.5);
+  mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize());
+  return add(grp, mesh);
+}
+function line(pts, m, grp) { grp.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(pts), m)); }
+function text(t, p, grp, s = 4) {
+  const c = document.createElement('canvas'); c.width = 1024; c.height = 200;
+  const x = c.getContext('2d'); x.font = 'bold 84px system-ui, sans-serif';
+  x.fillStyle = '#1d2630'; x.textAlign = 'center'; x.textBaseline = 'middle'; x.fillText(t, 512, 100);
+  const tex = new THREE.CanvasTexture(c); tex.colorSpace = THREE.SRGBColorSpace;
+  const sp = new THREE.Sprite(new THREE.SpriteMaterial({ map: tex, depthTest: false, transparent: true }));
+  sp.position.copy(p); sp.scale.set(s * 2.2, s * .48, 1); grp.add(sp);
+}
+// ---- terreno, avenida, padrones
+slab(-47.3, 0, 0, 60, -0.03, 0, MAT.park, G.parque);
+slab(0, 30, 0, 60, -0.05, 0, MAT.avenue, G.lote);
+const rect = [[-47.3, 0], [0, 0], [0, 60], [-47.3, 60], [-47.3, 0]].map(([x, y]) => V(x, .05, y));
+line(rect, MAT.line, G.lote);
+[20, 40].forEach(y => line([V(-47.3, .05, y), V(0, .05, y)], MAT.line, G.lote));
+text('10598 · 1.050 m²', V(-41, .3, 8), G.lote, 4);
+text('10597 · 1.000 m²', V(-41, .3, 28), G.lote, 4);
+text('10596 · 1.000 m²', V(-41, .3, 50), G.lote, 4);
+text('Av. Pedragosa Sierra', V(15, 1.2, 30), G.lote, 6);
+text('N', V(-50, .3, 58), G.lote, 4);
+line([V(-50, .05, 52), V(-50, .05, 55)], MAT.line, G.lote);
+// ---- estacionamiento y pavimento frontal
+slab(-10, -1, 3, 57, .0, .05, MAT.pave, G.parque);
+for (let i = 0; i < 9; i++) { const y0 = 4 + i * 2.6; slab(-9.5, -4.5, y0, y0 + 2.5, .05, .07, MAT.plaza, G.parque); }
+text('Estacionamiento · 9 plazas', V(-6, 1.2, 60.5), G.parque, 4.5);
+text('Parque central', V(-20, 1, 30), G.parque, 5);
+// ---- naves
+B.forEach(b => {
+  const e = b.e, r = b.r, ym = (b.y0 + b.y1) / 2, L = b.x1 - b.x0, W = b.y1 - b.y0;
+  if (b.roof === 'dos') {
+    slab(b.x0, b.x1, b.y0, b.y0 + .25, 0, e, MAT.wall, G.naves);
+    slab(b.x0, b.x1, b.y1 - .25, b.y1, 0, e, MAT.wall, G.naves);
+    [b.x0, b.x1].forEach(x => poly([V(x, 0, b.y0), V(x, 0, b.y1), V(x, e, b.y1), V(x, r, ym), V(x, e, b.y0)], MAT.wall, G.naves));
+    poly([V(b.x0, e, b.y0), V(b.x1, e, b.y0), V(b.x1, r, ym), V(b.x0, r, ym)], MAT.roof, G.techos);
+    poly([V(b.x0, e, b.y1), V(b.x1, e, b.y1), V(b.x1, r, ym), V(b.x0, r, ym)], MAT.roof, G.techos);
+    slab(b.x1, b.x1 + .04, b.y0 + .4, b.y1 - .4, 1.4, 4.6, MAT.glass, G.naves);
+    const n = Math.ceil(L / 5), sp = L / n;
+    for (let k = 0; k <= n; k++) {
+      const xp = b.x0 + k * sp;
+      rod(V(xp, 0, b.y0), V(xp, e, b.y0), .12, MAT.steel, G.estructura);
+      rod(V(xp, 0, b.y1), V(xp, e, b.y1), .12, MAT.steel, G.estructura);
+      rod(V(xp, e, b.y0), V(xp, r, ym), .1, MAT.steel, G.estructura);
+      rod(V(xp, r, ym), V(xp, e, b.y1), .1, MAT.steel, G.estructura);
+      rod(V(xp, e, b.y0), V(xp, e, b.y1), .08, MAT.steel, G.estructura);
+    }
+    rod(V(b.x0, r, ym), V(b.x1, r, ym), .1, MAT.steel, G.estructura);
+    line([V(b.x0 - 1.5, .2, b.y0), V(b.x0 - 1.5, .2, b.y1)], MAT.dim, G.luces);
+    text('luz 12 m', V(b.x0 - 3.5, 2, ym), G.luces, 3.5);
+    slab(b.x0, b.x1, b.y0 - .3, b.y0, e - .25, e + .05, MAT.gutter, G.desagues);
+    slab(b.x0, b.x1, b.y1, b.y1 + .3, e - .25, e + .05, MAT.gutter, G.desagues);
+    [b.x0 + .6, b.x1 - .6].forEach(xp => {
+      [b.y0 - .35, b.y1 + .35].forEach(yD => {
+        rod(V(xp, 0, yD), V(xp, e - .3, yD), .07, MAT.gutter, G.desagues);
+        rod(V(xp, -.4, yD), V(-8.6, -.4, yD), .1, MAT.blue, G.desagues);
+      });
+    });
+    slab(b.x0, b.x1, b.y0 - .08, b.y0 + .04, e - .45, e + .12, MAT.wood, G.madera);
+    slab(b.x0, b.x1, b.y1 - .04, b.y1 + .08, e - .45, e + .12, MAT.wood, G.madera);
+    if (b.parkSide === 'y1') slab(b.x0, b.x1, b.y1, b.y1 + .1, 0, 1.2, MAT.stone, G.piedra);
+    else slab(b.x0, b.x1, b.y0 - .1, b.y0, 0, 1.2, MAT.stone, G.piedra);
+    slab(b.x1, b.x1 + .1, b.y0, b.y1, 0, 1.2, MAT.stone, G.piedra);
+    text(b.id === 'S' ? 'Nave sur · 252 m²' : 'Nave norte · 240 m²', V(b.x0 + L / 2, 11, ym), G.naves, 4.5);
+  } else {
+    const hp = b.hp, hh = r;
+    slab(b.x0, b.x1, b.y0, b.y0 + .25, 0, hp, MAT.wall, G.naves);
+    slab(b.x0, b.x1, b.y1 - .25, b.y1, 0, hp, MAT.wall, G.naves);
+    slab(b.x0, b.x0 + .25, b.y0, b.y1, 0, hp, MAT.wall, G.naves);
+    slab(b.x1 - .25, b.x1, b.y0, b.y1, 0, hp, MAT.wall, G.naves);
+    poly([V(b.x0, e, b.y0), V(b.x1, hh, b.y0), V(b.x1, hh, b.y1), V(b.x0, e, b.y1)], MAT.roof, G.techos);
+    slab(b.x1, b.x1 + .04, b.y0 + .4, b.y1 - .4, 1.4, 4.6, MAT.glass, G.naves);
+    slab(b.x1 - .25, b.x1 + .03, b.y0, b.y1, 7.0, 7.2, MAT.wood, G.madera);
+    const n = Math.ceil(W / 5), sp = W / n;
+    for (let k = 0; k <= n; k++) {
+      const yp = b.y0 + k * sp;
+      rod(V(b.x0, 0, yp), V(b.x0, e, yp), .12, MAT.steel, G.estructura);
+      rod(V(b.x1, 0, yp), V(b.x1, hh, yp), .12, MAT.steel, G.estructura);
+      rod(V(b.x0, e, yp), V(b.x1, hh, yp), .1, MAT.steel, G.estructura);
+    }
+    line([V(b.x0, .2, b.y0 - 1.5), V(b.x1, .2, b.y0 - 1.5)], MAT.dim, G.luces);
+    text('luz 12 m', V((b.x0 + b.x1) / 2, 2, b.y0 - 3.5), G.luces, 3.5);
+    slab(b.x0 + .25, b.x0 + .6, b.y0, b.y1, e - .2, e, MAT.gutter, G.desagues);
+    rod(V(b.x0 + .4, 0, b.y1 - .5), V(b.x0 + .4, e - .2, b.y1 - .5), .07, MAT.gutter, G.desagues);
+    rod(V(b.x0 + .4, -.4, b.y1 - .5), V(-8.6, -.4, b.y1 - .5), .1, MAT.blue, G.desagues);
+    slab(b.x1, b.x1 + .1, b.y0, b.y1, 0, 1.2, MAT.stone, G.piedra);
+    text('Nave del fondo · 216 m²', V((b.x0 + b.x1) / 2, 9, ym), G.naves, 4.5);
+  }
+});
+// colector pluvial enterrado sobre la vereda
+rod(V(-8.6, -.4, 2), V(-8.6, -.4, 58), .14, MAT.blue, G.desagues);
+text('Colector pluvial', V(-8.6, 1.2, 1.5), G.desagues, 3);
+
+// ---- sol
+const SUNBOX = document.getElementById('suns');
+SUN.forEach((s, i) => {
+  const b = document.createElement('button'); b.textContent = s.n; b.dataset.s = i;
+  b.onclick = () => setSun(i); SUNBOX.appendChild(b);
+});
+function setSun(i) {
+  const s = SUN[i], a = s.alt * Math.PI / 180, z = s.az * Math.PI / 180, R = 160;
+  sun.position.set(TGT.x + R * Math.cos(a) * Math.sin(z), TGT.y + R * Math.sin(a), TGT.z - R * Math.cos(a) * Math.cos(z));
+  sun.intensity = s.alt > 0 ? 2.4 : 0;
+}
+// ---- vistas
+const VIEWS = {
+  planta: { p: [-24, 170, -30.01], t: [-24, 0, -30], up: [0, 0, -1] },
+  avenida: { p: [36, 22, -74], t: [-22, 3, -30], up: [0, 1, 0] },
+  portico: { p: [-74, 14, -6], t: [-26, 4, -30], up: [0, 1, 0] },
+  iso: { p: [40, 66, 30], t: [-22, 2, -30], up: [0, 1, 0] }
+};
+function view(k) { const v = VIEWS[k]; cam.up.set(...v.up); cam.position.set(...v.p); ctl.target.set(...v.t); ctl.update(); }
+document.querySelectorAll('button[data-v]').forEach(bt => bt.onclick = () => view(bt.dataset.v));
+document.querySelectorAll('input[data-l]').forEach(c => c.onchange = () => { G[c.dataset.l].visible = c.checked; });
+function fit() { const w = cv.clientWidth, h = cv.clientHeight; ren.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); }
+addEventListener('resize', fit); fit();
+view('iso'); setSun(1);
+(function loop() { requestAnimationFrame(loop); ctl.update(); ren.render(sc, cam); })();
+window.__u = { G, view, setSun, sun, cam, ctl };
+</script>
+</body></html>
