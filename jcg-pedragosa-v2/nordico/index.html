@@ -1,0 +1,205 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="robots" content="noindex,nofollow">
+<title>Pedragosa Sierra · Estudio de estilo nórdico · SBU</title>
+<style>
+:root{--ac:#b5622a;--ln:#e3dccf;--bg:#f6f2ec;--tx:#24211d}
+*{box-sizing:border-box}body{margin:0;font-family:Inter,system-ui,-apple-system,Segoe UI,Arial,sans-serif;color:var(--tx);background:#fff}
+header{background:#1f1d1b;color:#fff;padding:12px 18px}header .lo{color:#d98b52;font-size:11px;font-weight:700;letter-spacing:.25em}header h1{margin:2px 0;font-size:19px}header p{margin:0;font-size:12.5px;opacity:.75}header a{color:#f0b07f}
+main{max-width:1320px;margin:0 auto;padding:12px 18px 50px}
+#wrap{display:grid;grid-template-columns:270px 1fr;gap:12px}
+#ctl{background:var(--bg);border-radius:10px;padding:12px;font-size:13px;align-self:start}
+#ctl h3{margin:10px 0 5px;font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:#8a7a68}#ctl h3:first-child{margin-top:0}
+.op{display:block;width:100%;text-align:left;border:1px solid var(--ln);background:#fff;border-radius:8px;padding:7px 9px;margin:4px 0;cursor:pointer;font-size:13px}
+.op b{display:block}.op small{color:#777}.op.on{background:#1f1d1b;color:#fff;border-color:#1f1d1b}.op.on small{color:#cfc8bd}
+.sw{display:flex;gap:6px}.sw .op{text-align:center;padding:6px 4px}
+label.ck{display:flex;gap:6px;align-items:center;margin:5px 0;cursor:pointer}
+#v3{position:relative;height:max(480px,calc(100vh - 190px));border-radius:10px;overflow:hidden;background:#cfdde4}#v3 canvas{display:block;width:100%;height:100%}
+#vistas{position:absolute;right:10px;top:10px;display:flex;gap:4px;flex-wrap:wrap;justify-content:flex-end}#vistas button{border:0;background:rgba(255,255,255,.92);border-radius:7px;padding:6px 9px;font-size:12px;font-weight:600;cursor:pointer}
+#tag{position:absolute;left:10px;bottom:10px;background:rgba(31,29,27,.85);color:#fff;border-left:5px solid var(--ac);border-radius:8px;padding:8px 13px;max-width:560px;font-size:13px}#tag b{display:block;font-size:16px}
+#info{position:absolute;left:10px;top:10px;background:rgba(255,253,249,.94);border-radius:8px;padding:6px 10px;font-size:12px;max-width:330px;pointer-events:none}#info b{display:block}
+h2{margin:1.3em 0 .4em;font-size:20px}.sub{color:#6c655c;font-size:13.5px;max-width:980px;margin:.2em 0 .8em}
+table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:6px 8px;border-bottom:1px solid #eee;text-align:left;vertical-align:top}th{background:var(--bg);font-size:12px}td.n,th.n{text-align:right;white-space:nowrap}tr.tot td{font-weight:800;border-top:2px solid var(--tx)}td.sel,th.sel{background:#fff6ea}
+.g3{display:grid;grid-template-columns:repeat(auto-fit,minmax(280px,1fr));gap:12px}.card{background:var(--bg);border-radius:10px;padding:12px 14px;font-size:13.5px}.card h3{margin:0 0 6px;font-size:15px}.card ul{margin:6px 0 0;padding-left:18px}.card li{margin:3px 0}
+.pal{display:flex;gap:10px;flex-wrap:wrap}.pal div{font-size:12px;text-align:center;width:112px}.pal i{display:block;height:54px;border-radius:8px;border:1px solid #0002;margin-bottom:4px;background-size:cover}
+.warn{background:#fff6ea;border-left:4px solid var(--ac);padding:8px 12px;border-radius:6px;font-size:13px;margin:10px 0}.note{font-size:12.5px;color:#6c655c}
+@media (max-width:860px){#wrap{grid-template-columns:1fr}}
+@media print{#ctl,#vistas{display:none}#wrap{display:block}}
+</style>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+</head>
+<body>
+<header><div class="lo">SMART BUILDING URUGUAY</div><h1>Estudio de estilo: nave nórdica</h1><p>Avda. Pedragosa Sierra · padrones 10596, 10597 y 10598 · sobre el bloque compacto de 30 × 25 m en planta baja + planta alta del análisis normativo · <a href="../">volver al proyecto v2</a></p></header>
+<main>
+<div id="wrap">
+ <div id="ctl">
+  <h3>Arquitectura</h3><div id="oEst"></div>
+  <h3>Color de cenefas y paneles</h3><div class="sw" id="oPal"></div>
+  <h3>Materiales</h3>
+  <label class="ck"><input type="checkbox" id="cPie" checked> Franjas y zócalo de piedra</label>
+  <label class="ck"><input type="checkbox" id="cNat"> Piedra natural (si no, símil)</label>
+  <label class="ck"><input type="checkbox" id="cMad"> Madera natural (si no, símil madera)</label>
+  <label class="ck"><input type="checkbox" id="cTer" checked> Terraza gastronómica al frente</label>
+  <h3>Costo del paquete de imagen</h3><div id="kRes" style="font-size:13px"></div>
+ </div>
+ <div id="v3"><div id="info"><b>Tocá un material</b>para ver qué es.</div><div id="vistas"></div><div id="tag"></div></div>
+</div>
+<h2>Las tres variantes, comparadas</h2>
+<p class="sub">Lo que cuesta de más cada variante respecto del mismo bloque en panel PIR blanco con techo plano (la opción F1 del análisis, ≈ USD 1,49 M). Precios estimados con los unitarios y el margen del rubrado; se confirman con proveedores.</p>
+<div id="tCmp"></div>
+<h2>Qué define el estilo</h2>
+<div class="g3" id="gDef"></div>
+<h2>Paleta de materiales</h2>
+<div class="pal" id="pal"></div>
+<h2>Lo que hay que resolver antes de prometerlo</h2>
+<div id="tPen"></div>
+</main>
+<script type="module">
+import * as THREE from 'three';
+import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+const $ = id => document.getElementById(id), u$ = n => 'USD ' + Math.round(n).toLocaleString('es-UY'), f1 = n => n.toFixed(1).replace('.', ',');
+const K = 1.1 * 1.25, rd = v => Math.round(v / 100) * 100;
+// ---------- estado ----------
+const S = { est: 'naves', pal: 'grafito', pie: true, nat: false, mad: false, ter: true };
+const EST = { base: ['Referencia: caja blanca', 'Panel PIR blanco, techo plano, faja negra. Lo presupuestado hasta ahora.'], caja: ['A · Caja nórdica', 'Mismo volumen de techo plano, vestido de panel oscuro, madera y piedra. La más económica.'], nave: ['B · Nave a dos aguas', 'Una sola nave con la cumbrera paralela a la avenida. El techo se ve y es parte de la fachada.'], naves: ['C · Tres naves', 'Tres hastiales de 10 m mirando a la avenida, como un conjunto de graneros. La más reconocible.'] };
+const PAL = { negro: 0x1d1d1f, grafito: 0x565b60 };
+const W = 30, D = 25, REC = 1.5, HPB = 3.4, GEO = { base: { e: 7.2 }, caja: { e: 7.2 }, nave: { e: 6.4, r: 4.55 }, naves: { e: 7.0, r: 3.5 } };
+// ---------- three ----------
+const box = $('v3'), ren = new THREE.WebGLRenderer({ antialias: true, preserveDrawingBuffer: true }); ren.setPixelRatio(Math.min(devicePixelRatio, 2)); ren.shadowMap.enabled = true; ren.shadowMap.type = THREE.PCFSoftShadowMap; box.prepend(ren.domElement);
+const sc = new THREE.Scene(); sc.background = new THREE.Color(0xd5e1e7); sc.fog = new THREE.Fog(0xd5e1e7, 120, 320);
+const cam = new THREE.PerspectiveCamera(36, 1, .1, 600), ctl = new OrbitControls(cam, ren.domElement); ctl.enableDamping = true; ctl.maxPolarAngle = Math.PI * .495;
+sc.add(new THREE.HemisphereLight(0xffffff, 0x8a8070, 1.0), new THREE.AmbientLight(0xffffff, .35));
+const sun = new THREE.DirectionalLight(0xfff4e2, 1.7); sun.position.set(-35, 45, -60); sun.castShadow = true; sun.shadow.mapSize.set(2048, 2048); Object.assign(sun.shadow.camera, { left: -60, right: 60, top: 60, bottom: -60, far: 220 }); sun.target.position.set(15, 0, 10); sc.add(sun, sun.target);
+// ---------- texturas ----------
+const cv = (f, n = 256) => { const c = document.createElement('canvas'); c.width = c.height = n; f(c.getContext('2d'), n); return c; };
+let sd = 7; const rnd = () => (sd = sd * 16807 % 2147483647) / 2147483647;
+const CAN = {
+  madera: cv((g, n) => { for (let i = 0; i < 8; i++) { const t = 150 + rnd() * 40; g.fillStyle = `rgb(${t},${t * .66 | 0},${t * .4 | 0})`; g.fillRect(i * n / 8, 0, n / 8, n); g.fillStyle = 'rgba(60,35,15,.55)'; g.fillRect(i * n / 8, 0, 2, n); for (let k = 0; k < 5; k++) { g.fillStyle = 'rgba(70,40,20,.12)'; g.fillRect(i * n / 8 + 4 + rnd() * 22, 0, 1, n); } } }),
+  simil: cv((g, n) => { for (let i = 0; i < 8; i++) { const t = 158 + rnd() * 12; g.fillStyle = `rgb(${t},${t * .64 | 0},${t * .4 | 0})`; g.fillRect(i * n / 8, 0, n / 8, n); g.fillStyle = 'rgba(50,30,15,.7)'; g.fillRect(i * n / 8, 0, 3, n); } }),
+  piedra: cv((g, n) => { g.fillStyle = '#6f6c66'; g.fillRect(0, 0, n, n); let y = 0; while (y < n) { const h = 22 + (rnd() * 3 | 0) * 10; let x = -rnd() * 30; while (x < n) { const w = 40 + rnd() * 60, t = 120 + rnd() * 70; g.fillStyle = `rgb(${t},${t - 4},${t - 12})`; g.fillRect(x + 2, y + 2, w - 3, h - 3); x += w; } y += h; } }),
+  simpie: cv((g, n) => { g.fillStyle = '#77736c'; g.fillRect(0, 0, n, n); for (let y = 0; y < n; y += 32) for (let x = (y / 32 % 2) * -32; x < n; x += 64) { const t = 140 + rnd() * 40; g.fillStyle = `rgb(${t},${t - 3},${t - 10})`; g.fillRect(x + 2, y + 2, 61, 29); } }),
+  seam: p => cv((g, n) => { const c = new THREE.Color(PAL[p]); g.fillStyle = '#' + c.getHexString(); g.fillRect(0, 0, n, n); for (let i = 0; i < 4; i++) { g.fillStyle = 'rgba(255,255,255,.16)'; g.fillRect(i * n / 4, 0, 2, n); g.fillStyle = 'rgba(0,0,0,.28)'; g.fillRect(i * n / 4 + 2, 0, 3, n); } }),
+  blanco: cv((g, n) => { g.fillStyle = '#eef0ee'; g.fillRect(0, 0, n, n); for (let i = 0; i < 1; i++) { g.fillStyle = 'rgba(0,0,0,.10)'; g.fillRect(0, 0, 2, n); } }),
+};
+const SEAM = { negro: CAN.seam('negro'), grafito: CAN.seam('grafito') }, UNI = { madera: 1.2, simil: 1.2, piedra: 1.6, simpie: 1.6, seam: 1.6, blanco: 1.0 };
+const INFO = { madera: 'Revestimiento de madera natural · tablas verticales de pino termotratado o eucalipto, con protector', simil: 'Revestimiento símil madera · tablas verticales de WPC, aluminio foliado o fibrocemento texturado', piedra: 'Piedra natural · laja o granito gris de la zona sobre muro de bloque', simpie: 'Símil piedra · placas de piedra reconstituida sobre muro de bloque o placa cementicia', seam: 'Panel PIR con cara exterior microperfilada tipo junta alzada', blanco: 'Panel liso PIR blanco' };
+const tm = (kind, w, h) => { const img = kind === 'seam' ? SEAM[S.pal] : CAN[kind], t = new THREE.CanvasTexture(img); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.repeat.set(Math.max(.2, w / UNI[kind]), kind === 'piedra' || kind === 'simpie' ? Math.max(.2, h / UNI[kind]) : 1); t.colorSpace = THREE.SRGBColorSpace; return new THREE.MeshStandardMaterial({ map: t, roughness: kind === 'seam' ? .55 : .85, metalness: kind === 'seam' ? .25 : 0, side: THREE.DoubleSide }); };
+const MC = {}, M = (c, o = {}) => MC[c + JSON.stringify(o)] ||= new THREE.MeshStandardMaterial({ color: c, roughness: .8, ...o });
+const GLASS = M(0x9cc4d4, { transparent: true, opacity: .42, roughness: .08, metalness: .2 }), WARM = new THREE.MeshStandardMaterial({ color: 0xffe2a8, emissive: 0xffc566, emissiveIntensity: .55 });
+// ---------- helpers ----------
+let g = null;
+const bx = (x0, y0, z0, x1, y1, z1, m, info) => { const me = new THREE.Mesh(new THREE.BoxGeometry(Math.abs(x1 - x0) || .01, Math.abs(y1 - y0) || .01, Math.abs(z1 - z0) || .01), m); me.position.set((x0 + x1) / 2, (y0 + y1) / 2, (z0 + z1) / 2); me.castShadow = me.receiveShadow = true; if (info) me.userData.info = info; g.add(me); return me; };
+// caja texturada: cara = 'z' (frente/fondo), 'x' (laterales) o 'y' (horizontal)
+const bt = (x0, y0, z0, x1, y1, z1, kind, cara, info) => { const dx = Math.abs(x1 - x0), dy = Math.abs(y1 - y0), dz = Math.abs(z1 - z0), [w, h] = cara === 'z' ? [dx, dy] : cara === 'x' ? [dz, dy] : [dx, dz]; return bx(x0, y0, z0, x1, y1, z1, tm(kind, w, h), info || INFO[kind]); };
+// polígono plano (abanico) con UV proyectadas en los ejes dados
+const poly = (pts, kind, ax, info, mat) => { const pos = [], uv = [], u = UNI[kind] || 1, [a, b] = ax; for (let i = 1; i < pts.length - 1; i++) [pts[0], pts[i], pts[i + 1]].forEach(p => { pos.push(...p); uv.push(p[a] / u, kind === 'seam' || kind === 'madera' || kind === 'simil' ? 0 : p[b] / u); }); const ge = new THREE.BufferGeometry(); ge.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); ge.setAttribute('uv', new THREE.Float32BufferAttribute(uv, 2)); ge.computeVertexNormals(); let m = mat; if (!m) { m = tm(kind, u, u); } const me = new THREE.Mesh(ge, m); me.castShadow = me.receiveShadow = true; me.userData.info = info || INFO[kind]; g.add(me); return me; };
+// ---------- sitio (fijo) ----------
+{ g = new THREE.Group(); sc.add(g); const FX0 = -15, FX1 = 45, ZF = -10, ZB = 37.3;
+  bx(-120, -.14, -120, 160, -.06, 140, M(0xa9c38a));
+  bx(FX0, -.06, ZF, FX1, -.02, ZB, M(0xb6cc97), 'Terreno · 3 padrones fusionados, ≈ 60 × 47,3 m (a confirmar con la mensura)');
+  bx(-120, -.05, ZF - 2.5, 160, .1, ZF, M(0xc9c4ba), 'Vereda'); bx(-120, -.06, ZF - 13, 160, .02, ZF - 2.5, M(0x55585b), 'Avda. Pedragosa Sierra');
+  for (let x = -116; x < 156; x += 7) bx(x, .02, ZF - 7.8, x + 3.5, .03, ZF - 7.65, M(0xffffff));
+  // franja edificable y retiros
+  [[FX0 + 4, 0, FX1 - 4, .06], [FX0 + 4, 33.24, FX1 - 4, 33.3], [FX0 + 4, 0, FX0 + 4.06, 33.3], [FX1 - 4.06, 0, FX1 - 4, 33.3]].forEach(([a, b, c, d]) => bx(a, -.02, b, c, .02, d, M(0xb5622a), 'Franja edificable: retiros de 10 m al frente, 4 al fondo y ≈ 4 a los lados'));
+  // estacionamiento atrás y acceso lateral
+  bx(-5, -.03, 26, 35, .01, 36.6, M(0x8d9093), 'Estacionamiento de 16 plazas atrás (una por local)'); bx(32.5, -.03, ZF, 36.5, .01, 31, M(0x8d9093), 'Acceso vehicular lateral');
+  for (let k = 0; k <= 16; k++) bx(-5 + k * 2.5 - .04, .01, 31.6, -5 + k * 2.5 + .04, .02, 36.6, M(0xffffff));
+  [2, 5, 9, 13].forEach(k => { const x = -5 + k * 2.5 + 1.25; bx(x - .9, .25, 32, x + .9, 1.0, 36, M([0x8a2f25, 0xe8e8e8, 0x2f4f6f, 0x1f1f1f][k % 4])); bx(x - .8, 1.0, 33, x + .8, 1.45, 35, GLASS); });
+  // árboles: pinos al fondo y abedules al frente
+  const pino = (x, z, h) => { bx(x - .15, 0, z - .15, x + .15, h * .5, z + .15, M(0x6b4a2b)); const c = new THREE.Mesh(new THREE.ConeGeometry(1.7 + rnd(), h * .62, 7), M(0x37603a)); c.position.set(x, h * .66, z); c.castShadow = true; g.add(c); };
+  for (let n = 0; n < 70; n++) { const x = -110 + rnd() * 260, z = 40 + rnd() * 90; pino(x, z, 7 + rnd() * 5); } for (let n = 0; n < 16; n++) pino(n % 2 ? -22 - rnd() * 60 : 52 + rnd() * 70, -8 + rnd() * 40, 7 + rnd() * 4);
+  [-9, 39.5, -11.5].forEach((x, i) => { const z = i === 2 ? 14 : -5.5; bx(x - .08, 0, z - .08, x + .08, 3.2, z + .08, M(0xe9e6df)); const c = new THREE.Mesh(new THREE.SphereGeometry(1.7, 8, 6), M(0x8fb46a)); c.position.set(x, 4.2, z); c.scale.y = 1.25; c.castShadow = true; g.add(c); }); }
+// ---------- edificio (se reconstruye) ----------
+const ED = new THREE.Group(); sc.add(ED);
+function build() { ED.clear(); g = ED; const st = S.est, nor = st !== 'base', G0 = GEO[st], e = G0.e, osc = nor ? 'seam' : 'blanco', DK = M(nor ? PAL[S.pal] : 0x1d1d1f, { roughness: .6, metalness: .3 }), NEG = M(0x1b1b1c, { roughness: .5, metalness: .4 });
+  const mad = S.mad ? 'madera' : 'simil', pie = S.nat ? 'piedra' : 'simpie', hayP = nor && S.pie;
+  // platea, galería y terraza
+  bx(-.1, 0, -.1, W + .1, .15, D + .1, M(0xbdb6aa), 'Platea H30');
+  if (S.ter && nor) { bt(0, .0, -4.2, W, .16, 0, mad, 'y', 'Terraza gastronómica · deck de ' + (S.mad ? 'madera dura' : 'WPC') + ' de 4 m, dentro del retiro frontal (confirmar si se admite)'); [3, 12.5, 22, 27].forEach(x => { bx(x, .16, -4.1, x + 2.4, .7, -3.5, NEG, 'Jardinera de chapa negra'); const c = new THREE.Mesh(new THREE.SphereGeometry(.55, 7, 5), M(0x6f9a58)); c.position.set(x + 1.2, 1.05, -3.8); c.scale.set(2, .8, .6); g.add(c); }); [[6, -2], [9, -2.2], [16, -2], [19, -2.2], [24.5, -2]].forEach(([x, z]) => { bx(x - .45, .7, z - .45, x + .45, .76, z + .45, M(0xd9cfbf), 'Mesas de la terraza'); bx(x - .04, .16, z - .04, x + .04, .7, z + .04, NEG); }); }
+  // planta baja retirada 1,50 bajo el volumen: vidriera, montantes y puertas
+  const xP = [0, 10, 20, 30], aP = .8;
+  bx(.4, .15, REC, W - .4, 3.2, REC + .06, GLASS, 'Vidriera de aluminio ' + (nor ? 'anodizado negro' : 'blanco') + ', laminado 5+5, retirada 1,50 m bajo la planta alta');
+  for (let x = 0; x <= W + .01; x += 2.5) bx(x - .04, .15, REC - .03, x + .04, 3.2, REC + .1, nor ? NEG : M(0xe8e8e6), 'Montante de aluminio');
+  for (let i = 0; i < 6; i++) bx(i * 5 + 2.6, .15, REC + .07, i * 5 + 3.6, 2.3, REC + .11, M(nor ? 0x2b2f33 : 0x6f8f9a), `Puerta de acceso · local ${i + 1}`);
+  bx(0, 3.2, REC, W, HPB, REC + .1, nor ? NEG : M(0x1d1d1f), 'Dintel');
+  // cielorraso de la galería y luces cálidas
+  if (nor) bt(0, HPB - .08, 0, W, HPB, REC, mad, 'y', 'Cielorraso de la galería en ' + (S.mad ? 'madera' : 'símil madera') + ' con luz cálida embutida'); else bx(0, HPB - .08, 0, W, HPB, REC, M(0xffffff), 'Cielorraso de la galería');
+  for (let x = 1.25; x < W; x += 2.5) bx(x - .12, HPB - .1, .65, x + .12, HPB - .07, .89, WARM);
+  // franjas verticales en el frente: piedra o panel
+  xP.forEach((x, i) => { const x0 = i === 0 ? 0 : i === 3 ? W - 1.6 : x - aP / 2, x1 = i === 0 ? 1.6 : i === 3 ? W : x + aP / 2, top = (i === 0 || i === 3) ? e : HPB; if (hayP) bt(x0, .15, -.06, x1, top, REC + .12, pie, 'z'); else if (i === 0 || i === 3) bt(x0, .15, -.02, x1, top, REC + .12, osc, 'z'); else bx(x0, .15, .0, x1, top, REC + .12, DK, 'Machón entre locales'); });
+  // faja de cartelería
+  bx(0, HPB, -.1, W, HPB + .45, .02, DK, 'Faja de cartelería en chapa ' + (nor ? S.pal : 'negra')); for (let i = 0; i < 6; i++) bx(i * 5 + 1.3, HPB + .1, -.13, i * 5 + 3.7, HPB + .35, -.1, M(nor ? 0xd9c7a3 : 0x3a3a3a, nor ? { emissive: 0xd9b36a, emissiveIntensity: .35 } : {}), 'Cartel del local · letras corpóreas con luz cálida de fondo');
+  // planta alta: frente
+  const y0 = HPB + .45, VID = M(0x33424c, { roughness: .1, metalness: .5 }), vent = (x0, x1, a, b) => { bx(x0, a, -.05, x1, b, .1, VID, 'Ventana de la planta alta · aluminio ' + (nor ? 'negro' : 'blanco') + ', DVH'); [[x0 - .06, a - .06, x1 + .06, a], [x0 - .06, b, x1 + .06, b + .06], [x0 - .06, a, x0, b], [x1, a, x1 + .06, b]].forEach(([p, q, r, s]) => bx(p, q, -.08, r, s, .04, nor ? NEG : M(0xe8e8e6))); };
+  if (st === 'naves') { for (let i = 0; i < 3; i++) { const a = i * 10; bt(a + (i ? 0 : 1.6), y0, -.02, a + 10 - (i === 2 ? 1.6 : 0), e, .08, mad, 'z'); vent(a + 2, a + 8, 4.5, 6.7); poly([[a, e, -.03], [a + 10, e, -.03], [a + 5, e + G0.r, -.03]], mad, [0, 1]); vent(a + 4.3, a + 5.7, e + .5, e + 1.6); } }
+  else { if (nor) bt(1.6, y0, -.02, W - 1.6, e, .08, mad, 'z'); else bt(0, y0, -.02, W, e, .08, 'blanco', 'z'); for (let i = 0; i < 6; i++) vent(Math.max(nor ? 2.1 : .9, i * 5 + .9), Math.min(nor ? W - 2.1 : W - .9, i * 5 + 4.1), 4.4, Math.min(6.0, e - .5)); }
+  // laterales y fondo
+  const lat = x => { bt(x - (x ? 0 : .08), hayP ? .75 : .15, 0, x + (x ? .08 : 0), e, D, osc, 'x'); if (hayP) { bt(x - (x ? 0 : .1), .15, 0, x + (x ? .1 : 0), .75, D, pie, 'x'); bt(x - (x ? 0 : .12), .75, -.06, x + (x ? .12 : 0), HPB, 5, pie, 'x'); } [[8, 11], [15, 18]].forEach(([a, b]) => bx(x - .1, 4.5, a, x + .1, 6.0, b, M(0x33424c, { roughness: .1, metalness: .5 }), 'Ventana lateral')); };
+  lat(0); lat(W); bt(0, hayP ? .75 : .15, D, W, e, D + .08, osc, 'z'); if (hayP) bt(0, .15, D, W, .75, D + .1, pie, 'z');
+  bx(12, .15, D, 18, e + .6, D + 3.2, DK, 'Núcleo de escalera y ascensor al fondo · la planta alta tiene que ser accesible (Ley 18.651)'); for (let i = 0; i < 6; i++) if (i < 2 || i > 3) bx(i * 5 + 1.8, .15, D + .08, i * 5 + 2.8, 2.3, D + .12, M(0x2b2f33), 'Puerta de servicio');
+  // entrepiso de la planta alta (se ve por las vidrieras)
+  bx(.1, HPB - .02, REC + .2, W - .1, HPB + .2, D - .1, M(0x9aa3a8), 'Losa de la planta alta · steel deck');
+  // techo según la variante
+  if (st === 'caja' || st === 'base') { bx(0, e, 0, W, e + .1, D, M(0xf2f3f1), 'Techo Isodec PIR blanco, plano al 3 %, escondido detrás de la cenefa'); [[-.08, -.1, W + .08, .05], [-.08, D - .05, W + .08, D + .1], [-.1, -.1, .05, D + .1], [W - .05, -.1, W + .1, D + .1]].forEach(([a, b, c, d]) => bx(a, e - .1, b, c, e + .9, d, DK, 'Cenefa de chapa plegada ' + (nor ? S.pal : 'negra') + ' · tapa el techo y remata el volumen')); }
+  const techo = (p, info) => poly(p, 'seam', p[0][0] === p[1][0] ? [2, 1] : [0, 1], info, nor ? null : M(0xf2f3f1));
+  if (st === 'naves') { for (let i = 0; i < 3; i++) { const a = i * 10, r = G0.r; techo([[a, e, -.5], [a, e, D + .1], [a + 5, e + r, D + .1], [a + 5, e + r, -.5]], 'Techo a dos aguas de panel PIR ' + S.pal + ' microperfilado · 35° de pendiente'); techo([[a + 10, e, -.5], [a + 5, e + r, -.5], [a + 5, e + r, D + .1], [a + 10, e, D + .1]], 'Techo a dos aguas de panel PIR ' + S.pal); poly([[a, e, D + .08], [a + 5, e + r, D + .08], [a + 10, e, D + .08]], 'seam', [0, 1], 'Hastial del fondo'); bx(a + 4.9, e + r - .05, -.5, a + 5.1, e + r + .08, D + .1, DK, 'Cumbrera'); if (i) bx(a - .25, e - .12, -.3, a + .25, e + .02, D, M(0x7fb3c9), 'Limahoya: canaleta interna entre dos naves, con desborde · es el punto a cuidar de esta variante'); }
+    [0, W].forEach(x => bx(x - .12, e - .12, -.5, x + .12, e + .06, D + .1, DK, 'Remate de alero')); }
+  if (st === 'nave') { const r = G0.r, zc = D / 2; techo([[-.4, e, -.7], [W + .4, e, -.7], [W + .4, e + r, zc], [-.4, e + r, zc]], 'Techo a dos aguas de panel PIR ' + S.pal + ' microperfilado · 20° · es la quinta fachada: se ve desde la avenida'); techo([[-.4, e + r, zc], [W + .4, e + r, zc], [W + .4, e, D + .5], [-.4, e, D + .5]], 'Techo a dos aguas'); [0, W].forEach(x => poly([[x, e, 0], [x, e, D], [x, e + r, zc]], 'seam', [2, 1], 'Hastial lateral en panel ' + S.pal)); bx(-.4, e + r - .05, zc - .1, W + .4, e + r + .08, zc + .1, DK, 'Cumbrera'); bx(-.4, e - .1, -.75, W + .4, e + .06, -.6, DK, 'Canaleta y alero del frente'); for (let i = 0; i < 3; i++) bx(4 + i * 9, e + 1.2, 3.2, 8 + i * 9, e + 1.26, 6.6, GLASS, 'Lucernario en el faldón del frente · luz natural para la planta alta'); }
+  $('tag').innerHTML = `<b>${EST[st][0]}${nor ? ' · ' + S.pal : ''}</b>${EST[st][1]} Altura máxima ${f1(e + (G0.r || .9))} m (tope 12 m).`; }
+// ---------- costos del paquete de imagen ----------
+function paquete(st, o = S) { if (st === 'base') return { it: [], costo: 0, venta: 0 }; const G0 = GEO[st], e = G0.e, y0 = HPB + .45, it = [], add = (t, q, un, pu) => it.push([t, Math.round(q), un, pu, q * pu]);
+  const fr = st === 'naves' ? (W - 3.2) * (e - y0) - 3 * 13.2 + 3 * (10 * G0.r / 2) : (W - 3.2) * (e - y0) - 6 * 3.2 * 1.5, sof = W * REC;
+  add((o.mad ? 'Madera natural (pino termotratado o eucalipto, con protector)' : 'Símil madera (WPC, aluminio foliado o fibrocemento texturado)') + ' en el frente de la planta alta y el cielorraso de la galería', fr + sof, 'm²', o.mad ? 120 : 140);
+  if (o.pie) { const a = 2 * 1.6 * (e - .15) + 2 * .8 * (HPB - .15) + 2 * 5 * (HPB - .75) + (2 * D + W) * .6; add((o.nat ? 'Piedra natural (laja o granito gris)' : 'Símil piedra (piedra reconstituida)') + ' en franjas del frente, retornos laterales y zócalo, con su muro de bloque de respaldo', a, 'm²', o.nat ? 180 : 115); }
+  const tri = st === 'nave' ? 2 * (D * G0.r / 2) : st === 'naves' ? 3 * (10 * G0.r / 2) : 0, osc = 2 * D * e + W * e + tri;
+  add('Paneles de muro en ' + o.pal + ' microperfilado en vez de blanco liso (sobrecosto de color y perfil)', osc, 'm²', 7); if (tri) add('Hastiales: panel, estructura secundaria y remates', tri, 'm²', 90);
+  if (st === 'caja') add('Cenefa de coronación ' + o.pal + ' de 1,00 m en todo el perímetro (en lugar de la babeta simple)', 2 * (W + D), 'ml', 48);
+  if (st !== 'caja') { const k = st === 'naves' ? 1 / Math.cos(35 * Math.PI / 180) : 1 / Math.cos(20 * Math.PI / 180), ar = W * D * k; add('Techo a la vista: más superficie por la pendiente, panel en ' + o.pal + ' y remates de cumbrera y aleros', ar - W * D, 'm²', 76); add('Sobrecosto de color del techo (queda a la vista)', ar, 'm²', 7); add('Estructura: pórticos a dos aguas' + (st === 'naves' ? ' de tres naves, con vigas de limahoya' : ''), W * D * (st === 'naves' ? 8 : 3), 'kg', 3.7); if (st === 'naves') add('Limahoyas: 2 canaletas internas de chapa con desborde y doble bajada', 2 * D, 'ml', 140); else add('Lucernarios en el faldón del frente', 3, 'u', 1400); }
+  add('Carpintería de aluminio en negro anodizado en vez de blanco', W * 3.05 + 6 * 4.8 + 12, 'm²', 35);
+  add('Galería: iluminación cálida embutida y cartelería corpórea retroiluminada', W, 'ml', 150);
+  if (o.ter) add('Terraza gastronómica: deck de 4 m, jardineras de chapa y toma de agua y luz', W * 4.2, 'm²', 105);
+  const costo = it.reduce((t, x) => t + x[4], 0); return { it, costo, venta: rd(costo * K) }; }
+function render() { const VS = ['caja', 'nave', 'naves'], P = Object.fromEntries(VS.map(v => [v, paquete(v)])), BASE = 1490000;
+  const cur = paquete(S.est); $('kRes').innerHTML = S.est === 'base' ? '<b>Sin sobrecosto</b><br>Es la referencia.' : `<b style="font-size:19px">+ ${u$(cur.venta)}</b><br>sin IVA sobre la caja blanca<br><small>≈ +${f1(cur.venta / BASE * 100)} % del proyecto · ${u$(cur.venta / 1525)} por m² construido</small>`;
+  const filas = {}; VS.forEach(v => P[v].it.forEach(x => { const k = x[0].replace(/ (negro|grafito) /g, ' # '); (filas[k] ||= { t: x[0] })[v] = x; }));
+  $('tCmp').innerHTML = `<table><tr><th>Qué se agrega</th>${VS.map(v => `<th class="n${S.est === v ? ' sel' : ''}">${EST[v][0]}</th>`).join('')}</tr>${Object.values(filas).map(f => `<tr><td>${f.t}</td>${VS.map(v => `<td class="n${S.est === v ? ' sel' : ''}">${f[v] ? u$(f[v][4]) + `<br><small>${f[v][1].toLocaleString('es-UY')} ${f[v][2]}</small>` : '—'}</td>`).join('')}</tr>`).join('')}
+   <tr class="tot"><td>Costo directo del paquete</td>${VS.map(v => `<td class="n${S.est === v ? ' sel' : ''}">${u$(P[v].costo)}</td>`).join('')}</tr><tr class="tot"><td>Precio al cliente (imprevistos 10 % + margen 25 %), sin IVA</td>${VS.map(v => `<td class="n${S.est === v ? ' sel' : ''}">+ ${u$(P[v].venta)}</td>`).join('')}</tr>
+   <tr><td>Sobre el proyecto de referencia (≈ USD 1,49 M)</td>${VS.map(v => `<td class="n${S.est === v ? ' sel' : ''}">+ ${f1(P[v].venta / BASE * 100)} %</td>`).join('')}</tr>
+   <tr><td>Plazo de obra</td><td class="n">+ 1 a 2 semanas</td><td class="n">+ 2 semanas</td><td class="n">+ 3 a 4 semanas</td></tr><tr><td>Mantenimiento</td><td class="n">bajo</td><td class="n">bajo</td><td class="n">medio (limahoyas)</td></tr></table>`; }
+// ---------- textos ----------
+$('gDef').innerHTML = [['Volumen simple y oscuro', ['Forma de granero: una nave o varias, a dos aguas, sin adornos.', 'Envolvente en negro o gris grafito con textura de junta alzada.', 'Aleros cortos y remates finos.']], ['Madera cálida donde se toca y se mira', ['Tablas verticales en la planta alta y en el cielorraso de la galería.', 'Contraste: oscuro afuera, cálido donde entra la gente.', 'Luz cálida embutida; de noche la madera es la que se ve.']], ['Piedra que ancla', ['Franjas verticales de piedra en los extremos y zócalo en todo el perímetro.', 'Da peso y exclusividad a nivel de vereda.', 'Protege el panel de golpes y salpicaduras.']], ['Pensado para gastronomía', ['Planta baja retirada 1,50 m: galería techada sin sumar ocupación de suelo.', 'Terraza con deck y jardineras hacia la avenida.', 'Cartelería sobria: letras corpóreas retroiluminadas, sin cajas de luz.']]].map(([t, l]) => `<div class="card"><h3>${t}</h3><ul>${l.map(x => `<li>${x}</li>`).join('')}</ul></div>`).join('');
+const sw = (n, c) => `<div><i style="background-image:url(${c.toDataURL()})"></i>${n}</div>`;
+$('pal').innerHTML = sw('Panel gris grafito', SEAM.grafito) + sw('Panel negro', SEAM.negro) + sw('Madera natural', CAN.madera) + sw('Símil madera', CAN.simil) + sw('Piedra natural', CAN.piedra) + sw('Símil piedra', CAN.simpie) + `<div><i style="background:#1b1b1c"></i>Aluminio y chapa negros</div><div><i style="background:#ffd58a"></i>Luz cálida 2700 K</div>`;
+$('tPen').innerHTML = `<div class="warn"><b>Negro o grafito:</b> para las superficies grandes de panel conviene <b>gris grafito</b>, y dejar el negro para cenefas, carpintería y chapa plegada. El panel oscuro absorbe mucho más sol que el blanco: se dilata más y calienta más el local. Hay que confirmar con Bromyros qué colores oscuros fabrica en PIR, con qué largo máximo de panel y si mantiene la garantía.</div>
+<table><tr><th>Tema</th><th>Qué pasa</th><th>Cómo se resuelve</th></tr>
+<tr><td><b>Techo a la vista</b></td><td>En las variantes B y C el techo oscuro es parte de la fachada y pierde la ventaja del blanco que refleja el sol.</td><td>Subir el panel de techo a 100 mm, o usar la variante A (techo blanco escondido). Cuantificar con el cálculo de aire.</td></tr>
+<tr><td><b>Madera y Bomberos</b></td><td>Un revestimiento combustible en fachada puede complicar la habilitación, sobre todo con gastronomía.</td><td>Definirlo con el técnico registrado en Bomberos junto con el núcleo del panel: símil madera incombustible o madera con tratamiento ignífugo certificado.</td></tr>
+<tr><td><b>Madera natural</b></td><td>Con el salitre y el sol de Punta del Este se agrisa y pide protector cada 2 o 3 años.</td><td>Por defecto, símil madera en fachada y madera real solo bajo techo (cielorraso de la galería).</td></tr>
+<tr><td><b>Piedra sobre un edificio de panel</b></td><td>La piedra no se pega al panel: necesita un muro de bloque o un bastidor con placa cementicia, y su fundación.</td><td>Está incluido en el precio por m². El calculista suma la carga en las vigas de borde.</td></tr>
+<tr><td><b>Limahoyas (variante C)</b></td><td>Las dos canaletas entre naves son el punto donde un techo así puede perder.</td><td>Canaleta ancha con pendiente, doble bajada, desborde visible y acceso para limpiar. Es lo mismo que resolvimos en la canaleta oculta del v2.</td></tr>
+<tr><td><b>Norma</b></td><td>Altura máxima 12 m: las tres variantes entran (8,1 · 10,9 · 10,5 m). Los aleros de más de 0,90 m cuentan como ocupación.</td><td>La galería va bajo la planta alta, dentro de la huella. Confirmar en la consulta previa si la terraza con deck se admite en el retiro frontal y si descuenta jardín.</td></tr>
+</table><p class="note">Estudio de imagen sobre un volumen esquemático de 30 × 25 m. La distribución interior, la forma final del bloque y los precios dependen de la mensura, la consulta previa y las cotizaciones. La madera, la piedra y los colores del 3D son representaciones.</p>`;
+// ---------- controles ----------
+$('oEst').innerHTML = ['naves', 'nave', 'caja', 'base'].map(k => `<button class="op" data-e="${k}"><b>${EST[k][0]}</b><small>${EST[k][1]}</small></button>`).join('');
+$('oPal').innerHTML = ['grafito', 'negro'].map(k => `<button class="op" data-p="${k}"><b>${k === 'negro' ? 'Negro' : 'Gris grafito'}</b></button>`).join('');
+const marca = () => { document.querySelectorAll('[data-e]').forEach(b => b.classList.toggle('on', b.dataset.e === S.est)); document.querySelectorAll('[data-p]').forEach(b => b.classList.toggle('on', b.dataset.p === S.pal)); };
+const upd = () => { build(); render(); marca(); };
+$('oEst').onclick = e => { const b = e.target.closest('[data-e]'); if (b) { S.est = b.dataset.e; upd(); } }; $('oPal').onclick = e => { const b = e.target.closest('[data-p]'); if (b) { S.pal = b.dataset.p; upd(); } };
+[['cPie', 'pie'], ['cNat', 'nat'], ['cMad', 'mad'], ['cTer', 'ter']].forEach(([id, k]) => $(id).onchange = e => { S[k] = e.target.checked; upd(); });
+const VIS = { 'Desde la avenida': [[-14, 5.5, -34], [15, 4.2, 6]], 'Frente': [[15, 3.2, -40], [15, 4.6, 0]], 'Terraza': [[-3, 2.2, -11], [12, 3.4, 1]], 'Aérea': [[-20, 46, -38], [15, 0, 12]], 'Fondo': [[48, 14, 58], [15, 3, 14]] };
+$('vistas').innerHTML = Object.keys(VIS).map(n => `<button data-v="${n}">${n}</button>`).join('');
+let viaje = null; const irV = n => { const [p, t] = VIS[n]; viaje = { s: performance.now(), p0: cam.position.clone(), t0: ctl.target.clone(), p1: new THREE.Vector3(...p), t1: new THREE.Vector3(...t) }; };
+$('vistas').onclick = e => { const n = e.target.dataset.v; if (n) irV(n); };
+cam.position.set(...VIS['Desde la avenida'][0]); ctl.target.set(...VIS['Desde la avenida'][1]);
+const ray = new THREE.Raycaster(), mp = new THREE.Vector2();
+ren.domElement.addEventListener('click', ev => { const r = ren.domElement.getBoundingClientRect(); mp.set((ev.clientX - r.left) / r.width * 2 - 1, -(ev.clientY - r.top) / r.height * 2 + 1); ray.setFromCamera(mp, cam); const h = ray.intersectObjects(sc.children, true).find(q => q.object.userData.info); if (h) { const t = h.object.userData.info.split(' · '); $('info').innerHTML = `<b>${t[0]}</b>${t.slice(1).join(' · ')}`; } });
+function resize() { const w = box.clientWidth, h = box.clientHeight; if (!w) return; ren.setSize(w, h, false); cam.aspect = w / h; cam.updateProjectionMatrix(); }
+addEventListener('resize', resize); resize(); upd();
+(function loop() { requestAnimationFrame(loop); if (viaje) { const k = Math.min(1, (performance.now() - viaje.s) / 1300), e = k < .5 ? 2 * k * k : 1 - (-2 * k + 2) ** 2 / 2; cam.position.lerpVectors(viaje.p0, viaje.p1, e); ctl.target.lerpVectors(viaje.t0, viaje.t1, e); if (k >= 1) viaje = null; } ctl.update(); ren.render(sc, cam); })();
+window.__nor = { S, upd, irV, paquete, cam, ctl, VIS };
+</script>
+</body>
+</html>
