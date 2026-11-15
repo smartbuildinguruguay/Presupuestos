@@ -57,12 +57,15 @@ summary span{color:var(--acc)}
 .in{width:70px;font:inherit;padding:2px 5px;border:1px solid #c9ced4;border-radius:5px}
 @media print{#ctl,#tabs{display:none}section{display:block!important}}
 </style></head><body>
-<header><h1>Locales en Pedragosa Sierra · una nave en cada padrón</h1>
+<header><h1>Locales y consultorios en Pedragosa Sierra · una nave en cada padrón</h1>
 <p>Juan Carlos García · Av. Pedragosa Sierra, Punta del Este · padrones 10596, 10597 y 10598 · SBU · Ramiro Portugau, director de obra · Ing. Ricardo Portugau, cálculo · documento de trabajo 14/11/2026</p></header>
 <div id="ctl">
 <label>Estilo <select id="cEst"><option value="cro" selected>Croquis (cenefas)</option><option value="nor">Nórdico</option><option value="esc">Escandinavo</option><option value="pat">Patagónico</option></select></label>
 <label>Suelo <select id="cSue"></select></label>
-<label>Locales por nave lateral <select id="cN"><option value="2">2 + 2 en el fondo (6 locales)</option><option value="3" selected>3 + 2 en el fondo (8 locales)</option><option value="4">4 + 2 en el fondo (10 locales)</option></select></label>
+<label>Locales por nave lateral <select id="cN"><option value="2">2 locales</option><option value="3" selected>3 locales</option><option value="4">4 locales</option></select></label>
+<label>Nave de consultorios <select id="cCons"><option value="N" selected>Norte (7 consultorios)</option><option value="S">Sur (7 consultorios)</option><option value="none">Ninguna (solo locales)</option></select></label>
+<label>Fondo de la nave del medio <select id="cBd"><option value="14">14 m</option><option value="17">17 m</option><option value="20" selected>20 m</option></select></label>
+<label>Cara interior de la cenefa <select id="cCara"><option value="lis">Lisa</option><option value="mad">Madera natural</option><option value="mp" selected>Madera arriba y piedra abajo</option></select></label>
 <label>Locales gastronómicos <input id="cGas" type="number" min="0" max="12" value="0" style="width:56px"></label>
 <label><input id="cIva" type="checkbox"> Mostrar con IVA</label>
 </div>
@@ -72,6 +75,7 @@ summary span{color:var(--acc)}
 <section id="p-impl"><h2>Implantación en los tres padrones</h2><div id="dImpl"></div></section>
 <section id="p-pais"><h2>Jardín y paseo</h2><div id="dPais"></div></section>
 <section id="p-planta"><h2>Plantas de las tres naves</h2><div id="dPlanta"></div></section>
+<section id="p-sani"><h2>Sanitaria de los consultorios</h2><div id="dSani"></div></section>
 <section id="p-fach"><h2>Fachadas y cortes</h2><div id="dFach"></div></section>
 <section id="p-est"><h2>Estructura, luces y aguas</h2><div id="dEst"></div></section>
 <section id="p-3d"><h2>Modelo 3D por capas</h2>
@@ -100,31 +104,84 @@ const LOT = { D: 47.3, F: 60 };
 const RET = { fr: 10, lat: 3, suma: 8, fo: 4 };
 const PADS = [['10598', 0, 20, 1050], ['10597', 20, 40, 1000], ['10596', 40, 60, 1000]];
 const TAN = Math.tan(20 * Math.PI / 180);
+const NLB = 2, NCONS = 7, DP = 1.2, DPO = 1.0; // locales del fondo, consultorios, resguardo de cenefa al jardín y al retiro lateral
+const S = { est: 'cro', suelo: 'S0', n: 3, gas: 0, iva: false, cara: 'mp', cons: 'N', bd: 20 };
 const NV = [
-  { id: 'S', n: 'Nave sur', pad: '10598', pa: 1050, x0: -32.5, x1: -10.5, y0: 3, y1: 14.5, tipo: 'dos' },
-  { id: 'B', n: 'Nave del fondo', pad: '10597', pa: 1000, x0: -43, x1: -29, y0: 24.25, y1: 35.75, tipo: 'esc' },
+  { id: 'S', n: 'Nave sur', pad: '10598', pa: 1050, x0: -43, x1: -21, y0: 3, y1: 14.5, tipo: 'dos' },
+  { id: 'B', n: 'Nave del fondo', pad: '10597', pa: 1000, x0: -43, x1: -23, y0: 24.25, y1: 35.75, tipo: 'esc' },
   { id: 'N', n: 'Nave norte', pad: '10596', pa: 1000, x0: -43, x1: -22, y0: 45.5, y1: 57, tipo: 'dos' }
 ];
-const NLB = 2; // locales de la nave del fondo (perpendicular, abren solo al jardín)
-NV.forEach(b => {
-  b.L = b.x1 - b.x0; b.W = b.y1 - b.y0; b.A = b.L * b.W; b.e = 6.0;
+function deriv(b, o = S) {
+  if (b.id === 'B') b.x1 = b.x0 + o.bd;
+  b.L = b.x1 - b.x0; b.W = b.y1 - b.y0; b.A = b.L * b.W; b.e = 6.0; b.cons = o.cons === b.id;
   b.inY = b.id === 'S' ? b.y1 : b.y0; b.outY = b.id === 'S' ? b.y0 : b.y1; b.dIn = b.id === 'S' ? 1 : -1; // cara hacia el jardín
   if (b.tipo === 'dos') { b.r = b.e + b.W / 2 * TAN; b.hm = b.e + (b.r - b.e) / 2; b.alt = b.r; }
   else { b.lo = 6.0; b.hi = b.lo + .05 * b.L; b.hp = b.hi + .6; b.hm = (b.lo + b.hi) / 2; b.alt = b.hp; }
-  b.nfr = Math.ceil(b.L / 5) + 1; b.sep = b.L / (b.nfr - 1);
-  b.lat = [b.y0 - PADS.find(p => p[0] === b.pad)[1], PADS.find(p => p[0] === b.pad)[2] - b.y1];
-});
-const nloc = (b, o = S) => b.tipo === 'dos' ? o.n : NLB;
+  let fx;
+  if (b.tipo === 'esc') { const n = Math.ceil(b.L / 5) + 1; fx = Array.from({ length: n }, (_, k) => b.x0 + k * b.L / (n - 1)); }
+  else if (b.cons) fx = [0, 4.1, 8.0, 11.9, 15.8, b.L].map(u => b.x0 + u);
+  else { const n = o.n, w = b.L / n; fx = [b.x0]; for (let i = 0; i < n; i++) { if (w > 7.5) fx.push(b.x0 + i * w + w / 3, b.x0 + i * w + 2 * w / 3); fx.push(b.x0 + (i + 1) * w); } }
+  b.fx = fx; b.nfr = fx.length; const gp = fx.slice(1).map((x, i) => x - fx[i]); b.vmin = Math.min(...gp); b.vmax = Math.max(...gp);
+  const P = PADS.find(p => p[0] === b.pad); b.lat = [b.y0 - P[1], P[2] - b.y1];
+}
+const applyGeom = (o = S) => NV.forEach(b => deriv(b, o));
+const nloc = (b, o = S) => b.tipo === 'dos' ? (b.id === o.cons ? 1 : o.n) : NLB;
+const plazasDe = (b, o = S) => b.id === o.cons ? NCONS : nloc(b, o);
+/* Consultorios: programa del plano de la arquitecta (7 consultorios, espera, reuniones, archivo, recepción, 2 SSHH, baño accesible, escalera), redistribuido en la nave */
+function consRooms(b) {
+  const L = b.L, W = b.W, R = [], m = [0, 4.1, 8.0, 11.9, 15.8], r = (k, n, t, u0, u1, v0, v1, x = {}) => R.push({ k, n, t, u0, u1, v0, v1, A: (u1 - u0) * (v1 - v0), ...x });
+  for (let i = 0; i < 4; i++) r('C' + (i + 1), 'Consultorio ' + (i + 1), 'c', m[i], m[i + 1], 0, 4.2, { face: 'in' });
+  r('REC', 'Recepción', 'r', 15.8, 19.0, 0, 4.2, { face: 'in' }); r('BA', 'Baño accesible', 'b', 19.0, L, 0, 4.2);
+  r('REU', 'Sala de reuniones', 'u', 0, 4.1, 4.2, 7.3); r('ESP', 'Sala de espera', 'e', 4.1, 15.8, 4.2, 7.3); r('HALL', 'Hall de entrada', 'h', 15.8, L, 4.2, 7.3);
+  for (let i = 0; i < 3; i++) r('C' + (i + 5), 'Consultorio ' + (i + 5), 'c', m[i], m[i + 1], 7.3, W, { face: 'out' });
+  r('SH1', 'SSHH 1', 's', 11.9, 14.4, 7.3, W); r('SH2', 'SSHH 2', 's', 14.4, 16.9, 7.3, W); r('ARCH', 'Archivo y depósito', 'a', 16.9, 19.0, 7.3, W); r('ESC', 'Escalera (previsión PA)', 'x', 19.0, L, 7.3, W);
+  return R;
+}
+const toXY = (b, u, v) => ({ x: b.x0 + u, y: b.dIn > 0 ? b.y1 - v : b.y0 + v });
+/* Aberturas de cada nave: f = cara ('in' al jardín, 'out' al retiro lateral, 'e' hacia la avenida); a-z a lo largo de la cara (m desde el fondo o desde el sur); t: g vidriera, p puerta, w ventana */
+function openings(b, o = S) {
+  const O = [], add = (f, a, z, h0, h1, t) => O.push({ f, a, z, h0, h1, t });
+  if (b.tipo === 'esc') {
+    const w = (b.W - 2) / NLB; add('e', 1, b.W - 1, .6, 3.0, 'g');
+    for (let i = 0; i < NLB; i++) { const yc = 1 + (i + .5) * w; add('e', yc - .9, yc + .9, 0, 2.4, 'p'); }
+    return O;
+  }
+  if (b.cons) {
+    consRooms(b).forEach(r => {
+      const uc = (r.u0 + r.u1) / 2;
+      if (r.t === 'c') add(r.face, uc - .9, uc + .9, .9, 2.5, 'w');
+      if (r.k === 'REC') { add('in', r.u0 + .2, r.u1 - .2, .6, 3.0, 'g'); add('in', uc - .9, uc + .9, 0, 2.4, 'p'); }
+      if (r.t === 's') add('out', uc - .3, uc + .3, 1.9, 2.5, 'w');
+      if (r.k === 'ARCH') add('out', uc - .5, uc + .5, 0, 2.2, 'p');
+      if (r.k === 'HALL') { add('e', b.W / 2 - 1.2, b.W / 2 + 1.2, 0, 2.4, 'p'); add('e', 1.2, b.W / 2 - 1.4, .6, 3.0, 'g'); add('e', b.W / 2 + 1.4, b.W - 1.2, .6, 3.0, 'g'); }
+    });
+    return O;
+  }
+  const n = o.n, w = b.L / n;
+  for (let i = 0; i < n; i++) {
+    const xl = i * w, xc = xl + w / 2;
+    add('in', i === 0 ? 1 : xl + .15, i === n - 1 ? b.L - 1 : xl + w - .15, .6, 3.0, 'g'); add('in', xc - .9, xc + .9, 0, 2.4, 'p');
+    add('out', xc - .9, xc + .9, 0, 2.4, 'p'); add('out', xc + 1.25, Math.min(xc + 2.75, xl + w - .35), .7, 2.9, 'w');
+  }
+  add('e', 1.2, b.W - 1.2, 0, 3.0, 'g');
+  return O;
+}
+function chkAbert(b, o = S) { // puertas y ventanas sueltas contra las columnas (las vidrieras corridas pasan entre columnas por diseño)
+  const bad = [];
+  openings(b, o).filter(x => x.f !== 'e' && x.t !== 'g').forEach(x => b.fx.forEach(fx => { const u = fx - b.x0; if (u > x.a - .12 && u < x.z + .12) bad.push([x, u]); }));
+  return bad;
+}
+applyGeom();
 /* Jardín y paseo: todo sale de esta tabla (x hacia el fondo en negativo, y hacia el norte) */
 const GARD = {
-  decks: [[-32.5, -10.5, 14.5, 17, 'Galería sur, frente a los locales'], [-43, -22, 43, 45.5, 'Galería norte, frente a los locales'], [-29, -20, 24.25, 35.75, 'Plaza de estar frente a la nave del fondo']],
-  pave: [[-20, -10, 28.5, 31.5, 'Paseo de entrada desde la avenida']],
-  grav: [[[-14, 17], [-15.5, 21], [-18, 24.5], [-20, 27]], [[-26, 17], [-25, 21], [-24.5, 24.25]], [[-22, 43], [-20.8, 39], [-20.2, 35.75]], [[-30, 43], [-29.2, 39.5], [-27.5, 35.75]], [[-14, 17], [-13, 25]], [[-12, 43.5], [-13, 36], [-15, 32]]],
+  decks: [[-43, -21, 14.5, 17, 'Galería sur, frente a los locales'], [-43, -22, 43, 45.5, 'Galería norte, frente a los locales'], [-23, -15, 24.25, 35.75, 'Plaza de estar frente a la nave del fondo']],
+  pave: [[-15, -10, 28.5, 31.5, 'Paseo de entrada desde la avenida']],
+  grav: [[[-13, 17], [-14, 21], [-15, 24.25]], [[-19, 17], [-18.5, 21], [-18, 24.25]], [[-13, 43], [-14, 39], [-15, 35.75]], [[-19, 43], [-18.5, 39.5], [-18, 35.75]], [[-41, 17], [-38, 20.5], [-31, 21.5], [-24, 21]], [[-41, 43], [-38, 39.5], [-31, 38.5], [-24, 39]]],
   gravW: 1.5,
-  walkS: [-33, -10, 1, 2.8], walkN: [-43, -10, 57.2, 59],
-  canteros: [[-24.5, 21.5, 4.5, 1.8], [-24.5, 38.5, 4.5, 1.8], [-14.5, 25.2, 3, 1.4], [-14.5, 34.8, 3, 1.4], [-37, 19, 3.5, 2], [-37, 41.5, 3.5, 2]],
-  arboles: [[-12, 21.5], [-12.5, 39], [-16.5, 21.5], [-17.5, 41], [-22.5, 22.5], [-23, 38.5], [-33, 20], [-38, 21.5], [-34, 40], [-39.5, 39.5], [-38, 8], [-40.5, 12], [-15, 50], [-18, 53.5], [-14, 7], [-25, 20], [-27, 40.5]],
-  bancos: [[-23, 25.2, -23, 29], [-23, 31, -23, 34.8]]
+  walkS: [-43, -10, 1, 2.8], walkN: [-43, -10, 57.2, 59],
+  canteros: [[-33, 18.9, 5, 1.2], [-33, 41.1, 5, 1.2], [-12, 25.2, 2.5, 1.4], [-12, 34.8, 2.5, 1.4], [-16, 20, 2.2, 1.3], [-16, 40.5, 2.2, 1.3]],
+  arboles: [[-39, 21.5], [-34, 22.5], [-28.5, 22.5], [-39, 38.5], [-34, 37.8], [-28.5, 38], [-11.5, 21.5], [-11.5, 38.5], [-16.5, 22.5], [-16.5, 37.5], [-15, 7.5], [-12.5, 11.5], [-13.5, 51], [-16.5, 54.5], [-20, 20.5], [-21, 39.8], [-12, 28]],
+  bancos: [[-21.5, 25.4, -21.5, 28.6], [-21.5, 31.4, -21.5, 34.6]]
 };
 const gsegLen = p => p.slice(1).reduce((t, q, i) => t + Math.hypot(q[0] - p[i][0], q[1] - p[i][1]), 0);
 const SUELO = {
@@ -140,29 +197,78 @@ const EST = {
   esc: { n: 'Escandinavo', pie: 1, cen: 105, d: 'Madera en frentes y hastiales, chapa grafito, franja de piedra de 1,20 m y cenefa marcada.' },
   pat: { n: 'Patagónico', pie: 1.42, cen: 130, d: 'Machones de piedra de 2,40 m, zócalo de 1,00 m y techo con alero cajón de 85 cm.' }
 };
-const S = { est: 'cro', suelo: 'S0', n: 3, gas: 0, iva: false };
 const sum = (a, f) => a.reduce((t, x) => t + f(x), 0);
+/* Distribución de consultorios: tabiques, puertas y sanitaria */
+function consWalls(R, L, W) {
+  const H = {}, V = {}, add = (M, c, a, z) => { (M[c] = M[c] || []).push([Math.min(a, z), Math.max(a, z)]); };
+  R.forEach(r => { [r.v0, r.v1].forEach(v => { if (v > 0 && v < W) add(H, v, r.u0, r.u1); }); [r.u0, r.u1].forEach(u => { if (u > 0 && u < L) add(V, u, r.v0, r.v1); }); });
+  const un = M => Object.values(M).reduce((t, iv) => { iv.sort((p, q) => p[0] - q[0]); let cur = null, tot = 0; iv.forEach(x => { if (!cur) cur = [...x]; else if (x[0] <= cur[1] + 1e-6) cur[1] = Math.max(cur[1], x[1]); else { tot += cur[1] - cur[0]; cur = [...x]; } }); return tot + (cur ? cur[1] - cur[0] : 0); }, 0);
+  return un(H) + un(V);
+}
+function sani(o = S) {
+  const b = NV.find(x => x.id === o.cons); if (!b) return null;
+  const R = consRooms(b), L = b.L, rm = k => R.find(r => r.k === k), mid = r => (r.u0 + r.u1) / 2;
+  const lav = R.filter(r => r.t === 'c').map(r => ({ k: r.k, u: mid(r) + 1.2, v: r.v0 === 0 ? 3.9 : 7.6 }));
+  const wc = [[12.5, 11.0], [13.7, 11.0], [15.0, 11.0], [16.2, 11.0], [rm('BA').u1 - .7, .9]].map(([u, v]) => ({ u, v }));
+  const lvt = [[12.2, 7.7], [13.6, 7.7], [14.9, 7.7], [16.3, 7.7], [rm('BA').u0 + .7, 3.7]].map(([u, v]) => ({ u, v }));
+  const pil = { u: 17.4, v: 11.0 }, tt = { u: 18.4, v: 10.6 }, tk = { u: 17.6, v: 9.0 };
+  const T = []; const line = (t, d, pts) => T.push({ t, d, pts, len: gsegLen(pts) });
+  line('AF', 25, [[tk.u, 9.0], [tk.u, 5.75], [1.0, 5.75]]);
+  [...lav, ...wc, ...lvt, pil].forEach(f => line('AF', 20, [[f.u, 5.75], [f.u, f.v]]));
+  line('AC', 20, [[tt.u, 10.6], [tt.u, 5.45], [1.0, 5.45]]);
+  [...lav, ...lvt].forEach(f => line('AC', 20, [[f.u + .2, 5.45], [f.u + .2, f.v]]));
+  line('CL', 110, [[3.0, 9.6], [L + 1.8, 9.6]]); [...wc.slice(0, 4), pil].forEach(f => line('CL', 110, [[f.u, f.v], [f.u, 9.6]]));
+  lav.filter(x => x.v > 5).forEach(f => line('CL', 40, [[f.u, f.v], [f.u, 9.6]])); lvt.slice(0, 4).forEach(f => line('CL', 50, [[f.u, f.v], [f.u, 9.6]]));
+  line('CL', 110, [[2.0, 3.9], [L - .5, 3.9], [L - .5, 9.6]]); lav.filter(x => x.v < 5).forEach(f => line('CL', 40, [[f.u, f.v], [f.u, 3.9]])); line('CL', 110, [[wc[4].u, wc[4].v], [wc[4].u, 3.9]]); line('CL', 50, [[lvt[4].u, lvt[4].v], [lvt[4].u, 3.9]]);
+  const ci = [[L - .5, 9.6, 'interior'], [L + 1.8, 9.6, 'exterior']], vent = [[12.2, 11.3], [15.2, 11.3], [rm('BA').u0 + .3, .4], [pil.u, 11.3]];
+  const len = (t, d) => sum(T.filter(x => x.t === t && (!d || x.d === d)), x => x.len);
+  const A = { lav: lav.length, wc: wc.length, lvt: lvt.length };
+  const piso = sum(['SH1', 'SH2', 'BA'].map(rm), r => r.A), pared = sum(['SH1', 'SH2', 'BA'].map(rm), r => 2.2 * 2 * ((r.u1 - r.u0) + (r.v1 - r.v0)) - 1.8);
+  const I = [
+    ['Agua fría: troncal PP-R ø25 termofusión', len('AF', 25), 'ml', 9.5], ['Agua fría: ramales PP-R ø20 a cada aparato', len('AF', 20), 'ml', 6.8], ['Agua caliente: PP-R ø20 con aislación', len('AC'), 'ml', 9.8],
+    ['Desagüe PVC ø110 bajo platea (colectores y descargas de inodoros), con excavación y relleno', len('CL', 110), 'ml', 21], ['Desagüe PVC ø50 (lavatorios)', len('CL', 50), 'ml', 11], ['Desagüe PVC ø40 (lavamanos de consultorios)', len('CL', 40), 'ml', 9],
+    ['Cámaras de inspección con tapa (una interior hermética y una exterior)', ci.length, 'u', 260], ['Columnas de ventilación ø50 al techo con sombrerete', vent.length, 'u', 90],
+    ['Lavamanos clínico con grifería de pico alto, uno por consultorio', A.lav, 'u', 255], ['Inodoro con mochila (incluye los accesibles)', A.wc, 'u', 215], ['Lavatorio con grifería en SSHH y baño accesible', A.lvt, 'u', 165],
+    ['Barras de apoyo, espejo inclinado y accesorios de accesibilidad (3 baños)', 3, 'u', 240], ['Pileta de limpieza en el depósito', 1, 'u', 150], ['Termotanque eléctrico de 150 L con válvula de seguridad', 1, 'u', 360], ['Tanque de reserva de 1.000 L con flotante y tapa, sobre el depósito', 1, 'u', 260],
+    ['Llaves de paso y válvulas de corte por local y por baño', 14, 'u', 28], ['Pruebas hidráulicas y de estanqueidad con acta', 1, 'gl', 420], ['Cerámico en pisos y paredes de los tres baños (a 2,20 m)', Math.round(piso + pared), 'm²', 38]
+  ];
+  return { b, R, lav, wc, lvt, pil, tt, tk, T, ci, vent, I, A, total: sum(I, x => x[1] * x[3]), len, piso, pared };
+}
+/* Red sanitaria del predio: una acometida y una salida cloacal por padrón, pluvial separado */
+function redPredio(o = S) {
+  const out = [];
+  NV.forEach(b => { const y = b.id === o.cons ? toXY(b, 0, 9.6).y : b.id === 'B' ? (b.y0 + b.y1) / 2 : (b.y0 + b.y1) / 2, x1 = b.x1 + 1.8, pts = [[x1, y], [-1.5, y]]; const n = Math.ceil((-1.5 - x1) / 15) + 1; out.push({ b, y, x1, len: -1.5 - x1, ci: n, pts }); });
+  return out;
+}
 /* cantidades derivadas de la geometría */
 function Qty(o = S) {
   const D = NV.filter(b => b.tipo === 'dos'), E = NV.filter(b => b.tipo === 'esc'), cro = o.est === 'cro';
   const FP = sum(NV, b => b.A), per = sum(NV, b => 2 * (b.L + b.W)), AH = sum(NV, b => (b.L + 1.4) * (b.W + 1.4));
-  const cols = 2 * sum(NV, b => b.nfr), nl = sum(NV, b => nloc(b, o));
+  const cols = 2 * sum(NV, b => b.nfr), nl = sum(NV, b => nloc(b, o)), hasC = NV.some(b => b.id === o.cons);
   const RF = sum(NV, b => b.tipo === 'dos' ? b.L * 2 * (b.W / 2 / Math.cos(20 * Math.PI / 180)) : b.L * b.W * Math.sqrt(1 + .05 * .05));
   const gross = sum(NV, b => b.tipo === 'dos' ? 2 * (b.L + b.W) * b.e + (b.r - b.e) * b.W : 2 * (b.L + b.W) * b.hp);
-  // vidriera corrida al jardín (con pilares de 1 m en los extremos), ventana y puerta al costado, hastial con banderola; la nave del fondo abre solo al frente
-  const frentes = sum(D, b => (b.L - 2) + (b.W - 3.5)) + sum(E, b => b.W - 2);
-  const glass = sum(D, b => (b.L - 2) * 2.9 + o.n * 1.5 * 2.2 + (b.W - 3.5) * 3.0 + 7.1) + sum(E, b => (b.W - 2) * 2.9);
-  const doors = sum(D, b => 2 * o.n) + NLB * E.length;
+  const OP = NV.map(b => openings(b, o));
+  const glass = sum(OP, l => sum(l.filter(q => q.t !== 'p'), q => (q.z - q.a) * (q.h1 - q.h0))) + D.length * 7.1;
+  const doors = sum(OP, l => l.filter(q => q.t === 'p').length), frentes = sum(OP, l => sum(l.filter(q => q.t === 'g'), q => q.z - q.a));
   const stone = (sum(D, b => b.L + b.W) + sum(E, b => b.W)) * 1.2 * EST[o.est].pie;
-  const cen = cro ? sum(D, b => 2 * (2 * b.e + b.W / Math.cos(20 * Math.PI / 180))) + sum(E, b => 2 * b.hp + b.W) : sum(D, b => 2 * b.L) + sum(E, b => 2 * (b.L + b.W));
+  const hast = Math.cos(20 * Math.PI / 180);
+  const cen = cro ? sum(D, b => 2 * (2 * b.e + b.W / hast)) + sum(E, b => 2 * b.hp + b.W) : sum(D, b => 2 * b.L) + sum(E, b => 2 * (b.L + b.W));
   const pir = Math.max(0, gross - glass - stone);
-  const div = sum(D, b => (o.n - 1) * b.W * b.hm) + sum(E, b => (NLB - 1) * b.L * b.hm);
-  const plz = nl, pav = plz * 27.5 + 50 + 3.5 * (10 + 24 + 3);
+  const div = sum(D.filter(b => b.id !== o.cons), b => (o.n - 1) * b.W * b.hm) + sum(E, b => (NLB - 1) * b.L * b.hm);
+  const plz = sum(NV, b => plazasDe(b, o)), pav = plz * 27.5 + 50 + 3.5 * (10 + 24 + 3);
   const dk = sum(GARD.decks, d => (d[1] - d[0]) * (d[3] - d[2])), pv = sum(GARD.pave, d => (d[1] - d[0]) * (d[3] - d[2]));
   const gr = sum(GARD.grav, p => gsegLen(p) * GARD.gravW) + [GARD.walkS, GARD.walkN].reduce((t, w) => t + (w[1] - w[0]) * (w[3] - w[2]), 0);
   const cn = sum(GARD.canteros, c => Math.PI * c[2] * c[3]), tr = GARD.arboles.length, bn = sum(GARD.bancos, p => Math.hypot(p[2] - p[0], p[3] - p[1]));
   const jar = 3050 - FP - pav - pv, cesp = Math.max(0, jar - dk - gr - cn);
-  return { FP, per, AH, cols, nl, RF, gross, glass, stone, cen, pir, div, plz, pav, jar, frentes, doors, dk, pv, gr, cn, tr, bn, cesp, cro };
+  // resguardo de cenefa (estilo Croquis): vísera de 1,2 m al jardín y 1,0 m al retiro, aletas y portal de hastial proyectado
+  const cIn = sum(D, b => b.L) + sum(E, b => b.W), cOut = sum(D, b => b.L);
+  const fins = 2 * (D.length + E.length) + 2 * D.length; // aletas de extremo en la cara al jardín y en cada hastial
+  const sof = cIn * DP + cOut * DPO + sum(D, b => 2 * DP * (b.W / 2 / hast)) , finA = sum(D, b => 2 * DP * 3.45 + 2 * DP * b.e) + sum(E, b => 2 * DP * b.hp);
+  const stoneRec = cro && o.cara === 'mp' ? sum(D, b => (b.L - 2) * .6 + (b.W - 2.4) * .6 + 4 * DP * 1.2) + sum(E, b => (b.W - 2) * .6 + 2 * DP * 1.2) : 0;
+  const recTot = sof + finA, woodRec = !cro || o.cara === 'lis' ? 0 : o.cara === 'mad' ? recTot + sum(D, b => (b.L - 2) * .6 + (b.W - 2.4) * .6) + sum(E, b => (b.W - 2) * .6) : recTot - sum(D, b => 4 * DP * 1.2) - sum(E, b => 2 * DP * 1.2);
+  const SN = sani(o), cw = SN ? consWalls(SN.R, SN.b.L, SN.b.W) : 0;
+  const red = redPredio(o);
+  return { FP, per, AH, cols, nl, RF, gross, glass, stone, cen, pir, div, plz, pav, jar, frentes, doors, dk, pv, gr, cn, tr, bn, cesp, cro, hasC, cIn, cOut, stoneRec, woodRec, cw, red, SN };
 }
 /* ================= COTIZACIÓN ================= */
 function cotiza(o = S) {
@@ -197,16 +303,37 @@ function cotiza(o = S) {
   it(3, 'Puertas vidriadas: una al jardín y una al costado en cada local lateral; una al frente en los del fondo', q.doors, 'par', 800, .2);
   if (q.cro) it(3, 'Cenefas verticales de madera tratada y oscurecida de piso a cubierta (tablilla, subestructura y fijaciones), a cotizar', Math.round(q.pir), 'm²', 62, .4);
   it(3, q.cro ? 'Marco oscuro de chapa plegada en los hastiales (cubierta que baja como pared)' : 'Cenefa de madera o simil en aleros y coronación', Math.round(q.cen), 'ml', EST[o.est].cen, .4);
+  if (q.cro) {
+    it(3, `Resguardo de cenefa: vísera de ${f1(DP)} m sobre las vidrieras al jardín y de ${f1(DPO)} m sobre las puertas del retiro lateral, con ménsulas, aletas y cielorraso de cenefa`, Math.round(q.cIn + q.cOut), 'ml', 135, .4);
+    it(3, `Portal de hastial proyectado ${f1(DP)} m: marco, aletas y alero que protegen la vidriera`, Math.round(q.cen), 'ml', 85, .4);
+    if (q.woodRec > 0) it(3, 'Madera natural (lapacho o pino tratado con aceite) en la cara interior de la cenefa: cielorraso de la vísera, aletas y antepecho, a cotizar', Math.round(q.woodRec), 'm²', 96, .45);
+    if (q.stoneRec > 0) it(3, 'Piedra granítica careada en el zócalo de las vidrieras y el pie de las aletas, cara interior de la cenefa', Math.round(q.stoneRec), 'm²', 230, .55);
+  }
   cat('6 · Divisorios e interiores');
   it(4, 'Divisorios entre locales: steel frame, doble placa por cara y lana de roca, en toda la altura', Math.round(q.div), 'm²', 52, .5);
   it(4, 'Masillado y pintura de divisorios', Math.round(q.div * 2), 'm²', 8, .5);
-  it(4, 'Baño accesible terminado por local, con instalación, puerta, tablero, tomas y previsión de aire', nl, 'u', 5610, .45);
+  it(4, 'Baño accesible terminado por local, con instalación, puerta, tablero, tomas y previsión de aire', nl - (q.hasC ? 1 : 0), 'u', 5610, .45);
   cat('7 · Instalaciones generales');
-  it(1, 'Sanitaria: colector cloacal, pluvial separado con bocas y agua con submedidores, desde cada nave', 1, 'gl', 9700 + 2 * 1800, .45);
+  const rp = q.red, lc = sum(rp, r => r.len), nci = sum(rp, r => r.ci);
+  it(1, `Colectores cloacales PVC ø110 enterrados desde la salida de cada nave hasta la conexión de OSE (${rp.length} padrones)`, Math.round(lc), 'ml', 24, .4);
+  it(1, 'Cámaras de inspección del predio, cada 15 m como máximo y en cada salida', nci, 'u', 260, .4);
+  it(1, 'Colector pluvial ø160 con bocas y rejillas, separado de la cloaca, hacia la calle o infiltración', 58, 'ml', 34, .4);
+  it(1, 'Bajadas pluviales a colector: conexiones, codos y bocas de registro', 12, 'u', 150, .4);
+  it(1, 'Agua: acometida y cañería de PE ø32 a cada nave con medidor y submedidores por local', Math.round(lc + 2 * 3), 'ml', 11, .4);
+  it(1, 'Submedidores de agua y llaves de corte por local', q.nl, 'u', 140, .3);
   it(5, 'Conexión a saneamiento de OSE (tres padrones)', 3, 'u', 1500, .45);
   it(4, 'Eléctrica: gabinete de UTE por padrón con una medición por local y servicios comunes', 1, 'gl', nl * 810 + 2900 + 2 * 900, .5);
   it(5, 'Iluminación del jardín, los pasajes y el estacionamiento', 1, 'gl', 5000 + 2500, .5);
   it(4, 'Incendio: extintores, emergencia y señalización', 1, 'gl', 2500 + nl * 250, .3);
+  if (q.SN) {
+    const SN = q.SN; cat('7 bis · Consultorios: distribución del plano de la arquitecta y sanitaria');
+    it(4, 'Tabiques de los consultorios y ambientes: steel frame, doble placa por cara y lana de roca, hasta el cielorraso', Math.round(q.cw * 3.0), 'm²', 52, .5);
+    it(4, 'Masillado y pintura de tabiques', Math.round(q.cw * 3.0 * 2), 'm²', 8, .5);
+    it(4, 'Puertas interiores de madera con marco, herrajes y pintura (consultorios, baños, reuniones, archivo)', 12, 'u', 230, .3);
+    it(4, 'Eléctrica interior: bocas, tomas, iluminación y tableros por ambiente (14 ambientes)', 14, 'u', 420, .5);
+    it(4, 'Cielorraso de placa con claraboya longitudinal sobre la sala de espera', Math.round(SN.b.A), 'm²', 17, .5);
+    SN.I.forEach(x => it(4, 'Sanitaria de consultorios · ' + x[0], x[1], x[2], x[3], .4));
+  }
   cat('8 · Exteriores');
   it(5, `Pavimento de hormigón: ${q.plz} plazas, maniobra y accesos`, Math.round(q.pav), 'm²', 37, .45);
   it(5, 'Vereda municipal frente a los 3 padrones', 120, 'm²', 30, .45);
@@ -299,8 +426,7 @@ function dImpl() {
     g += T_(X((b.x0 + b.x1) / 2), Y((b.y0 + b.y1) / 2) - 2, b.n, 'text-anchor="middle" font-weight="700" font-size="10"') + T_(X((b.x0 + b.x1) / 2), Y((b.y0 + b.y1) / 2) + 10, `${nf(b.A)} m² · ${b.tipo === 'dos' ? 'dos aguas' : 'un agua escondido'}`, 'text-anchor="middle" font-size="9"');
     const cx = (b.x0 + b.x1) / 2, cy = (b.y0 + b.y1) / 2, r = Math.hypot(b.L, b.W) / 2;
     g += `<circle cx="${X(cx).toFixed(1)}" cy="${Y(cy).toFixed(1)}" r="${(r * s).toFixed(1)}" fill="none" stroke="#2e7d32" stroke-dasharray="5 3" stroke-width="1"/>`;
-    if (b.tipo === 'dos') { const w = b.L / S.n; for (let i = 0; i < S.n; i++) { const xx = X(b.x0 + (i + .5) * w); g += `<circle cx="${xx.toFixed(1)}" cy="${Y(b.inY).toFixed(1)}" r="3.4" fill="#2c6fa3" stroke="#fff"/><circle cx="${xx.toFixed(1)}" cy="${Y(b.outY).toFixed(1)}" r="3.4" fill="#d9822b" stroke="#fff"/>`; } }
-    else { const w = b.W / NLB; for (let i = 0; i < NLB; i++) g += `<circle cx="${X(b.x1).toFixed(1)}" cy="${Y(b.y0 + (i + .5) * w).toFixed(1)}" r="3.4" fill="#2c6fa3" stroke="#fff"/>`; }
+    openings(b).filter(q => q.t === 'p').forEach(q => { const c = (q.a + q.z) / 2, px = q.f === 'e' ? b.x1 : b.x0 + c, py = q.f === 'in' ? b.inY : q.f === 'out' ? b.outY : b.y0 + c; g += `<circle cx="${X(px).toFixed(1)}" cy="${Y(py).toFixed(1)}" r="3.4" fill="${q.f === 'in' ? '#2c6fa3' : q.f === 'out' ? '#d9822b' : '#2e8b57'}" stroke="#fff"/>`; });
   });
   const gS = NV[1].y0 - NV[0].y1, gN = NV[2].y0 - NV[1].y1;
   [[NV[0].y1, NV[1].y0, gS], [NV[1].y1, NV[2].y0, gN]].forEach(([a, b, v]) => { g += L_(X(-31), Y(a), X(-31), Y(b), 'stroke="#b03a2e" stroke-width="1.2"') + T_(X(-31) + 4, Y((a + b) / 2) + 4, `${f2(v)} m entre naves`, 'fill="#b03a2e" font-size="10"'); });
@@ -316,13 +442,14 @@ function dImpl() {
   rows += chk(NV.every(b => Math.hypot(b.L, b.W) <= 42.5 && b.A <= 900), 'Bloque ≤ 900 m² e inscrito en Ø 42,5 m', NV.map(b => `${b.id}: Ø ${f1(Math.hypot(b.L, b.W))} m`).join(' · '));
   rows += chk(dmin >= 5, 'Separación entre bloques', `${f2(gS)} m y ${f2(gN)} m entre las naves de los extremos y la del fondo (mín. 5 m; 8 m de promedio)`) + chk(NV.every(b => b.alt <= 12), 'Altura', `máx. ${f2(Math.max(...NV.map(b => b.alt)))} m (límite 12 m)`);
   rows += chk(q.FP <= 3050 * .25, 'FOS total', `${nf(q.FP)} m² · ${f1(q.FP / 3050 * 100)} %`) + chk(q.jar >= 1830, 'Jardín ≥ 60 %', `${nf(q.jar)} m² · ${f1(q.jar / 30.5)} % (deck y gravilla cuentan como jardín: a confirmar)`) + chk(q.plz >= q.nl, 'Estacionamiento', `${q.plz} plazas para ${q.nl} locales`);
+  rows += chk(NV.every(b => chkAbert(b).length === 0), 'Aberturas fuera de las columnas', 'Ninguna puerta ni ventana cae sobre una columna de pórtico (las vidrieras corridas pasan entre columnas)') + chk(NV.every(b => Math.min(...b.lat) - DPO >= 2), 'Resguardo de cenefa en los retiros', `Vísera de ${f1(DPO)} m al retiro lateral y ${f1(DP)} m al jardín: el retiro libre queda en ${f1(Math.min(...NV.map(b => Math.min(...b.lat))) - DPO)} m como mínimo (a confirmar con la Intendencia)`);
   const sol = SOLES.map(([n, dd, c]) => `<tr><td>${n}</td><td class="n">${Math.round(solParque(dd, c) * 100)} %</td></tr>`).join('');
   return `<div class="cols" style="grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)"><div>${svg}</div><div>
-  <div class="ok"><b>Una nave por padrón, desfasadas.</b> La nave sur avanza hacia la avenida, la norte se retrae y la del fondo cruza perpendicular, al fondo del padrón central. Cada una respeta los retiros de su padrón y entre ellas queda un jardín-paseo abierto a la avenida. Los padrones no se fusionan.</div>
+  <div class="ok"><b>Una nave por padrón, todas contra el retiro de fondo.</b> Las naves sur y norte arrancan en la misma línea de fondo y la del medio cruza perpendicular, también contra el fondo. Cada una respeta los retiros de su padrón y entre ellas queda un jardín-paseo abierto a la avenida. Los padrones no se fusionan.</div>
   <h3>Verificación por padrón</h3><table><thead><tr><th>Criterio</th><th>Resultado</th><th></th></tr></thead><tbody>${rows}</tbody></table>
   <h3>Sol sobre el jardín central</h3><table><thead><tr><th>Momento</th><th class="n">Jardín al sol</th></tr></thead><tbody>${sol}</tbody></table>
   <p class="mut"><small>Sombra gris: invierno a las 12:40, con alturas medias. Círculos verdes: Ø 42,5 m. Puntos azules: acceso al jardín; naranjas: acceso por el retiro lateral. Flechas rojas: un acceso vehicular por padrón. El detalle del paisaje está en la pestaña Jardín y paseo.</small></p></div></div>
-  <div class="warn" style="margin-top:12px"><b>Por qué la nave del fondo va perpendicular.</b> Con 20 m de frente por padrón y retiros laterales de 3 m con suma mayor a 8 m, ninguna nave puede pasar de 11,9 m en el sentido transversal. La del fondo queda entonces con 11,5 m sobre el jardín y 14 m de fondo, a 4 m del límite, y cierra la U al fondo sin cruzar al padrón vecino. Los dos brazos quedan separados por 31 m: cerrarlos sobre la avenida pediría fusionar padrones o una excepción de la Junta (art. 21).</div>
+  <div class="warn" style="margin-top:12px"><b>Por qué la nave del fondo va perpendicular.</b> Con 20 m de frente por padrón y retiros laterales de 3 m con suma mayor a 8 m, ninguna nave puede pasar de 11,9 m en el sentido transversal. La del fondo queda con 11,5 m sobre el jardín y ${f1(NV[1].L)} m de fondo (se puede alargar en profundidad, no en ancho), contra el retiro de fondo, y cierra la U sin cruzar al padrón vecino. Los dos brazos quedan separados por 31 m: cerrarlos sobre la avenida pediría fusionar padrones o una excepción de la Junta (art. 21).</div>
   <p class="mut"><small>Hipótesis: norte arriba y avenida al este según el visor SNIG; orden de padrones 10598 al sur, 10597 al centro y 10596 al norte; frente de 20 m por padrón y fondo de 47,3 m. Faltan la mensura y la consulta previa.</small></p>`;
 }
 function h(pts) { // envolvente convexa
@@ -334,42 +461,72 @@ function h(pts) { // envolvente convexa
 }
 /* ================= PLANTAS ================= */
 const dimL = (x1, y1, x2, y2, t, v) => L_(x1, y1, x2, y2, 'stroke="#555"') + (v ? `<text transform="translate(${x1 - 6},${(y1 + y2) / 2}) rotate(-90)" text-anchor="middle" font-family="system-ui" font-size="11">${t}</text>` : T_((x1 + x2) / 2, y1 - 5, t, 'text-anchor="middle"'));
+const dr = (g, f, b, X, Y, q, col) => { // dibuja una abertura en planta
+  const c = f === 'in' ? b.inY : b.outY;
+  if (f === 'e') return L_(X(b.x1), Y(b.y0 + q.a), X(b.x1), Y(b.y0 + q.z), q.t === 'p' ? 'stroke="#fff" stroke-width="7"' : `stroke="${col}" stroke-width="5"`) + (q.t === 'p' ? L_(X(b.x1), Y(b.y0 + q.a), X(b.x1), Y(b.y0 + q.z), `stroke="${col}" stroke-width="2" stroke-dasharray="3 2"`) : '');
+  return q.t === 'p' ? L_(X(b.x0 + q.a), Y(c), X(b.x0 + q.z), Y(c), 'stroke="#fff" stroke-width="7"') + L_(X(b.x0 + q.a), Y(c), X(b.x0 + q.z), Y(c), `stroke="${col}" stroke-width="2" stroke-dasharray="3 2"`) : L_(X(b.x0 + q.a), Y(c), X(b.x0 + q.z), Y(c), `stroke="${col}" stroke-width="${q.t === 'g' ? 5 : 4}"`);
+};
 function planNave(b) {
-  const s = 26, m = 46, X = x => m + (x - b.x0) * s, Y = y => m + (b.y1 - y) * s, n = S.n, w = b.L / n; let g = '';
+  const s = 26, m = 46, X = x => m + (x - b.x0) * s, Y = y => m + (b.y1 - y) * s, n = S.n, w = b.L / n, ym = (b.y0 + b.y1) / 2; let g = '';
   g += R_(X(b.x0), Y(b.y1), b.L * s, b.W * s, 'fill="#f4f1ea" stroke="#222" stroke-width="5"');
   for (let i = 1; i < n; i++) g += L_(X(b.x0 + i * w), Y(b.y0), X(b.x0 + i * w), Y(b.y1), 'stroke="#222" stroke-width="3"');
-  for (let k = 0; k < b.nfr; k++) [b.y0, b.y1].forEach(y => g += R_(X(b.x0 + k * b.sep) - 4, Y(y) - 4, 8, 8, 'fill="#c8621b"'));
-  const ym = (b.y0 + b.y1) / 2;
+  b.fx.forEach(x => [b.y0, b.y1].forEach(y => g += R_(X(x) - 4, Y(y) - 4, 8, 8, 'fill="#c8621b"')));
+  const stY = b.dIn > 0 ? [ym - 1.5 - 3.65, ym - 1.5] : [ym + 1.5, ym + 1.5 + 3.65];
   for (let i = 0; i < n; i++) {
-    const xl = b.x0 + i * w, xc = xl + w / 2, a0 = Math.max(xl + .5, b.x0 + 1), a1 = Math.min(xl + w - .5, b.x1 - 1);
+    const xl = b.x0 + i * w, xc = xl + w / 2;
     g += R_(X(xl + (i === 0 ? .15 : 0)), Y(ym + 1.5), 2.4 * s, 3 * s, 'fill="#dfe9ef" stroke="#2c6fa3" stroke-width="1.5"') + T_(X(xl) + 7, Y(ym) + 4, 'baño', 'font-size="10" fill="#2c6fa3"');
-    g += L_(X(a0), Y(b.inY), X(a1), Y(b.inY), 'stroke="#2c6fa3" stroke-width="5"') + L_(X(xc - .9), Y(b.inY), X(xc + .9), Y(b.inY), 'stroke="#fff" stroke-width="7"') + L_(X(xc - .9), Y(b.inY), X(xc + .9), Y(b.inY), 'stroke="#222" stroke-width="2" stroke-dasharray="3 2"');
-    g += L_(X(xc + 1.6), Y(b.outY), X(xc + 3.1), Y(b.outY), 'stroke="#2c6fa3" stroke-width="4"') + L_(X(xc - .9), Y(b.outY), X(xc + .9), Y(b.outY), 'stroke="#fff" stroke-width="7"') + L_(X(xc - .9), Y(b.outY), X(xc + .9), Y(b.outY), 'stroke="#d9822b" stroke-width="2" stroke-dasharray="3 2"');
-    g += T_(X(xc + 1.2), Y(ym) + 4, `Local ${i + 1}`, 'text-anchor="middle" font-weight="700"') + T_(X(xc + 1.2), Y(ym) + 18, `${f1(w * b.W)} m²`, 'text-anchor="middle" font-size="10"');
+    g += R_(X(xl + (i === 0 ? .15 : 0)), Y(stY[1]), 2.2 * s, 3.65 * s, 'fill="none" stroke="#999" stroke-dasharray="4 3"') + T_(X(xl) + 5, Y(stY[1]) + 14, 'escalera PA', 'font-size="9" fill="#888"');
+    g += T_(X(xc + 1.4), Y(ym) + 4, `Local ${i + 1}`, 'text-anchor="middle" font-weight="700"') + T_(X(xc + 1.4), Y(ym) + 18, `${f1(w * b.W)} m²`, 'text-anchor="middle" font-size="10"');
   }
-  g += L_(X(b.x1), Y(b.y1 - 1.7), X(b.x1), Y(b.y0 + 1.7), 'stroke="#2c6fa3" stroke-width="5"');
+  openings(b).forEach(q => g += dr(g, q.f, b, X, Y, q, q.f === 'out' ? '#d9822b' : q.f === 'e' ? '#2e8b57' : '#2c6fa3'));
   g += L_(X(b.x0), Y(ym), X(b.x1), Y(ym), 'stroke="#888" stroke-dasharray="8 5"') + T_(X(b.x1) - 8, Y(ym) - 5, 'cumbrera', 'text-anchor="end" font-size="9" fill="#666"');
-  g += dimL(X(b.x0), m - 22, X(b.x1), m - 22, `${f2(b.L)} m · ${b.nfr} pórticos cada ${f2(b.sep)} m`, 0) + dimL(m - 22, Y(b.y1), m - 22, Y(b.y0), `${f2(b.W)} m`, 1);
-  const top = b.dIn > 0 ? 'Norte: jardín (vidriera corrida y puerta)' : 'Sur: jardín (vidriera corrida y puerta)', bot = b.dIn > 0 ? 'Sur: retiro lateral (puerta y ventana)' : 'Norte: retiro lateral (puerta y ventana)';
+  g += dimL(X(b.x0), m - 22, X(b.x1), m - 22, `${f2(b.L)} m · ${b.nfr} pórticos · vanos de ${f2(b.vmin)}${b.vmax - b.vmin > .05 ? ' a ' + f2(b.vmax) : ''} m`, 0) + dimL(m - 22, Y(b.y1), m - 22, Y(b.y0), `${f2(b.W)} m`, 1);
+  const top = 'jardín: vidriera corrida con vísera, y puerta', bot = 'retiro lateral: puerta y ventana';
   g += T_(X(b.x0), Y(b.y1) - 8, b.dIn > 0 ? top : bot, 'fill="#666" font-size="10"') + T_(X(b.x0), Y(b.y0) + 24, b.dIn > 0 ? bot : top, 'fill="#666" font-size="10"') + T_(X(b.x1) - 80, Y(b.y0) + 24, 'avenida →', 'fill="#666" font-size="10"');
-  return `<h3>${b.n} · padrón ${b.pad} · ${nf(b.A)} m²</h3>` + SV(b.L * s + m * 2, b.W * s + m * 2 + 14, g);
+  return `<h3>${b.n} · padrón ${b.pad} · ${nf(b.A)} m² · ${n} locales de ${f1(w * b.W)} m²</h3>` + SV(b.L * s + m * 2, b.W * s + m * 2 + 14, g);
 }
 function planB(b) {
   const s = 30, m = 46, X = x => m + (x - b.x0) * s, Y = y => m + (b.y1 - y) * s, w = b.W / NLB, ym = (b.y0 + b.y1) / 2; let g = '';
   g += R_(X(b.x0), Y(b.y1), b.L * s, b.W * s, 'fill="#f4f1ea" stroke="#222" stroke-width="5"') + L_(X(b.x0), Y(ym), X(b.x1), Y(ym), 'stroke="#222" stroke-width="3"');
-  for (let k = 0; k < b.nfr; k++) [b.y0, b.y1].forEach(y => g += R_(X(b.x0 + k * b.sep) - 4, Y(y) - 4, 8, 8, 'fill="#c8621b"'));
+  b.fx.forEach(x => [b.y0, b.y1].forEach(y => g += R_(X(x) - 4, Y(y) - 4, 8, 8, 'fill="#c8621b"')));
   for (let i = 0; i < NLB; i++) {
-    const yl = b.y0 + i * w, yc = yl + w / 2, bY = i === 0 ? ym - 2.4 : ym;
+    const yl = b.y0 + i * w, yc = yl + w / 2, bY = i === 0 ? ym - 2.4 : ym, stY = i === 0 ? yl + .15 : yl + w - .15 - 1.1;
     g += R_(X(b.x0 + .15), Y(bY + 2.4), 3 * s, 2.4 * s, 'fill="#dfe9ef" stroke="#2c6fa3" stroke-width="1.5"') + T_(X(b.x0 + .15) + 8, Y(bY + 1.2) + 4, 'baño', 'font-size="10" fill="#2c6fa3"');
-    g += L_(X(b.x1), Y(yl + .4), X(b.x1), Y(yl + w - .4), 'stroke="#2c6fa3" stroke-width="5"') + L_(X(b.x1), Y(yc - .9), X(b.x1), Y(yc + .9), 'stroke="#fff" stroke-width="7"') + L_(X(b.x1), Y(yc - .9), X(b.x1), Y(yc + .9), 'stroke="#222" stroke-width="2" stroke-dasharray="3 2"');
-    g += T_(X(b.x0 + 8.5), Y(yc) - 2, `Local ${i + 1}`, 'text-anchor="middle" font-weight="700"') + T_(X(b.x0 + 8.5), Y(yc) + 13, `${f1(w * b.L)} m²`, 'text-anchor="middle" font-size="10"');
+    g += R_(X(b.x0 + 3.2), Y(stY + 1.1), 3.6 * s, 1.1 * s, 'fill="none" stroke="#999" stroke-dasharray="4 3"') + T_(X(b.x0 + 3.3), Y(stY + .5) + 4, 'escalera PA', 'font-size="9" fill="#888"');
+    g += T_(X(b.x0 + b.L * .62), Y(yc) - 2, `Local ${i + 1}`, 'text-anchor="middle" font-weight="700"') + T_(X(b.x0 + b.L * .62), Y(yc) + 13, `${f1(w * b.L)} m²`, 'text-anchor="middle" font-size="10"');
   }
+  openings(b).forEach(q => g += dr(g, q.f, b, X, Y, q, '#2c6fa3'));
   g += `<polygon points="${X(b.x0) + 14},${Y(b.y1) + 22} ${X(b.x1) - 14},${Y(b.y1) + 22} ${X(b.x1) - 30},${Y(b.y1) + 16} ${X(b.x1) - 30},${Y(b.y1) + 28}" fill="#888"/>` + T_(X(b.x0) + 18, Y(b.y1) + 16, 'agua hacia el jardín (5 %)', 'font-size="9" fill="#666"');
-  g += dimL(X(b.x0), m - 22, X(b.x1), m - 22, `${f2(b.L)} m · ${b.nfr} pórticos cada ${f2(b.sep)} m`, 0) + dimL(m - 22, Y(b.y1), m - 22, Y(b.y0), `${f2(b.W)} m`, 1);
-  g += T_(X(b.x0), Y(b.y0) + 24, 'fondo del lote (retiro de 4 m)', 'fill="#666" font-size="10"') + T_(X(b.x1) - 100, Y(b.y0) + 24, 'jardín y avenida →', 'fill="#666" font-size="10"');
-  return `<h3>${b.n} · padrón ${b.pad} · ${nf(b.A)} m² · perpendicular a las otras</h3>` + SV(b.L * s + m * 2, b.W * s + m * 2 + 14, g);
+  g += dimL(X(b.x0), m - 22, X(b.x1), m - 22, `${f2(b.L)} m · ${b.nfr} pórticos cada ${f2(b.vmax)} m`, 0) + dimL(m - 22, Y(b.y1), m - 22, Y(b.y0), `${f2(b.W)} m`, 1);
+  g += T_(X(b.x0), Y(b.y0) + 24, 'contra el retiro de fondo', 'fill="#666" font-size="10"') + T_(X(b.x1) - 100, Y(b.y0) + 24, 'jardín y avenida →', 'fill="#666" font-size="10"');
+  return `<h3>${b.n} · padrón ${b.pad} · ${nf(b.A)} m² · perpendicular a las otras · ${NLB} locales de ${f1(w * b.L)} m²</h3>` + SV(b.L * s + m * 2, b.W * s + m * 2 + 14, g);
 }
-function dPlanta() { return `<p class="mut">Norte arriba, avenida a la derecha. Los locales de las naves sur y norte cruzan toda la nave: vidriera corrida y puerta al jardín por un lado, puerta y ventana al retiro lateral por el otro. Los del fondo abren solo hacia el jardín. Los puntos naranja son las columnas. Cambiá la cantidad de locales por nave lateral arriba.</p>` + planNave(NV[0]) + planB(NV[1]) + planNave(NV[2]) + `<p class="mut"><small>El primer local de cada nave lateral también tiene vitrina sobre el hastial (línea azul gruesa a la derecha). Los baños son de 2,4 × 3,0 m con giro de silla de ruedas (Ley 18.651) y, en la nave del fondo, comparten pared húmeda sobre el tabique medianero. Las plantas altas no se construyen ahora: quedan previstas como extra por local.</small></p>`; }
+const RCOL = { c: '#e8f0f6', r: '#f3e9d9', b: '#dfe9ef', u: '#eee8f4', e: '#f7f4ec', h: '#f1f1ea', s: '#dfe9ef', a: '#eceae4', x: '#e6e6e6' };
+function planCons(b) {
+  const s = 30, m = 50, R = consRooms(b), L = b.L, W = b.W, P = (u, v) => toXY(b, u, v), X = x => m + (x - b.x0) * s, Y = y => m + (b.y1 - y) * s; let g = '';
+  const rect = r => { const a = P(r.u0, r.v0), c = P(r.u1, r.v1); return [Math.min(X(a.x), X(c.x)), Math.min(Y(a.y), Y(c.y)), Math.abs(X(c.x) - X(a.x)), Math.abs(Y(c.y) - Y(a.y))]; };
+  g += R_(X(b.x0), Y(b.y1), L * s, W * s, 'fill="#f4f1ea" stroke="#222" stroke-width="6"');
+  R.forEach(r => { const [x, y, w, h] = rect(r); g += R_(x, y, w, h, `fill="${RCOL[r.t]}" stroke="#222" stroke-width="2.2"`); });
+  R.filter(r => r.t === 'c').forEach(r => { const a = P(r.u0 + .35, r.v0 + (r.v0 === 0 ? .4 : 3.3)), c = P(r.u0 + 1.75, r.v0 + (r.v0 === 0 ? 1.1 : 3.8)), ca = P(r.u1 - 2.3, r.v0 + (r.v0 === 0 ? 2.6 : 1.1)), cb = P(r.u1 - .4, r.v0 + (r.v0 === 0 ? 3.5 : 1.8)); g += R_(Math.min(X(a.x), X(c.x)), Math.min(Y(a.y), Y(c.y)), 1.4 * s, .7 * s, 'fill="#fff" stroke="#999"') + R_(Math.min(X(ca.x), X(cb.x)), Math.min(Y(ca.y), Y(cb.y)), 1.9 * s, .65 * s, 'fill="#fff" stroke="#999"'); });
+  const esp = R.find(r => r.k === 'ESP'), sk = rect({ u0: esp.u0 + .3, u1: esp.u1 - .3, v0: 5.45, v1: 6.05 }); g += R_(sk[0], sk[1], sk[2], sk[3], 'fill="rgba(156,195,210,.45)" stroke="#2c6fa3" stroke-dasharray="5 3"') + T_(sk[0] + sk[2] / 2, sk[1] + 3, 'claraboya longitudinal', 'text-anchor="middle" font-size="9" fill="#2c6fa3"');
+  R.forEach(r => { const [x, y, w, h] = rect(r); let lab = r.t === 'c' ? r.n.replace('Consultorio ', 'Cons. ') : r.n; if (w < 90) lab = { ARCH: 'Archivo', ESC: 'Esc. PA', BA: 'Baño acc.', SH1: 'SSHH 1', SH2: 'SSHH 2' }[r.k] || lab; if (r.k !== 'ESP' || true) g += T_(x + w / 2, y + h / 2 - (r.t === 'c' ? 6 : 0) + (r.t === 'c' ? 0 : 0), lab, 'text-anchor="middle" font-size="9.5" font-weight="700" fill="#222"') + T_(x + w / 2, y + h / 2 + (r.t === 'c' ? 6 : 12), `${f1(r.A)} m²`, 'text-anchor="middle" font-size="9" fill="#555"'); });
+  const door = (u, v, hor, col = '#fff') => { const a = hor ? P(u - .45, v) : P(u, v - .45), c = hor ? P(u + .45, v) : P(u, v + .45); return L_(X(a.x), Y(a.y), X(c.x), Y(c.y), `stroke="${col}" stroke-width="7"`); };
+  R.filter(r => r.t === 'c' || r.t === 's' || r.k === 'ARCH' || r.k === 'BA').forEach(r => { const vv = r.k === 'BA' ? 4.2 : r.v0 === 0 ? 4.2 : 7.3, uu = r.k === 'BA' ? r.u0 + .8 : r.u0 + .9; g += door(uu, vv, true); });
+  g += door(4.1, 5.75, false) + door(15.8, 2.1, false) + door(15.8, 5.75, false);
+  openings(b).forEach(q => g += dr(g, q.f, b, X, Y, q, q.f === 'out' ? '#d9822b' : q.f === 'e' ? '#2e8b57' : '#2c6fa3'));
+  b.fx.forEach(x => [b.y0, b.y1].forEach(y => g += R_(X(x) - 4, Y(y) - 4, 8, 8, 'fill="#c8621b"')));
+  g += dimL(X(b.x0), m - 26, X(b.x1), m - 26, `${f2(L)} × ${f2(W)} m · ${nf(b.A)} m² · pórticos en los ejes de los consultorios`, 0);
+  g += T_(X(b.x0), Y(b.y1) - 8, b.dIn > 0 ? 'retiro lateral (puertas de servicio y ventanas)' : 'jardín (entrada por recepción y ventanas)', 'fill="#666" font-size="10"') + T_(X(b.x0), Y(b.y0) + 24, b.dIn > 0 ? 'jardín (entrada por recepción y ventanas)' : 'retiro lateral (puertas de servicio y ventanas)', 'fill="#666" font-size="10"') + T_(X(b.x1) - 120, Y(b.y0) + 24, 'avenida: entrada principal →', 'fill="#2e8b57" font-size="10"');
+  const svg = SV(L * s + m * 2, W * s + m * 2 + 14, g);
+  const C = R.filter(r => r.t === 'c'), aC = sum(C, r => r.A);
+  const arq = [['Consultorios', '7 · 10,8 a 13,7 m² (total 79,8)', `7 · ${f1(Math.min(...C.map(r => r.A)))} a ${f1(Math.max(...C.map(r => r.A)))} m² (total ${f1(aC)})`], ['Sala de espera', 'Central, sin luz natural', `${f1(R.find(r => r.k === 'ESP').A)} m² con claraboya y vista al hall`], ['Recepción', 'Al fondo, junto a la escalera', `${f1(R.find(r => r.k === 'REC').A)} m² sobre el jardín, con puerta propia`], ['Sala de reuniones', 'Dentro de la espera', `${f1(R.find(r => r.k === 'REU').A)} m², cerrada y acústica`], ['Archivo', '4,98 m²', `${f1(R.find(r => r.k === 'ARCH').A)} m² como archivo y depósito, con puerta de servicio al retiro`], ['SSHH', '2 de 9,20 m²', `2 de ${f1(R.find(r => r.k === 'SH1').A)} m² con box accesible, en el eje húmedo norte`], ['Baño accesible', '2 chicos', `1 de ${f1(R.find(r => r.k === 'BA').A)} m² junto a la recepción`], ['Escalera a PA', '17 peldaños 27×18', 'En el extremo del hall, a la vista desde la entrada']];
+  return `<h3>${b.n} · padrón ${b.pad} · consultorios · ${nf(b.A)} m²</h3>${svg}<h3>Programa de la arquitecta y cómo queda acá</h3><table><thead><tr><th>Ambiente</th><th>Plano de la arquitecta</th><th>Esta propuesta</th></tr></thead><tbody>${arq.map(x => `<tr><td><b>${x[0]}</b></td><td>${x[1]}</td><td>${x[2]}</td></tr>`).join('')}</tbody></table>
+  <div class="ok" style="margin-top:12px"><b>Qué se mejora:</b> los siete consultorios tienen ventana (cuatro al jardín y tres al retiro lateral) y son más amplios; la sala de espera se ilumina por una claraboya sobre la cumbrera; hay dos entradas (avenida y jardín) y una de servicio; los baños quedan juntos para compartir un solo colector, y la escalera a la planta alta nace en el hall.</div>`;
+}
+function dPlanta() {
+  const b = NV.find(x => x.id === S.cons);
+  return `<p class="mut">Norte arriba, avenida a la derecha. Todas las naves arrancan contra el retiro de fondo. Cada local cruza la nave: vidriera corrida con vísera y puerta al jardín por un lado, puerta y ventana al retiro lateral por el otro, con el baño y la previsión de escalera sobre el tabique medianero. Los puntos naranja son las columnas: ninguna puerta ni ventana cae sobre una. En azul, los accesos al jardín; en naranja, al retiro lateral; en verde, hacia la avenida.</p>` + NV.map(x => x.tipo === 'esc' ? planB(x) : x.id === S.cons ? planCons(x) : planNave(x)).join('') + `<p class="mut"><small>Los baños son de 2,4 × 3,0 m con giro de silla de ruedas (Ley 18.651). La escalera a la planta alta (17 peldaños de 27 × 18, en dos tramos con descanso) no se construye ahora: queda prevista como extra por local.</small></p>`;
+}
 /* ================= JARDÍN Y PASEO ================= */
 function dPais() {
   const s = 14, ox = 10, oy = 10, X = x => ox + (x + LOT.D) * s, Y = y => oy + (LOT.F - y) * s, q = Qty(); let g = '';
@@ -389,6 +546,34 @@ function dPais() {
   <h3>Qué se construye</h3><table><thead><tr><th>Elemento</th><th class="n">Cantidad</th></tr></thead><tbody>${F.map(x => `<tr><td>${x[0]}</td><td class="n">${nf(x[1])} ${x[2]}</td></tr>`).join('')}<tr class="tot"><td>Precio del paisaje con margen (${S.iva ? 'con' : 'sin'} IVA)</td><td class="n">${u$(sub)}</td></tr></tbody></table>
   <h3>Cómo se recorre</h3><ul><li><b>Eje de entrada:</b> paseo de 3 m desde el carril de la avenida hasta la plaza, alineado con el centro de la nave del fondo.</li><li><b>Plaza de estar:</b> deck de 9 × 11,5 m con dos bancos corridos y canteros a los costados; es el patio común de los locales del fondo.</li><li><b>Galerías:</b> deck de 2,5 m frente a cada nave lateral, para mesas y filas de sillas de los locales gastronómicos.</li><li><b>Retiros laterales:</b> caminos de servicio de gravilla de 1,8 m, con la puerta y la ventana de cada local, para carga y descarga.</li><li><b>Plantación:</b> árboles nativos de hoja caduca al norte de las galerías (dan sombra en verano y dejan pasar el sol de invierno) y gramíneas en los canteros.</li></ul>
   <div class="warn"><b>A definir con un paisajista:</b> especies, riego y drenaje del jardín (el pluvial de los techos puede infiltrarse en los canteros). Los decks y la gravilla se cuentan como jardín en el 60 % exigido; hay que confirmarlo en la consulta previa.</div></div></div>`;
+}
+
+/* ================= SANITARIA DE CONSULTORIOS ================= */
+function dSani() {
+  const N = sani(); if (!N) return '<p class="mut">Con la opción «Ninguna» no hay nave de consultorios: los baños son los de cada local (un baño de 2,4 × 3,0 m por local, ver Plantas).</p>';
+  const b = N.b, s = 34, m = 52, L = b.L, W = b.W, P = (u, v) => toXY(b, u, v), X = x => m + (x - b.x0) * s, Y = y => m + (b.y1 - y) * s; let g = '';
+  g += R_(X(b.x0), Y(b.y1), L * s, W * s, 'fill="#f7f5ef" stroke="#222" stroke-width="6"');
+  N.R.forEach(r => { const a = P(r.u0, r.v0), c = P(r.u1, r.v1); g += R_(Math.min(X(a.x), X(c.x)), Math.min(Y(a.y), Y(c.y)), Math.abs(X(c.x) - X(a.x)), Math.abs(Y(c.y) - Y(a.y)), `fill="${RCOL[r.t]}" stroke="#555" stroke-width="1.6"`) + T_((X(a.x) + X(c.x)) / 2, (Y(a.y) + Y(c.y)) / 2 + 3, r.k, 'text-anchor="middle" font-size="9" fill="#999"'); });
+  const COLT = { AF: '#2c6fa3', AC: '#c0392b', CL: '#6b4f2a' };
+  N.T.forEach(p => { const pts = p.pts.map(([u, v]) => { const q = P(u, v); return X(q.x).toFixed(1) + ',' + Y(q.y).toFixed(1); }).join(' '); g += `<polyline points="${pts}" fill="none" stroke="${COLT[p.t]}" stroke-width="${p.t === 'CL' ? (p.d >= 110 ? 3.2 : 2) : 1.8}" ${p.t === 'CL' ? 'stroke-dasharray="7 3"' : ''} />`; });
+  const mark = (arr, fn) => arr.forEach(f => { const q = P(f.u, f.v); g += fn(X(q.x), Y(q.y)); });
+  mark(N.lav, (x, y) => `<circle cx="${x}" cy="${y}" r="6" fill="#fff" stroke="#2c6fa3" stroke-width="2"/>`); mark(N.wc, (x, y) => R_(x - 6, y - 8, 12, 16, 'fill="#fff" stroke="#6b4f2a" stroke-width="2" rx="5"')); mark(N.lvt, (x, y) => `<circle cx="${x}" cy="${y}" r="5" fill="#dfe9ef" stroke="#2c6fa3"/>`);
+  [N.pil].forEach(f => mark([f], (x, y) => R_(x - 8, y - 6, 16, 12, 'fill="#fff" stroke="#2c6fa3" stroke-width="2"')));
+  mark([N.tt], (x, y) => `<circle cx="${x}" cy="${y}" r="9" fill="#f6d7d2" stroke="#c0392b" stroke-width="2"/>` + T_(x, y + 3, 'TT', 'text-anchor="middle" font-size="8"')); mark([N.tk], (x, y) => R_(x - 10, y - 10, 20, 20, 'fill="#cfe3f2" stroke="#2c6fa3" stroke-width="2"') + T_(x, y + 3, '1000 L', 'text-anchor="middle" font-size="7"'));
+  N.ci.forEach(([u, v, t]) => { const q = P(u, v); g += R_(X(q.x) - 7, Y(q.y) - 7, 14, 14, 'fill="#fff" stroke="#111" stroke-width="2"') + T_(X(q.x), Y(q.y) - 11, 'CI ' + t, 'text-anchor="middle" font-size="9"'); });
+  N.vent.forEach(([u, v]) => { const q = P(u, v); g += `<circle cx="${X(q.x)}" cy="${Y(q.y)}" r="4" fill="#2e8b57"/>`; });
+  g += T_(X(b.x0), m - 28, 'Aguas: fría (azul), caliente (rojo), cloacal (marrón, trazos), ventilación (verde). Salida cloacal hacia la avenida →', 'font-size="11" fill="#444"');
+  const svg = SV(L * s + m * 2 + 30, W * s + m * 2, g);
+  const leg = [['AF', 'Agua fría'], ['AC', 'Agua caliente'], ['CL', 'Cloacal']].map(([k, n]) => `<span style="color:${COLT[k]}"><b>━</b> ${n}</span>`).join(' &nbsp; ');
+  const rows = N.I.map(x => `<tr><td>${x[0]}</td><td class="n">${nf(x[1])}</td><td>${x[2]}</td><td class="n">${nf(x[3])}</td><td class="n">${nf(x[1] * x[3])}</td></tr>`).join('');
+  const RP = redPredio();
+  const red = RP.map(r => `<tr><td>${r.b.n} (padrón ${r.b.pad})</td><td class="n">${f1(r.len)} m</td><td class="n">${r.ci}</td></tr>`).join('');
+  return `<p class="mut">Se desarrolla la sanitaria de la nave de consultorios sobre la distribución de la arquitecta: un núcleo húmedo único junto al retiro lateral, con dos SSHH, baño accesible, depósito con pileta, termotanque y tanque. ${leg}</p>${svg}
+  <div class="warn"><b>A verificar por el sanitario:</b> diámetros, pendientes y ubicación de cámaras son de anteproyecto. Si en la calle no hay red cloacal de OSE, la salida pasa a cámara séptica y pozo (no está en el precio).</div>
+  <div class="cols"><div><h3>Criterios de diseño</h3><ul><li>Agua fría y caliente en PP-R termofusión; troncal ø25 y ramales ø20.</li><li>Desagües en PVC ø110 (inodoros y colectores), ø50 y ø40, con 1,5 % de pendiente hacia la salida.</li><li>Tanque de reserva de 1.000 L sobre el depósito y termotanque de 150 L.</li><li>Una cámara de inspección interior y otra exterior; cuatro columnas de ventilación al techo.</li><li>El pluvial va separado, al colector de la avenida.</li></ul></div>
+  <div><h3>Salidas cloacales por padrón</h3><table><thead><tr><th>Nave</th><th class="n">Colector a la línea</th><th class="n">Cámaras</th></tr></thead><tbody>${red}</tbody></table></div></div>
+  <h3>Cómputo de la sanitaria interior</h3><table><thead><tr><th>Rubro</th><th class="n">Cantidad</th><th>Unid.</th><th class="n">USD unit.</th><th class="n">USD</th></tr></thead><tbody>${rows}<tr class="tot"><td colspan="4">Total costo directo</td><td class="n">${nf(N.total)}</td></tr></tbody></table>
+  <p class="mut"><small>Este total entra en el rubrado (7 bis · Consultorios) y se multiplica por los gastos y la utilidad del presupuesto.</small></p>`;
 }
 /* ================= FACHADAS Y CORTES ================= */
 const sty = () => ({ cro: S.est === 'cro', ch: S.est === 'nor' ? COL.nor : COL.chapa, sh: S.est === 'cro' ? 0 : S.est === 'nor' ? .6 : S.est === 'pat' ? 1.0 : 1.2, mach: S.est === 'pat' });
@@ -431,28 +616,25 @@ function elGable() {
   if (S.est === 'cro') g += T_(X0 + b.W * s + 14, base - 1.5 * s, 'marco oscuro de 55 cm', 'font-size="10" fill="#555"') + T_(X0 + b.W * s + 14, base - 3.0 * s, 'vidriera con travesaño', 'font-size="10" fill="#555"');
   return SV(X0 * 2 + b.W * s + 80, base + 34, g);
 }
-function elLado(b, titulo) { // cara larga hacia el jardín de una nave lateral
-  const st = sty(), s = 26, X0 = 40, base = 250, X = x => X0 + x * s, Y = h => base - h * s, n = S.n, w = b.L / n; let g = '';
-  if (st.cro) {
-    g += R_(X(0), Y(b.e), b.L * s, b.e * s, `fill="${COL.cen}" stroke="#111"`) + R_(X(0), Y(b.r), b.L * s, (b.r - b.e) * s, `fill="${COL.cenD}" stroke="#111"`);
-    g += R_(X(1), Y(3.0), (b.L - 2) * s, 3.0 * s, `fill="${COL.vid}" stroke="#222" opacity=".92"`) + R_(X(.8), Y(3.0) - .35 * s, (b.L - 1.6) * s, .35 * s, `fill="${COL.marco}"`);
-    for (let i = 0; i < n; i++) { const xc = (i + .5) * w; g += R_(X(xc - .9), Y(2.4), 1.8 * s, 2.4 * s, 'fill="#4b7f95" stroke="#111"') + L_(X(xc), Y(2.4), X(xc), Y(0), 'stroke="#111"'); if (i) g += L_(X(i * w), Y(0), X(i * w), Y(3.0), 'stroke="#111" stroke-width="2"'); g += T_(X(xc), Y(3.0) - 14, `Local ${i + 1}`, 'text-anchor="middle" font-size="10" fill="#fff"'); }
-    g += T_(X(b.L / 2), Y((b.e + b.r) / 2) + 4, 'la cubierta baja como pared: misma piel nervada, sin alero', 'text-anchor="middle" font-size="10" fill="#ddd"');
-  } else {
-    g += R_(X(0), Y(b.e), b.L * s, b.e * s, `fill="${st.ch}" stroke="#111"`) + R_(X(0), Y(b.r), b.L * s, (b.r - b.e) * s, `fill="${COL.techo}" stroke="#111"`) + R_(X(-.1), Y(b.e), (b.L + .2) * s, .45 * s, `fill="${COL.mad}"`);
-    for (let i = 0; i < n; i++) { const x0 = i * w; g += R_(X(x0 + .6), Y(st.sh + 2.9), (w - 1.2) * s, 2.9 * s, `fill="${COL.vid}" stroke="#222" opacity=".85"`) + R_(X(x0 + w / 2 - .9), Y(st.sh + 2.4), 1.8 * s, 2.4 * s, 'fill="#4b7f95" stroke="#111"') + L_(X(x0 + w / 2), Y(st.sh + 2.4), X(x0 + w / 2), Y(st.sh), 'stroke="#111"'); g += T_(X(x0 + w / 2), Y(st.sh + 2.9) - 8, `Local ${i + 1}`, 'text-anchor="middle" font-size="10" fill="#fff"'); }
-    g += R_(X(0), Y(st.sh), b.L * s, st.sh * s, `fill="${COL.pie}"`);
+function elCara(b, face, titulo) { // cara larga de una nave: aberturas reales y resguardo de cenefa
+  const st = sty(), s = 26, X0 = 40, base = 250, X = x => X0 + x * s, Y = h => base - h * s; let g = '';
+  const wall = st.cro ? COL.cen : st.ch, roof = st.cro ? COL.cenD : COL.techo;
+  g += R_(X(0), Y(b.e), b.L * s, b.e * s, `fill="${wall}" stroke="#111"`) + R_(X(0), Y(b.r), b.L * s, (b.r - b.e) * s, `fill="${roof}" stroke="#111"`);
+  if (!st.cro) g += R_(X(0), Y(st.sh), b.L * s, st.sh * s, `fill="${COL.pie}"`);
+  const O = openings(b).filter(q => q.f === face);
+  O.forEach(q => { const col = q.t === 'g' ? COL.vid : q.t === 'p' ? '#4b7f95' : COL.vid; g += R_(X(q.a), Y(q.h1), (q.z - q.a) * s, (q.h1 - q.h0) * s, `fill="${col}" stroke="#222" opacity=".92"`); if (q.t === 'p') g += L_(X((q.a + q.z) / 2), Y(q.h1), X((q.a + q.z) / 2), Y(q.h0), 'stroke="#111"'); if (q.t === 'g') g += L_(X(q.a), Y(2.5), X(q.z), Y(2.5), 'stroke="#222" stroke-width="1.2"'); });
+  if (st.cro) { // vísera y aletas del resguardo
+    const ext = face === 'in' ? DP : DPO;
+    g += R_(X(0), Y(3.35), b.L * s, .22 * s, `fill="${COL.marco}"`);
+    b.fx.forEach(x => g += R_(X(x) - 2.5, Y(3.35), 5, 3.35 * s, `fill="${COL.marco}" opacity=".85"`));
+    g += T_(X(b.L), Y(3.35) - 6, `vísera y aletas · saliente ${f1(ext)} m`, 'text-anchor="end" font-size="10" fill="#ddd"');
   }
+  if (b.cons) O.filter(q => q.t === 'w').forEach((q, i) => g += T_(X((q.a + q.z) / 2), Y(q.h1) - 5, 'C' + (i + 1), 'text-anchor="middle" font-size="10" fill="#fff"'));
+  else for (let i = 0; i < S.n; i++) g += T_(X((i + .5) * b.L / S.n), Y(3.6) - 12, `Local ${i + 1}`, 'text-anchor="middle" font-size="10" fill="#ddd"');
   g += L_(X(-.5), Y(0), X(b.L + .5), Y(0), 'stroke="#222" stroke-width="2"') + T_(X(0), 20, titulo, 'font-weight="700"') + T_(X(b.L), base + 18, `${f2(b.L)} m`, 'text-anchor="end" fill="#555"');
   return SV(X0 * 2 + b.L * s, base + 28, g);
 }
-function elCostado(b) { // cara hacia el retiro lateral: puerta y ventana por local
-  const st = sty(), s = 26, X0 = 40, base = 250, X = x => X0 + x * s, Y = h => base - h * s, n = S.n, w = b.L / n; let g = '';
-  g += R_(X(0), Y(b.e), b.L * s, b.e * s, st.cro ? `fill="${COL.cen}" stroke="#111"` : `fill="${st.ch}" stroke="#111"`) + R_(X(0), Y(b.r), b.L * s, (b.r - b.e) * s, `fill="${st.cro ? COL.cenD : COL.techo}" stroke="#111"`);
-  for (let i = 0; i < n; i++) { const xc = (i + .5) * w; g += R_(X(xc - .9), Y(2.4), 1.8 * s, 2.4 * s, 'fill="#4b7f95" stroke="#111"') + R_(X(xc + 1.6), Y(2.9), 1.5 * s, 2.2 * s, `fill="${COL.vid}" stroke="#222"`) + T_(X(xc), Y(3.1) - 6, `Local ${i + 1}`, 'text-anchor="middle" font-size="10" fill="#fff"'); }
-  g += L_(X(-.5), Y(0), X(b.L + .5), Y(0), 'stroke="#222" stroke-width="2"') + T_(X(0), 20, 'Cara hacia el retiro lateral · puerta de servicio y ventana por local', 'font-weight="700"');
-  return SV(X0 * 2 + b.L * s, base + 28, g);
-}
+const elLado = (b, t) => elCara(b, 'in', t), elCostado = b => elCara(b, 'out', 'Cara hacia el retiro lateral · puerta de servicio y ventana por local');
 function elFrenteB() {
   const b = NV[1], s = 30, X0 = 70, base = 270; let g = frenteB(b, s, X0, base);
   g += T_(X0 + b.W * s / 2, 24, 'Nave del fondo vista desde el jardín · abre solo hacia adelante', 'text-anchor="middle" font-weight="700"') + T_(X0 + b.W * s + 14, base - b.hp * s + 4, `pretil ${f2(b.hp)} m`) + T_(X0 + b.W * s / 2, base + 20, `${f2(b.W)} m · dos locales de ${f2(b.W / NLB)} m`, 'text-anchor="middle" fill="#555"');
@@ -463,11 +645,11 @@ function elAvenida() {
   g += R_(Xy(0), Y(0), 60 * s, 4, 'fill="#8fb06f"');
   PADS.forEach(([n, a, z]) => { g += L_(Xy(a), Y(0) + 4, Xy(a), 24, 'stroke="#999" stroke-dasharray="4 3"') + T_(Xy((a + z) / 2), 20, 'Padrón ' + n, 'text-anchor="middle" font-size="10" fill="#555"'); });
   [NV[2], NV[1], NV[0]].forEach(b => { g += `<g opacity="${b.id === 'S' ? 1 : b.id === 'N' ? .86 : .93}">` + (b.tipo === 'dos' ? gableEl(b, s, Xy(b.y0), base) : frenteB(b, s, Xy(b.y0), base)) + '</g>'; });
-  g += T_(Xy(30), 138 + 24, 'Vista desde la avenida · las tres naves desfasadas (la del fondo, de frente al jardín)', 'text-anchor="middle" font-weight="700"');
+  g += T_(Xy(30), 138 + 24, 'Vista desde la avenida · las tres naves contra el fondo (la del medio, de frente al jardín)', 'text-anchor="middle" font-weight="700"');
   return SV(60 * s + 60, base + 40, g);
 }
 function dFach() {
-  return `<p class="mut">Estilo: <b>${EST[S.est].n}</b>. ${EST[S.est].d} Cambialo arriba y los dibujos se actualizan.</p>` + elAvenida() + `<div class="cols"><div>${elGable()}</div><div>${elFrenteB()}</div></div>` + elLado(NV[0], 'Cara al jardín · nave sur (22 m)') + elCostado(NV[0]) + `<h3>Cortes</h3>` + cortes() +
+  return `<p class="mut">Estilo: <b>${EST[S.est].n}</b>. ${EST[S.est].d} Cambialo arriba y los dibujos se actualizan.</p>` + elAvenida() + `<div class="cols"><div>${elGable()}</div><div>${elFrenteB()}</div></div>` + elLado(NV[0], `Cara al jardín · nave sur (${f1(NV[0].L)} m)`) + elCostado(NV[0]) + (S.cons !== 'none' ? elLado(NV.find(x => x.id === S.cons), 'Cara al jardín · nave de consultorios (7 ventanas)') : '') + `<h3>Cortes</h3>` + cortes() +
     `<p class="mut"><small>${S.est === 'cro' ? 'Cenefas verticales de madera oscura en muros y marcos de hastial; la cubierta de chapa nervada oscura sigue el mismo ritmo y baja como pared, sin alero ni piedra. Vidrio laminado 5+5 en vidrieras corridas con travesaño, y banderola triangular en los hastiales.' : 'Colores: chapa grafito (nórdico más oscuro), madera o simil madera en cenefa y hastiales, piedra granítica careada en la base, vidrio laminado 5+5.'} La nave del fondo tiene pretil de ${f2(NV[1].hp)} m: el techo de un agua queda detrás.</small></p>`;
 }
 function cortes() {
@@ -479,7 +661,8 @@ function cortes() {
   g += P_([[X(-.4), Y(b.e) + 2], [X(W / 2), Y(b.r) - 12], [X(W + .4), Y(b.e) + 2], [X(W + .4), Y(b.e) - 4], [X(W / 2), Y(b.r) - 18], [X(-.4), Y(b.e) - 4]], `fill="#e8e8e6" stroke="#999"`);
   [-.4, W + .4].forEach(x => g += R_(X(x) - 6, Y(b.e) - 8, 12, 14, 'fill="#9aa3ab" stroke="#555"'));
   g += L_(X(-.4), Y(b.e) + 6, X(-.4), Y(0), 'stroke="#2c6fa3" stroke-width="3"') + L_(X(W + .4), Y(b.e) + 6, X(W + .4), Y(0), 'stroke="#2c6fa3" stroke-width="3"');
-  g += T_(X(W / 2), Y(b.r) - 28, 'Isodec PIR 80 mm sobre correas', 'text-anchor="middle" font-size="10"') + T_(X(-.6) - 4, Y(b.e) - 14, 'canaleta', 'text-anchor="end" font-size="10" fill="#2c6fa3"') + T_(X(W / 2), Y(3), 'luz 11,50 m', 'text-anchor="middle"') + L_(X(0), Y(2.6), X(W), Y(2.6), 'stroke="#555"');
+  g += R_(X(b.dIn > 0 ? W : -DPO), Y(3.35), (b.dIn > 0 ? DPO : DP) * s * 0 + (b.dIn > 0 ? DP : DPO) * s, .2 * s, `fill="${COL.marco}"`) + R_(X(b.dIn > 0 ? -DPO : W), Y(3.35), (b.dIn > 0 ? DPO : DP) * s, .2 * s, `fill="${COL.marco}"`) + T_(X(W / 2), Y(3.35) - 30, 'viseras del resguardo: jardín 1,20 m · retiro 1,00 m', 'text-anchor="middle" font-size="10" fill="#8a4a10"');
+  g += T_(X(W / 2), Y(b.r) - 28, 'Isodec PIR 80 mm sobre correas', 'text-anchor="middle" font-size="10"') + T_(X(-.6) - 4, Y(b.e) - 14, 'canaleta', 'text-anchor="end" font-size="10" fill="#2c6fa3"') + T_(X(W / 2), Y(3), `luz ${f2(W)} m`, 'text-anchor="middle"') + L_(X(0), Y(2.6), X(W), Y(2.6), 'stroke="#555"');
   g += T_(X(W / 2), base + 40, 'Corte transversal · naves sur y norte', 'text-anchor="middle" font-weight="700"');
   const c1 = SV(X0 * 2 + W * s, base + 56, g);
   // corte longitudinal de la nave del fondo
@@ -488,7 +671,7 @@ function cortes() {
   q += P_([[X2(B.x0), Y2(0)], [X2(B.x0), Y2(B.hp)], [X2(B.x1), Y2(B.hp)], [X2(B.x1), Y2(0)]], 'fill="none" stroke="#111" stroke-width="2"');
   q += L_(X2(B.x0), Y2(B.hi), X2(B.x1), Y2(B.lo), `stroke="${COL.ac}" stroke-width="6"`) + L_(X2(B.x0), Y2(B.hi) - 7, X2(B.x1), Y2(B.lo) - 7, 'stroke="#e8e8e6" stroke-width="5"');
   q += R_(X2(B.x1) - 8, Y2(B.lo) - 6, 8, 12, 'fill="#9aa3ab" stroke="#555"') + L_(X2(B.x1) - 4, Y2(B.lo) + 6, X2(B.x1) - 4, Y2(0), 'stroke="#2c6fa3" stroke-width="3"');
-  for (let k = 0; k < B.nfr; k++) { const x = B.x0 + k * B.sep; q += L_(X2(x), Y2(0), X2(x), Y2(B.hi - (B.hi - B.lo) * k / (B.nfr - 1)), `stroke="${COL.ac}" stroke-width="5"`); }
+  for (let k = 0; k < B.nfr; k++) { const x = B.fx[k]; q += L_(X2(x), Y2(0), X2(x), Y2(B.hi - (B.hi - B.lo) * k / (B.nfr - 1)), `stroke="${COL.ac}" stroke-width="5"`); }
   q += T_(X2(B.x0) + 4, Y2(B.hp) - 6, `pretil ${f2(B.hp)} m: esconde el techo`, 'font-size="10"') + T_(X2(B.x0) + 6, Y2(B.hi) + 24, `alto ${f2(B.hi)} m`, 'font-size="10" fill="#333"') + T_(X2(B.x1) - 16, Y2(B.lo) + 24, `bajo ${f2(B.lo)} m`, 'text-anchor="end" font-size="10" fill="#333"') + T_(X2(B.x1) - 14, Y2(1.5), 'canaleta interna y bajada embutida', 'text-anchor="end" font-size="10" fill="#2c6fa3"');
   q += T_(X2((B.x0 + B.x1) / 2), base2 + 34, 'Corte este-oeste · nave del fondo', 'text-anchor="middle" font-weight="700"') + T_(X2(B.x0), base2 + 18, 'fondo del lote', 'fill="#555"') + T_(X2(B.x1), base2 + 18, 'frente al jardín →', 'text-anchor="end" fill="#555"');
   const c2 = SV(50 * 2 + B.L * s2, base2 + 48, q);
@@ -507,12 +690,12 @@ function cortes() {
 /* ================= ESTRUCTURA ================= */
 function dEst() {
   const s = 11, X = x => 20 + (x + 43) * s, Y = y => 20 + (60 - y) * s; let g = R_(X(-43), Y(60), 43 * s, 60 * s, 'fill="#f3f1ea" stroke="#999"');
-  NV.forEach(b => { g += R_(X(b.x0), Y(b.y1), b.L * s, b.W * s, 'fill="#e8eef3" stroke="#222"'); for (let k = 0; k < b.nfr; k++) { const x = b.x0 + k * b.sep; g += L_(X(x), Y(b.y0), X(x), Y(b.y1), 'stroke="#2c6fa3" stroke-width="2"') + R_(X(x) - 4, Y(b.y0) - 4, 8, 8, 'fill="#c8621b"') + R_(X(x) - 4, Y(b.y1) - 4, 8, 8, 'fill="#c8621b"') + T_(X(x), Y(b.y1) - 6, 'P' + (k + 1), 'text-anchor="middle" font-size="9"'); } g += T_(X(b.x0) + 4, Y(b.y0) + 14, b.n, 'font-size="10" font-weight="700"'); });
+  NV.forEach(b => { g += R_(X(b.x0), Y(b.y1), b.L * s, b.W * s, 'fill="#e8eef3" stroke="#222"'); for (let k = 0; k < b.nfr; k++) { const x = b.fx[k]; g += L_(X(x), Y(b.y0), X(x), Y(b.y1), 'stroke="#2c6fa3" stroke-width="2"') + R_(X(x) - 4, Y(b.y0) - 4, 8, 8, 'fill="#c8621b"') + R_(X(x) - 4, Y(b.y1) - 4, 8, 8, 'fill="#c8621b"') + T_(X(x), Y(b.y1) - 6, 'P' + (k + 1), 'text-anchor="middle" font-size="9"'); } g += T_(X(b.x0) + 4, Y(b.y0) + 14, b.n, 'font-size="10" font-weight="700"'); });
   g += T_(X(-43), Y(0) + 26, 'Pórticos en azul · columnas en naranja · avenida a la derecha', 'font-size="10" fill="#555"');
-  const q = Qty(), rows = NV.map(b => `<tr><td>${b.n}</td><td class="n">${f2(b.W)} m</td><td class="n">${f2(b.L)} m</td><td class="n">${b.nfr}</td><td class="n">${f2(b.sep)} m</td><td class="n">${2 * b.nfr}</td><td>${b.tipo === 'dos' ? `columna ${f2(b.e)} m · dintel a 20° · cumbrera ${f2(b.r)} m` : `columnas de ${f2(b.lo)} a ${f2(b.hi)} m · dintel a 5 % · pretil ${f2(b.hp)} m`}</td></tr>`).join('');
+  const q = Qty(), rows = NV.map(b => `<tr><td>${b.n}</td><td class="n">${f2(b.W)} m</td><td class="n">${f2(b.L)} m</td><td class="n">${b.nfr}</td><td class="n">${f2(b.vmin)}${b.vmax - b.vmin > .05 ? '–' + f2(b.vmax) : ''} m</td><td class="n">${2 * b.nfr}</td><td>${b.tipo === 'dos' ? `columna ${f2(b.e)} m · dintel a 20° · cumbrera ${f2(b.r)} m` : `columnas de ${f2(b.lo)} a ${f2(b.hi)} m · dintel a 5 % · pretil ${f2(b.hp)} m`}</td></tr>`).join('');
   const llu = q.RF * .01;
   return `<div class="cols" style="grid-template-columns:minmax(0,1fr) minmax(0,1fr)"><div>${SV(43 * s + 40, 60 * s + 50, g)}</div><div>
-  <h3>Pórticos, luces y columnas</h3><table><thead><tr><th>Nave</th><th class="n">Luz</th><th class="n">Largo</th><th class="n">Pórticos</th><th class="n">Separación</th><th class="n">Columnas</th><th>Forma</th></tr></thead><tbody>${rows}<tr class="tot"><td colspan="5">Total</td><td class="n">${q.cols}</td><td></td></tr></tbody></table>
+  <h3>Pórticos, luces y columnas</h3><table><thead><tr><th>Nave</th><th class="n">Luz</th><th class="n">Largo</th><th class="n">Pórticos</th><th class="n">Vano</th><th class="n">Columnas</th><th>Forma</th></tr></thead><tbody>${rows}<tr class="tot"><td colspan="5">Total</td><td class="n">${q.cols}</td><td></td></tr></tbody></table>
   <p class="mut"><small>Los perfiles los dimensiona el Ing. Ricardo Portugau. Anteproyecto: acero laminado 32 kg/m² más 9 kg/m² de perfiles conformados, ${nf(q.FP * 41 / 1000)} t en total.</small></p>
   <h3>Capas de la estructura</h3><ol>
   <li><b>Fundación:</b> platea de 15 cm por nave, con vigas bajo los pórticos y pernos en cada columna. Tres plateas independientes, una por padrón.</li>
@@ -575,7 +758,7 @@ function build3d() {
   NV.forEach(b => {
     const ym = (b.y0 + b.y1) / 2, W = b.W, FRm = .55, ci = 1 / Math.cos(20 * Math.PI / 180), top = b.tipo === 'dos' ? b.e : b.hp;
     if (b.tipo === 'dos') {
-      const e = b.e, r = b.r, w = b.L / S.n;
+      const e = b.e, r = b.r;
       faceY(b.x0, b.x1, b.y0, 0, e, wall, G3.naves); faceY(b.x0, b.x1, b.y1, 0, e, wall, G3.naves);
       [b.x0, b.x1].forEach(x => polyUV([V3(x, 0, b.y0), V3(x, 0, b.y1), V3(x, e, b.y1), V3(x, r, ym), V3(x, e, b.y0)], wall, G3.naves, uvZ));
       polyUV([V3(b.x0, e, b.y0), V3(b.x1, e, b.y0), V3(b.x1, r, ym), V3(b.x0, r, ym)], roofM, G3.techos, uvX); polyUV([V3(b.x0, e, b.y1), V3(b.x1, e, b.y1), V3(b.x1, r, ym), V3(b.x0, r, ym)], roofM, G3.techos, uvX);
@@ -584,8 +767,8 @@ function build3d() {
         const O = [[0, 0], [0, e], [W / 2, r], [W, e], [W, 0]], I = [[FRm, 0], [FRm, ei], [W / 2, ri], [W - FRm, ei], [W - FRm, 0]];
         [[b.x1 + .03, 1], [b.x0 - .03, -1]].forEach(([xf]) => { for (let i = 0; i < 4; i++) polyUV([V3(xf, O[i][1], b.y0 + O[i][0]), V3(xf, O[i + 1][1], b.y0 + O[i + 1][0]), V3(xf, I[i + 1][1], b.y0 + I[i + 1][0]), V3(xf, I[i][1], b.y0 + I[i][0])], MT.marco, G3.madera, uvZ); });
         const ya = ri - .55, hh = 1.7, hw = hh / TA2; polyUV([V3(b.x1 + .05, ya, ym), V3(b.x1 + .05, ya - hh, ym + hw), V3(b.x1 + .05, ya - hh, ym - hw)], MT.glass, G3.naves, uvZ);
-        decX(b.x1, b.y0 + FRm + .25, b.y1 - FRm - .25, 0, 3.0, MT.glass, G3.naves); for (let i = 1; i < 5; i++) { const yy = b.y0 + FRm + .25 + i * (W - 2 * FRm - .5) / 5; slab(b.x1 + .03, b.x1 + .07, yy - .03, yy + .03, 0, 3.0, MT.line.color ? MT.marco : MT.marco, G3.naves); }
-        slab(b.x1 + .03, b.x1 + .07, b.y0 + FRm, b.y1 - FRm, 2.4, 2.45, MT.marco, G3.naves);
+        if (!b.cons) decX(b.x1, b.y0 + FRm + .25, b.y1 - FRm - .25, 0, 3.0, MT.glass, G3.naves); if (!b.cons) for (let i = 1; i < 5; i++) { const yy = b.y0 + FRm + .25 + i * (W - 2 * FRm - .5) / 5; slab(b.x1 + .03, b.x1 + .07, yy - .03, yy + .03, 0, 3.0, MT.line.color ? MT.marco : MT.marco, G3.naves); }
+        if (!b.cons) slab(b.x1 + .03, b.x1 + .07, b.y0 + FRm, b.y1 - FRm, 2.4, 2.45, MT.marco, G3.naves);
       } else {
         if (S.est !== 'pat') poly([V3(b.x1 + .03, b.e, b.y0), V3(b.x1 + .03, b.e, b.y1), V3(b.x1 + .03, b.r, ym)], MT.wood, G3.madera);
         slab(b.x0, b.x1, b.y0 - .08, b.y0 + .04, b.e - .45, b.e + .1, MT.wood, G3.madera); slab(b.x0, b.x1, b.y1 - .04, b.y1 + .08, b.e - .45, b.e + .1, MT.wood, G3.madera);
@@ -594,29 +777,37 @@ function build3d() {
         if (st.mach) [b.x0, b.x1 - 2.4].forEach(x => slab(x, x + 2.4, b.inY, b.inY + b.dIn * .14, 0, e, MT.stone, G3.piedra));
       }
       // estructura
-      for (let k = 0; k < b.nfr; k++) { const x = b.x0 + k * b.sep; rod(V3(x, 0, b.y0), V3(x, e, b.y0), .12, MT.steel, G3.estructura); rod(V3(x, 0, b.y1), V3(x, e, b.y1), .12, MT.steel, G3.estructura); rod(V3(x, e, b.y0), V3(x, r, ym), .1, MT.steel, G3.estructura); rod(V3(x, r, ym), V3(x, e, b.y1), .1, MT.steel, G3.estructura); }
+      for (let k = 0; k < b.nfr; k++) { const x = b.fx[k]; rod(V3(x, 0, b.y0), V3(x, e, b.y0), .12, MT.steel, G3.estructura); rod(V3(x, 0, b.y1), V3(x, e, b.y1), .12, MT.steel, G3.estructura); rod(V3(x, e, b.y0), V3(x, r, ym), .1, MT.steel, G3.estructura); rod(V3(x, r, ym), V3(x, e, b.y1), .1, MT.steel, G3.estructura); }
       rod(V3(b.x0, r, ym), V3(b.x1, r, ym), .1, MT.steel, G3.estructura);
       slab(b.x0, b.x1, b.y0 - .3, b.y0, e - .25, e + .05, MT.gutter, G3.desagues); slab(b.x0, b.x1, b.y1, b.y1 + .3, e - .25, e + .05, MT.gutter, G3.desagues);
       [b.x0 + .6, b.x1 - .6].forEach(xp => [b.y0 - .35, b.y1 + .35].forEach(yD => { rod(V3(xp, 0, yD), V3(xp, e - .3, yD), .07, MT.gutter, G3.desagues); rod(V3(xp, -.4, yD), V3(-8.6, -.4, yD), .09, MT.blue, G3.desagues); }));
-      // accesos: vidriera corrida al jardín, puerta y ventana al retiro lateral
-      const dI = b.dIn, glassY = b.inY;
-      decY(b.x0 + 1, b.x1 - 1, glassY, dI, 0, 3.0, MT.glass, G3.naves); slab(b.x0 + .8, b.x1 - .8, glassY, glassY + dI * .45, 3.0, 3.3, MT.marco, G3.naves); slab(b.x0 + 1, b.x1 - 1, glassY + dI * .03, glassY + dI * .07, 2.4, 2.45, MT.marco, G3.naves);
-      for (let i = 0; i < S.n; i++) {
-        const xl = b.x0 + i * w, xc = xl + w / 2; if (i) slab(xl - .03, xl + .03, glassY + dI * .03, glassY + dI * .08, 0, 3.0, MT.marco, G3.naves);
-        decY(xc - .9, xc + .9, glassY, dI, 0, 2.4, MT.door, G3.naves);
-        decY(xc - .9, xc + .9, b.outY, -dI, 0, 2.4, MT.door, G3.naves); decY(xc + 1.6, xc + 3.1, b.outY, -dI, .7, 2.9, MT.glass, G3.naves);
+      // aberturas generadas del modelo + resguardo (vísera y aletas) + cara interior
+      const sg = Math.sign(b.dIn), yv = (y0, d1) => [Math.min(y0, y0 + d1), Math.max(y0, y0 + d1)];
+      openings(b).forEach(q => {
+        const m = q.t === 'p' ? MT.door : MT.glass;
+        if (q.f === 'in') decY(b.x0 + q.a, b.x0 + q.z, b.inY, sg, q.h0, q.h1, m, G3.naves); else if (q.f === 'out') decY(b.x0 + q.a, b.x0 + q.z, b.outY, -sg, q.h0, q.h1, m, G3.naves); else if (b.cons) decX(b.x1, b.y0 + q.a, b.y0 + q.z, q.h0, q.h1, m, G3.naves);
+        if (q.t === 'g' && q.f === 'in') slab(b.x0 + q.a, b.x0 + q.z, b.inY + sg * .03, b.inY + sg * .07, 2.4, 2.45, MT.marco, G3.naves);
+      });
+      if (cro) {
+        const vi = yv(b.inY, sg * DP), vo = yv(b.outY, -sg * DPO);
+        slab(b.x0, b.x1, vi[0], vi[1], 3.3, 3.5, MT.marco, G3.naves); slab(b.x0, b.x1, vo[0], vo[1], 3.3, 3.5, MT.marco, G3.naves);
+        b.fx.forEach(x => { slab(x - .05, x + .05, vi[0], vi[1], 0, 3.5, MT.marco, G3.naves); slab(x - .05, x + .05, vo[0], vo[1], 0, 3.5, MT.marco, G3.naves); });
+        if (S.cara !== 'lis') { // cara interior de la cenefa: madera natural arriba, piedra abajo
+          const yi0 = b.y0 + .12, yi1 = b.y1 - .12, hs = S.cara === 'mp' ? 1.2 : 0;
+          if (hs) { slab(b.x0 + .1, b.x1 - .1, yi0 - .03, yi0 + .03, 0, hs, MT.stone, G3.piedra); slab(b.x0 + .1, b.x1 - .1, yi1 - .03, yi1 + .03, 0, hs, MT.stone, G3.piedra); }
+          slab(b.x0 + .1, b.x1 - .1, yi0 - .03, yi0 + .03, hs, e - .1, MT.wood, G3.madera); slab(b.x0 + .1, b.x1 - .1, yi1 - .03, yi1 + .03, hs, e - .1, MT.wood, G3.madera);
+        }
       }
     } else {
       const lo = b.lo, hi = b.hi, hp = b.hp;
       faceY(b.x0, b.x1, b.y0, 0, hp, wall, G3.naves); faceY(b.x0, b.x1, b.y1, 0, hp, wall, G3.naves); faceX(b.x0, b.y0, b.y1, 0, hp, wall, G3.naves); faceX(b.x1, b.y0, b.y1, 0, hp, wall, G3.naves);
       polyUV([V3(b.x0, hi, b.y0), V3(b.x1, lo, b.y0), V3(b.x1, lo, b.y1), V3(b.x0, hi, b.y1)], roofM, G3.techos, uvX);
       const cap = cro ? MT.marco : MT.wood; slab(b.x0 - .05, b.x1 + .05, b.y0 - .05, b.y0 + .25, hp - .2, hp + .08, cap, G3.madera); slab(b.x0 - .05, b.x1 + .05, b.y1 - .25, b.y1 + .05, hp - .2, hp + .08, cap, G3.madera); slab(b.x0 - .05, b.x0 + .25, b.y0, b.y1, hp - .2, hp + .08, cap, G3.madera); slab(b.x1 - .25, b.x1 + .05, b.y0, b.y1, hp - .2, hp + .08, cap, G3.madera);
-      for (let k = 0; k < b.nfr; k++) { const x = b.x0 + k * b.sep, hh = hi - (hi - lo) * k / (b.nfr - 1); rod(V3(x, 0, b.y0), V3(x, hh, b.y0), .12, MT.steel, G3.estructura); rod(V3(x, 0, b.y1), V3(x, hh, b.y1), .12, MT.steel, G3.estructura); rod(V3(x, hh, b.y0), V3(x, hh, b.y1), .1, MT.steel, G3.estructura); }
+      for (let k = 0; k < b.nfr; k++) { const x = b.fx[k], hh = hi - (hi - lo) * (x - b.x0) / b.L; rod(V3(x, 0, b.y0), V3(x, hh, b.y0), .12, MT.steel, G3.estructura); rod(V3(x, 0, b.y1), V3(x, hh, b.y1), .12, MT.steel, G3.estructura); rod(V3(x, hh, b.y0), V3(x, hh, b.y1), .1, MT.steel, G3.estructura); }
       slab(b.x1 - .6, b.x1 - .25, b.y0, b.y1, lo - .3, lo, MT.gutter, G3.desagues);
       [b.y0 + .5, b.y1 - .5].forEach(yp => { rod(V3(b.x1 - .45, 0, yp), V3(b.x1 - .45, lo - .3, yp), .07, MT.gutter, G3.desagues); rod(V3(b.x1 - .45, -.4, yp), V3(-8.6, -.4, yp), .09, MT.blue, G3.desagues); });
-      // frente al jardín: vidriera corrida y una puerta por local (no hay otras aberturas)
-      decX(b.x1, b.y0 + 1, b.y1 - 1, 0, 3.0, MT.glass, G3.naves); slab(b.x1, b.x1 + .45, b.y0 + .8, b.y1 - .8, 3.0, 3.3, MT.marco, G3.naves); slab(b.x1 + .03, b.x1 + .07, b.y0 + 1, b.y1 - 1, 2.4, 2.45, MT.marco, G3.naves);
-      const w = (W - 2) / NLB; for (let i = 0; i < NLB; i++) { const yc = b.y0 + 1 + (i + .5) * w; decX(b.x1, yc - .9, yc + .9, 0, 2.4, MT.door, G3.naves); if (i) slab(b.x1 + .03, b.x1 + .08, b.y0 + 1 + i * w - .03, b.y0 + 1 + i * w + .03, 0, 3.0, MT.marco, G3.naves); }
+      openings(b).forEach(q => decX(b.x1, b.y0 + q.a, b.y0 + q.z, q.h0, q.h1, q.t === 'p' ? MT.door : MT.glass, G3.naves));
+      slab(b.x1, b.x1 + DP, b.y0, b.y1, 3.3, 3.5, MT.marco, G3.naves); [b.y0, ym, b.y1].forEach(y => slab(b.x1, b.x1 + DP, y - .05, y + .05, 0, 3.5, MT.marco, G3.naves));
       if (!cro) slab(b.x1, b.x1 + .12, b.y0, b.y1, 0, sh, MT.stone, G3.piedra);
     }
     lab(`${b.n} · ${nf(b.A)} m²`, V3((b.x0 + b.x1) / 2, b.alt + 2, ym), G3.naves, 3.4);
@@ -682,8 +873,8 @@ function plan(o = S) {
   add('est', 2, 'Montaje de pórticos: nave sur, del fondo y norte', 6, { fs: ['fHp', 'fab'] }); add('cru', 2, 'Arriostramiento', 2, { fs: 'est' }); add('cor', 2, 'Correas, tensores y tornapuntas', 3, { fs: 'cru' }); add('lar', 2, 'Largueros y pretil de la nave del fondo', 3, { fs: 'cor' }); add('bas', 2, 'Parantes y bastidores de fachada', 3, { fs: 'lar' });
   add('ped', 0, 'Pedido de paneles y vidrieras con seña', 1, { hito: true, at: 'est' }); add('pent', 0, 'Fabricación y entrega de paneles', 12, { fs: 'ped' }); add('alu', 0, 'Fabricación de las vidrieras de los locales', 20, { fs: 'ped' });
   add('techo', 3, 'Techos de panel y canaletas (tres naves)', 8, { fs: ['bas', 'pent'] }); add('muro', 3, 'Muros de panel', 10, { ss: 'techo', lag: 3 }); add('vid', 3, 'Vidrieras y puertas de los locales', 6, { ss: 'muro', lag: 4, fs: 'alu' }); const cro = o.est === 'cro'; add('pie', 3, cro ? 'Remates, babetas y cierres de la envolvente' : 'Piedra: zócalos y franjas (piedrero)', cro ? 2 : 8, { ss: 'vid', lag: 2 }); add('cen', 3, cro ? 'Cenefas verticales de madera en muros y marcos oscuros de hastial' : 'Cenefa de madera o simil y hastiales', cro ? 12 : 4, { fs: 'vid' });
-  add('div', 4, 'Divisorios y cerramientos de baño', 5, { fs: 'techo' }); add('iSan', 4, 'Sanitaria interior', 4, { ss: 'div', lag: 2 }); add('iEle', 4, 'Eléctrica e iluminación', 5, { ss: 'iSan', lag: 1 }); add('ter', 4, 'Terminaciones: masillado y pintura, artefactos, luminarias y tableros', 14, { fs: 'iEle' });
-  add('ext', 5, 'Exteriores: decks, paseo, senderos, plantación, riego, estacionamiento y vereda', 14, { fs: ['cen', 'pie'] }); add('con', 5, 'Conexiones de UTE y OSE de los tres padrones, pruebas y limpieza final', 5, { fs: ['ter', 'ext'] }); add('mar', 5, 'Margen por lluvia, atrasos de proveedores y trámites', 10, { fs: 'con', margen: true }); add('hab', 5, 'Inspección de Bomberos, final de obra y entrega', 4, { fs: 'mar' });
+  add('div', 4, 'Divisorios y cerramientos de baño', 5, { fs: 'techo' }); add('iSan', 4, 'Sanitaria interior', 4, { ss: 'div', lag: 2 }); add('iEle', 4, 'Eléctrica e iluminación', 5, { ss: 'iSan', lag: 1 }); add('ter', 4, 'Terminaciones: masillado y pintura, artefactos, luminarias y tableros', 14, { fs: 'iEle' }); if (o.cons !== 'none') add('cons', 4, 'Consultorios: tabiques de 7 consultorios, sanitaria de 3 baños, cielorraso y claraboya', 12, { ss: 'iSan', lag: 1 });
+  add('ext', 5, 'Exteriores: decks, paseo, senderos, plantación, riego, estacionamiento y vereda', 14, { fs: ['cen', 'pie'] }); add('con', 5, 'Conexiones de UTE y OSE de los tres padrones, pruebas y limpieza final', 5, { fs: o.cons !== 'none' ? ['ter', 'ext', 'cons'] : ['ter', 'ext'] }); add('mar', 5, 'Margen por lluvia, atrasos de proveedores y trámites', 10, { fs: 'con', margen: true }); add('hab', 5, 'Inspección de Bomberos, final de obra y entrega', 4, { fs: 'mar' });
   T.forEach(t => { let s; if (t.fijo) { s = D0(t.fijo); t.s = s; t.f = t.d > 1 ? masHab(s, t.d) : s; return; }
     if (t.ini) s = D0(CR.ini); else if (t.at) s = by[t.at].s; else { s = new Date(0); if (t.ss) s = masHab(by[t.ss].s, 1 + (t.lag || 0)); if (t.fs) [].concat(t.fs).forEach(k => { const p = by[k], x = addD(p.f, 1 + (p.espera || 0)); if (x > s) s = x; }); }
     t.s = sigHab(s); t.f = masHab(t.s, t.d); });
@@ -741,13 +932,14 @@ function dRent() {
   if (!$('inAlq')) { $('dRent').innerHTML = `<p class="mut">Más locales chicos se alquilan más caros por m², pero cuestan más (divisorios, baños, medidores, habilitaciones) y tienen más rotación. La tabla compara 2, 3 y 4 locales en cada nave lateral (más 2 en la del fondo), o sea 6, 8 y 10 locales, con los mismos supuestos.</p><p>Alquiler base USD/m²/mes (locales de unos 120 m²) <input class="in" id="inAlq" type="number" value="${RT.alq}"> · Vacancia % <input class="in" id="inVac" type="number" value="${RT.vac}"> · Gastos del dueño % del alquiler <input class="in" id="inGas" type="number" value="${RT.gas}"> · Terreno USD <input class="in" id="inTer" type="number" step="10000" value="${RT.ter}" style="width:100px"></p><div id="tRent"></div><div id="refAlq"></div>`; $('dRent').addEventListener('input', e => { RT.alq = +$('inAlq').value || 0; RT.vac = +$('inVac').value || 0; RT.gas = +$('inGas').value || 0; RT.ter = +$('inTer').value || 0; rentTabla(); }); }
   rentTabla();
 }
+const unidades = (o, sinCons) => NV.reduce((a, b) => a + (b.id === o.cons ? (sinCons ? 0 : NCONS) : nloc(b, o)), 0);
 function rentTabla() {
   const k = IVA(), q0 = Qty(), fac = m2 => m2 >= 100 ? 1 : m2 >= 70 ? 1.08 : 1.15;
-  const rows = [2, 3, 4].map(n => { const r = cotiza({ ...S, n }), nl = 2 * n + NLB, m2 = q0.FP / nl, alq = RT.alq * fac(m2), anual = alq * q0.FP * 12, neto = anual * (1 - RT.vac / 100) * (1 - RT.gas / 100), inv = r.ob * k + r.bps + RT.ter; return { n, nl, m2, alq, mes: alq * m2, neto, inv, y: neto / inv, pb: inv / neto }; });
+  const rows = [2, 3, 4].map(n => { const r = cotiza({ ...S, n }), nl = unidades({ ...S, n }), m2 = q0.FP / nl, alq = RT.alq * fac(m2), anual = alq * q0.FP * 12, neto = anual * (1 - RT.vac / 100) * (1 - RT.gas / 100), inv = r.ob * k + r.bps + RT.ter; return { n, nl, m2, alq, mes: alq * m2, neto, inv, y: neto / inv, pb: inv / neto }; });
   const best = rows.reduce((a, b) => b.y > a.y ? b : a);
-  $('tRent').innerHTML = `<table><thead><tr><th>Locales</th><th class="n">m² c/u</th><th class="n">Alquiler USD/m²/mes</th><th class="n">Por local / mes</th><th class="n">Ingreso neto / año</th><th class="n">Inversión ${S.iva ? 'con IVA' : 'sin IVA'}</th><th class="n">Rentabilidad neta</th><th class="n">Repago</th></tr></thead><tbody>${rows.map(r => `<tr${r === best ? ' class="best"' : ''}${r.n === S.n ? ' style="outline:2px solid var(--acc)"' : ''}><td><b>${r.nl}</b> (${r.n} + ${r.n} + ${NLB})${r === best ? ' <span class="pill">mejor</span>' : ''}</td><td class="n">${f1(r.m2)}</td><td class="n">${f1(r.alq)}</td><td class="n">${u$(r.mes)}</td><td class="n">${u$(r.neto)}</td><td class="n">${u$(r.inv)}</td><td class="n"><b>${f1(r.y * 100)} %</b></td><td class="n">${f1(r.pb)} años</td></tr>`).join('')}</tbody></table>
+  $('tRent').innerHTML = `<table><thead><tr><th>Unidades</th><th class="n">m² promedio</th><th class="n">Alquiler USD/m²/mes</th><th class="n">Por local / mes</th><th class="n">Ingreso neto / año</th><th class="n">Inversión ${S.iva ? 'con IVA' : 'sin IVA'}</th><th class="n">Rentabilidad neta</th><th class="n">Repago</th></tr></thead><tbody>${rows.map(r => `<tr${r === best ? ' class="best"' : ''}${r.n === S.n ? ' style="outline:2px solid var(--acc)"' : ''}><td><b>${r.nl}</b> (${S.cons === 'none' ? r.n + ' + ' + r.n : r.n + ' locales + ' + NCONS + ' consultorios'} + ${NLB} en el fondo)${r === best ? ' <span class="pill">mejor</span>' : ''}</td><td class="n">${f1(r.m2)}</td><td class="n">${f1(r.alq)}</td><td class="n">${u$(r.mes)}</td><td class="n">${u$(r.neto)}</td><td class="n">${u$(r.inv)}</td><td class="n"><b>${f1(r.y * 100)} %</b></td><td class="n">${f1(r.pb)} años</td></tr>`).join('')}</tbody></table>
   <p class="mut"><small>Supuestos: el alquiler por m² sube 8 % (locales de 70 a 100 m²) y 15 % (menos de 70 m²) al achicarse el local. Inversión = obra + gestión + aportes BPS, entrega en cáscara, estilo ${EST[S.est].n}${RT.ter ? ', más el terreno' : ', sin terreno'}. No incluye impuestos sobre la renta ni financiación.</small></p>
-  ${RT.ter ? '' : `<div class="warn"><b>Ojo con el terreno:</b> la tabla no lo cuenta. Si se valúa, por ejemplo, en USD 300.000, la rentabilidad de ${2 * S.n + NLB} locales baja a ${f1(rows.find(r => r.n === S.n).neto / (rows.find(r => r.n === S.n).inv + 300000) * 100)} %. Poné el valor real arriba.</div>`}`;
+  ${RT.ter ? '' : `<div class="warn"><b>Ojo con el terreno:</b> la tabla no lo cuenta. Si se valúa, por ejemplo, en USD 300.000, la rentabilidad de ${rows.find(r => r.n === S.n).nl} unidades baja a ${f1(rows.find(r => r.n === S.n).neto / (rows.find(r => r.n === S.n).inv + 300000) * 100)} %. Poné el valor real arriba.</div>`}`;
   $('refAlq').innerHTML = `<p class="mut"><small>Avisos publicados (noviembre 2026, tomados en la v1): Pedragosa Sierra, local de 136 m² a USD 5.550/mes (≈ 41/m²); Camino Lussich, 162 m² a USD 3.000 (≈ 18,5/m²); Solanas, 97,5 m² a USD 2.000 (≈ 20,5/m²); Av. Roosevelt, 161 m² en dos plantas a USD 7.500 (≈ 46/m²). Se toman 22 USD/m²/mes como base prudente. Conviene validarlo con una inmobiliaria de la zona.</small></p>`;
 }
 /* ================= RESUMEN y PENDIENTES ================= */
@@ -786,16 +978,16 @@ function dPend() {
   <p class="mut"><small>Valores de referencia en dólares, sin IVA salvo que se indique, sujetos a mensura, normativa y cálculo final. Smart Building Uruguay · Ramiro Portugau · 098 526 226 · smartbuildinguruguay@gmail.com</small></p>`;
 }
 /* ================= CONTROL ================= */
-const TABS = [['p-proy', 'Proyecto'], ['p-impl', 'Implantación'], ['p-pais', 'Jardín y paseo'], ['p-planta', 'Plantas'], ['p-fach', 'Fachadas y cortes'], ['p-est', 'Estructura y aguas'], ['p-3d', '3D por capas'], ['p-rub', 'Rubrado y precio'], ['p-crono', 'Cronograma y pagos'], ['p-xtra', 'Extras por local'], ['p-rent', 'Rentabilidad'], ['p-pend', 'Supuestos y pendientes']];
+const TABS = [['p-proy', 'Proyecto'], ['p-impl', 'Implantación'], ['p-pais', 'Jardín y paseo'], ['p-planta', 'Plantas'], ['p-sani', 'Sanitaria consultorios'], ['p-fach', 'Fachadas y cortes'], ['p-est', 'Estructura y aguas'], ['p-3d', '3D por capas'], ['p-rub', 'Rubrado y precio'], ['p-crono', 'Cronograma y pagos'], ['p-xtra', 'Extras por local'], ['p-rent', 'Rentabilidad'], ['p-pend', 'Supuestos y pendientes']];
 $('tabs').innerHTML = TABS.map(([id, t]) => `<button data-t="${id}">${t}</button>`).join('');
 $('cSue').innerHTML = Object.entries(SUELO).map(([k, v]) => `<option value="${k}">${v[0]}</option>`).join('');
 function show(id) { document.querySelectorAll('main > section').forEach(s => s.classList.toggle('on', s.id === id)); $('tabs').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.t === id)); if (id === 'p-3d') { fit(); } history.replaceState(null, '', '#' + id); }
 $('tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) show(b.dataset.t); });
 function upd() {
-  S.est = $('cEst').value; S.suelo = $('cSue').value; S.n = +$('cN').value; S.gas = Math.max(0, Math.min(2 * S.n + NLB, +$('cGas').value || 0)); S.iva = $('cIva').checked;
-  $('dProy').innerHTML = dProy(); $('dImpl').innerHTML = dImpl(); $('dPais').innerHTML = dPais(); $('dPlanta').innerHTML = dPlanta(); $('dFach').innerHTML = dFach(); $('dEst').innerHTML = dEst(); $('dRub').innerHTML = dRub(); $('dCrono').innerHTML = dCrono(); $('dXtra').innerHTML = dXtra(); dRent(); $('dPend').innerHTML = dPend(); build3d();
+  S.est = $('cEst').value; S.suelo = $('cSue').value; S.n = +$('cN').value; S.cons = $('cCons').value; S.bd = +$('cBd').value; S.cara = $('cCara').value; applyGeom(); S.gas = Math.max(0, Math.min(unidades(S, true), +$('cGas').value || 0)); S.iva = $('cIva').checked;
+  $('dProy').innerHTML = dProy(); $('dImpl').innerHTML = dImpl(); $('dPais').innerHTML = dPais(); $('dPlanta').innerHTML = dPlanta(); $('dSani').innerHTML = dSani(); $('dFach').innerHTML = dFach(); $('dEst').innerHTML = dEst(); $('dRub').innerHTML = dRub(); $('dCrono').innerHTML = dCrono(); $('dXtra').innerHTML = dXtra(); dRent(); $('dPend').innerHTML = dPend(); build3d();
 }
-['cEst', 'cSue', 'cN', 'cGas', 'cIva'].forEach(id => $(id).addEventListener('input', upd));
+['cEst', 'cSue', 'cN', 'cCons', 'cBd', 'cCara', 'cGas', 'cIva'].forEach(id => $(id).addEventListener('input', upd));
 $('cEst').value = S.est; upd(); fit(); view('iso'); setSun(1);
 show(location.hash.slice(1) && $(location.hash.slice(1)) ? location.hash.slice(1) : 'p-proy');
 (function loop() { requestAnimationFrame(loop); ctl.update(); ren.render(sc, cam); })();
