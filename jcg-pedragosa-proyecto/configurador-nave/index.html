@@ -66,11 +66,12 @@ details.sec{border-bottom:1px solid var(--line)}details.sec>summary{cursor:point
 <h3>Caras a revestir <span style="font-weight:400;text-transform:none">(o hacé clic sobre la pared en el visor)</span></h3><div class="chips" id="chS"></div>
 <h3>Revestimiento de las caras elegidas</h3><div class="chips" id="chV"></div>
 <h3>Ancho de tabla WPC (separación 12 mm)</h3><div class="chips" id="chD"></div>
+<h3>Cenefa (portal)</h3><div class="chips" id="chP"></div>
+<h3>Cielorraso de la cenefa (cara hacia adentro)</h3><div class="chips" id="chC"></div>
 <h3>Paneles PIR de pared (ISOWALL 1,14 × 80 mm)</h3><div class="chips" id="chW"></div>
 <h3>Paneles PIR de techo (ISODEC 1,14 × 80 mm)</h3><div class="chips" id="chR"></div>
 </div>
 <div class="pane" id="p-old">
-<h3>Cenefa / portal</h3><div class="chips" id="chP"></div>
 <h3>Aberturas (marcos)</h3><div class="chips" id="chM"></div>
 <h3>Apoyos de las víseras</h3><div class="chips" id="chA"></div>
 <h3>Estilo de cenefa</h3><div class="cards" id="cEstilo"></div><div class="row"><button class="btn" style="background:#6b7783;border-color:#6b7783" id="bEst">Agregar estilo desde .glb…</button></div><input type="file" id="fEst" accept=".glb" hidden>
@@ -489,7 +490,7 @@ function buildEle(){const g=new THREE.Group(),co=pm(CL.cond,{roughness:.4}),bd=p
  label(g,'Bandeja portacables 200 mm',-66,5.5,zBand,{w:330,fs:21});
  return g}
 /* -------- ensamble y UI -------- */
-const PS={rv:{frente:'tablas',latS:'tablas',latN:'tablas',fondo:'tablas'},sel:['frente','latS','latN','fondo'],ww:90,pan:true,tens:true,ann:false,part:false,san:false,ele:false};
+const PS={rv:{frente:'tablas',latS:'tablas',latN:'tablas',fondo:'tablas'},sel:['frente','latS','latN','fondo'],ww:90,por:'orig',cie:'igual',pan:true,tens:true,ann:false,part:false,san:false,ele:false};
 function inRoot(o){while(o){if(o===root)return true;o=o.parent}return false}
 function buildProject(){if(PJ.grp)W.remove(PJ.grp);PJ.q={};PJ.clean=[];PJ.L={};const G=new THREE.Group();G.name='PROYECTO';
  const s=buildStruct(),c=buildClean(),p=buildPart(),n=buildSan(),e=buildEle(),pn=buildPanels();PJ.L.tens=s;PJ.L.clean=c;PJ.L.part=p;PJ.L.san=n;PJ.L.ele=e;PJ.L.pan=pn;PJ.pan=pn;G.add(s,c,p,n,e,pn);W.add(G);PJ.grp=G;W.updateMatrixWorld(true);
@@ -517,20 +518,24 @@ $('#pjOff')&&($('#pjOff').onclick=()=>{PS.part=false;PS.san=false;PS.ele=false;a
 $('#bPjCsv')&&($('#bPjCsv').onclick=()=>navigator.clipboard.writeText(window.__pjcsv||'').then(()=>{$('#bPjCsv').textContent='Copiado ✓';setTimeout(()=>$('#bPjCsv').textContent='Copiar CSV de instalaciones',1500)}));
 
 /* -------- interfaz simplificada -------- */
-const SWC={roble:'#d9a86f',teca:'#b27b3f',nogal:'#6e4a2f',ceniza:'#8c9094',none:'#fff',todas:'#cfe3ea',frente:'#e8e4dc',latS:'#e8e4dc',latN:'#e8e4dc',fondo:'#e8e4dc',orig:'linear-gradient(135deg,#d9c4a0 0 50%,#8a6f4a 50%)',lapacho:'#6a4a2c',wpc1:'#b27b3f',wpc2:'#d9a86f',piedra:'url('+STONE.a+')',hormigon:'#a8a8a2',blanco:'#f0efe9',gris:'#c9ccc7',grafito:'#383b3f',negro:'#1d1f21',pir:'linear-gradient(#f0efe9 0 60%,#c9ccc7 60%)',solei:'#a06a3a',aletas:'#6b7783',none:'#fff'};
+const SWC={igual:'linear-gradient(135deg,#f0efe9 0 50%,#c9ccc7 50%)','wpc:ceniza':'#8c9094','wpc:nogal':'#6e4a2f','wpc:teca':'#b27b3f','wpc:roble':'#d9a86f',roble:'#d9a86f',teca:'#b27b3f',nogal:'#6e4a2f',ceniza:'#8c9094',none:'#fff',todas:'#cfe3ea',frente:'#e8e4dc',latS:'#e8e4dc',latN:'#e8e4dc',fondo:'#e8e4dc',orig:'linear-gradient(135deg,#d9c4a0 0 50%,#8a6f4a 50%)',lapacho:'#6a4a2c',wpc1:'#b27b3f',wpc2:'#d9a86f',piedra:'url('+STONE.a+')',hormigon:'#a8a8a2',blanco:'#f0efe9',gris:'#c9ccc7',grafito:'#383b3f',negro:'#1d1f21',pir:'linear-gradient(#f0efe9 0 60%,#c9ccc7 60%)',solei:'#a06a3a',aletas:'#6b7783',none:'#fff'};
 const ROWS=[];
 function chipRow(box,opts,get,set){const b=$(box);b.innerHTML='';opts.forEach(o=>{const e=document.createElement('button');e.className='sw2';e.dataset.id=o[0];e.innerHTML=`<i style="background:${SWC[o[0]]||'#ccc'}"></i>${o[1]}`;e.onclick=()=>{set(o[0]);syncDesign()};b.appendChild(e)});ROWS.push([b,get])}
 function syncDesign(){ROWS.forEach(([b,get])=>{const v=get();b.querySelectorAll('.sw2').forEach(e=>e.classList.toggle('on',b.id==='chS'?(PS.sel.includes(e.dataset.id)||(e.dataset.id==='todas'&&PS.sel.length===4)):e.dataset.id===v))})}
 const TONES={roble:'WPC roble claro',teca:'WPC teca',nogal:'WPC nogal',ceniza:'WPC ceniza'};
 const FACES=[['frente','Frente'],['latS','Lateral sur'],['latN','Lateral norte'],['fondo','Fondo']];
-function applyFaces(){for(const f of PS.sel){}for(const [f] of FACES){const v=PS.rv[f];state.mats[f]=String(v).startsWith('wpc')?v.replace(/:\d+$/,'')+':'+PS.ww:'orig'}applyPJ();applyMats()}
+const wid=v=>String(v).startsWith('wpc')?v.replace(/:\d+$/,'')+':'+PS.ww:v;
+function applyFaces(){for(const [f] of FACES){const v=PS.rv[f];state.mats[f]=String(v).startsWith('wpc')?wid(v):'orig'}
+ state.mats.portal=wid(PS.por);state.mats.cielo=PS.cie==='igual'?(PS.por==='orig'?'orig':wid(PS.por)):wid(PS.cie);applyPJ();applyMats()}
 function setRev(v){PS.sel.forEach(f=>{PS.rv[f]=v==='orig'?'tablas':v==='none'?'none':'wpc:'+v});applyFaces()}
 function selFace(f,add){const i=PS.sel.indexOf(f);if(add){if(i<0)PS.sel.push(f);else if(PS.sel.length>1)PS.sel.splice(i,1)}else PS.sel=[f];syncDesign()}
 window.selFace=selFace;
 chipRow('#chS',FACES.concat([['todas','Todas']]),()=>'',id=>{if(id==='todas')PS.sel=FACES.map(x=>x[0]);else selFace(id,true)});
 chipRow('#chV',[['none','Sin revestir'],['orig','Original (tablitas)'],...Object.keys(TONES).map(k=>[k,TONES[k]])],()=>{const v=PS.sel.map(f=>PS.rv[f]);const u=[...new Set(v)];if(u.length!==1)return '';return u[0]==='tablas'?'orig':u[0]==='none'?'none':u[0].replace(/^wpc:/,'').replace(/:\d+$/,'')},setRev);
 chipRow('#chD',[['30','30 mm'],['60','60 mm'],['90','90 mm'],['150','150 mm']],()=>String(PS.ww),id=>{PS.ww=+id;applyFaces()});
-chipRow('#chP',[['orig','Original'],['blanco','Blanco'],['gris','Gris claro'],['grafito','Grafito'],['piedra','Piedra'],['lapacho','Lapacho'],['wpc1','WPC teca']],()=>state.mats.portal||'orig',id=>{state.mats.portal=id;state.mats.cielo=id==='orig'?'orig':state.mats.cielo;applyMats()});
+const TW=Object.keys(TONES).map(k=>['wpc:'+k,TONES[k]]);
+chipRow('#chP',[['orig','Original'],['blanco','Blanco'],['gris','Gris claro'],['grafito','Grafito'],['piedra','Piedra'],...TW],()=>PS.por,id=>{PS.por=id;applyFaces()});
+chipRow('#chC',[['igual','Igual a la cenefa'],...TW],()=>PS.cie,id=>{PS.cie=id;applyFaces()});
 const pirSet=(k,mk)=>id=>{PJ[k]=id;const m=PJ[mk];if(m)m.color.set(PIRC[id]);if(MESHES.length)applyMats()};
 chipRow('#chW',[['w','Blanco'],['g','Gris claro']].map(([a,b])=>[a==='w'?'blanco':'gris',b]),()=>PJ.pw==='g'?'gris':'blanco',id=>pirSet('pw','mw')(id==='gris'?'g':'w'));
 chipRow('#chR',[['blanco','Blanco'],['gris','Gris claro']],()=>PJ.pr==='g'?'gris':'blanco',id=>pirSet('pr','mr')(id==='gris'?'g':'w'));
@@ -548,7 +553,7 @@ function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSiz
 new ResizeObserver(resize).observe(stage);resize();
 renderer.setAnimationLoop(()=>{if(anim){const k=Math.min(1,(performance.now()-anim.t0)/700),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;cam.position.lerpVectors(anim.p0,anim.p1,e);ctl.target.lerpVectors(anim.t0v,anim.t1,e);if(k>=1)anim=null}ctl.update();renderer.render(scene,cam)});
 async function start(buf){state.mats={};state.portal='alero';state.apoyo='solei';state.aleroOn=true;state.estilo=0;await loadGLB(buf);buildProject();renderEstilos();buildEls();buildTree();applyMats();applyOpts();applyPJ();$('#load').style.display='none';window.__ready=true}
-window.__cfg={PS,applyPJ,THREE,scene,cam,ctl,state,get MESHES(){return MESHES},applyOpts,applyMats,goView,xray,BBf:()=>BB,PRE};
+window.__cfg={PS,PJ,applyPJ,THREE,scene,cam,ctl,state,get MESHES(){return MESHES},applyOpts,applyMats,goView,xray,BBf:()=>BB,PRE};
 function b64(s){const bin=atob(s),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u.buffer}
 (async()=>{try{if(window.OV2_B64&&window.OV2_B64.length>100)if(window.OV3_B64&&window.OV3_B64.length>100)OVBUF.push({name:'Estilo 3 · cenefa larga',desc:'Cenefa larga: banda continua en el borde del techo que proyecta en el frente.',buf:b64(window.OV3_B64)});OVBUF.push({name:'Estilo 2 · cenefa nueva',desc:'Portal con cenefa simple frontal, cielorraso y alero de techo rediseñados (superpuesto al modelo base).',buf:b64(window.OV2_B64)});let buf;if(window.GLB_B64&&window.GLB_B64.length>100)buf=b64(window.GLB_B64);else buf=await (await fetch('NAVE_COMERCIAL.glb')).arrayBuffer();await start(buf)}catch(err){$('#load').innerHTML='No pude cargar el modelo ('+err.message+').<br>Usá “Cargar .glb editado” para elegir tu archivo.'}})();
 </script></body></html>
