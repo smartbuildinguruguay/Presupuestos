@@ -61,10 +61,11 @@ summary span{color:var(--acc)}
 <p>Juan Carlos García · Av. Pedragosa Sierra, Punta del Este · padrones 10596, 10597 y 10598 · SBU · Ramiro Portugau, director de obra · Ing. Ricardo Portugau, cálculo · documento de trabajo 14/11/2026</p></header>
 <div id="ctl">
 <label>Estilo <select id="cEst"><option value="cro" selected>Croquis (cenefas)</option><option value="nor">Nórdico</option><option value="esc">Escandinavo</option><option value="pat">Patagónico</option></select></label>
+<label>Referencia de fachada <select id="cRef"><option value="" selected>Croquis base</option><option value="r1">Portal blanco y pentágono</option><option value="r2">Barn con pilares de piedra</option><option value="r3">Cabaña: portal de madera</option><option value="r4">Dintel negro y tablas</option></select></label>
 <label>Suelo <select id="cSue"></select></label>
 <label>Locales por nave lateral <select id="cN"><option value="2">2 locales</option><option value="3" selected>3 locales</option><option value="4">4 locales</option></select></label>
 <label>Nave de consultorios <select id="cCons"><option value="N" selected>Norte (7 consultorios)</option><option value="S">Sur (7 consultorios)</option><option value="none">Ninguna (solo locales)</option></select></label>
-<label>Fondo de la nave del medio <select id="cBd"><option value="14">14 m</option><option value="17">17 m</option><option value="20" selected>20 m</option></select></label>
+<label>Fondo de la nave del medio (2 pisos) <select id="cBd"><option value="10">10 m</option><option value="12" selected>12 m</option><option value="14">14 m</option><option value="16">16 m</option></select></label>
 <label>Cara interior de la cenefa <select id="cCara"><option value="lis">Lisa</option><option value="mad">Madera natural</option><option value="mp" selected>Madera arriba y piedra abajo</option></select></label>
 <label>Locales gastronómicos <input id="cGas" type="number" min="0" max="12" value="0" style="width:56px"></label>
 <label><input id="cIva" type="checkbox"> Mostrar con IVA</label>
@@ -105,28 +106,31 @@ const RET = { fr: 10, lat: 3, suma: 8, fo: 4 };
 const PADS = [['10598', 0, 20, 1050], ['10597', 20, 40, 1000], ['10596', 40, 60, 1000]];
 const TAN = Math.tan(20 * Math.PI / 180);
 const NLB = 2, NCONS = 7, DP = 1.2, DPO = 1.0; // locales del fondo, consultorios, resguardo de cenefa al jardín y al retiro lateral
-const S = { est: 'cro', suelo: 'S0', n: 3, gas: 0, iva: false, cara: 'mp', cons: 'N', bd: 20 };
+const S = { ref: '', est: 'cro', suelo: 'S0', n: 3, gas: 0, iva: false, cara: 'mp', cons: 'N', bd: 12 };
+const NPLZ = 16, PL = { w: 2.5, d: 5, acc: 3.5, ais: 6, x1: -6 }; // estacionamiento del plano de la arquitecta: 16 plazas de 2,50 × 5,00
+const PORT = 1.5; // portal proyectado en el hastial (cuenta en el FOS)
 const NV = [
-  { id: 'S', n: 'Nave sur', pad: '10598', pa: 1050, x0: -43, x1: -21, y0: 3, y1: 14.5, tipo: 'dos' },
-  { id: 'B', n: 'Nave del fondo', pad: '10597', pa: 1000, x0: -43, x1: -23, y0: 24.25, y1: 35.75, tipo: 'esc' },
-  { id: 'N', n: 'Nave norte', pad: '10596', pa: 1000, x0: -43, x1: -22, y0: 45.5, y1: 57, tipo: 'dos' }
+  { id: 'S', n: 'Nave sur', pad: '10598', pa: 1050, x0: -43, x1: -22, y0: 3, y1: 14.5, tipo: 'dos' },
+  { id: 'B', n: 'Nave del fondo', pad: '10597', pa: 1000, x0: -43, x1: -31, y0: 24.25, y1: 35.75, tipo: 'dos', niv: 2 },
+  { id: 'N', n: 'Nave norte', pad: '10596', pa: 1000, x0: -43, x1: -23, y0: 45.5, y1: 57, tipo: 'dos' }
 ];
 function deriv(b, o = S) {
   if (b.id === 'B') b.x1 = b.x0 + o.bd;
-  b.L = b.x1 - b.x0; b.W = b.y1 - b.y0; b.A = b.L * b.W; b.e = 6.0; b.cons = o.cons === b.id;
+  b.L = b.x1 - b.x0; b.W = b.y1 - b.y0; b.A = b.L * b.W; b.e = 6.0; b.cons = o.cons === b.id; b.niv = b.niv || 1; b.nb = b.id === 'B' ? 2 : o.n;
   b.inY = b.id === 'S' ? b.y1 : b.y0; b.outY = b.id === 'S' ? b.y0 : b.y1; b.dIn = b.id === 'S' ? 1 : -1; // cara hacia el jardín
   if (b.tipo === 'dos') { b.r = b.e + b.W / 2 * TAN; b.hm = b.e + (b.r - b.e) / 2; b.alt = b.r; }
   else { b.lo = 6.0; b.hi = b.lo + .05 * b.L; b.hp = b.hi + .6; b.hm = (b.lo + b.hi) / 2; b.alt = b.hp; }
   let fx;
   if (b.tipo === 'esc') { const n = Math.ceil(b.L / 5) + 1; fx = Array.from({ length: n }, (_, k) => b.x0 + k * b.L / (n - 1)); }
   else if (b.cons) fx = [0, 4.1, 8.0, 11.9, 15.8, b.L].map(u => b.x0 + u);
-  else { const n = o.n, w = b.L / n; fx = [b.x0]; for (let i = 0; i < n; i++) { if (w > 7.5) fx.push(b.x0 + i * w + w / 3, b.x0 + i * w + 2 * w / 3); fx.push(b.x0 + (i + 1) * w); } }
+  else { const n = b.nb, w = b.L / n; fx = [b.x0]; for (let i = 0; i < n; i++) { if (w > 7.5) fx.push(b.x0 + i * w + w / 3, b.x0 + i * w + 2 * w / 3); fx.push(b.x0 + (i + 1) * w); } }
   b.fx = fx; b.nfr = fx.length; const gp = fx.slice(1).map((x, i) => x - fx[i]); b.vmin = Math.min(...gp); b.vmax = Math.max(...gp);
   const P = PADS.find(p => p[0] === b.pad); b.lat = [b.y0 - P[1], P[2] - b.y1];
 }
-const applyGeom = (o = S) => NV.forEach(b => deriv(b, o));
-const nloc = (b, o = S) => b.tipo === 'dos' ? (b.id === o.cons ? 1 : o.n) : NLB;
+const applyGeom = (o = S) => { NV.forEach(b => deriv(b, o)); if (typeof GARD !== 'undefined') GARD = gardenOf(); };
+const nloc = (b, o = S) => b.id === o.cons ? 1 : b.nb * b.niv;
 const plazasDe = (b, o = S) => b.id === o.cons ? NCONS : nloc(b, o);
+const plazasTot = (o = S) => Math.max(NPLZ, sum(NV, b => plazasDe(b, o)));
 /* Consultorios: programa del plano de la arquitecta (7 consultorios, espera, reuniones, archivo, recepción, 2 SSHH, baño accesible, escalera), redistribuido en la nave */
 function consRooms(b) {
   const L = b.L, W = b.W, R = [], m = [0, 4.1, 8.0, 11.9, 15.8], r = (k, n, t, u0, u1, v0, v1, x = {}) => R.push({ k, n, t, u0, u1, v0, v1, A: (u1 - u0) * (v1 - v0), ...x });
@@ -151,13 +155,13 @@ function openings(b, o = S) {
       const uc = (r.u0 + r.u1) / 2;
       if (r.t === 'c') add(r.face, uc - .9, uc + .9, .9, 2.5, 'w');
       if (r.k === 'REC') { add('in', r.u0 + .2, r.u1 - .2, .6, 3.0, 'g'); add('in', uc - .9, uc + .9, 0, 2.4, 'p'); }
-      if (r.t === 's') add('out', uc - .3, uc + .3, 1.9, 2.5, 'w');
+      if (r.t === 's') { const wc = r.k === 'SH2' ? uc - .8 : uc; add('out', wc - .3, wc + .3, 1.9, 2.5, 'w'); }
       if (r.k === 'ARCH') add('out', uc - .5, uc + .5, 0, 2.2, 'p');
       if (r.k === 'HALL') { add('e', b.W / 2 - 1.2, b.W / 2 + 1.2, 0, 2.4, 'p'); add('e', 1.2, b.W / 2 - 1.4, .6, 3.0, 'g'); add('e', b.W / 2 + 1.4, b.W - 1.2, .6, 3.0, 'g'); }
     });
     return O;
   }
-  const n = o.n, w = b.L / n;
+  const n = b.nb, w = b.L / n;
   for (let i = 0; i < n; i++) {
     const xl = i * w, xc = xl + w / 2;
     add('in', i === 0 ? 1 : xl + .15, i === n - 1 ? b.L - 1 : xl + w - .15, .6, 3.0, 'g'); add('in', xc - .9, xc + .9, 0, 2.4, 'p');
@@ -172,17 +176,30 @@ function chkAbert(b, o = S) { // puertas y ventanas sueltas contra las columnas 
   return bad;
 }
 applyGeom();
-/* Jardín y paseo: todo sale de esta tabla (x hacia el fondo en negativo, y hacia el norte) */
-const GARD = {
-  decks: [[-43, -21, 14.5, 17, 'Galería sur, frente a los locales'], [-43, -22, 43, 45.5, 'Galería norte, frente a los locales'], [-23, -15, 24.25, 35.75, 'Plaza de estar frente a la nave del fondo']],
-  pave: [[-15, -10, 28.5, 31.5, 'Paseo de entrada desde la avenida']],
-  grav: [[[-13, 17], [-14, 21], [-15, 24.25]], [[-19, 17], [-18.5, 21], [-18, 24.25]], [[-13, 43], [-14, 39], [-15, 35.75]], [[-19, 43], [-18.5, 39.5], [-18, 35.75]], [[-41, 17], [-38, 20.5], [-31, 21.5], [-24, 21]], [[-41, 43], [-38, 39.5], [-31, 38.5], [-24, 39]]],
-  gravW: 1.5,
-  walkS: [-43, -10, 1, 2.8], walkN: [-43, -10, 57.2, 59],
-  canteros: [[-33, 18.9, 5, 1.2], [-33, 41.1, 5, 1.2], [-12, 25.2, 2.5, 1.4], [-12, 34.8, 2.5, 1.4], [-16, 20, 2.2, 1.3], [-16, 40.5, 2.2, 1.3]],
-  arboles: [[-39, 21.5], [-34, 22.5], [-28.5, 22.5], [-39, 38.5], [-34, 37.8], [-28.5, 38], [-11.5, 21.5], [-11.5, 38.5], [-16.5, 22.5], [-16.5, 37.5], [-15, 7.5], [-12.5, 11.5], [-13.5, 51], [-16.5, 54.5], [-20, 20.5], [-21, 39.8], [-12, 28]],
-  bancos: [[-21.5, 25.4, -21.5, 28.6], [-21.5, 31.4, -21.5, 34.6]]
-};
+/* Estacionamiento: 16 plazas de 2,50 × 5,00 en el retiro de frente, dos grupos de 8 a cada lado del paseo peatonal (una plaza accesible de 3,50 m) */
+function parking() {
+  const st = [], xa = PL.x1 - PL.d; let yS = 3.5;
+  for (let i = 0; i < NPLZ / 2; i++) { const w = i === 0 ? PL.acc : PL.w; st.push([xa, PL.x1, yS, yS + w, i === 0]); yS += w; }
+  let yN = 36; for (let i = 0; i < NPLZ / 2; i++) { st.push([xa, PL.x1, yN, yN + PL.w, false]); yN += PL.w; }
+  const ys0 = 3.5, ys1 = Math.max(yS, yN), area = st.reduce((t, p) => t + (p[1] - p[0]) * (p[3] - p[2]), 0), ais = [[PL.x1, 0, ys0, yS], [PL.x1, 0, 36, yN]];
+  return { st, ais, area, aisA: ais.reduce((t, p) => t + (p[1] - p[0]) * (p[3] - p[2]), 0), y0: ys0, y1: ys1, xa };
+}
+const PARK = parking();
+/* Jardín y paseo: todo sale de esta tabla (x hacia el fondo en negativo, y hacia el norte); la plaza y el parque se calculan desde la nave del fondo */
+function gardenOf() {
+  const B = NV[1], S_ = NV[0], N_ = NV[2], xb = B.x1, xp = xb + 8;
+  return {
+    decks: [[S_.x0, S_.x1, 14.5, 17, 'Galería sur, frente a los locales'], [N_.x0, N_.x1, 43, 45.5, 'Galería norte, frente a los locales'], [xb, xp, B.y0, B.y1, 'Plaza de estar frente a la nave del fondo']],
+    pave: [[xp + 7, PARK.xa + 5 + 0, 28.5, 31.5, 'Paseo peatonal entre los dos grupos de estacionamiento']].map(p => [xp + 7, -6, 28.5, 31.5, p[4]]),
+    grav: [[[xp + 7, 30], [xp + 3.5, 30], [xp, 30]], [[S_.x1 - .5, 17], [xp - 1.5, 21], [xp - 3, B.y0]], [[xb + 1.5, 17], [xb + 2.5, 21], [xb + 3.5, B.y0]], [[N_.x1 - .5, 43], [xp - 1.5, 39.5], [xp - 3, B.y1]], [[xb + 1.5, 43], [xb + 2.5, 39.5], [xb + 3.5, B.y1]]],
+    gravW: 1.5,
+    walkS: [-43, -6, 1, 2.8], walkN: [-43, -6, 57.2, 59],
+    canteros: [[xb - 5.5 + 0, 21, 5, 1.2], [xb - 5.5, 39, 5, 1.2], [xp + 11, 25.2, 2.6, 1.4], [xp + 11, 34.8, 2.6, 1.4], [xp + 3, 23.2, 2.4, 1.3], [xp + 3, 36.8, 2.4, 1.3]],
+    arboles: [[xb - 8, 21.5], [xb - 3, 21], [xb - 8, 38.5], [xb - 3, 39], [xp + 1.5, 21], [xp + 1.5, 39], [xp + 6, 22], [xp + 6, 38], [xp + 10, 21.5], [xp + 10, 38.5], [-17.5, 24], [-17.5, 36], [-15, 7.5], [-12.5, 11.5], [-13.5, 51], [-16.5, 54.5], [-27, 16.8], [xp + 4, 28.2]],
+    bancos: [[xp + .5, B.y0 + 1.2, xp + .5, B.y0 + 4.2], [xp + .5, B.y1 - 4.2, xp + .5, B.y1 - 1.2]]
+  };
+}
+var GARD = gardenOf();
 const gsegLen = p => p.slice(1).reduce((t, q, i) => t + Math.hypot(q[0] - p[i][0], q[1] - p[i][1]), 0);
 const SUELO = {
   S0: ['Suelo firme: desmonte 0,20 + tosca 0,30', .3, 'Arena densa o tosca natural: SPT N ≥ 15 a −0,80, sin napa a menos de 1,5 m.'],
@@ -197,6 +214,7 @@ const EST = {
   esc: { n: 'Escandinavo', pie: 1, cen: 105, d: 'Madera en frentes y hastiales, chapa grafito, franja de piedra de 1,20 m y cenefa marcada.' },
   pat: { n: 'Patagónico', pie: 1.42, cen: 130, d: 'Machones de piedra de 2,40 m, zócalo de 1,00 m y techo con alero cajón de 85 cm.' }
 };
+const REFOPT = {"r1": {"n": "Portal blanco y pentágono", "f": 0.9, "vid": 0.321, "pie": 0.0, "mad": 0.576, "cha": 0.0, "mar": 0.016, "tot": 324.6}, "r2": {"n": "Barn con pilares de piedra", "f": 0.55, "vid": 0.452, "pie": 0.151, "mad": 0.0, "cha": 0.314, "mar": 0.005, "tot": 332.2}, "r3": {"n": "Cabaña: portal de madera", "f": 0.6, "vid": 0.257, "pie": 0.0, "mad": 0.153, "cha": 0.579, "mar": 0.0, "tot": 331.1}, "r4": {"n": "Dintel negro y tablas", "f": 0.5, "vid": 0.437, "pie": 0.0, "mad": 0.406, "cha": 0.0, "mar": 0.065, "tot": 333.4}}; // proporciones por m² de envolvente salidas del editor de materiales (/materiales/), una por foto de referencia
 const sum = (a, f) => a.reduce((t, x) => t + f(x), 0);
 /* Distribución de consultorios: tabiques, puertas y sanitaria */
 function consWalls(R, L, W) {
@@ -250,12 +268,14 @@ function Qty(o = S) {
   const OP = NV.map(b => openings(b, o));
   const glass = sum(OP, l => sum(l.filter(q => q.t !== 'p'), q => (q.z - q.a) * (q.h1 - q.h0))) + D.length * 7.1;
   const doors = sum(OP, l => l.filter(q => q.t === 'p').length), frentes = sum(OP, l => sum(l.filter(q => q.t === 'g'), q => q.z - q.a));
-  const stone = (sum(D, b => b.L + b.W) + sum(E, b => b.W)) * 1.2 * EST[o.est].pie;
+  const RO = o.est === 'cro' && o.ref ? REFOPT[o.ref] : null;
+  const glass2 = RO ? RO.vid * gross : glass, stone = RO ? RO.pie * gross : (sum(D, b => b.L + b.W) + sum(E, b => b.W)) * 1.2 * EST[o.est].pie, refW = RO ? RO.mad * gross : 0, refC = RO ? RO.cha * gross : 0;
   const hast = Math.cos(20 * Math.PI / 180);
   const cen = cro ? sum(D, b => 2 * (2 * b.e + b.W / hast)) + sum(E, b => 2 * b.hp + b.W) : sum(D, b => 2 * b.L) + sum(E, b => 2 * (b.L + b.W));
-  const pir = Math.max(0, gross - glass - stone);
-  const div = sum(D.filter(b => b.id !== o.cons), b => (o.n - 1) * b.W * b.hm) + sum(E, b => (NLB - 1) * b.L * b.hm);
-  const plz = sum(NV, b => plazasDe(b, o)), pav = plz * 27.5 + 50 + 3.5 * (10 + 24 + 3);
+  const pir = Math.max(0, gross - glass2 - stone);
+  const div = sum(D.filter(b => b.id !== o.cons), b => (b.nb - 1) * b.W * b.hm);
+  const ent = sum(NV, b => b.niv > 1 ? b.A * .92 * (b.niv - 1) : 0), esc = NV.filter(b => b.niv > 1).length;
+  const plz = plazasTot(o), pav = PARK.area + PARK.aisA + 60;
   const dk = sum(GARD.decks, d => (d[1] - d[0]) * (d[3] - d[2])), pv = sum(GARD.pave, d => (d[1] - d[0]) * (d[3] - d[2]));
   const gr = sum(GARD.grav, p => gsegLen(p) * GARD.gravW) + [GARD.walkS, GARD.walkN].reduce((t, w) => t + (w[1] - w[0]) * (w[3] - w[2]), 0);
   const cn = sum(GARD.canteros, c => Math.PI * c[2] * c[3]), tr = GARD.arboles.length, bn = sum(GARD.bancos, p => Math.hypot(p[2] - p[0], p[3] - p[1]));
@@ -264,11 +284,12 @@ function Qty(o = S) {
   const cIn = sum(D, b => b.L) + sum(E, b => b.W), cOut = sum(D, b => b.L);
   const fins = 2 * (D.length + E.length) + 2 * D.length; // aletas de extremo en la cara al jardín y en cada hastial
   const sof = cIn * DP + cOut * DPO + sum(D, b => 2 * DP * (b.W / 2 / hast)) , finA = sum(D, b => 2 * DP * 3.45 + 2 * DP * b.e) + sum(E, b => 2 * DP * b.hp);
-  const stoneRec = cro && o.cara === 'mp' ? sum(D, b => (b.L - 2) * .6 + (b.W - 2.4) * .6 + 4 * DP * 1.2) + sum(E, b => (b.W - 2) * .6 + 2 * DP * 1.2) : 0;
-  const recTot = sof + finA, woodRec = !cro || o.cara === 'lis' ? 0 : o.cara === 'mad' ? recTot + sum(D, b => (b.L - 2) * .6 + (b.W - 2.4) * .6) + sum(E, b => (b.W - 2) * .6) : recTot - sum(D, b => 4 * DP * 1.2) - sum(E, b => 2 * DP * 1.2);
+  const stoneRec = cro && !RO && o.cara === 'mp' ? sum(D, b => (b.L - 2) * .6 + (b.W - 2.4) * .6 + 4 * DP * 1.2) + sum(E, b => (b.W - 2) * .6 + 2 * DP * 1.2) : 0;
+  const recTot = sof + finA, woodRec = !cro || RO || o.cara === 'lis' ? 0 : o.cara === 'mad' ? recTot + sum(D, b => (b.L - 2) * .6 + (b.W - 2.4) * .6) + sum(E, b => (b.W - 2) * .6) : recTot - sum(D, b => 4 * DP * 1.2) - sum(E, b => 2 * DP * 1.2);
   const SN = sani(o), cw = SN ? consWalls(SN.R, SN.b.L, SN.b.W) : 0;
   const red = redPredio(o);
-  return { FP, per, AH, cols, nl, RF, gross, glass, stone, cen, pir, div, plz, pav, jar, frentes, doors, dk, pv, gr, cn, tr, bn, cesp, cro, hasC, cIn, cOut, stoneRec, woodRec, cw, red, SN };
+  const AR = FP + sum(NV, b => b.A * (b.niv - 1));
+  return { RO, refW, refC, AR, ent, esc, FP, per, AH, cols, nl, RF, gross, glass: glass2, stone, cen, pir, div, plz, pav, jar, frentes, doors, dk, pv, gr, cn, tr, bn, cesp, cro, hasC, cIn, cOut, stoneRec, woodRec, cw, red, SN };
 }
 /* ================= COTIZACIÓN ================= */
 function cotiza(o = S) {
@@ -291,18 +312,23 @@ function cotiza(o = S) {
   it(2, 'Perfiles conformados galvanizados: correas, largueros y bastidores (9 kg/m²)', Math.round(q.FP * 9), 'kg', 2.6, .11);
   it(2, 'Pernos de anclaje con plantilla (4 por columna)', q.cols * 4, 'u', 18, .11);
   it(2, 'Grúa para el montaje', 1, 'gl', 5500, .11);
-  it(2, 'Previsión de la planta alta: esperas, estructura del núcleo de escalera y fosa del ascensor en cada nave', 3, 'u', 2230, .11);
+  it(2, 'Previsión de la planta alta en las naves laterales: esperas, estructura del núcleo de escalera y fosa del ascensor', 2, 'u', 2230, .11);
+  if (q.ent > 0) { it(2, 'Entrepiso de la nave del fondo (planta alta): vigas de acero, losa colaborante de 10 cm con malla y terminación, a cotizar', Math.round(q.ent), 'm²', 96, .4); it(2, 'Escalera interna de acero con peldaños de madera y baranda, nave del fondo', q.esc, 'u', 2400, .4); }
   cat('4 · Techo');
   it(3, 'Isodec PIR 80 mm engrafado blanco (material)', Math.round(q.RF), 'm²', 52.44, 0);
   it(3, 'Montaje de techo, fijaciones y sellado', Math.round(q.RF), 'm²', 24, .85);
-  it(3, 'Canaletas de chapa en alero, 12 bajadas con codo embutido y canaleta interna de la nave del fondo', 1, 'gl', Math.round(2 * (22 + 21) * 45 + 12 * 240 + 20 * 60), .4);
+  it(3, 'Canaletas de chapa en los aleros de las tres naves y 12 bajadas con codo embutido', 1, 'gl', Math.round(2 * sum(NV, b => b.L) * 45 + 12 * 240), .4);
   cat('5 · Muros y aberturas');
   it(3, 'Panel liso PIR 80 mm (material) · a cotizar', Math.round(q.pir), 'm²', 55, 0);
   it(3, 'Montaje de muros, remates y zócalo', Math.round(q.pir), 'm²', 28, .7);
   it(3, 'Vidrieras de los locales (vidriera corrida al jardín, ventana al costado, hastiales con banderola y frente de la nave del fondo), aluminio línea pesada, laminado 5+5', Math.round(q.glass), 'm²', 290, 0);
   it(3, 'Puertas vidriadas: una al jardín y una al costado en cada local lateral; una al frente en los del fondo', q.doors, 'par', 800, .2);
-  if (q.cro) it(3, 'Cenefas verticales de madera tratada y oscurecida de piso a cubierta (tablilla, subestructura y fijaciones), a cotizar', Math.round(q.pir), 'm²', 62, .4);
+  if (q.cro && !q.RO) it(3, 'Cenefas verticales de madera tratada y oscurecida de piso a cubierta (tablilla, subestructura y fijaciones), a cotizar', Math.round(q.pir), 'm²', 62, .4);
   it(3, q.cro ? 'Marco oscuro de chapa plegada en los hastiales (cubierta que baja como pared)' : 'Cenefa de madera o simil en aleros y coronación', Math.round(q.cen), 'ml', EST[o.est].cen, .4);
+  if (q.RO) {
+    if (q.refW > 0) it(3, 'Revestimiento de tablas de madera machimbrada tratada sobre el panel (subestructura y fijaciones), a cotizar', Math.round(q.refW), 'm²', 85, .45);
+    if (q.refC > 0) it(3, 'Revestimiento de chapa trapezoidal prepintada sobre el panel, con remates', Math.round(q.refC), 'm²', 30, .5);
+  }
   if (q.cro) {
     it(3, `Resguardo de cenefa: vísera de ${f1(DP)} m sobre las vidrieras al jardín y de ${f1(DPO)} m sobre las puertas del retiro lateral, con ménsulas, aletas y cielorraso de cenefa`, Math.round(q.cIn + q.cOut), 'ml', 135, .4);
     it(3, `Portal de hastial proyectado ${f1(DP)} m: marco, aletas y alero que protegen la vidriera`, Math.round(q.cen), 'ml', 85, .4);
@@ -346,8 +372,8 @@ function cotiza(o = S) {
   it(5, 'Árboles nativos de 2,5 a 3 m con tutor y riego inicial', q.tr, 'u', 320, .25);
   it(5, 'Bancos corridos de madera', Math.round(q.bn), 'ml', 220, .4);
   it(5, 'Riego automático por aspersión y goteo con programador', Math.round(q.jar), 'm²', 3.2, .4);
-  cat('9 · Paquete de imagen · ' + EST[o.est].n);
-  if (q.stone > 0) it(3, `Piedra granítica de la zona, careada, colocada (${o.est === 'pat' ? 'machones, retornos y zócalo' : o.est === 'nor' ? 'zócalo de 60 cm' : 'franja de 1,20 m'}); con piedrero, muro de respaldo y andamio`, Math.round(q.stone), 'm²', 230, .55);
+  cat('9 · Paquete de imagen · ' + EST[o.est].n + (q.RO ? ' · ' + q.RO.n : ''));
+  if (q.stone > 0) it(3, `Piedra granítica de la zona, careada, colocada (${q.RO ? 'pilares y zócalo según la referencia' : o.est === 'pat' ? 'machones, retornos y zócalo' : o.est === 'nor' ? 'zócalo de 60 cm' : 'franja de 1,20 m'}); con piedrero, muro de respaldo y andamio`, Math.round(q.stone), 'm²', 230, .55);
   it(3, 'Luz cálida embutida en las vidrieras y cartelería corpórea de cada local', Math.round(q.frentes), 'ml', 70, .3);
   cat('10 · Cierre de obra');
   it(5, 'Andamios, fletes, limpieza, volquetas y seguros de obra', 1, 'gl', 11900, .15);
@@ -392,6 +418,12 @@ const SV = (w, h, b) => { const k = ++svN; b = b.split('url(#slat)').join('url(#
 const COL = { cen: 'url(#slat)', cenD: 'url(#slatD)', marco: '#1d2022', deck: '#b98a52', grava: '#d8d0bd', arbol: 'rgba(78,125,66,.62)', chapa: '#3b4046', nor: '#26292d', mad: '#a2763f', pie: '#9d9386', vid: '#9cc3d2', techo: '#2f353b', ac: '#7d8790' };
 const chk = (ok, t, d) => `<tr><td>${t}</td><td>${d}</td><td>${ok ? '<span class="pill">Cumple</span>' : '<b style="color:#b03a2e">No cumple</b>'}</td></tr>`;
 /* ================= IMPLANTACIÓN ================= */
+function parkSVG(X, Y, s, st = '#777') {
+  let g = PARK.ais.map(p => R_(X(p[0]), Y(p[3]), (p[1] - p[0]) * s, (p[3] - p[2]) * s, 'fill="#d9d9d4"')).join('');
+  PARK.st.forEach(p => g += R_(X(p[0]), Y(p[3]), (p[1] - p[0]) * s, (p[3] - p[2]) * s, `fill="${p[4] ? '#cfe3f3' : '#fff'}" stroke="${st}" stroke-width=".8"`));
+  const c = (PARK.st[0][1] + PARK.st[0][0]) / 2; g += T_(X(c), Y(PARK.st[0][3]) - 4, 'accesible', 'text-anchor="middle" font-size="8" fill="#2c6fa3"');
+  return g + T_(X(-11), Y(PARK.y0) + 12, `${NPLZ} plazas de 2,50 × 5,00 · maniobra 6,00 m`, 'fill="#555" font-size="10"');
+}
 function gardenSVG(X, Y, s, rot) {
   let g = '';
   GARD.canteros.forEach(c => g += `<ellipse cx="${X(c[0]).toFixed(1)}" cy="${Y(c[1]).toFixed(1)}" rx="${(c[2] * s).toFixed(1)}" ry="${(c[3] * s).toFixed(1)}" fill="#a9c58f" stroke="#6f9a58" stroke-width=".8"/>`);
@@ -416,8 +448,7 @@ function dImpl() {
   g += gardenSVG(X, Y, s);
   const sp = sunPos(172, 12.67);
   NV.forEach(b => { const Ls = Math.min(b.hm / Math.tan(sp.alt), 40), dx = -Math.sin(sp.az) * Ls, dy = -Math.cos(sp.az) * Ls, c = [[b.x0, b.y0], [b.x1, b.y0], [b.x1, b.y1], [b.x0, b.y1]]; const pts = c.concat(c.map(p => [p[0] + dx, p[1] + dy])); const hull = h(pts); g += P_(hull.map(p => [X(p[0]), Y(p[1])]), 'fill="rgba(40,50,80,.2)"'); });
-  for (let i = 0; i < q.plz; i++) { const y0 = 4 + i * (52 / Math.max(q.plz, 1)); g += R_(X(-8), Y(y0 + 2.5), 4.5 * s, 2.5 * s, 'fill="#fff" stroke="#777" stroke-width=".8"'); }
-  g += T_(X(-9), Y(0) + 14, `${q.plz} plazas, una por local`, 'fill="#555" font-size="10"');
+  g += parkSVG(X, Y, s);
   [10, 30, 50].forEach(y => g += `<polygon points="${X(0)},${Y(y)} ${X(0) + 10},${Y(y) - 5} ${X(0) + 10},${Y(y) + 5}" fill="#b03a2e"/>`);
   NV.forEach(b => {
     g += R_(X(b.x0), Y(b.y1), b.L * s, b.W * s, `fill="${b.tipo === 'dos' ? '#7f93a8' : '#6e8aa0'}" stroke="#111" stroke-width="1.3"`);
@@ -429,27 +460,27 @@ function dImpl() {
     openings(b).filter(q => q.t === 'p').forEach(q => { const c = (q.a + q.z) / 2, px = q.f === 'e' ? b.x1 : b.x0 + c, py = q.f === 'in' ? b.inY : q.f === 'out' ? b.outY : b.y0 + c; g += `<circle cx="${X(px).toFixed(1)}" cy="${Y(py).toFixed(1)}" r="3.4" fill="${q.f === 'in' ? '#2c6fa3' : q.f === 'out' ? '#d9822b' : '#2e8b57'}" stroke="#fff"/>`; });
   });
   const gS = NV[1].y0 - NV[0].y1, gN = NV[2].y0 - NV[1].y1;
-  [[NV[0].y1, NV[1].y0, gS], [NV[1].y1, NV[2].y0, gN]].forEach(([a, b, v]) => { g += L_(X(-31), Y(a), X(-31), Y(b), 'stroke="#b03a2e" stroke-width="1.2"') + T_(X(-31) + 4, Y((a + b) / 2) + 4, `${f2(v)} m entre naves`, 'fill="#b03a2e" font-size="10"'); });
+  [[NV[0].y1, NV[1].y0, gS], [NV[1].y1, NV[2].y0, gN]].forEach(([a, b, v]) => { g += L_(X(-26), Y(a), X(-26), Y(b), 'stroke="#b03a2e" stroke-width="1.2"') + T_(X(-26) + 4, Y((a + b) / 2) + 4, `${f2(v)} m entre naves`, 'fill="#b03a2e" font-size="10"'); });
   g += T_(X(-10) + 4, Y(60) - 6, 'retiro frontal 10 m', 'fill="#6b5b3a" font-size="10"') + T_(X(-LOT.D) + 4, Y(60) - 6, 'fondo 4 m', 'fill="#555" font-size="10"');
   g += `<line x1="${X(0) + 70}" y1="${oy + 46}" x2="${X(0) + 70}" y2="${oy + 14}" stroke="#111" stroke-width="2"/><polygon points="${X(0) + 70},${oy + 8} ${X(0) + 65},${oy + 20} ${X(0) + 75},${oy + 20}" fill="#111"/>` + T_(X(0) + 66, oy + 4, 'N', 'font-weight="700"');
   g += L_(X(-LOT.D), Y(0) + 28, X(-LOT.D) + 10 * s, Y(0) + 28, 'stroke="#111" stroke-width="2"') + T_(X(-LOT.D) + 10 * s + 4, Y(0) + 32, '10 m');
   const svg = SV(X(0) + 110, Y(0) + 40, g);
   let dmin = 99; for (let i = 0; i < 3; i++) for (let j = i + 1; j < 3; j++) dmin = Math.min(dmin, rectDist(NV[i], NV[j]));
   let rows = '';
-  NV.forEach(b => { const lim = b.pa * .25; rows += chk(b.A <= lim, `FOS · ${b.n} (${b.pad})`, `${nf(b.A)} m² · ${f1(b.A / b.pa * 100)} % de ${nf(b.pa)} m² (máx. ${nf(lim)} m²)`); });
+  NV.forEach(b => { const lim = b.pa * .25; const ap = (b.L + PORT) * b.W; rows += chk(ap <= lim, `FOS · ${b.n} (${b.pad})`, `${nf(b.A)} m² + portal ${f1(PORT * b.W)} m² = ${nf(ap)} m² · ${f1(ap / b.pa * 100)} % de ${nf(b.pa)} m² (máx. ${nf(lim)} m²)`); });
   NV.forEach(b => rows += chk(b.lat[0] >= 3 && b.lat[1] >= 3 && b.lat[0] + b.lat[1] > 8, `Retiros laterales · ${b.pad}`, `${f2(b.lat[0])} m y ${f2(b.lat[1])} m · suma ${f2(b.lat[0] + b.lat[1])} m (mín. 3 y suma > 8)`));
   rows += chk(NV.every(b => b.x1 <= -10), 'Retiro frontal', `Naves a ${f1(-Math.max(...NV.map(b => b.x1)))} m o más de la línea de avenida (mín. 10 m)`) + chk(NV.every(b => b.x0 >= -(LOT.D - 4)), 'Retiro de fondo', `Naves a ${f1(LOT.D + Math.min(...NV.map(b => b.x0)))} m del fondo como mínimo (mín. 4 m)`);
   rows += chk(NV.every(b => Math.hypot(b.L, b.W) <= 42.5 && b.A <= 900), 'Bloque ≤ 900 m² e inscrito en Ø 42,5 m', NV.map(b => `${b.id}: Ø ${f1(Math.hypot(b.L, b.W))} m`).join(' · '));
   rows += chk(dmin >= 5, 'Separación entre bloques', `${f2(gS)} m y ${f2(gN)} m entre las naves de los extremos y la del fondo (mín. 5 m; 8 m de promedio)`) + chk(NV.every(b => b.alt <= 12), 'Altura', `máx. ${f2(Math.max(...NV.map(b => b.alt)))} m (límite 12 m)`);
-  rows += chk(q.FP <= 3050 * .25, 'FOS total', `${nf(q.FP)} m² · ${f1(q.FP / 3050 * 100)} %`) + chk(q.jar >= 1830, 'Jardín ≥ 60 %', `${nf(q.jar)} m² · ${f1(q.jar / 30.5)} % (deck y gravilla cuentan como jardín: a confirmar)`) + chk(q.plz >= q.nl, 'Estacionamiento', `${q.plz} plazas para ${q.nl} locales`);
+  rows += chk(q.FP + PORT * sum(NV, b => b.W) <= 3050 * .25, 'FOS total', `${nf(q.FP)} m² + portales ${nf(PORT * sum(NV, b => b.W))} m² · ${f1((q.FP + PORT * sum(NV, b => b.W)) / 30.5)} % (máx. 25 %)`) + chk(q.jar >= 1830, 'Jardín ≥ 60 %', `${nf(q.jar)} m² · ${f1(q.jar / 30.5)} % (deck y gravilla cuentan como jardín: a confirmar)`) + chk(q.plz >= NPLZ && q.plz >= q.nl, 'Estacionamiento', `${q.plz} plazas de ${f2(PL.w)} × ${f2(PL.d)} m (como en el plano de la arquitecta: 16) para ${q.nl} unidades, una accesible de ${f1(PL.acc)} m; en el retiro de frente: a confirmar`);
   rows += chk(NV.every(b => chkAbert(b).length === 0), 'Aberturas fuera de las columnas', 'Ninguna puerta ni ventana cae sobre una columna de pórtico (las vidrieras corridas pasan entre columnas)') + chk(NV.every(b => Math.min(...b.lat) - DPO >= 2), 'Resguardo de cenefa en los retiros', `Vísera de ${f1(DPO)} m al retiro lateral y ${f1(DP)} m al jardín: el retiro libre queda en ${f1(Math.min(...NV.map(b => Math.min(...b.lat))) - DPO)} m como mínimo (a confirmar con la Intendencia)`);
   const sol = SOLES.map(([n, dd, c]) => `<tr><td>${n}</td><td class="n">${Math.round(solParque(dd, c) * 100)} %</td></tr>`).join('');
   return `<div class="cols" style="grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)"><div>${svg}</div><div>
-  <div class="ok"><b>Una nave por padrón, todas contra el retiro de fondo.</b> Las naves sur y norte arrancan en la misma línea de fondo y la del medio cruza perpendicular, también contra el fondo. Cada una respeta los retiros de su padrón y entre ellas queda un jardín-paseo abierto a la avenida. Los padrones no se fusionan.</div>
+  <div class="ok"><b>Una nave por padrón, todas contra el retiro de fondo.</b> Las naves sur y norte arrancan en la misma línea de fondo y la del medio, corta y de dos pisos, cierra la U contra el fondo. Cada una respeta los retiros de su padrón y entre ellas queda un jardín-paseo abierto a la avenida. Los padrones no se fusionan.</div>
   <h3>Verificación por padrón</h3><table><thead><tr><th>Criterio</th><th>Resultado</th><th></th></tr></thead><tbody>${rows}</tbody></table>
   <h3>Sol sobre el jardín central</h3><table><thead><tr><th>Momento</th><th class="n">Jardín al sol</th></tr></thead><tbody>${sol}</tbody></table>
   <p class="mut"><small>Sombra gris: invierno a las 12:40, con alturas medias. Círculos verdes: Ø 42,5 m. Puntos azules: acceso al jardín; naranjas: acceso por el retiro lateral. Flechas rojas: un acceso vehicular por padrón. El detalle del paisaje está en la pestaña Jardín y paseo.</small></p></div></div>
-  <div class="warn" style="margin-top:12px"><b>Por qué la nave del fondo va perpendicular.</b> Con 20 m de frente por padrón y retiros laterales de 3 m con suma mayor a 8 m, ninguna nave puede pasar de 11,9 m en el sentido transversal. La del fondo queda con 11,5 m sobre el jardín y ${f1(NV[1].L)} m de fondo (se puede alargar en profundidad, no en ancho), contra el retiro de fondo, y cierra la U sin cruzar al padrón vecino. Los dos brazos quedan separados por 31 m: cerrarlos sobre la avenida pediría fusionar padrones o una excepción de la Junta (art. 21).</div>
+  <div class="warn" style="margin-top:12px"><b>Forma de U con el parque adentro.</b> Los retiros laterales (3 m, suma mayor a 8 m) limitan cada nave a 11,9 m de ancho, así que la nave del fondo no puede crecer hacia los costados. En vez de alargarla, se la hizo corta (${f1(NV[1].L)} m de fondo), de dos pisos, y contra el retiro de fondo: eso libera ${f1(NV[2].x1 - NV[1].x1 + 0)} m más de parque delante de ella y deja un parque abierto de ${f1(PARK.xa - NV[1].x1)} m de profundidad hasta el estacionamiento entre los dos brazos. Cerrar la U sobre la avenida pediría fusionar padrones o una excepción de la Junta (art. 21).</div>
   <p class="mut"><small>Hipótesis: norte arriba y avenida al este según el visor SNIG; orden de padrones 10598 al sur, 10597 al centro y 10596 al norte; frente de 20 m por padrón y fondo de 47,3 m. Faltan la mensura y la consulta previa.</small></p>`;
 }
 function h(pts) { // envolvente convexa
@@ -467,7 +498,7 @@ const dr = (g, f, b, X, Y, q, col) => { // dibuja una abertura en planta
   return q.t === 'p' ? L_(X(b.x0 + q.a), Y(c), X(b.x0 + q.z), Y(c), 'stroke="#fff" stroke-width="7"') + L_(X(b.x0 + q.a), Y(c), X(b.x0 + q.z), Y(c), `stroke="${col}" stroke-width="2" stroke-dasharray="3 2"`) : L_(X(b.x0 + q.a), Y(c), X(b.x0 + q.z), Y(c), `stroke="${col}" stroke-width="${q.t === 'g' ? 5 : 4}"`);
 };
 function planNave(b) {
-  const s = 26, m = 46, X = x => m + (x - b.x0) * s, Y = y => m + (b.y1 - y) * s, n = S.n, w = b.L / n, ym = (b.y0 + b.y1) / 2; let g = '';
+  const s = 26, m = 46, X = x => m + (x - b.x0) * s, Y = y => m + (b.y1 - y) * s, n = b.nb, w = b.L / n, ym = (b.y0 + b.y1) / 2; let g = '';
   g += R_(X(b.x0), Y(b.y1), b.L * s, b.W * s, 'fill="#f4f1ea" stroke="#222" stroke-width="5"');
   for (let i = 1; i < n; i++) g += L_(X(b.x0 + i * w), Y(b.y0), X(b.x0 + i * w), Y(b.y1), 'stroke="#222" stroke-width="3"');
   b.fx.forEach(x => [b.y0, b.y1].forEach(y => g += R_(X(x) - 4, Y(y) - 4, 8, 8, 'fill="#c8621b"')));
@@ -481,9 +512,9 @@ function planNave(b) {
   openings(b).forEach(q => g += dr(g, q.f, b, X, Y, q, q.f === 'out' ? '#d9822b' : q.f === 'e' ? '#2e8b57' : '#2c6fa3'));
   g += L_(X(b.x0), Y(ym), X(b.x1), Y(ym), 'stroke="#888" stroke-dasharray="8 5"') + T_(X(b.x1) - 8, Y(ym) - 5, 'cumbrera', 'text-anchor="end" font-size="9" fill="#666"');
   g += dimL(X(b.x0), m - 22, X(b.x1), m - 22, `${f2(b.L)} m · ${b.nfr} pórticos · vanos de ${f2(b.vmin)}${b.vmax - b.vmin > .05 ? ' a ' + f2(b.vmax) : ''} m`, 0) + dimL(m - 22, Y(b.y1), m - 22, Y(b.y0), `${f2(b.W)} m`, 1);
-  const top = 'jardín: vidriera corrida con vísera, y puerta', bot = 'retiro lateral: puerta y ventana';
+  const top = 'jardín: vidriera corrida con vísera, y puerta', bot = b.id === 'B' ? 'jardín del lado sur: puerta y ventana' : 'retiro lateral: puerta y ventana';
   g += T_(X(b.x0), Y(b.y1) - 8, b.dIn > 0 ? top : bot, 'fill="#666" font-size="10"') + T_(X(b.x0), Y(b.y0) + 24, b.dIn > 0 ? bot : top, 'fill="#666" font-size="10"') + T_(X(b.x1) - 80, Y(b.y0) + 24, 'avenida →', 'fill="#666" font-size="10"');
-  return `<h3>${b.n} · padrón ${b.pad} · ${nf(b.A)} m² · ${n} locales de ${f1(w * b.W)} m²</h3>` + SV(b.L * s + m * 2, b.W * s + m * 2 + 14, g);
+  return `<h3>${b.n} · padrón ${b.pad} · ${nf(b.A)} m² por planta${b.niv > 1 ? ' · DOS PISOS (planta baja y alta iguales, ' + nf(b.A * b.niv) + ' m² en total)' : ''} · ${n} locales${b.niv > 1 ? ' por planta' : ''} de ${f1(w * b.W)} m²</h3>` + SV(b.L * s + m * 2, b.W * s + m * 2 + 14, g);
 }
 function planB(b) {
   const s = 30, m = 46, X = x => m + (x - b.x0) * s, Y = y => m + (b.y1 - y) * s, w = b.W / NLB, ym = (b.y0 + b.y1) / 2; let g = '';
@@ -525,7 +556,7 @@ function planCons(b) {
 }
 function dPlanta() {
   const b = NV.find(x => x.id === S.cons);
-  return `<p class="mut">Norte arriba, avenida a la derecha. Todas las naves arrancan contra el retiro de fondo. Cada local cruza la nave: vidriera corrida con vísera y puerta al jardín por un lado, puerta y ventana al retiro lateral por el otro, con el baño y la previsión de escalera sobre el tabique medianero. Los puntos naranja son las columnas: ninguna puerta ni ventana cae sobre una. En azul, los accesos al jardín; en naranja, al retiro lateral; en verde, hacia la avenida.</p>` + NV.map(x => x.tipo === 'esc' ? planB(x) : x.id === S.cons ? planCons(x) : planNave(x)).join('') + `<p class="mut"><small>Los baños son de 2,4 × 3,0 m con giro de silla de ruedas (Ley 18.651). La escalera a la planta alta (17 peldaños de 27 × 18, en dos tramos con descanso) no se construye ahora: queda prevista como extra por local.</small></p>`;
+  return `<p class="mut">Norte arriba, avenida a la derecha. Todas las naves arrancan contra el retiro de fondo. Cada local cruza la nave: vidriera corrida con vísera y puerta al jardín por un lado, puerta y ventana al retiro lateral por el otro, con el baño y la previsión de escalera sobre el tabique medianero. Los puntos naranja son las columnas: ninguna puerta ni ventana cae sobre una. En azul, los accesos al jardín; en naranja, al retiro lateral; en verde, hacia la avenida.</p>` + NV.map(x => x.id === S.cons ? planCons(x) : planNave(x)).join('') + `<p class="mut"><small>Los baños son de 2,4 × 3,0 m con giro de silla de ruedas (Ley 18.651). La escalera a la planta alta (17 peldaños de 27 × 18, en dos tramos con descanso) no se construye ahora: queda prevista como extra por local.</small></p>`;
 }
 /* ================= JARDÍN Y PASEO ================= */
 function dPais() {
@@ -534,17 +565,17 @@ function dPais() {
   [20, 40].forEach(y => g += L_(X(-LOT.D), Y(y), X(0), Y(y), 'stroke="#555" stroke-dasharray="5 3"'));
   g += gardenSVG(X, Y, s);
   NV.forEach(b => g += R_(X(b.x0), Y(b.y1), b.L * s, b.W * s, 'fill="#7f93a8" stroke="#111" stroke-width="1.3"') + T_(X((b.x0 + b.x1) / 2), Y((b.y0 + b.y1) / 2) + 4, b.n, 'text-anchor="middle" font-weight="700" font-size="11"'));
-  for (let i = 0; i < q.plz; i++) { const y0 = 4 + i * (52 / Math.max(q.plz, 1)); g += R_(X(-8), Y(y0 + 2.5), 4.5 * s, 2.5 * s, 'fill="#fff" stroke="#999" stroke-width=".8"'); }
+  g += parkSVG(X, Y, s, '#999');
   const lb = [[-15, 30, 'Entrada', 1], [-24.5, 30, 'Plaza de estar', 1], [-26, 15.7, 'Galería', 1], [-32, 44.2, 'Galería', 1], [-24.5, 21.5, 'Cantero', 1], [-24.5, 38.5, 'Cantero', 1]];
   lb.forEach(([x, y, t]) => g += T_(X(x), Y(y) + 4, t, 'text-anchor="middle" font-size="10" font-weight="700" fill="#1d2630"'));
   g += `<line x1="${X(0) + 40}" y1="${oy + 60}" x2="${X(0) + 40}" y2="${oy + 28}" stroke="#111" stroke-width="2"/><polygon points="${X(0) + 40},${oy + 22} ${X(0) + 35},${oy + 34} ${X(0) + 45},${oy + 34}" fill="#111"/>` + T_(X(0) + 36, oy + 16, 'N', 'font-weight="700"');
   const svg = SV(X(0) + 80, Y(0) + 24, g);
   const F = [['Decks de madera (galerías y plaza)', q.dk, 'm²'], ['Paseo de entrada en hormigón', q.pv, 'm²'], ['Senderos de gravilla y caminos laterales', q.gr, 'm²'], ['Canteros', q.cn, 'm²'], ['Césped', q.cesp, 'm²'], ['Árboles nativos', q.tr, 'u'], ['Bancos corridos', q.bn, 'ml']];
   const c = cotiza(); let on = false, sc = 0; c.R.forEach(x => { if (x.cat) on = x.cat.startsWith('8 bis'); else if (on) sc += x.c; }); const sub = sc * c.fv * IVA();
-  return `<p class="mut">El jardín es el espacio entre las dos naves laterales, frente a la nave del fondo. Se entra desde la avenida por un paseo recto que lleva a una plaza de estar de madera frente a los dos locales del fondo; desde ahí, caminos de gravilla sinuosos llegan a las galerías de deck que recorren el frente de las naves sur y norte. Atrás de la nave sur y delante de la norte quedan bosquecitos.</p>
+  return `<p class="mut">El jardín es el espacio entre las dos naves laterales, frente a la nave del fondo. Se entra desde la avenida por un paseo recto que lleva a una plaza de estar de madera frente a la nave del fondo (dos pisos); desde ahí, caminos de gravilla sinuosos llegan a las galerías de deck que recorren el frente de las naves sur y norte. Atrás de la nave sur y delante de la norte quedan bosquecitos.</p>
   <div class="cols" style="grid-template-columns:minmax(0,1.2fr) minmax(0,1fr)"><div>${svg}</div><div>
   <h3>Qué se construye</h3><table><thead><tr><th>Elemento</th><th class="n">Cantidad</th></tr></thead><tbody>${F.map(x => `<tr><td>${x[0]}</td><td class="n">${nf(x[1])} ${x[2]}</td></tr>`).join('')}<tr class="tot"><td>Precio del paisaje con margen (${S.iva ? 'con' : 'sin'} IVA)</td><td class="n">${u$(sub)}</td></tr></tbody></table>
-  <h3>Cómo se recorre</h3><ul><li><b>Eje de entrada:</b> paseo de 3 m desde el carril de la avenida hasta la plaza, alineado con el centro de la nave del fondo.</li><li><b>Plaza de estar:</b> deck de 9 × 11,5 m con dos bancos corridos y canteros a los costados; es el patio común de los locales del fondo.</li><li><b>Galerías:</b> deck de 2,5 m frente a cada nave lateral, para mesas y filas de sillas de los locales gastronómicos.</li><li><b>Retiros laterales:</b> caminos de servicio de gravilla de 1,8 m, con la puerta y la ventana de cada local, para carga y descarga.</li><li><b>Plantación:</b> árboles nativos de hoja caduca al norte de las galerías (dan sombra en verano y dejan pasar el sol de invierno) y gramíneas en los canteros.</li></ul>
+  <h3>Cómo se recorre</h3><ul><li><b>Eje de entrada:</b> paseo de 3 m desde el carril de la avenida hasta la plaza, alineado con el centro de la nave del fondo.</li><li><b>Plaza de estar:</b> deck de 8 × 11,5 m con dos bancos corridos y canteros a los costados; es el patio común de los locales del fondo.</li><li><b>Galerías:</b> deck de 2,5 m frente a cada nave lateral, para mesas y filas de sillas de los locales gastronómicos.</li><li><b>Retiros laterales:</b> caminos de servicio de gravilla de 1,8 m, con la puerta y la ventana de cada local, para carga y descarga.</li><li><b>Plantación:</b> árboles nativos de hoja caduca al norte de las galerías (dan sombra en verano y dejan pasar el sol de invierno) y gramíneas en los canteros.</li></ul>
   <div class="warn"><b>A definir con un paisajista:</b> especies, riego y drenaje del jardín (el pluvial de los techos puede infiltrarse en los canteros). Los decks y la gravilla se cuentan como jardín en el 60 % exigido; hay que confirmarlo en la consulta previa.</div></div></div>`;
 }
 
@@ -636,21 +667,22 @@ function elCara(b, face, titulo) { // cara larga de una nave: aberturas reales y
 }
 const elLado = (b, t) => elCara(b, 'in', t), elCostado = b => elCara(b, 'out', 'Cara hacia el retiro lateral · puerta de servicio y ventana por local');
 function elFrenteB() {
-  const b = NV[1], s = 30, X0 = 70, base = 270; let g = frenteB(b, s, X0, base);
-  g += T_(X0 + b.W * s / 2, 24, 'Nave del fondo vista desde el jardín · abre solo hacia adelante', 'text-anchor="middle" font-weight="700"') + T_(X0 + b.W * s + 14, base - b.hp * s + 4, `pretil ${f2(b.hp)} m`) + T_(X0 + b.W * s / 2, base + 20, `${f2(b.W)} m · dos locales de ${f2(b.W / NLB)} m`, 'text-anchor="middle" fill="#555"');
+  const b = NV[1], s = 30, X0 = 70, base = 270; let g = gableEl(b, s, X0, base);
+  g += L_(X0 - 10, base - 3.2 * s, X0 + b.W * s + 10, base - 3.2 * s, 'stroke="#c8621b" stroke-dasharray="6 4" stroke-width="1.4"') + T_(X0 + b.W * s + 14, base - 3.2 * s + 4, 'entrepiso a 3,20 m', 'font-size="10" fill="#c8621b"');
+  g += T_(X0 + b.W * s / 2, 24, 'Nave del fondo (dos pisos) vista desde la avenida · cierra la U', 'text-anchor="middle" font-weight="700"') + T_(X0 + b.W * s + 14, base - b.e * s + 4, `alero ${f2(b.e)} m`) + T_(X0 + b.W * s + 14, base - b.r * s + 4, `cumbrera ${f2(b.r)} m`) + T_(X0 + b.W * s / 2, base + 20, `luz ${f2(b.W)} m · planta baja y planta alta`, 'text-anchor="middle" fill="#555"');
   return SV(X0 * 2 + b.W * s + 80, base + 34, g);
 }
 function elAvenida() {
   const s = 13, X0 = 30, base = 150, Xy = y => X0 + y * s, Y = h => base - h * s; let g = '';
   g += R_(Xy(0), Y(0), 60 * s, 4, 'fill="#8fb06f"');
   PADS.forEach(([n, a, z]) => { g += L_(Xy(a), Y(0) + 4, Xy(a), 24, 'stroke="#999" stroke-dasharray="4 3"') + T_(Xy((a + z) / 2), 20, 'Padrón ' + n, 'text-anchor="middle" font-size="10" fill="#555"'); });
-  [NV[2], NV[1], NV[0]].forEach(b => { g += `<g opacity="${b.id === 'S' ? 1 : b.id === 'N' ? .86 : .93}">` + (b.tipo === 'dos' ? gableEl(b, s, Xy(b.y0), base) : frenteB(b, s, Xy(b.y0), base)) + '</g>'; });
-  g += T_(Xy(30), 138 + 24, 'Vista desde la avenida · las tres naves contra el fondo (la del medio, de frente al jardín)', 'text-anchor="middle" font-weight="700"');
+  [NV[2], NV[1], NV[0]].forEach(b => { g += `<g opacity="${b.id === 'S' ? 1 : b.id === 'N' ? .86 : .93}">` + gableEl(b, s, Xy(b.y0), base) + '</g>'; });
+  g += T_(Xy(30), 138 + 24, 'Vista desde la avenida · las tres naves contra el fondo; la del medio, más atrás y de dos pisos', 'text-anchor="middle" font-weight="700"');
   return SV(60 * s + 60, base + 40, g);
 }
 function dFach() {
-  return `<p class="mut">Estilo: <b>${EST[S.est].n}</b>. ${EST[S.est].d} Cambialo arriba y los dibujos se actualizan.</p>` + elAvenida() + `<div class="cols"><div>${elGable()}</div><div>${elFrenteB()}</div></div>` + elLado(NV[0], `Cara al jardín · nave sur (${f1(NV[0].L)} m)`) + elCostado(NV[0]) + (S.cons !== 'none' ? elLado(NV.find(x => x.id === S.cons), 'Cara al jardín · nave de consultorios (7 ventanas)') : '') + `<h3>Cortes</h3>` + cortes() +
-    `<p class="mut"><small>${S.est === 'cro' ? 'Cenefas verticales de madera oscura en muros y marcos de hastial; la cubierta de chapa nervada oscura sigue el mismo ritmo y baja como pared, sin alero ni piedra. Vidrio laminado 5+5 en vidrieras corridas con travesaño, y banderola triangular en los hastiales.' : 'Colores: chapa grafito (nórdico más oscuro), madera o simil madera en cenefa y hastiales, piedra granítica careada en la base, vidrio laminado 5+5.'} La nave del fondo tiene pretil de ${f2(NV[1].hp)} m: el techo de un agua queda detrás.</small></p>`;
+  return `<p class="mut">Estilo: <b>${EST[S.est].n}</b>. ${EST[S.est].d} Cambialo arriba y los dibujos se actualizan.</p>` + (S.est === 'cro' && S.ref ? `<div class="ok" style="display:flex;gap:12px;align-items:center"><img src="materiales/ref/ref${S.ref.slice(1)}.jpg" alt="" style="height:84px;border-radius:6px"><div><b>Referencia activa: ${REFOPT[S.ref].n}.</b> Se cotiza con el reparto de materiales de esa foto (vidrio ${f1(REFOPT[S.ref].vid * 100)} %, piedra ${f1(REFOPT[S.ref].pie * 100)} %, madera ${f1(REFOPT[S.ref].mad * 100)} %, chapa ${f1(REFOPT[S.ref].cha * 100)} % de la envolvente). Las formas se dibujan y ajustan en el <a href="materiales/">editor de materiales</a>; los dibujos de abajo siguen mostrando el croquis base.</div></div>` : '') + elAvenida() + `<div class="cols"><div>${elGable()}</div><div>${elFrenteB()}</div></div>` + elLado(NV[0], `Cara al jardín · nave sur (${f1(NV[0].L)} m)`) + elCostado(NV[0]) + (S.cons !== 'none' ? elLado(NV.find(x => x.id === S.cons), 'Cara al jardín · nave de consultorios (7 ventanas)') : '') + `<h3>Cortes</h3>` + cortes() +
+    `<p class="mut"><small>${S.est === 'cro' ? 'Cenefas verticales de madera oscura en muros y marcos de hastial; la cubierta de chapa nervada oscura sigue el mismo ritmo y baja como pared, sin alero ni piedra. Vidrio laminado 5+5 en vidrieras corridas con travesaño, y banderola triangular en los hastiales.' : 'Colores: chapa grafito (nórdico más oscuro), madera o simil madera en cenefa y hastiales, piedra granítica careada en la base, vidrio laminado 5+5.'} La nave del fondo es de dos pisos, con el mismo techo a dos aguas y la misma cenefa que las laterales.</small></p>`;
 }
 function cortes() {
   const b = NV[0], s = 30, X0 = 70, base = 285, X = x => X0 + x * s, Y = h => base - h * s, W = b.W; let g = '';
@@ -668,22 +700,23 @@ function cortes() {
   // corte longitudinal de la nave del fondo
   const B = NV[1], s2 = 24, X2 = x => 50 + (x - B.x0) * s2, base2 = 250, Y2 = h => base2 - h * s2; let q = '';
   q += R_(X2(B.x0), base2, B.L * s2, 4, 'fill="#bbb"');
-  q += P_([[X2(B.x0), Y2(0)], [X2(B.x0), Y2(B.hp)], [X2(B.x1), Y2(B.hp)], [X2(B.x1), Y2(0)]], 'fill="none" stroke="#111" stroke-width="2"');
-  q += L_(X2(B.x0), Y2(B.hi), X2(B.x1), Y2(B.lo), `stroke="${COL.ac}" stroke-width="6"`) + L_(X2(B.x0), Y2(B.hi) - 7, X2(B.x1), Y2(B.lo) - 7, 'stroke="#e8e8e6" stroke-width="5"');
-  q += R_(X2(B.x1) - 8, Y2(B.lo) - 6, 8, 12, 'fill="#9aa3ab" stroke="#555"') + L_(X2(B.x1) - 4, Y2(B.lo) + 6, X2(B.x1) - 4, Y2(0), 'stroke="#2c6fa3" stroke-width="3"');
-  for (let k = 0; k < B.nfr; k++) { const x = B.fx[k]; q += L_(X2(x), Y2(0), X2(x), Y2(B.hi - (B.hi - B.lo) * k / (B.nfr - 1)), `stroke="${COL.ac}" stroke-width="5"`); }
-  q += T_(X2(B.x0) + 4, Y2(B.hp) - 6, `pretil ${f2(B.hp)} m: esconde el techo`, 'font-size="10"') + T_(X2(B.x0) + 6, Y2(B.hi) + 24, `alto ${f2(B.hi)} m`, 'font-size="10" fill="#333"') + T_(X2(B.x1) - 16, Y2(B.lo) + 24, `bajo ${f2(B.lo)} m`, 'text-anchor="end" font-size="10" fill="#333"') + T_(X2(B.x1) - 14, Y2(1.5), 'canaleta interna y bajada embutida', 'text-anchor="end" font-size="10" fill="#2c6fa3"');
-  q += T_(X2((B.x0 + B.x1) / 2), base2 + 34, 'Corte este-oeste · nave del fondo', 'text-anchor="middle" font-weight="700"') + T_(X2(B.x0), base2 + 18, 'fondo del lote', 'fill="#555"') + T_(X2(B.x1), base2 + 18, 'frente al jardín →', 'text-anchor="end" fill="#555"');
+  q += P_([[X2(B.x0), Y2(0)], [X2(B.x0), Y2(B.e)], [X2(B.x0), Y2(B.r)], [X2(B.x1), Y2(B.r)], [X2(B.x1), Y2(0)]], 'fill="none" stroke="#111" stroke-width="2"');
+  q += L_(X2(B.x0), Y2(B.e), X2(B.x1), Y2(B.e), 'stroke="#888" stroke-dasharray="6 4"') + L_(X2(B.x0), Y2(B.r) + 3, X2(B.x1), Y2(B.r) + 3, `stroke="${COL.ac}" stroke-width="6"`);
+  q += R_(X2(B.x0), Y2(3.2), B.L * s2, .2 * s2, 'fill="#c8621b" opacity=".8"') + T_(X2(B.x0) + 6, Y2(3.2) - 5, 'entrepiso (losa colaborante) a 3,20 m', 'font-size="10" fill="#c8621b"');
+  for (let k = 0; k < B.nfr; k++) { const x = B.fx[k]; q += L_(X2(x), Y2(0), X2(x), Y2(B.e), `stroke="${COL.ac}" stroke-width="5"`); }
+  q += L_(X2(B.x1 - 4.4), Y2(0), X2(B.x1 - 1.4), Y2(3.2), 'stroke="#555" stroke-width="3"') + T_(X2(B.x1 - 4.4), Y2(0) - 6, 'escalera', 'font-size="10" fill="#555"');
+  q += T_(X2(B.x0) + 6, Y2(B.r) - 8, `cumbrera ${f2(B.r)} m`, 'font-size="10"') + T_(X2(B.x0) + 6, Y2(B.e) - 6, `alero ${f2(B.e)} m`, 'font-size="10" fill="#333"');
+  q += T_(X2((B.x0 + B.x1) / 2), base2 + 34, 'Corte este-oeste · nave del fondo (dos pisos)', 'text-anchor="middle" font-weight="700"') + T_(X2(B.x0), base2 + 18, 'fondo del lote', 'fill="#555"') + T_(X2(B.x1), base2 + 18, 'frente al parque →', 'text-anchor="end" fill="#555"');
   const c2 = SV(50 * 2 + B.L * s2, base2 + 48, q);
   // corte norte-sur por los tres padrones con sol de invierno
   const s3 = 13, X3 = y => 26 + y * s3, base3 = 190, Y3 = hh => base3 - hh * s3; let z = '';
   z += R_(X3(0), base3, 60 * s3, 4, 'fill="#8fb06f"');
   PADS.forEach(([n, a, zz]) => { z += L_(X3(a), base3, X3(a), 30, 'stroke="#777" stroke-dasharray="4 3"') + T_(X3((a + zz) / 2), 24, 'Padrón ' + n, 'text-anchor="middle" font-size="10" fill="#555"'); z += R_(X3(a), base3 - 3, 3 * s3, 3, 'fill="#c9a66b"') + R_(X3(zz - 3), base3 - 3, 3 * s3, 3, 'fill="#c9a66b"'); });
-  NV.forEach(bb => { if (bb.tipo === 'dos') z += P_([[X3(bb.y0), Y3(0)], [X3(bb.y0), Y3(bb.e)], [X3((bb.y0 + bb.y1) / 2), Y3(bb.r)], [X3(bb.y1), Y3(bb.e)], [X3(bb.y1), Y3(0)]], `fill="${COL.chapa}" stroke="#111"`); else z += R_(X3(bb.y0), Y3(bb.hp), bb.W * s3, bb.hp * s3, `fill="#6e8aa0" stroke="#111"`); });
+  NV.forEach(bb => { if (bb.tipo === 'dos') z += P_([[X3(bb.y0), Y3(0)], [X3(bb.y0), Y3(bb.e)], [X3((bb.y0 + bb.y1) / 2), Y3(bb.r)], [X3(bb.y1), Y3(bb.e)], [X3(bb.y1), Y3(0)]], `fill="${COL.chapa}" stroke="#111"`); });
   const sp = sunPos(172, 12.67), tg = Math.tan(sp.alt);
-  [[NV[2].y0, NV[2].e], [(NV[2].y0 + NV[2].y1) / 2, NV[2].r], [NV[1].y0, NV[1].hp], [(NV[0].y1 + NV[1].y0) / 2 + 4.9, 0]].slice(0, 3).forEach(([y, hh]) => { z += L_(X3(y), Y3(hh), X3(y - hh / tg), Y3(0), 'stroke="#e0b030" stroke-width="1.6" stroke-dasharray="6 4"'); });
-  const sh = [[NV[2].y0 - NV[2].e / tg, NV[2].y0], [NV[1].y0 - NV[1].hp / tg, NV[1].y0]]; sh.forEach(([a, c]) => z += R_(X3(Math.max(a, 0)), base3 + 4, (c - Math.max(a, 0)) * s3, 6, 'fill="rgba(40,50,80,.35)"'));
-  z += T_(X3(1), 44, `sol de invierno al mediodía: ${f1(sp.alt * 180 / Math.PI)}° desde el norte (a la derecha)`, 'font-size="10" fill="#8a6d10"') + T_(X3(30), base3 + 36, 'Corte norte-sur a 12 m del fondo (x = −31) · sombra de invierno a las 12:40 (franjas grises sobre el suelo)', 'text-anchor="middle" font-weight="700"') + T_(X3(60), base3 + 18, 'norte →', 'text-anchor="end" fill="#555"');
+  [[NV[2].y0, NV[2].e], [(NV[2].y0 + NV[2].y1) / 2, NV[2].r], [NV[1].y0, NV[1].e], [(NV[0].y1 + NV[1].y0) / 2 + 4.9, 0]].slice(0, 3).forEach(([y, hh]) => { z += L_(X3(y), Y3(hh), X3(y - hh / tg), Y3(0), 'stroke="#e0b030" stroke-width="1.6" stroke-dasharray="6 4"'); });
+  const sh = [[NV[2].y0 - NV[2].e / tg, NV[2].y0], [NV[1].y0 - NV[1].e / tg, NV[1].y0]]; sh.forEach(([a, c]) => z += R_(X3(Math.max(a, 0)), base3 + 4, (c - Math.max(a, 0)) * s3, 6, 'fill="rgba(40,50,80,.35)"'));
+  z += T_(X3(1), 44, `sol de invierno al mediodía: ${f1(sp.alt * 180 / Math.PI)}° desde el norte (a la derecha)`, 'font-size="10" fill="#8a6d10"') + T_(X3(30), base3 + 36, `Corte norte-sur a ${f1(NV[1].L)} m del fondo (frente de la nave del medio) ·`+' sombra de invierno a las 12:40 (franjas grises sobre el suelo)', 'text-anchor="middle" font-weight="700"') + T_(X3(60), base3 + 18, 'norte →', 'text-anchor="end" fill="#555"');
   const c3 = SV(60 * s3 + 60, base3 + 50, z);
   return `<div class="cols"><div>${c1}</div><div>${c2}</div></div>${c3}`;
 }
@@ -699,14 +732,14 @@ function dEst() {
   <p class="mut"><small>Los perfiles los dimensiona el Ing. Ricardo Portugau. Anteproyecto: acero laminado 32 kg/m² más 9 kg/m² de perfiles conformados, ${nf(q.FP * 41 / 1000)} t en total.</small></p>
   <h3>Capas de la estructura</h3><ol>
   <li><b>Fundación:</b> platea de 15 cm por nave, con vigas bajo los pórticos y pernos en cada columna. Tres plateas independientes, una por padrón.</li>
-  <li><b>Pórticos:</b> columnas de 6,00 m y dinteles de la luz de 11,50 m. Las naves sur y norte tienen cumbrera y los pórticos se repiten cada 4,2 a 4,4 m a lo largo de 21 a 22 m; la del fondo, perpendicular, tiene un agua y pórticos cada 4,7 m.</li>
+  <li><b>Pórticos:</b> columnas de 6,00 m y dinteles de la luz de 11,50 m. Las naves sur y norte tienen cumbrera y los pórticos se repiten cada 4,2 a 4,4 m a lo largo de 21 a 22 m; la del fondo (dos pisos, 12 m) lleva pórticos cada 6 m y entrepiso de losa colaborante.</li>
   <li><b>Arriostramiento:</b> cruces en los paños de cabecera de cada nave.</li>
   <li><b>Correas y largueros:</b> galvanizados, sobre los dinteles y en los muros.</li>
   <li><b>Piel:</b> panel PIR de 80 mm en techo y muros, y encima las cenefas de madera en los muros (estilo Croquis), las vidrieras y el marco de los hastiales.</li></ol></div></div>
   <h3>Aguas y desagües</h3><div class="cols"><div class="card"><b>Naves sur y norte (dos aguas)</b><ul><li>Cada faldón drena a su alero, con canaleta de chapa de 1 % de pendiente.</li><li>Una bajada en cada extremo de cada alero: 4 por nave, con codo embutido en el panel.</li><li>Las bajadas llegan a un colector pluvial enterrado que sale hacia la avenida, separado de la cloaca.</li></ul></div>
-  <div class="card"><b>Nave del fondo (techo escondido)</b><ul><li>Un agua con 5 % de pendiente hacia el frente. La canaleta queda interna, detrás del pretil.</li><li>Dos bajadas embutidas en las esquinas del frente (hacia el jardín), sin canaleta a la vista.</li><li>El pretil de ${f2(NV[1].hp)} m supera en 0,60 m el punto más alto del techo, así que no se ve desde el jardín.</li></ul></div></div>
+  <div class="card"><b>Nave del fondo (dos pisos)</b><ul><li>Mismo techo a dos aguas de 20°, con canaleta de chapa y bajadas embutidas en las cuatro esquinas.</li><li>Las bajadas se conectan al colector pluvial que cruza el parque hacia la avenida.</li><li>Entrepiso a 3,20 m: vigas de acero apoyadas en los pórticos y losa colaborante.</li></ul></div></div>
   <p><b>Lluvia.</b> El techo suma ${nf(q.RF)} m²: cada 10 mm de lluvia aportan unos ${f1(llu)} m³. Una cisterna de 20 m³ alcanzaría para el riego del jardín. No está incluida en el precio.</p>
-  <div class="warn"><b>A confirmar:</b> la pendiente de 5 % de la nave del fondo debe verificarse contra el mínimo del fabricante del panel; si pide más, el punto alto sube 0,2 m y el pretil también. El destino final del pluvial (calle o infiltración en el predio) lo define la Intendencia.</div>`;
+  <div class="warn"><b>A confirmar:</b> el entrepiso y la escalera de la nave del fondo son un supuesto de precio (no hay cálculo ni proyecto de detalle). El destino final del pluvial (calle o infiltración en el predio) lo define la Intendencia.</div>`;
 }
 /* ================= 3D ================= */
 const cv = $('cv'), ren = new THREE.WebGLRenderer({ canvas: cv, antialias: true });
@@ -746,15 +779,15 @@ function build3d() {
   line3([[-LOT.D, 0], [0, 0], [0, 60], [-LOT.D, 60], [-LOT.D, 0]].map(([x, y]) => V3(x, .05, y)), MT.line, G3.lote);
   [20, 40].forEach(y => line3([V3(-LOT.D, .05, y), V3(0, .05, y)], MT.line, G3.lote));
   PADS.forEach(([n, a, z]) => lab(n + ' · ' + nf(PADS.find(p => p[0] === n)[3]) + ' m²', V3(-40, .3, (a + z) / 2 - 7), G3.lote, 3.4)); lab('Av. Pedragosa Sierra', V3(15, 1.2, 30), G3.lote, 5); lab('N', V3(-50, .3, 58), G3.lote, 3);
-  slab(-10, -1, 3, 57, 0, .05, MT.pave, G3.parque);
-  for (let i = 0; i < q.plz; i++) { const y0 = 4 + i * (52 / q.plz); slab(-8, -3.5, y0, y0 + 2.5, .05, .07, MT.plaza, G3.parque); }
-  lab(q.plz + ' plazas', V3(-6, 1.2, 60.5), G3.parque, 3);
+  PARK.ais.forEach(p => slab(p[0], p[1], p[2], p[3], 0, .05, MT.pave, G3.parque));
+  PARK.st.forEach(p => { slab(p[0], p[1], p[2], p[3], .05, .07, p[4] ? MT.glass : MT.plaza, G3.parque); line3([V3(p[0], .09, p[2]), V3(p[1], .09, p[2])], MT.line, G3.parque); });
+  lab(q.plz + ' plazas de 2,50 × 5,00', V3(-9, 1.2, 60.5), G3.parque, 3);
   /* paisaje */
   GARD.decks.forEach(p => slab(p[0], p[1], p[2], p[3], .02, .2, MT.deck, G3.paisaje)); GARD.pave.forEach(p => slab(p[0], p[1], p[2], p[3], .02, .1, MT.conc, G3.paisaje));
   GARD.grav.forEach(p => p.slice(1).forEach((c, i) => seg3(p[i], c, GARD.gravW, .02, .06, MT.grav, G3.paisaje))); [GARD.walkS, GARD.walkN].forEach(w => slab(w[0], w[1], w[2], w[3], .02, .06, MT.grav, G3.paisaje));
   GARD.canteros.forEach(c => { const me = new THREE.Mesh(new THREE.CylinderGeometry(1, 1, .3, 24), MT.bed); me.scale.set(c[2], 1, c[3]); me.position.set(c[0], .15, -c[1]); add3(G3.paisaje, me); });
   GARD.bancos.forEach(p => { seg3([p[0], p[1]], [p[2], p[3]], .5, .38, .46, MT.bench, G3.paisaje); }); GARD.arboles.forEach((p, i) => tree3(p[0], p[1], i, G3.paisaje));
-  lab('Plaza de estar', V3(-24.5, 4.5, 30), G3.paisaje, 3);
+  lab('Plaza de estar', V3(NV[1].x1 + 4, 4.5, 30), G3.paisaje, 3);
   NV.forEach(b => {
     const ym = (b.y0 + b.y1) / 2, W = b.W, FRm = .55, ci = 1 / Math.cos(20 * Math.PI / 180), top = b.tipo === 'dos' ? b.e : b.hp;
     if (b.tipo === 'dos') {
@@ -870,7 +903,7 @@ function plan(o = S) {
   add('fHv', 1, 'Hormigonado de vigas y nudos con bomba', 2, { fs: 'fPn' }); add('fTos', 1, 'Relleno de tosca compactada', 2, { fs: 'fHv' }); add('fMal', 1, 'Nylon, separadores y malla doble', 2, { fs: 'fTos' });
   add('fHp', 1, 'Hormigonado de las tres plateas con bomba y llaneado (cura 7 días)', 3, { fs: 'fMal', espera: 7 });
   add('tal', 0, 'Anticipo y encargo de la estructura al taller', 1, { hito: true, at: 'fRep' }); add('fab', 0, 'Planos de taller, fabricación, granallado y pintura de la estructura', 20, { fs: 'tal' });
-  add('est', 2, 'Montaje de pórticos: nave sur, del fondo y norte', 6, { fs: ['fHp', 'fab'] }); add('cru', 2, 'Arriostramiento', 2, { fs: 'est' }); add('cor', 2, 'Correas, tensores y tornapuntas', 3, { fs: 'cru' }); add('lar', 2, 'Largueros y pretil de la nave del fondo', 3, { fs: 'cor' }); add('bas', 2, 'Parantes y bastidores de fachada', 3, { fs: 'lar' });
+  add('est', 2, 'Montaje de pórticos: nave sur, del fondo y norte', 6, { fs: ['fHp', 'fab'] }); add('cru', 2, 'Arriostramiento', 2, { fs: 'est' }); add('cor', 2, 'Correas, tensores y tornapuntas', 3, { fs: 'cru' }); add('lar', 2, 'Largueros de la nave del fondo', 3, { fs: 'cor' }); add('bas', 2, 'Parantes y bastidores de fachada', 3, { fs: 'lar' });
   add('ped', 0, 'Pedido de paneles y vidrieras con seña', 1, { hito: true, at: 'est' }); add('pent', 0, 'Fabricación y entrega de paneles', 12, { fs: 'ped' }); add('alu', 0, 'Fabricación de las vidrieras de los locales', 20, { fs: 'ped' });
   add('techo', 3, 'Techos de panel y canaletas (tres naves)', 8, { fs: ['bas', 'pent'] }); add('muro', 3, 'Muros de panel', 10, { ss: 'techo', lag: 3 }); add('vid', 3, 'Vidrieras y puertas de los locales', 6, { ss: 'muro', lag: 4, fs: 'alu' }); const cro = o.est === 'cro'; add('pie', 3, cro ? 'Remates, babetas y cierres de la envolvente' : 'Piedra: zócalos y franjas (piedrero)', cro ? 2 : 8, { ss: 'vid', lag: 2 }); add('cen', 3, cro ? 'Cenefas verticales de madera en muros y marcos oscuros de hastial' : 'Cenefa de madera o simil y hastiales', cro ? 12 : 4, { fs: 'vid' });
   add('div', 4, 'Divisorios y cerramientos de baño', 5, { fs: 'techo' }); add('iSan', 4, 'Sanitaria interior', 4, { ss: 'div', lag: 2 }); add('iEle', 4, 'Eléctrica e iluminación', 5, { ss: 'iSan', lag: 1 }); add('ter', 4, 'Terminaciones: masillado y pintura, artefactos, luminarias y tableros', 14, { fs: 'iEle' }); if (o.cons !== 'none') add('cons', 4, 'Consultorios: tabiques de 7 consultorios, sanitaria de 3 baños, cielorraso y claraboya', 12, { ss: 'iSan', lag: 1 });
@@ -929,13 +962,13 @@ function dXtra() {
 /* ================= RENTABILIDAD ================= */
 const RT = { alq: 22, vac: 10, gas: 8, ter: 0 };
 function dRent() {
-  if (!$('inAlq')) { $('dRent').innerHTML = `<p class="mut">Más locales chicos se alquilan más caros por m², pero cuestan más (divisorios, baños, medidores, habilitaciones) y tienen más rotación. La tabla compara 2, 3 y 4 locales en cada nave lateral (más 2 en la del fondo), o sea 6, 8 y 10 locales, con los mismos supuestos.</p><p>Alquiler base USD/m²/mes (locales de unos 120 m²) <input class="in" id="inAlq" type="number" value="${RT.alq}"> · Vacancia % <input class="in" id="inVac" type="number" value="${RT.vac}"> · Gastos del dueño % del alquiler <input class="in" id="inGas" type="number" value="${RT.gas}"> · Terreno USD <input class="in" id="inTer" type="number" step="10000" value="${RT.ter}" style="width:100px"></p><div id="tRent"></div><div id="refAlq"></div>`; $('dRent').addEventListener('input', e => { RT.alq = +$('inAlq').value || 0; RT.vac = +$('inVac').value || 0; RT.gas = +$('inGas').value || 0; RT.ter = +$('inTer').value || 0; rentTabla(); }); }
+  if (!$('inAlq')) { $('dRent').innerHTML = `<p class="mut">Más locales chicos se alquilan más caros por m², pero cuestan más (divisorios, baños, medidores, habilitaciones) y tienen más rotación. La tabla compara 2, 3 y 4 locales en cada nave lateral (más 4 en la del fondo, dos por planta), con los mismos supuestos.</p><p>Alquiler base USD/m²/mes (locales de unos 120 m²) <input class="in" id="inAlq" type="number" value="${RT.alq}"> · Vacancia % <input class="in" id="inVac" type="number" value="${RT.vac}"> · Gastos del dueño % del alquiler <input class="in" id="inGas" type="number" value="${RT.gas}"> · Terreno USD <input class="in" id="inTer" type="number" step="10000" value="${RT.ter}" style="width:100px"></p><div id="tRent"></div><div id="refAlq"></div>`; $('dRent').addEventListener('input', e => { RT.alq = +$('inAlq').value || 0; RT.vac = +$('inVac').value || 0; RT.gas = +$('inGas').value || 0; RT.ter = +$('inTer').value || 0; rentTabla(); }); }
   rentTabla();
 }
 const unidades = (o, sinCons) => NV.reduce((a, b) => a + (b.id === o.cons ? (sinCons ? 0 : NCONS) : nloc(b, o)), 0);
 function rentTabla() {
   const k = IVA(), q0 = Qty(), fac = m2 => m2 >= 100 ? 1 : m2 >= 70 ? 1.08 : 1.15;
-  const rows = [2, 3, 4].map(n => { const r = cotiza({ ...S, n }), nl = unidades({ ...S, n }), m2 = q0.FP / nl, alq = RT.alq * fac(m2), anual = alq * q0.FP * 12, neto = anual * (1 - RT.vac / 100) * (1 - RT.gas / 100), inv = r.ob * k + r.bps + RT.ter; return { n, nl, m2, alq, mes: alq * m2, neto, inv, y: neto / inv, pb: inv / neto }; });
+  const rows = [2, 3, 4].map(n => { const r = cotiza({ ...S, n }), nl = unidades({ ...S, n }), m2 = q0.AR / nl, alq = RT.alq * fac(m2), anual = alq * q0.AR * 12, neto = anual * (1 - RT.vac / 100) * (1 - RT.gas / 100), inv = r.ob * k + r.bps + RT.ter; return { n, nl, m2, alq, mes: alq * m2, neto, inv, y: neto / inv, pb: inv / neto }; });
   const best = rows.reduce((a, b) => b.y > a.y ? b : a);
   $('tRent').innerHTML = `<table><thead><tr><th>Unidades</th><th class="n">m² promedio</th><th class="n">Alquiler USD/m²/mes</th><th class="n">Por local / mes</th><th class="n">Ingreso neto / año</th><th class="n">Inversión ${S.iva ? 'con IVA' : 'sin IVA'}</th><th class="n">Rentabilidad neta</th><th class="n">Repago</th></tr></thead><tbody>${rows.map(r => `<tr${r === best ? ' class="best"' : ''}${r.n === S.n ? ' style="outline:2px solid var(--acc)"' : ''}><td><b>${r.nl}</b> (${S.cons === 'none' ? r.n + ' + ' + r.n : r.n + ' locales + ' + NCONS + ' consultorios'} + ${NLB} en el fondo)${r === best ? ' <span class="pill">mejor</span>' : ''}</td><td class="n">${f1(r.m2)}</td><td class="n">${f1(r.alq)}</td><td class="n">${u$(r.mes)}</td><td class="n">${u$(r.neto)}</td><td class="n">${u$(r.inv)}</td><td class="n"><b>${f1(r.y * 100)} %</b></td><td class="n">${f1(r.pb)} años</td></tr>`).join('')}</tbody></table>
   <p class="mut"><small>Supuestos: el alquiler por m² sube 8 % (locales de 70 a 100 m²) y 15 % (menos de 70 m²) al achicarse el local. Inversión = obra + gestión + aportes BPS, entrega en cáscara, estilo ${EST[S.est].n}${RT.ter ? ', más el terreno' : ', sin terreno'}. No incluye impuestos sobre la renta ni financiación.</small></p>
@@ -945,7 +978,7 @@ function rentTabla() {
 /* ================= RESUMEN y PENDIENTES ================= */
 function dProy() {
   const q = Qty(), c = cotiza(), k = IVA(), P = plan();
-  return `<div class="lead"><b>El proyecto.</b> ${q.nl} locales comerciales en tres naves de acero y panel PIR, una en cada padrón: dos naves a dos aguas desfasadas y una nave perpendicular al fondo, con un jardín-paseo en el medio abierto a la avenida. Cada nave se puede alquilar, vender o ampliar por separado: tiene su propio acceso, su estacionamiento, sus conexiones y su permiso. Estilo <b>${EST[S.est].n}</b>.</div>
+  return `<div class="lead"><b>El proyecto.</b> ${q.nl} locales comerciales en tres naves de acero y panel PIR, una en cada padrón: dos naves largas a dos aguas y una nave corta de dos pisos contra el fondo, que forman una U abierta a la avenida con el parque en el medio. Cada nave se puede alquilar, vender o ampliar por separado: tiene su propio acceso, su estacionamiento, sus conexiones y su permiso. Estilo <b>${EST[S.est].n}</b>.</div>
   <div class="k"><div><span>Superficie de las tres naves</span><b>${nf(q.FP)} m²</b></div><div><span>Locales · plazas</span><b>${q.nl} · ${q.plz}</b></div><div><span>Obra + gestión ${S.iva ? 'con IVA' : 'sin IVA'}</span><b>${u$(c.ob * k)}</b></div><div><span>Por m² de planta</span><b>${u$(c.ob / q.FP * k)}</b></div><div><span>FOS total · jardín</span><b>${f1(q.FP / 30.5)} % · ${f1(q.jar / 30.5)} %</b></div><div><span>Columnas · techo</span><b>${q.cols} · ${nf(q.RF)} m²</b></div><div><span>Entrega estimada</span><b>${fCo(P.fin)} ${P.fin.getFullYear()}</b></div><div><span>Con IVA y BPS</span><b>${u$(c.ob * 1.22 + c.bps)}</b></div></div>
   <div class="cols"><div class="card"><b>Qué cambia respecto del modelo anterior</b><ul><li>El estilo sale del croquis: <b>cenefas verticales de madera de piso a cubierta</b>, cubierta que baja como pared (sin alero ni piedra) y marco oscuro en los hastiales.</li><li>La nave del fondo pasa a ser <b>perpendicular</b> y se lleva al fondo del padrón central, con techo de un agua escondido y apertura solo al jardín.</li><li>Las naves sur y norte se <b>desfasan</b> (la sur avanza, la norte se retrae) para armar un jardín-paseo con decks, caminos y plaza.</li><li>Cada local lateral tiene <b>acceso por los dos lados</b>: al jardín y al retiro lateral.</li><li>Se mantienen los criterios de precio, las licencias, el inicio anticipado y la entrega en cáscara con baño de la v1.</li></ul></div>
   <div class="card"><b>Dónde está cada cosa</b><ul><li><b>Implantación, Jardín y paseo y Plantas:</b> los tres padrones con retiros, FOS por padrón, sol y paisaje.</li><li><b>Fachadas y cortes y Estructura:</b> estilo elegido, pórticos, luces y aguas.</li><li><b>3D:</b> modelo por capas con sol por estación.</li><li><b>Rubrado, Cronograma, Extras y Rentabilidad:</b> se recalculan con el estilo, el suelo y los locales de la barra de arriba.</li></ul></div></div>
@@ -954,12 +987,12 @@ function dProy() {
 function dPend() {
   return `<h3>Supuestos de este documento</h3><ul>
   <li><b>Geometría:</b> norte arriba y avenida al este según el visor SNIG; orden de padrones 10598 sur, 10597 centro y 10596 norte; frente de 20 m por padrón y fondo de 47,3 m. Todo sale de una sola tabla de naves, así que si la mensura cambia una medida, se corrige en un lugar.</li>
-  <li><b>Retiros:</b> frente 10 m, fondo 4 m, laterales de 3 m con suma mayor a 8 m, según la presentación de normativa del 14/11/2026. Con 20 m de frente, cada nave queda en 11,5 m de ancho; la del fondo va perpendicular y mide 11,5 × 14 m.</li>
+  <li><b>Retiros:</b> frente 10 m, fondo 4 m, laterales de 3 m con suma mayor a 8 m, según la presentación de normativa del 14/11/2026. Con 20 m de frente, cada nave queda en 11,5 m de ancho; la del fondo mide 11,5 × ${f1(NV[1].L)} m en dos pisos.</li>
   <li><b>FOS por padrón</b> (25 % de la superficie de cada uno). Si la Intendencia lo calcula distinto, hay que reverlo.</li>
   <li><b>Estacionamiento</b> en el retiro frontal, una plaza por local (art. 208). Que se admita estacionar dentro del retiro es una consulta.</li>
-  <li><b>Alturas:</b> alero a 6,00 m (previsión de planta alta), techo a 20°, nave del fondo con pretil de ${f2(NV[1].hp)} m y techo a 5 %.</li>
+  <li><b>Alturas:</b> alero a 6,00 m (previsión de planta alta), techo a 20°, nave del fondo de dos pisos (entrepiso a 3,20 m) con el mismo techo a 20°.</li>
   <li><b>Estilo Croquis:</b> lo que interpreté del dibujo: cenefas verticales de madera oscura en muros, cubierta de chapa nervada oscura que continúa la piel hasta el piso sin alero, marco oscuro de 55 cm en los hastiales con banderola triangular y vidriera con travesaño. Las cenefas se cotizan a USD 62/m² colocadas (supuesto). Si querías que la cubierta llegue literalmente al piso, hay que rehacer la sección.</li>
-  <li><b>Accesos:</b> vidriera corrida al jardín y, por el retiro lateral, una puerta y una ventana por local; la nave del fondo solo abre al frente.</li>
+  <li><b>Accesos:</b> vidriera corrida al jardín y, por el retiro lateral, una puerta y una ventana por local; la nave del fondo (dos pisos) abre al parque por el hastial y por sus dos costados.</li>
   <li><b>Jardín:</b> decks y gravilla cuentan como jardín en el 60 % exigido (a confirmar con la Intendencia); el paseo de hormigón no. Especies, riego y drenaje los define un paisajista.</li>
   <li><b>Suelo firme</b> en el precio base; los otros suelos se comparan en Rubrado.</li>
   <li><b>Tarifas</b> de la estimación v3 (panel, estructura, vidrieras, piedra a USD 230/m² estimada). Costo directo × 1,1 × 1,25.</li></ul>
@@ -970,7 +1003,7 @@ function dPend() {
   <li><b>Planos de sanitaria y eléctrica</b> sobre este layout, con una conexión de UTE y OSE por padrón (los de la v1 son del bloque anterior).</li>
   <li><b>Cálculo estructural</b> del Ing. Ricardo Portugau: perfiles, correas, anclajes y succión de viento.</li>
   <li><b>Estudio de suelos</b> para confirmar el suelo firme.</li>
-  <li><b>Cotizaciones</b> de estructura, paneles, cenefas de madera, vidrieras, decks y plantas con estas cantidades, y pendiente mínima del panel para la nave del fondo.</li>
+  <li><b>Cotizaciones</b> de estructura, paneles, cenefas de madera, vidrieras, decks y plantas con estas cantidades, y entrepiso y escalera de la nave del fondo.</li>
   <li><b>Del Proyecto v1 sin portar todavía:</b> pedido de cotización a proveedores y respuestas, quién hace cada rubro (subcontrato o cuadrilla propia con manitou), auditoría de costos y estudio de mercado, cálculo de caja de SBU y planos de instalaciones por local.</li>
   <li><b>Anotación del croquis:</b> "padrón 10596 · 7:8": no la pude interpretar (¿relación de medidas, alturas, escala?). Decime qué significa y la incorporo.</li>
   <li><b>Planta alta por local:</b> precio y decisión de cada local, si la piden después.</li>
@@ -984,12 +1017,12 @@ $('cSue').innerHTML = Object.entries(SUELO).map(([k, v]) => `<option value="${k}
 function show(id) { document.querySelectorAll('main > section').forEach(s => s.classList.toggle('on', s.id === id)); $('tabs').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.t === id)); if (id === 'p-3d') { fit(); } history.replaceState(null, '', '#' + id); }
 $('tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) show(b.dataset.t); });
 function upd() {
-  S.est = $('cEst').value; S.suelo = $('cSue').value; S.n = +$('cN').value; S.cons = $('cCons').value; S.bd = +$('cBd').value; S.cara = $('cCara').value; applyGeom(); S.gas = Math.max(0, Math.min(unidades(S, true), +$('cGas').value || 0)); S.iva = $('cIva').checked;
+  S.est = $('cEst').value; S.ref = $('cRef').value; S.suelo = $('cSue').value; S.n = +$('cN').value; S.cons = $('cCons').value; S.bd = +$('cBd').value; S.cara = $('cCara').value; applyGeom(); S.gas = Math.max(0, Math.min(unidades(S, true), +$('cGas').value || 0)); S.iva = $('cIva').checked;
   $('dProy').innerHTML = dProy(); $('dImpl').innerHTML = dImpl(); $('dPais').innerHTML = dPais(); $('dPlanta').innerHTML = dPlanta(); $('dSani').innerHTML = dSani(); $('dFach').innerHTML = dFach(); $('dEst').innerHTML = dEst(); $('dRub').innerHTML = dRub(); $('dCrono').innerHTML = dCrono(); $('dXtra').innerHTML = dXtra(); dRent(); $('dPend').innerHTML = dPend(); build3d();
 }
-['cEst', 'cSue', 'cN', 'cCons', 'cBd', 'cCara', 'cGas', 'cIva'].forEach(id => $(id).addEventListener('input', upd));
+['cEst', 'cRef', 'cSue', 'cN', 'cCons', 'cBd', 'cCara', 'cGas', 'cIva'].forEach(id => $(id).addEventListener('input', upd));
 $('cEst').value = S.est; upd(); fit(); view('iso'); setSun(1);
 show(location.hash.slice(1) && $(location.hash.slice(1)) ? location.hash.slice(1) : 'p-proy');
 (function loop() { requestAnimationFrame(loop); ctl.update(); ren.render(sc, cam); })();
-window.__p = { S, NV, Qty, cotiza, plan, pagos, upd, show, view, sunPos, solParque };
+window.__p = { chkAbert, openings, consRooms, S, NV, Qty, cotiza, plan, pagos, upd, show, view, sunPos, solParque };
 </script></body></html>
