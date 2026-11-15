@@ -160,3 +160,20 @@ Referencia cruzada, NO es el Isowall de Bromyros (otro perfil, norma AS/NZS 1170
 - Con succión, el ala inferior comprime en el apoyo: mantener tirantillas (sag rods) a 1/3 de luz y una en el vuelo.
 
 **Detalles a resolver en obra/taller:** empalmes de C solapados 30–40 cm con 4 bulones (lo más lejos posible del apoyo del pórtico 4), placa de punta 6 mm en cada C al soldar a la viga de borde, babeta y cierre inferior (sofito) de la cenefa. Peso viga de borde: 2 × ≈ 5,8 m × 10,8 kg/m.
+
+---
+## 12. Cenefa frontal como portal de 1,20 m (paneles de pared + techo)
+
+**Criterio (según CENEFA_ESTILO_2.glb):** la cenefa avanza 1,20 m (x = −49,91 → −48,71) y forma un volumen: fajas laterales (retornos) de panel de pared de piso a alero, una faja/dintel horizontal a la altura del alero (y ≈ 5,4–6,0) y el borde de cubierta con su cara de panel, todo con paneles de pared verticales de 80 mm (cajón cerrado).
+
+**Sistema estructural: se extiende la fachada 1,20 m** (misma lógica de líneas de apoyo que los muros laterales, así las luces de panel de 2,85 y 2,6 m ya verificadas siguen valiendo):
+- Solera RHS 100×50 prolongada sobre la platea hasta la placa de base del poste de esquina.
+- Dintel de vano IPE 200 (y = 2,95) y viga de alero IPE 160 (y = 5,54) acostadas, prolongadas hasta el poste de esquina (voladizo desde la columna del pórtico 4, simplemente apoyadas en el poste).
+- **2 postes de esquina RHS 200×100×6** (200 mm en el plano de la pared, cara exterior a ras de ala de columna, de y = 0,065 a 5,64) con placa de base 250×300×15 anclada a la platea (previsto 4 M16, a verificar con el espesor de platea).
+- **Dintel de cenefa RHS 120×60×4** (11 m, a y ≈ 5,54, cara exterior en x = −48,71) entre postes de esquina, atado al piñón con 3 voladizos RHS 100×50×3 (a z = −43,04, −40,71, −38,36, sobre los postes del piñón) que lo sostienen lateralmente: la luz lateral queda en ≈ 2,3–3,4 m en lugar de 11 m (sin ellos la flecha por viento sería ≈ 190 mm).
+- **Viga de borde RHS 120×60×4** en las puntas de las C (ver sección 11) que recibe la cara de panel del borde de cubierta; el triángulo entre el dintel de cenefa y la viga de borde se cierra con panel vertical de 0,1 a 2,2 m de luz (OK con tabla).
+- Sofito: panel horizontal (luz 1,2 m) apoyado en el piñón (voladizos) y en el dintel de cenefa.
+
+**Peso agregado por la cenefa (kg):** correas prolongadas ≈ 150 · viga de borde 130 · postes 302 · placas base 18 · dintel 117 · voladizos ≈ 20 · IPE y solera prolongados ≈ 80 → ≈ 0,8 t. **Neto total de la estructura v2 ≈ +4,4 t** sin la cruz de fondo opcional (185 kg).
+
+**Pendiente:** verificar postes de esquina y dintel con viento 1,3 kPa (sobre fajas y cara de cenefa), anclajes a platea, babetas y sofito; el DAE no incluye los paneles.
