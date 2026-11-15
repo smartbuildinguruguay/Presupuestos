@@ -126,3 +126,23 @@ Pesos con áreas nominales sin radios de esquina. Las platinas nuevas pesan unos
 - **Paneles Kingspan Bromyros (Uruguay):** el catálogo oficial NO trae tablas de carga; sólo K/R (Isoroof 80 mm K=0,277). Para cubierta indica "carga admisible 80 kg/m² para 3 o más soportes" (producto exacto a confirmar) → **incompatible con succión de ~150 kg/m²** salvo que se confirme otra tabla. La tabla Isowall del cliente es del tipo Cintac/Tupemesa (50/75 mm, L/200, A792 Gr37), no de Bromyros. Pedir tabla de Isowall 80 mm e Isoroof/Isodec 80 mm a Bromyros (0800 1948).
 - **Tubos:** pesos coherentes con el modelo: RHS 100×50 ≈ 6,6–6,8 kg/m (e=3 mm); RHS 120×60 ≈ 10,8 kg/m (e=4 mm); RHS 200×100: 5 mm = 22,3, 6 mm ≈ 26–27 kg/m (Cintac). Falta confirmar espesores y calidad (A500 Gr.C / fy≥315 MPa vs 235 asumido) con el proveedor.
 - **Perfil C 250×75×25×2,5:** no se encontró ficha publicada; propiedades siguen por fórmula (×0,85). Pedir catálogo (Gerdau Uruguay, Ternium) o usar IPE/RHS con tabla.
+
+---
+## 10. Contraste con tabla Kingspan Australia (KS1000 AWP 80 mm, vano simple, kN/m²)
+
+Referencia cruzada, NO es el Isowall de Bromyros (otro perfil, norma AS/NZS 1170 con temperatura/color). Valores leídos de una ficha en Scribd con tabla desordenada: confirmar luces contra el PDF original.
+
+| Luz m | ULS pres. | ULS succ. | SLS pres. | SLS succ. |
+|---|---|---|---|---|
+| 3,0 | 4,69 | 4,76 | 3,22 | 2,79 |
+| 3,5 | 3,68 | 3,49 | 2,27 | 1,92 |
+| 4,0 | 2,82 | 2,68 | 1,64 | 1,35 |
+| 4,5 | 2,23 | 2,11 | 1,22 | 0,96 |
+| 5,0 | 1,80 | 1,71 | 0,92 | 0,70 |
+
+**Verificación de vanos de panel con viento 1,3 kPa (servicio) / 1,95 kPa (último = 1,3×1,5):**
+- Muros laterales y frente: luces ≤ 2,85 m (solera→dintel 2,95) y ≤ 2,6 m (dintel→alero 5,54) → holgado en ambos modelos.
+- Piñón frontal: 4,36→cumbrera ≈ 3,3 m → OK.
+- Piñón de fondo (línea única y=3,70): solera→3,70 ≈ 3,6 m; 3,70→cumbrera ≈ 3,95 m. Con tabla de vano simple a 4,0 m (conservador, el panel real es continuo): SLS succ. 1,35 ≥ 1,3 (justo), ULS 2,68 ≥ 1,95 OK. **Margen mínimo: no superar 4,0 m; si Bromyros no confirma ≥ 1,3 kPa a 4,0 m, agregar una segunda línea de clavaderas (≈ y 5,3) en el fondo.**
+- Con la tabla Isowall del cliente (2 apoyos, 4,0 m → 110 kg/m² ≈ 1,08 kPa) el fondo NO cumpliría 1,3 kPa sin segunda línea; con 3 apoyos (138 kg/m² ≈ 1,35 kPa a 4,0 m) cumple justo.
+- Cubierta: sin tabla pública (Kingspan AU remite a Servicios Técnicos). Pendiente con Bromyros.
