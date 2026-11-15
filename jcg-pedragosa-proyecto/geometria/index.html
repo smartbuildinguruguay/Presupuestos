@@ -1,0 +1,143 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Estudio de geometría · nave tipo · Pedragosa Sierra</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#222;background:#faf9f5}
+header{background:#2a3a4a;color:#fff;padding:12px 18px}header h1{margin:0;font-size:18px}header p{margin:2px 0 0;font-size:12px;opacity:.8}
+.wrap{display:grid;grid-template-columns:330px minmax(0,1fr);gap:14px;padding:14px;align-items:start}
+@media(max-width:900px){.wrap{grid-template-columns:1fr}}
+.panel{background:#fff;border:1px solid #e3e0d6;border-radius:10px;padding:12px 14px}
+.panel h3{margin:10px 0 4px;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:#6a7480}.panel h3:first-child{margin-top:0}
+.row{display:grid;grid-template-columns:1fr 54px;gap:6px;align-items:center;margin:5px 0}.row label{font-size:13px}
+.row input[type=range]{grid-column:1/3;width:100%}.row output{text-align:right;font-variant-numeric:tabular-nums;font-weight:600}
+.row .h{grid-column:1/3;font-size:11px;color:#7a828b;margin-top:-3px}
+button{font:inherit;border:1px solid #cfd3d8;background:#f6f7f8;border-radius:8px;padding:6px 9px;cursor:pointer;margin:2px 2px 2px 0}button:hover{background:#eceff2}
+#cv{width:100%;height:560px;border-radius:10px;border:1px solid #e3e0d6;background:#efeee8;display:block}
+.kpi{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:8px;margin-top:10px}.kpi div{background:#fff;border:1px solid #e3e0d6;border-radius:8px;padding:8px 10px}.kpi b{display:block;font-size:17px}.kpi span{font-size:11px;color:#6a7480}
+textarea{width:100%;height:120px;font:12px ui-monospace,monospace;border:1px solid #d5d8dc;border-radius:8px;padding:6px}
+.cols{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:10px}@media(max-width:900px){.cols{grid-template-columns:1fr}}
+svg{width:100%;height:auto;background:#fff;border:1px solid #e3e0d6;border-radius:8px}
+.note{font-size:12px;color:#6a7480;margin-top:8px}
+</style></head><body>
+<header><h1>Estudio de geometría · nave tipo de dos aguas</h1><p>Juan Carlos García · Av. Pedragosa Sierra · SBU · Ramiro Portugau · solo define la forma; lo que se apruebe acá pasa al proyecto</p></header>
+<div class="wrap">
+<div class="panel" id="pan"></div>
+<div>
+<canvas id="cv"></canvas>
+<div class="kpi" id="kpi"></div>
+<div class="cols"><div><svg id="plan" viewBox="0 0 520 250"></svg><div class="note">Planta: en naranja lo que sale del volumen principal; en azul el vidrio retranqueado.</div></div><div><svg id="sec" viewBox="0 0 520 250"></svg><div class="note">Corte transversal por una bahía vidriada: el dintel funciona como alero hacia adentro.</div></div></div>
+<div class="panel" style="margin-top:10px"><h3>Parámetros para subir al proyecto</h3><textarea id="json" readonly></textarea><button id="cp">Copiar</button></div>
+</div></div>
+<script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
+<script type="module">
+import * as THREE from 'three';
+import {OrbitControls} from 'three/addons/controls/OrbitControls.js';
+import {RoomEnvironment} from 'three/addons/environments/RoomEnvironment.js';
+const $=id=>document.getElementById(id);
+const P0={W:11.5,L:22,e:6,n:3,Pf:1.5,f:.55,Rl:.9,Al:0,hl0:.3,hl1:3.3,cen:.3};
+const DEF=[
+ ['W','Luz de la nave (ancho)','m',8,14,.1,'Ancho del volumen; los retiros limitan cuánto se puede abrir.'],
+ ['L','Largo de la nave','m',12,26,.5,''],
+ ['e','Altura de alero (cara baja del techo)','m',4,8,.1,''],
+ ['n','Locales / bahías vidriadas','',1,5,1,'Cada bahía lleva una puerta al centro.'],
+ ['Pf','Portal hacia adelante (volumen frontal)','m',0,3.5,.1,'Cuánto avanza el marco del hastial: forma un volumen hacia la avenida, no hacia los costados.'],
+ ['f','Espesor del marco del portal','m',.2,1,.05,''],
+ ['Rl','Retranqueo del vidrio en los laterales','m',0,1.6,.1,'El vidrio se mete hacia adentro y el dintel queda como alero interior.'],
+ ['Al','Alerillo lateral del techo (opcional)','m',0,1,.1,'Si se usa, que sea chico; 0 = el techo baja como pared.'],
+ ['hl0','Alto del zócalo cerrado','m',0,1.2,.05,''],
+ ['hl1','Alto del vidrio (dintel)','m',2.4,4.5,.1,''],
+ ['cen','Ancho de cenefa (madera)','m',.15,.6,.05,'Solo cambia el ritmo visual.']];
+const PRE={
+ 'Croquis':{Pf:1.5,Rl:.9,Al:0,f:.55},
+ 'Alerillo chico':{Pf:1.5,Rl:.4,Al:.4,f:.55},
+ 'Portal profundo':{Pf:2.5,Rl:1.2,Al:0,f:.7},
+ 'Plano (sin portal)':{Pf:0,Rl:0,Al:0,f:.45}};
+let p={...P0};
+const pan=$('pan');
+pan.innerHTML='<h3>Presets</h3>'+Object.keys(PRE).map(k=>`<button data-p="${k}">${k}</button>`).join('')+'<h3>Vistas</h3><button data-v="iso">Isométrica</button><button data-v="front">Frente (avenida)</button><button data-v="side">Lateral</button><button data-v="top">Planta</button><h3>Geometría</h3>'+DEF.map(([k,t,u,a,b,s,h])=>`<div class="row"><label>${t}</label><output id="o_${k}"></output><input type="range" id="r_${k}" min="${a}" max="${b}" step="${s}">${h?`<div class="h">${h}</div>`:''}</div>`).join('');
+const TA=Math.tan(20*Math.PI/180),CA=Math.cos(20*Math.PI/180);
+/* escena */
+const cv=$('cv'),ren=new THREE.WebGLRenderer({canvas:cv,antialias:true,preserveDrawingBuffer:true});ren.setPixelRatio(Math.min(devicePixelRatio,2));ren.shadowMap.enabled=true;ren.toneMapping=THREE.ACESFilmicToneMapping;
+const sc=new THREE.Scene();sc.background=new THREE.Color(0xefeee8);sc.environment=new THREE.PMREMGenerator(ren).fromScene(new RoomEnvironment(),.04).texture;
+const cam=new THREE.PerspectiveCamera(40,1,.1,500),ctl=new OrbitControls(cam,cv);ctl.enableDamping=true;
+const sun=new THREE.DirectionalLight(0xffffff,2.2);sun.position.set(-20,30,25);sun.castShadow=true;sun.shadow.mapSize.set(2048,2048);Object.assign(sun.shadow.camera,{left:-30,right:30,top:30,bottom:-30,near:1,far:120});sc.add(sun);sc.add(new THREE.HemisphereLight(0xffffff,0xb8b4a8,.5));
+const gnd=new THREE.Mesh(new THREE.PlaneGeometry(200,200),new THREE.MeshStandardMaterial({color:0xcfd6c0,roughness:1}));gnd.rotation.x=-Math.PI/2;gnd.position.y=-.01;gnd.receiveShadow=true;sc.add(gnd);
+const G=new THREE.Group();sc.add(G);
+function stripes(c1,c2,w){const c=document.createElement('canvas');c.width=64;c.height=8;const x=c.getContext('2d');x.fillStyle=c1;x.fillRect(0,0,64,8);x.fillStyle=c2;x.fillRect(0,0,64*w,8);const t=new THREE.CanvasTexture(c);t.wrapS=t.wrapT=THREE.RepeatWrapping;t.colorSpace=THREE.SRGBColorSpace;t.anisotropy=4;return t}
+const TW=stripes('#4a3224','#2b1c13',.14),TR=stripes('#3c4249','#22262b',.12),TN=stripes('#a9794c','#7e5532',.14);
+const mat=(t,rx,ry)=>{const m=t.clone();m.needsUpdate=true;m.repeat.set(rx,ry);return new THREE.MeshStandardMaterial({map:m,roughness:.8,side:THREE.DoubleSide})};
+const MT={marco:new THREE.MeshStandardMaterial({color:0x1d1f22,roughness:.7}),glass:new THREE.MeshPhysicalMaterial({color:0x9ec3d3,transparent:true,opacity:.55,roughness:.05,metalness:0,side:THREE.DoubleSide}),door:new THREE.MeshStandardMaterial({color:0x3f6e83,roughness:.4,transparent:true,opacity:.85}),floor:new THREE.MeshStandardMaterial({color:0xb9b4a6,roughness:1}),inner:new THREE.MeshStandardMaterial({color:0xb48a5d,roughness:.8})};
+function box(w,h,d,m,x,y,z,hz){const g=new THREE.BoxGeometry(w,h,d),uv=g.attributes.uv;if(hz){for(let i=0;i<uv.count;i++){const face=Math.floor(i/4);const hor=face<2?d:face<4?0:w;uv.setX(i,uv.getX(i)*hor/hz)}}const me=new THREE.Mesh(g,m);me.position.set(x,y,z);me.castShadow=me.receiveShadow=true;G.add(me);return me}
+function poly(pts,m,uvf){const g=new THREE.BufferGeometry(),pos=[],uv=[];const tri=(a,b,c)=>[a,b,c].forEach(q=>{pos.push(...q);uv.push(...(uvf?uvf(q):[0,0]))});for(let i=1;i<pts.length-1;i++)tri(pts[0],pts[i],pts[i+1]);g.setAttribute('position',new THREE.Float32BufferAttribute(pos,3));g.setAttribute('uv',new THREE.Float32BufferAttribute(uv,2));g.computeVertexNormals();const me=new THREE.Mesh(g,m);me.castShadow=me.receiveShadow=true;G.add(me);return me}
+const ST={};
+function build(){
+ while(G.children.length){const c=G.children.pop();c.geometry&&c.geometry.dispose()}
+ const {W,L,e,n,Pf,f,Rl,Al,hl0,hl1,cen}=p,r=e+W/2*TA,hw=W/2,t=.22;
+ const wood=mat(TW,1/cen,.05),roof=mat(TR,1/.45,.05),woodU=(w,h)=>0;
+ /* eje: x largo (0..L, frente en x=L), y alto, z ancho */
+ box(L+Pf+.6,.12,W+.6,MT.floor,(L+Pf)/2,.06,0);
+ /* techo */
+ const zo=hw+Al,eo=e-Al*TA;
+ [-1,1].forEach(s=>poly([[0,eo,s*zo],[L+Pf,eo,s*zo],[L+Pf,r,0],[0,r,0]],roof,q=>[Math.abs(q[2])/.45*1.0,q[0]*.0]));
+ [-1,1].forEach(s=>{box(L+Pf,.14,.14,MT.marco,(L+Pf)/2,eo-.07,s*zo)});
+ /* paredes laterales con vidrio retranqueado */
+ const nb=n,bw=L/nb;
+ [-1,1].forEach(s=>{
+   const zOut=s*hw,zIn=s*(hw-Rl);
+   box(L,e-hl1,t,wood,L/2,hl1+(e-hl1)/2,zOut-s*t/2,cen);                  // dintel / cenefa alta
+   if(hl0>0)box(L,hl0,t,wood,L/2,hl0/2,zOut-s*t/2,cen);                     // zócalo
+   for(let i=0;i<=nb;i++){const x=Math.min(Math.max(i*bw,.15),L-.15);const d=Math.max(Rl,t);box(.3,hl1-hl0,d,MT.marco,x,(hl0+hl1)/2,zOut-s*d/2)}
+   if(Rl>0){box(L,.08,Rl,MT.marco,L/2,hl0+.04,zOut-s*Rl/2)}                // alféizar
+   if(Rl>0.05)box(L,.1,Rl,MT.marco,L/2,hl1-.05,zOut-s*Rl/2);                 // soffit del alero interior
+   poly([[0,hl0,zIn],[L,hl0,zIn],[L,hl1,zIn],[0,hl1,zIn]],MT.glass);
+   box(L,.05,.05,MT.marco,L/2,2.4,zIn);
+   for(let i=0;i<nb;i++){const xc=(i+.5)*bw;const dr=box(1.8,2.4,.05,MT.door,xc,1.2,zIn);if(i%2===0||true)box(.05,2.4,.07,MT.marco,xc,1.2,zIn)}
+ });
+ /* fondo cerrado */
+ poly([[0,0,-hw],[0,0,hw],[0,e,hw],[0,r,0],[0,e,-hw]],mat(TW,1/cen,.05));
+ /* portal frontal: marco extruido hacia adelante + hastial retranqueado a x=L */
+ const ri=r-f/CA,ei=e+f*(TA-1/CA);
+ if(Pf>0){
+  const sh=new THREE.Shape();sh.moveTo(-hw,0);sh.lineTo(-hw,e);sh.lineTo(0,r);sh.lineTo(hw,e);sh.lineTo(hw,0);sh.lineTo(hw-f,0);sh.lineTo(hw-f,ei);sh.lineTo(0,ri);sh.lineTo(-hw+f,ei);sh.lineTo(-hw+f,0);sh.closePath();
+  const g=new THREE.ExtrudeGeometry(sh,{depth:Pf,bevelEnabled:false});g.rotateY(Math.PI/2);g.translate(L,0,0);
+  const me=new THREE.Mesh(g,MT.marco);me.castShadow=me.receiveShadow=true;G.add(me);
+  // cara interior del portal en madera natural
+  [-1,1].forEach(s=>box(Pf,e-.0,.03,MT.inner,L+Pf/2,e/2,s*(hw-f-.015)));
+ }
+ // frente del hastial (en x=L): panel de cenefas + vidrios
+ const wi=hw-f;
+ poly([[L,0,-wi],[L,0,wi],[L,ei,wi],[L,ri,0],[L,ei,-wi]],mat(TW,1/cen,.05),q=>[q[2]/cen*0+q[2]*(1/cen)/1,0]);
+ const xg=L+.03;
+ poly([[xg,0,-(wi-.25)],[xg,0,wi-.25],[xg,3.0,wi-.25],[xg,3.0,-(wi-.25)]],MT.glass);
+ const nm=Math.max(3,Math.round((2*wi-.5)/2.3));for(let i=0;i<=nm;i++){const z=-(wi-.25)+i*(2*wi-.5)/nm;box(.06,3.0,.06,MT.marco,xg+.02,1.5,z)}
+ box(.07,.06,2*wi-.5,MT.marco,xg+.02,2.4,0);box(.09,.12,2*wi-.4,MT.marco,xg+.02,3.05,0);
+ const ya=ri-.55,hh=Math.min(1.9,ya-3.3),hwid=hh/TA;if(hh>.5)poly([[xg,ya,0],[xg,ya-hh,hwid],[xg,ya-hh,-hwid]],MT.glass);
+ // puertas del hastial
+ [-1,1].forEach(s=>box(.05,2.4,1.6,MT.door,xg+.01,1.2,s*(wi-.25)/2));
+ /* contornos */
+ G.traverse(o=>{if(o.isMesh&&o.geometry&&(o.material===MT.marco||o.material.map)){}});
+ /* cálculos */
+ const A0=L*W,Ac=(L+Pf)*W+2*Al*(L+Pf);
+ ST.A0=A0;ST.Ac=Ac;ST.vol=Pf*W;
+ return {r,e};
+}
+function kpi(){const s=ST;$('kpi').innerHTML=`<div><b>${(p.L*p.W).toFixed(1).replace('.',',')} m²</b><span>volumen principal</span></div><div><b>${(p.Pf*p.W).toFixed(1).replace('.',',')} m²</b><span>portal hacia adelante (techado)</span></div><div><b>${s.Ac.toFixed(1).replace('.',',')} m²</b><span>proyección del techo (cuenta para FOS)</span></div><div><b>${(p.W/2*TA+p.e).toFixed(2).replace('.',',')} m</b><span>cumbrera</span></div>`}
+function plan(){const s=16,x0=40,y0=40,W=p.W,L=p.L,Pf=p.Pf,Rl=p.Rl,Al=p.Al;const X=x=>x0+x*s*.78,Y=y=>y0+(y+W/2)*s*.78;let g=`<rect x="${X(0)}" y="${Y(-W/2)}" width="${L*s*.78}" height="${W*s*.78}" fill="#f4f1ea" stroke="#222" stroke-width="3"/>`;
+ g+=`<rect x="${X(L)}" y="${Y(-W/2)}" width="${Pf*s*.78}" height="${W*s*.78}" fill="rgba(217,130,43,.25)" stroke="#d9822b" stroke-width="2"/>`;
+ [-1,1].forEach(sg=>{g+=`<line x1="${X(0)}" y1="${Y(sg*(W/2-Rl))}" x2="${X(L)}" y2="${Y(sg*(W/2-Rl))}" stroke="#2c6fa3" stroke-width="3"/>`;if(Al>0)g+=`<rect x="${X(0)}" y="${sg<0?Y(-W/2-Al):Y(W/2)}" width="${L*s*.78}" height="${Al*s*.78}" fill="rgba(217,130,43,.3)"/>`});
+ g+=`<line x1="${X(L)}" y1="${Y(-W/2)}" x2="${X(L)}" y2="${Y(W/2)}" stroke="#2c6fa3" stroke-width="3"/><text x="${X(L)+4}" y="${y0-10}" font-size="11" fill="#d9822b">portal ${p.Pf.toFixed(1).replace('.',',')} m →  avenida</text><text x="${X(0)}" y="${y0-10}" font-size="11" fill="#555">${L} × ${W} m</text><text x="${X(0)+4}" y="${Y(W/2)+16}" font-size="11" fill="#2c6fa3">vidrio retranqueado ${p.Rl.toFixed(1).replace('.',',')} m</text>`;$('plan').innerHTML=g}
+function sec(){const s=18,W=p.W,e=p.e,r=e+W/2*TA,X=x=>260+x*s,Y=y=>220-y*s,Rl=p.Rl,Al=p.Al,hl0=p.hl0,hl1=p.hl1;let g=`<line x1="20" y1="${Y(0)}" x2="500" y2="${Y(0)}" stroke="#222" stroke-width="2"/>`;
+ g+=`<polyline points="${X(-W/2-Al)},${Y(e-Al*TA)} ${X(0)},${Y(r)} ${X(W/2+Al)},${Y(e-Al*TA)}" fill="none" stroke="#333" stroke-width="5"/>`;
+ [-1,1].forEach(sg=>{const xo=X(sg*W/2),xi=X(sg*(W/2-Rl));g+=`<rect x="${Math.min(xo,xo-sg*6)}" y="${Y(e)}" width="6" height="${(e-hl1)*s}" fill="#4a3224"/><rect x="${Math.min(xo,xo-sg*6)}" y="${Y(hl0)}" width="6" height="${hl0*s}" fill="#4a3224"/><line x1="${xi}" y1="${Y(hl0)}" x2="${xi}" y2="${Y(hl1)}" stroke="#2c6fa3" stroke-width="3"/><rect x="${Math.min(xo,xi)}" y="${Y(hl1)}" width="${Math.abs(xo-xi)}" height="4" fill="#1d1f22"/>`;if(Rl>0)g+=`<text x="${(xo+xi)/2}" y="${Y(hl1)-6}" font-size="10" text-anchor="middle" fill="#8a4a10">alero interior ${Rl.toFixed(1).replace('.',',')}</text>`});
+ g+=`<text x="260" y="${Y(r)-10}" font-size="11" text-anchor="middle" fill="#555">luz ${W} m · cumbrera ${r.toFixed(2).replace('.',',')} m</text>`;$('sec').innerHTML=g}
+const VIEWS={iso:()=>[[p.L+22,16,30],[ (p.L+p.Pf)/2,3,0]],front:()=>[[p.L+34,5,0],[p.L/2,3.5,0]],side:()=>[[p.L/2,6,44],[p.L/2,3.5,0]],top:()=>[[p.L/2+.01,70,0.01],[p.L/2,0,0]]};
+function view(k){const [pp,t]=VIEWS[k]();cam.position.set(...pp);ctl.target.set(...t);ctl.update()}
+function upd(){DEF.forEach(([k])=>{$('o_'+k).textContent=(+p[k]).toFixed(k==='n'?0:k==='f'||k==='hl0'||k==='cen'?2:1).replace('.',',')});build();kpi();plan();sec();$('json').value=JSON.stringify(p,null,1)}
+DEF.forEach(([k])=>{const r=$('r_'+k);r.value=p[k];r.oninput=()=>{p[k]=+r.value;upd()}});
+pan.querySelectorAll('[data-p]').forEach(b=>b.onclick=()=>{Object.assign(p,PRE[b.dataset.p]);DEF.forEach(([k])=>$('r_'+k).value=p[k]);upd()});
+pan.querySelectorAll('[data-v]').forEach(b=>b.onclick=()=>view(b.dataset.v));
+$('cp').onclick=()=>navigator.clipboard&&navigator.clipboard.writeText($('json').value);
+function fit(){const w=cv.clientWidth,h=cv.clientHeight;ren.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
+addEventListener('resize',fit);fit();upd();view('iso');window.__v=view;window.__p=p;window.__upd=upd;window.__set=(o)=>{Object.assign(p,o);DEF.forEach(([k])=>$('r_'+k).value=p[k]);upd()};
+(function loop(){requestAnimationFrame(loop);ctl.update();ren.render(sc,cam)})();
+</script></body></html>
