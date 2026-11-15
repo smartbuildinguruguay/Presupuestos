@@ -765,7 +765,8 @@ const MT = { roof: mat(0x2f353b, { r: .5, s: THREE.DoubleSide }), steel: mat(0x7
 function slatTex(base, gap) { const c = document.createElement('canvas'); c.width = 64; c.height = 64; const x = c.getContext('2d'); x.fillStyle = base; x.fillRect(0, 0, 64, 64); x.fillStyle = gap; x.fillRect(0, 0, 5, 64); x.fillStyle = 'rgba(255,255,255,.05)'; x.fillRect(5, 0, 4, 64); const t = new THREE.CanvasTexture(c); t.wrapS = t.wrapT = THREE.RepeatWrapping; t.colorSpace = THREE.SRGBColorSpace; t.anisotropy = 4; return t; }
 Object.assign(MT, { slat: new THREE.MeshStandardMaterial({ map: slatTex('#4d3f34', '#17120d'), roughness: .8, metalness: .05, side: THREE.DoubleSide }), slatR: new THREE.MeshStandardMaterial({ map: slatTex('#383b3f', '#121315'), roughness: .5, metalness: .35, side: THREE.DoubleSide }), marco: mat(0x1d2022, { r: .5, m: .3, s: THREE.DoubleSide }), deck: mat(0xb98a52, { r: .85 }), conc: mat(0xc4c4be, { r: .9 }), grav: mat(0xd8d0bd, { r: 1 }), bed: mat(0x9fbd86, { r: 1 }), trunk: mat(0x5b4631, { r: 1 }), leaf1: mat(0x5c8f4e, { r: .9 }), leaf2: mat(0x6fa45c, { r: .9 }), bench: mat(0x5b3f22, { r: .8 }) });
 const V3 = (X, hh, Y) => new THREE.Vector3(X, hh, -Y);
-const add3 = (grp, m) => { m.castShadow = true; m.receiveShadow = true; grp.add(m); return m; };
+let CUR = 'lote';
+const add3 = (grp, m) => { m.userData.nv = CUR; m.castShadow = true; m.receiveShadow = true; grp.add(m); return m; };
 const slab = (x0, x1, y0, y1, h0, h1, m, grp) => { const me = new THREE.Mesh(new THREE.BoxGeometry(Math.abs(x1 - x0), h1 - h0, Math.abs(y1 - y0)), m); me.position.set((x0 + x1) / 2, (h0 + h1) / 2, -(y0 + y1) / 2); return add3(grp, me); };
 function poly(pts, m, grp) { const pos = []; for (let i = 1; i < pts.length - 1; i++) [pts[0], pts[i], pts[i + 1]].forEach(p => pos.push(p.x, p.y, p.z)); const gg = new THREE.BufferGeometry(); gg.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3)); gg.computeVertexNormals(); return add3(grp, new THREE.Mesh(gg, m)); }
 function rod(a, b, r, m, grp) { const d = new THREE.Vector3().subVectors(b, a), L = d.length(), me = new THREE.Mesh(new THREE.CylinderGeometry(r, r, L, 8), m); me.position.copy(a).add(b).multiplyScalar(.5); me.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), d.normalize()); return add3(grp, me); }
@@ -796,6 +797,7 @@ function build3d() {
   GARD.bancos.forEach(p => { seg3([p[0], p[1]], [p[2], p[3]], .5, .38, .46, MT.bench, G3.paisaje); }); GARD.arboles.forEach((p, i) => tree3(p[0], p[1], i, G3.paisaje));
   lab('Plaza de estar', V3(NV[1].x1 + 4, 4.5, 30), G3.paisaje, 3);
   NV.forEach(b => {
+    CUR = b.id;
     const ym = (b.y0 + b.y1) / 2, W = b.W, FRm = rs ? rs.fw : .55, ci = 1 / Math.cos(20 * Math.PI / 180), top = b.tipo === 'dos' ? b.e : b.hp;
     if (b.tipo === 'dos') {
       const e = b.e, r = b.r;
@@ -855,6 +857,7 @@ function build3d() {
     lab(`${b.n} · ${nf(b.A)} m²`, V3((b.x0 + b.x1) / 2, b.alt + 2, ym), G3.naves, 3.4);
     line3([V3(b.x0 - 1.5, .2, b.y0), V3(b.x0 - 1.5, .2, b.y1)], MT.dim, G3.luces);
   });
+  CUR = 'lote';
   rod(V3(-8.6, -.4, 2), V3(-8.6, -.4, 58), .14, MT.blue, G3.desagues); lab('Colector pluvial', V3(-8.6, 1.2, 1.5), G3.desagues, 2.6);
 }
 const pan = $('pan3d'); pan.innerHTML = '<h4>Capas</h4>' + LAY.map(([k, t]) => `<label><input type="checkbox" data-l="${k}" checked> ${t}</label>`).join('') + '<h4>Vistas</h4><button data-v="planta">Planta (norte arriba)</button><button data-v="avenida">Desde la avenida</button><button data-v="portico">Pórticos desde el fondo</button><button data-v="iso">Isométrica</button><h4>Sol</h4><div id="suns"></div>';
@@ -866,6 +869,21 @@ function setSun(i) { const [, d, c] = SOLES[i], sp = sunPos(d, c), R = 160; sunL
 $('suns').innerHTML = SOLES.map((x, i) => `<button data-s="${i}">${x[0]}</button>`).join(''); pan.querySelectorAll('button[data-s]').forEach(b => b.onclick = () => setSun(+b.dataset.s));
 function fit() { const w = cv.clientWidth, hh = cv.clientHeight; if (!w) return; ren.setSize(w, hh, false); cam.aspect = w / hh; cam.updateProjectionMatrix(); }
 addEventListener('resize', fit);
+
+/* exportación a Collada: metros, Z hacia arriba, X hacia el fondo en negativo (avenida en X = 0), Y hacia el norte */
+function exportScene() {
+  build3d(); const out = {}, fix = { slat: '4d3f34', slatR: '383b3f' };
+  Object.entries(G3).forEach(([layer, grp]) => grp.traverse(o => {
+    if (!o.isMesh) return; o.updateWorldMatrix(true, false);
+    const g = o.geometry, pos = g.attributes.position, idx = g.index, m = o.material, v = new THREE.Vector3();
+    const key = o.userData.nv || 'lote', hex = (m.map ? (Object.entries(MT).find(([k, x]) => x === m) || [])[0] : null), col = m.map ? (fix[hex] || '808080') : m.color.getHexString();
+    const name = layer + '_' + col + (m.transparent ? '_vidrio' : ''), bucket = ((out[key] = out[key] || {})[name] = out[key][name] || { col, alpha: m.transparent ? m.opacity : 1, p: [] });
+    const P = i => { v.fromBufferAttribute(pos, i).applyMatrix4(o.matrixWorld); return [v.x, -v.z, v.y]; };
+    const n = idx ? idx.count : pos.count; for (let i = 0; i < n; i++) bucket.p.push(...P(idx ? idx.getX(i) : i));
+  }));
+  return out;
+}
+window.__exportScene = exportScene;
 /* ================= RUBRADO ================= */
 function dRub() {
   const c = cotiza(), k = IVA(); let h = '', sub = 0, rows = '', cn = '';
