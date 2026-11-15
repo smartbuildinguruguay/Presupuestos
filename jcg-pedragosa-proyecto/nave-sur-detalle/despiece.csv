@@ -10,6 +10,8 @@ Placa de empalme en cumbrera 600×400×12;8;0;0;0
 Correa de techo C150×50×15×2;12;250.8;0;0
 Panel de techo PIR 80 mm (1,00 m útil);42;256.5;256.5;0
 Remate de cumbrera;2;42.0;0;0
+Alero de techo 25 cm (panel PIR, opcion piedra);2;42.5;11.3;0
+Alero de fondo 25 cm (panel PIR, opcion piedra);2;12.2;3.1;0
 Panel de muro PIR 80 mm vertical (1,00 m útil), neto de aberturas;132;0;300.3;0
 Cenefa de tablas de madera 70 mm (superficie);0;0;235.4;0
 Clavadera horizontal C100×50×2 (muro);33;188.1;0;0
@@ -31,9 +33,8 @@ Portal: cabeza de panel/cenefa (volumen proyectado 1,20 m);0;0;6.4;0
 Patas del portal en piedra (franjas, opcion);2;0;6.2;0
 Vísera de panel con cielorraso de madera y cenefa de borde;0;44.4;48.8;0
 Aleta de vísera (chapa plegada);8;0;29.0;0
-Lama de madera 5x15 (solei);178;583.8;0;0
-Tirante de madera 18x18 (cargadero y zocalo de lamas);4;88.8;0;0
-Columna de piedra 44x44 (apoyo de vísera);8;26.2;0;0
+Columna de solei (tablas 15x3 cm paralelas a la fachada, 1,20 m de profundidad);10;32.8;0;0
+Tabla de solei 15x3 cm x 3,28 m;125;410.0;0;0
 Canaleta de chapa en alero;2;42.0;0;0
 Bajada pluvial ø80;4;23.6;0;0
 Tensor de cubierta ø20;8;71.0;0;0

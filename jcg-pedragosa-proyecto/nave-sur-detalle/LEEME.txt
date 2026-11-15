@@ -1,16 +1,21 @@
 Nave sur, padron 10598: modelo de detalle (anteproyecto). Metros, Z arriba, mismo origen que el modelo general (X = 0 en la avenida; fondo del lote en X = -47,3; Y = 0 limite sur del 10598).
 
-GRUPOS (componentes anidados, cada uno se edita aparte):
-01 Fundacion / 02 Estructura H240 / 03 Correas / 04 Clavaderas / 05 Tensores / 06 Cubierta paneles / 07 Fachadas paneles / 08 Cenefa madera / 09 Aberturas (un grupo por abertura, con contramarco plegado) / 10 Portal y viseras (cabeza + viseras en cenefa/panel continuo) / 12 Desagues.
-VARIANTES (solo una de cada par se ve a la vez):
-  10b Patas portal cenefa  |  10c Patas portal piedra (franjas)
-  11a Apoyos aletas chapa  |  11b Apoyos lamas madera solei  |  11c Apoyos columnas piedra
-Colores de panel: materiales "Panel muro" y "Panel techo" (opciones: blanco+grafito, PIR blanco, PIR gris claro, muro gris claro + techo grafito).
+GRUPOS (cada uno es un grupo/componente con sus subgrupos adentro):
+01 Fundacion
+02 Estructura H240 (columnas, dinteles, montantes, correas, clavaderas por cara, tensores)
+03 Paneles PIR (cubierta lado sur / jardin, muros sur / jardin, hastiales)
+04 Cenefa madera (por cara)
+05 Aberturas (un subgrupo por abertura, con contramarco plegado)
+06 Portal y viseras
+08 Desagues
+VARIANTES (una a la vez):
+ 06b Patas portal cenefa | 06c Patas portal piedra (+ 03b Alero de techo 25 cm, solo con piedra)
+ 07a Apoyos aletas chapa | 07b Apoyos solei madera (columnas de tablas 15x3 paralelas a la fachada, perpendiculares a ella)
+COLOR: materiales Panel muro, Panel techo, Cenefa, Cumbrera, Cielorraso (opciones: madera+grafito, blanco, gris claro; cambian toda la fachada y el techo).
 
-CONSOLA RUBY (Ventana > Consola Ruby), barras normales /:
-  1) load 'C:/ruta/sbu_etiquetas.rb'      (crea etiquetas; apaga las variantes 10c, 11b, 11c)
-  2) load 'C:/ruta/sbu_opciones.rb'
-     SBU.opcion(patas: :piedra, apoyos: :madera, panel: :gris_claro)
-Tambien se pueden prender/apagar a mano desde el panel Etiquetas; el color se cambia editando el material en Materiales.
+CONSOLA RUBY (barras normales /, comillas rectas, una linea por vez):
+ load 'C:/ruta/sbu_etiquetas.rb'
+ load 'C:/ruta/sbu_opciones.rb'
+ SBU.opcion(patas: :piedra, apoyos: :solei, panel: :gris_claro)
 
 Perfiles a validar por el Ing. Ricardo Portugau. Los encuentros de rodilla y cumbrera estan aproximados.
