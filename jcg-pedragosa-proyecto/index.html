@@ -608,13 +608,16 @@ function dSani() {
 }
 /* ================= FACHADAS Y CORTES ================= */
 const sty = () => ({ cro: S.est === 'cro', ch: S.est === 'nor' ? COL.nor : COL.chapa, sh: S.est === 'cro' ? 0 : S.est === 'nor' ? .6 : S.est === 'pat' ? 1.0 : 1.2, mach: S.est === 'pat' });
+const RS = { r1: { fr: '#f1f1ee', fw: .9, field: '#9a7348', wood: 1, pil: 0, tri: 1 }, r2: { fr: '#2b2b2b', fw: .55, field: '#4a5058', wood: 0, pil: 1, tri: 0 }, r3: { fr: '#8a5a2f', fw: .6, field: '#4a5058', wood: 0, pil: 0, tri: 0 }, r4: { fr: '#1b1b1b', fw: .5, field: '#8a6a45', wood: 1, pil: 0, tri: 1 } };
+const refSt = () => S.est === 'cro' && S.ref ? RS[S.ref] : null;
 const TA = Math.tan(20 * Math.PI / 180), CA = Math.cos(20 * Math.PI / 180), FR = .55;
 function gableEl(b, s, X0, base) { // hastial visto desde la avenida
   const st = sty(), X = x => X0 + x * s, Y = h => base - h * s, W = b.W; let g = '';
   if (st.cro) {
-    const f = FR, ri = b.r - f / CA, ei = b.e + f * (TA - 1 / CA);
-    g += P_([[X(0), Y(0)], [X(0), Y(b.e)], [X(W / 2), Y(b.r)], [X(W), Y(b.e)], [X(W), Y(0)]], `fill="${COL.marco}" stroke="#000"`);
-    g += P_([[X(f), Y(0)], [X(f), Y(ei)], [X(W / 2), Y(ri)], [X(W - f), Y(ei)], [X(W - f), Y(0)]], `fill="${COL.cen}"`);
+    const rs = refSt(), f = rs ? rs.fw : FR, ri = b.r - f / CA, ei = b.e + f * (TA - 1 / CA);
+    g += P_([[X(0), Y(0)], [X(0), Y(b.e)], [X(W / 2), Y(b.r)], [X(W), Y(b.e)], [X(W), Y(0)]], `fill="${rs ? rs.fr : COL.marco}" stroke="#000"`);
+    g += P_([[X(f), Y(0)], [X(f), Y(ei)], [X(W / 2), Y(ri)], [X(W - f), Y(ei)], [X(W - f), Y(0)]], `fill="${rs ? rs.field : COL.cen}"`);
+    if (rs && rs.pil) [0, W - 1.2].forEach(x => g += R_(X(x), Y(b.e), 1.2 * s, b.e * s, `fill="${COL.pie}" stroke="#555"`));
     const ya = ri - .55, hh = 1.7, hw = hh / TA; g += P_([[X(W / 2), Y(ya)], [X(W / 2 + hw), Y(ya - hh)], [X(W / 2 - hw), Y(ya - hh)]], `fill="${COL.vid}" stroke="#222" opacity=".9"`);
     g += R_(X(f + .25), Y(3.0), (W - 2 * f - .5) * s, 3.0 * s, `fill="${COL.vid}" stroke="#222" opacity=".92"`) + L_(X(f + .25), Y(2.4), X(W - f - .25), Y(2.4), 'stroke="#222" stroke-width="1.4"');
     const nm = 5; for (let i = 1; i < nm; i++) g += L_(X(f + .25 + i * (W - 2 * f - .5) / nm), Y(0), X(f + .25 + i * (W - 2 * f - .5) / nm), Y(3.0), 'stroke="#222" stroke-width="1.2"');
@@ -649,15 +652,16 @@ function elGable() {
 }
 function elCara(b, face, titulo) { // cara larga de una nave: aberturas reales y resguardo de cenefa
   const st = sty(), s = 26, X0 = 40, base = 250, X = x => X0 + x * s, Y = h => base - h * s; let g = '';
-  const wall = st.cro ? COL.cen : st.ch, roof = st.cro ? COL.cenD : COL.techo;
+  const rs = refSt(), wall = st.cro ? (rs ? rs.field : COL.cen) : st.ch, roof = st.cro ? COL.cenD : COL.techo;
   g += R_(X(0), Y(b.e), b.L * s, b.e * s, `fill="${wall}" stroke="#111"`) + R_(X(0), Y(b.r), b.L * s, (b.r - b.e) * s, `fill="${roof}" stroke="#111"`);
   if (!st.cro) g += R_(X(0), Y(st.sh), b.L * s, st.sh * s, `fill="${COL.pie}"`);
   const O = openings(b).filter(q => q.f === face);
   O.forEach(q => { const col = q.t === 'g' ? COL.vid : q.t === 'p' ? '#4b7f95' : COL.vid; g += R_(X(q.a), Y(q.h1), (q.z - q.a) * s, (q.h1 - q.h0) * s, `fill="${col}" stroke="#222" opacity=".92"`); if (q.t === 'p') g += L_(X((q.a + q.z) / 2), Y(q.h1), X((q.a + q.z) / 2), Y(q.h0), 'stroke="#111"'); if (q.t === 'g') g += L_(X(q.a), Y(2.5), X(q.z), Y(2.5), 'stroke="#222" stroke-width="1.2"'); });
   if (st.cro) { // vísera y aletas del resguardo
     const ext = face === 'in' ? DP : DPO;
-    g += R_(X(0), Y(3.35), b.L * s, .22 * s, `fill="${COL.marco}"`);
+    g += R_(X(0), Y(3.35), b.L * s, .22 * s, `fill="${rs ? rs.fr : COL.marco}"`);
     b.fx.forEach(x => g += R_(X(x) - 2.5, Y(3.35), 5, 3.35 * s, `fill="${COL.marco}" opacity=".85"`));
+    if (rs && rs.pil) b.fx.forEach(x => g += R_(X(x) - .3 * s, Y(b.e), .6 * s, b.e * s, `fill="${COL.pie}" stroke="#555" opacity=".9"`));
     g += T_(X(b.L), Y(3.35) - 6, `vísera y aletas · saliente ${f1(ext)} m`, 'text-anchor="end" font-size="10" fill="#ddd"');
   }
   if (b.cons) O.filter(q => q.t === 'w').forEach((q, i) => g += T_(X((q.a + q.z) / 2), Y(q.h1) - 5, 'C' + (i + 1), 'text-anchor="middle" font-size="10" fill="#fff"'));
@@ -681,7 +685,7 @@ function elAvenida() {
   return SV(60 * s + 60, base + 40, g);
 }
 function dFach() {
-  return `<p class="mut">Estilo: <b>${EST[S.est].n}</b>. ${EST[S.est].d} Cambialo arriba y los dibujos se actualizan.</p>` + (S.est === 'cro' && S.ref ? `<div class="ok" style="display:flex;gap:12px;align-items:center"><img src="materiales/ref/ref${S.ref.slice(1)}.jpg" alt="" style="height:84px;border-radius:6px"><div><b>Referencia activa: ${REFOPT[S.ref].n}.</b> Se cotiza con el reparto de materiales de esa foto (vidrio ${f1(REFOPT[S.ref].vid * 100)} %, piedra ${f1(REFOPT[S.ref].pie * 100)} %, madera ${f1(REFOPT[S.ref].mad * 100)} %, chapa ${f1(REFOPT[S.ref].cha * 100)} % de la envolvente). Las formas se dibujan y ajustan en el <a href="materiales/">editor de materiales</a>; los dibujos de abajo siguen mostrando el croquis base.</div></div>` : '') + elAvenida() + `<div class="cols"><div>${elGable()}</div><div>${elFrenteB()}</div></div>` + elLado(NV[0], `Cara al jardín · nave sur (${f1(NV[0].L)} m)`) + elCostado(NV[0]) + (S.cons !== 'none' ? elLado(NV.find(x => x.id === S.cons), 'Cara al jardín · nave de consultorios (7 ventanas)') : '') + `<h3>Cortes</h3>` + cortes() +
+  return `<p class="mut">Estilo: <b>${EST[S.est].n}</b>. ${EST[S.est].d} Cambialo arriba y los dibujos se actualizan.</p>` + (S.est === 'cro' && S.ref ? `<div class="ok" style="display:flex;gap:12px;align-items:center"><img src="materiales/ref/ref${S.ref.slice(1)}.jpg" alt="" style="height:84px;border-radius:6px"><div><b>Referencia activa: ${REFOPT[S.ref].n}.</b> Se cotiza con el reparto de materiales de esa foto (vidrio ${f1(REFOPT[S.ref].vid * 100)} %, piedra ${f1(REFOPT[S.ref].pie * 100)} %, madera ${f1(REFOPT[S.ref].mad * 100)} %, chapa ${f1(REFOPT[S.ref].cha * 100)} % de la envolvente). Las formas se dibujan y ajustan en el <a href="materiales/">editor de materiales</a>; los dibujos y el 3D usan sus colores, el portal y los pilares de piedra (vidrieras y aberturas se mantienen).</div></div>` : '') + elAvenida() + `<div class="cols"><div>${elGable()}</div><div>${elFrenteB()}</div></div>` + elLado(NV[0], `Cara al jardín · nave sur (${f1(NV[0].L)} m)`) + elCostado(NV[0]) + (S.cons !== 'none' ? elLado(NV.find(x => x.id === S.cons), 'Cara al jardín · nave de consultorios (7 ventanas)') : '') + `<h3>Cortes</h3>` + cortes() +
     `<p class="mut"><small>${S.est === 'cro' ? 'Cenefas verticales de madera oscura en muros y marcos de hastial; la cubierta de chapa nervada oscura sigue el mismo ritmo y baja como pared, sin alero ni piedra. Vidrio laminado 5+5 en vidrieras corridas con travesaño, y banderola triangular en los hastiales.' : 'Colores: chapa grafito (nórdico más oscuro), madera o simil madera en cenefa y hastiales, piedra granítica careada en la base, vidrio laminado 5+5.'} La nave del fondo es de dos pisos, con el mismo techo a dos aguas y la misma cenefa que las laterales.</small></p>`;
 }
 function cortes() {
@@ -774,7 +778,7 @@ const decX = (X, a, b, h0, h1, m, grp, d = 1) => polyUV([V3(X + d * .04, h0, a),
 function seg3(a, b, w, h0, h1, m, grp) { const L = Math.hypot(b[0] - a[0], b[1] - a[1]), me = new THREE.Mesh(new THREE.BoxGeometry(L, h1 - h0, w), m); me.position.set((a[0] + b[0]) / 2, (h0 + h1) / 2, -(a[1] + b[1]) / 2); me.rotation.y = Math.atan2(b[1] - a[1], b[0] - a[0]); return add3(grp, me); }
 function tree3(x, y, i, grp) { const tr = new THREE.Mesh(new THREE.CylinderGeometry(.14, .2, 2.3, 8), MT.trunk); tr.position.set(x, 1.15, -y); add3(grp, tr); const lf = new THREE.Mesh(new THREE.SphereGeometry(1, 14, 10), i % 2 ? MT.leaf1 : MT.leaf2), r = 2 + (i % 3) * .3; lf.scale.set(r, r * .85, r); lf.position.set(x, 3.7 + (i % 3) * .2, -y); add3(grp, lf); }
 function build3d() {
-  clear3(); const st = sty(), cro = st.cro, wall = cro ? MT.slat : mat(st.ch, { r: .55, s: THREE.DoubleSide }), roofM = cro ? MT.slatR : MT.roof, sh = st.sh, q = Qty();
+  clear3(); const st = sty(), cro = st.cro, rs = refSt(), wall = cro ? (rs ? (rs.wood ? MT.slat : MT.slatR) : MT.slat) : mat(st.ch, { r: .55, s: THREE.DoubleSide }), roofM = cro ? MT.slatR : MT.roof, sh = st.sh, q = Qty();
   slab(-LOT.D, 0, 0, 60, -.03, 0, MT.park, G3.parque); slab(0, 30, 0, 60, -.05, 0, MT.avenue, G3.lote);
   line3([[-LOT.D, 0], [0, 0], [0, 60], [-LOT.D, 60], [-LOT.D, 0]].map(([x, y]) => V3(x, .05, y)), MT.line, G3.lote);
   [20, 40].forEach(y => line3([V3(-LOT.D, .05, y), V3(0, .05, y)], MT.line, G3.lote));
@@ -789,16 +793,17 @@ function build3d() {
   GARD.bancos.forEach(p => { seg3([p[0], p[1]], [p[2], p[3]], .5, .38, .46, MT.bench, G3.paisaje); }); GARD.arboles.forEach((p, i) => tree3(p[0], p[1], i, G3.paisaje));
   lab('Plaza de estar', V3(NV[1].x1 + 4, 4.5, 30), G3.paisaje, 3);
   NV.forEach(b => {
-    const ym = (b.y0 + b.y1) / 2, W = b.W, FRm = .55, ci = 1 / Math.cos(20 * Math.PI / 180), top = b.tipo === 'dos' ? b.e : b.hp;
+    const ym = (b.y0 + b.y1) / 2, W = b.W, FRm = rs ? rs.fw : .55, ci = 1 / Math.cos(20 * Math.PI / 180), top = b.tipo === 'dos' ? b.e : b.hp;
     if (b.tipo === 'dos') {
       const e = b.e, r = b.r;
       faceY(b.x0, b.x1, b.y0, 0, e, wall, G3.naves); faceY(b.x0, b.x1, b.y1, 0, e, wall, G3.naves);
       [b.x0, b.x1].forEach(x => polyUV([V3(x, 0, b.y0), V3(x, 0, b.y1), V3(x, e, b.y1), V3(x, r, ym), V3(x, e, b.y0)], wall, G3.naves, uvZ));
       polyUV([V3(b.x0, e, b.y0), V3(b.x1, e, b.y0), V3(b.x1, r, ym), V3(b.x0, r, ym)], roofM, G3.techos, uvX); polyUV([V3(b.x0, e, b.y1), V3(b.x1, e, b.y1), V3(b.x1, r, ym), V3(b.x0, r, ym)], roofM, G3.techos, uvX);
       if (cro) {
-        const TA2 = Math.tan(20 * Math.PI / 180), ri = r - FRm * ci, ei = e + FRm * (TA2 - ci);
+        const TA2 = Math.tan(20 * Math.PI / 180), ri = r - FRm * ci, ei = e + FRm * (TA2 - ci), fm = rs ? mat(new THREE.Color(rs.fr), { r: .5, s: THREE.DoubleSide }) : MT.marco;
+        if (rs && rs.pil) { b.fx.forEach(x => [b.y0 - .1, b.y1 + .1].forEach(yy => slab(x - .3, x + .3, yy - .15, yy + .15, 0, e, MT.stone, G3.piedra))); [b.y0, b.y1 - 1.2].forEach(yy => slab(b.x1, b.x1 + .15, yy, yy + 1.2, 0, e, MT.stone, G3.piedra)); }
         const O = [[0, 0], [0, e], [W / 2, r], [W, e], [W, 0]], I = [[FRm, 0], [FRm, ei], [W / 2, ri], [W - FRm, ei], [W - FRm, 0]];
-        [[b.x1 + .03, 1], [b.x0 - .03, -1]].forEach(([xf]) => { for (let i = 0; i < 4; i++) polyUV([V3(xf, O[i][1], b.y0 + O[i][0]), V3(xf, O[i + 1][1], b.y0 + O[i + 1][0]), V3(xf, I[i + 1][1], b.y0 + I[i + 1][0]), V3(xf, I[i][1], b.y0 + I[i][0])], MT.marco, G3.madera, uvZ); });
+        [[b.x1 + .03, 1], [b.x0 - .03, -1]].forEach(([xf]) => { for (let i = 0; i < 4; i++) polyUV([V3(xf, O[i][1], b.y0 + O[i][0]), V3(xf, O[i + 1][1], b.y0 + O[i + 1][0]), V3(xf, I[i + 1][1], b.y0 + I[i + 1][0]), V3(xf, I[i][1], b.y0 + I[i][0])], fm, G3.madera, uvZ); });
         const ya = ri - .55, hh = 1.7, hw = hh / TA2; polyUV([V3(b.x1 + .05, ya, ym), V3(b.x1 + .05, ya - hh, ym + hw), V3(b.x1 + .05, ya - hh, ym - hw)], MT.glass, G3.naves, uvZ);
         if (!b.cons) decX(b.x1, b.y0 + FRm + .25, b.y1 - FRm - .25, 0, 3.0, MT.glass, G3.naves); if (!b.cons) for (let i = 1; i < 5; i++) { const yy = b.y0 + FRm + .25 + i * (W - 2 * FRm - .5) / 5; slab(b.x1 + .03, b.x1 + .07, yy - .03, yy + .03, 0, 3.0, MT.line.color ? MT.marco : MT.marco, G3.naves); }
         if (!b.cons) slab(b.x1 + .03, b.x1 + .07, b.y0 + FRm, b.y1 - FRm, 2.4, 2.45, MT.marco, G3.naves);
