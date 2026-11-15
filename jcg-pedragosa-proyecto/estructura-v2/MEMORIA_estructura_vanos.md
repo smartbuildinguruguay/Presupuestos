@@ -101,3 +101,20 @@ Pesos con áreas nominales sin radios de esquina. Las platinas nuevas pesan unos
 2. Confirmar espesores reales de tubos y calidad del acero.
 3. Las chapas de los tensores se tocan 2–3 cm con las platinas en 4 nudos: se resuelve soldándolas a la platina.
 4. Detalles de unión (vigas acostadas a columnas, jambas a dintel y platea) para el taller.
+
+---
+## 8. Bases empotradas, pestañas de correa y cruz de fondo (agregado)
+
+**Hallazgo de deriva:** con bases articuladas, HEB240 a 7 m, viento 1,0 kPa: desplazamiento en alero ≈ 78 mm (h/74, servicio) → demasiado para panel PIR y aberturas embutidas. La resistencia alcanza (rodilla 144 kNm vs ~220 de capacidad); manda la deformación lateral.
+
+**Opción A (modelada en el DAE): bases empotradas.** Placa 600×400×30, 4 anclajes M24 por columna (32 en total), 2 cartelas 12 mm por columna. Deriva ≈ 14 mm (h/404); M en base ≈ 113 kNm, H ≈ 49 kN. La fundación debe resistir ese momento: la platea sola puede no alcanzar → verificar dados/zapatas o vigas de fundación con el calculista firmante.
+
+**Opción B: bases articuladas + cruz de fondo.** Cruz en el plano del pórtico de fondo (grupo `[OPCIONAL] Cruz de fondo`, platina 80×10 + cartelas), más subir las cruces de techo de 50×8 a 80×10. La cruz de fondo toma ~72 % del viento transversal (~107 kN de ~160 kN) por diafragma de cubierta. Deriva ≈ 20 mm (h/290), ≈ +0,5 t. **Conclusión:** la cruz de fondo NO es necesaria por resistencia; sirve sólo en la Opción B. Con empotradas (A) no hace falta. Se dejó como grupo opcional (borrable en SketchUp).
+
+**Unión correa–dintel:** pestaña soldada en taller 150×140×6 sobre el ala del dintel (32 u.), alma de la C abulonada con 2 M12 8.8 (32×2 = 64 bulones). Empalmes de correa solapados 30–40 cm con 4 bulones. Falta confirmar levantamiento (~15–19 kN por apoyo) con la ficha del fabricante de la C.
+
+**Planilla actualizada (kg):** platinas de nudo 702 · IPE200 886 · IPE160 621 · jambas 354 · soleras 248 · postes piñón 1.132 · clavaderas piñón 339 · correas C250 1.443 · bases empotradas (placas 452 + cartelas 23 + anclajes 53) · pestañas 21 · bulones 1 · cruz opcional 185. Total nuevo 6.459 kg (6.274 sin la cruz opcional); retirado 2.949 kg (clavaderas y montantes) + ~250 kg de placas viejas 400×400×25. **Neto ≈ +3,1 t** sin cruz opcional.
+
+**Interferencias:** 0 con aberturas; 261 contactos con estructura conservada, todos de extremo o soldadura (cruces contra columnas/dinteles, cartelas contra cara de ala, clavadera de piñón en columna 1, correas vs dintel) — sin penetraciones reales de volumen significativo.
+
+**Supuestos no verificados:** viento neto 1,0 kPa (UNIT 50-84), tabla ISOWALL 80 mm provista por el cliente, fy 235 MPa, propiedades de la C por fórmula (sin catálogo), espesores reales de tubos. Todo requiere cálculo firmado antes de ejecutar.
