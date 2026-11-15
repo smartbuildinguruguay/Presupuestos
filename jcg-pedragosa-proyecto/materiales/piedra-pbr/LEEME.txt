@@ -1,0 +1,17 @@
+Textura PBR de piedra (revestimiento de columnas) - generada a partir de la foto enviada.
+1024 x 1024 px, repetible (sin costuras). Escala sugerida: 0,80 m por repeticion (tamaño real aprox. de la foto).
+
+ARCHIVOS
+ piedra_albedo_BaseColor.png   color
+ piedra_normal_OpenGL.png      normal (convencion OpenGL / Y+; la que usan glTF y SketchUp)
+ piedra_roughness.png          rugosidad (blanco = mas rugoso)
+ piedra_ao.png                 oclusion ambiental
+ piedra_height.png             altura (para displacement / bump)
+ piedra_ORM_glTF.png           AO (R) + Roughness (G) + Metal (B=0) empaquetado para glTF
+ columna_piedra_PBR_prueba.glb columna de prueba 0,44 x 0,44 x 3,28 m ya con el material PBR armado
+
+USO EN SKETCHUP
+ A) Con PBR (versiones recientes): Archivo > Importar > columna_piedra_PBR_prueba.glb. El material "Piedra columna PBR" queda en el panel Materiales con color, normal y rugosidad; despues se lo aplica con el balde a las columnas.
+ B) Sin PBR: Materiales > Crear material > textura = piedra_albedo_BaseColor.png, tamaño 0,80 m. Los demas mapas sirven para Enscape / D5 / V-Ray / Twinmotion (normal, roughness, AO).
+
+Nota: los mapas de normal, rugosidad y AO se derivan de la foto (no es un escaneo), asi que el relieve es aproximado.
