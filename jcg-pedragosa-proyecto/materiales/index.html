@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Estudio de materiales · cara interior de la cenefa · Pedragosa Sierra</title>
+<style>
+*{box-sizing:border-box}body{margin:0;font:14px/1.45 system-ui,-apple-system,Segoe UI,Roboto,sans-serif;color:#222;background:#faf9f5}
+header{background:#2a3a4a;color:#fff;padding:12px 18px}header h1{margin:0;font-size:18px}header p{margin:2px 0 0;font-size:12px;opacity:.8}
+.wrap{display:grid;grid-template-columns:310px minmax(0,1fr);gap:14px;padding:14px;align-items:start}@media(max-width:900px){.wrap{grid-template-columns:1fr}}
+.panel{background:#fff;border:1px solid #e3e0d6;border-radius:10px;padding:12px 14px;margin-bottom:12px}
+.panel h3{margin:10px 0 4px;font-size:12px;letter-spacing:.05em;text-transform:uppercase;color:#6a7480}.panel h3:first-child{margin-top:0}
+.row{display:grid;grid-template-columns:1fr 54px;gap:6px;align-items:center;margin:5px 0}.row label{font-size:13px}.row input[type=range]{grid-column:1/3;width:100%}.row output{text-align:right;font-weight:600;font-variant-numeric:tabular-nums}
+button,select{font:inherit;border:1px solid #cfd3d8;background:#f6f7f8;border-radius:8px;padding:6px 9px;cursor:pointer;margin:2px 2px 2px 0}button:hover{background:#eceff2}button.on{background:#2a3a4a;color:#fff;border-color:#2a3a4a}
+#pal{display:flex;flex-wrap:wrap;gap:6px}#pal button{display:flex;align-items:center;gap:6px;padding:5px 8px}#pal i{display:inline-block;width:22px;height:22px;border-radius:4px;border:1px solid #888}
+svg#el{width:100%;height:auto;background:#fff;border:1px solid #e3e0d6;border-radius:10px;display:block}
+.cell{cursor:pointer}.cell:hover{outline:none;stroke:#d9822b;stroke-width:3}
+table{border-collapse:collapse;width:100%;font-size:13px}th,td{padding:5px 8px;border-bottom:1px solid #eee;text-align:left}th{background:#f1f2f4;font-size:12px}td.n,th.n{text-align:right;font-variant-numeric:tabular-nums}
+textarea{width:100%;height:110px;font:12px ui-monospace,monospace;border:1px solid #d5d8dc;border-radius:8px;padding:6px}
+.note{font-size:12px;color:#6a7480;margin-top:6px}.hint{font-size:12px;color:#8a4a10;background:#fff4e2;border:1px solid #f0d9ae;border-radius:8px;padding:6px 9px;margin-bottom:8px}
+</style></head><body>
+<header><h1>Estudio de materiales · cara interior de la cenefa</h1><p>Juan Carlos García · Av. Pedragosa Sierra · SBU · Ramiro Portugau · elevaciones en 2D para repartir piedra, madera machimbrada y vidrio</p></header>
+<div class="wrap"><div>
+<div class="panel"><h3>Cara que se estudia</h3><button data-view="lat" class="on">Lateral (al jardín / retiro)</button><button data-view="hast">Hastial (portal a la avenida)</button>
+<h3>Esquemas</h3><div id="pre"></div>
+<h3>Medidas de la nave</h3><div id="vars0"></div>
+<h3>Reparto de la cara</h3><div id="vars"></div></div>
+<div class="panel"><h3>Materiales a pintar</h3><div id="pal"></div><div class="note">Clic en una zona la pinta. Con <b>Mayús</b> + clic pinta todas las zonas del mismo tipo (todas las columnas, todos los paños de la misma fila, etc.).</div><button id="rst">Volver al esquema</button></div>
+</div><div>
+<div class="hint" id="hint"></div><div id="ttl" class="note" style="margin:0 0 6px;font-size:13px"></div><svg id="el"></svg>
+<div class="panel" style="margin-top:12px"><h3>Cuánto de cada material (esta nave)</h3><div id="stats"></div></div>
+<div class="panel"><h3>Reparto para subir al proyecto</h3><textarea id="json" readonly></textarea><button id="cp">Copiar</button></div>
+</div></div>
+<script>
+const $=id=>document.getElementById(id),TA=Math.tan(20*Math.PI/180),CA=Math.cos(20*Math.PI/180);
+const f1=n=>(Math.round(n*10)/10).toString().replace('.',','),f2=n=>(Math.round(n*100)/100).toString().replace('.',',');
+const MAT={vidrio:['Vidrio','#9ec3d3'],puerta:['Puerta vidriada','#3f6e83'],piedra:['Piedra','#9a9488'],madera:['Madera machimbrada','#b48a5d'],cenefa:['Cenefa oscura','#4a3224'],ciego:['Paño ciego (revoque)','#d8d4c8'],marco:['Marco / perfil negro','#1d1f22']};
+const PR={vidrio:180,puerta:230,piedra:230,madera:96,cenefa:62,ciego:35,marco:0};
+const NAVE={L:22,W:11.5,e:6,f:.55};
+const PRESETS={
+ 'Todo vidrio (como estaba)':{pw:.3,hz:.3,hv:3.3,fj:0,pier:'marco',zoc:'cenefa',faja:'marco',upper:'cenefa',mods:{1:['vidrio'],2:['puerta','vidrio'],3:['vidrio','puerta','vidrio']}},
+ 'Columnas de piedra':{pw:.7,hz:.6,hv:3.3,fj:0,pier:'piedra',zoc:'piedra',faja:'madera',upper:'madera',mods:{1:['vidrio'],2:['puerta','vidrio'],3:['vidrio','puerta','vidrio']}},
+ 'Fajas de piedra':{pw:.35,hz:1.0,hv:3.0,fj:.6,pier:'marco',zoc:'piedra',faja:'piedra',upper:'madera',mods:{1:['vidrio'],2:['puerta','vidrio'],3:['vidrio','puerta','vidrio']}},
+ 'Menos vidrio':{pw:.7,hz:.9,hv:3.3,fj:.5,pier:'piedra',zoc:'piedra',faja:'piedra',upper:'madera',mods:{1:['vidrio'],2:['puerta','piedra'],3:['vidrio','puerta','piedra']}}};
+let view='lat',dirM='h',tri=true,sel='piedra',preset='Columnas de piedra';
+const P={lat:{n:3,mod:3},hast:{n:2,mod:3}};const SH={...PRESETS[preset]};const OV={lat:{},hast:{}};delete SH.mods;let MODS=PRESETS[preset].mods;
+const V0=[['L','Largo de la nave (m)',12,26,.5],['W','Luz de la nave (m)',8,14,.1],['e','Altura de alero (m)',4,8,.1]];
+const VARS=[['n','Bahías (entre pórticos)',1,5,1],['mod','Módulos por bahía',1,3,1],['pw','Ancho de columna (m)',.2,1.2,.05],['hz','Alto del zócalo (m)',0,1.5,.05],['hv','Alto del vano (m)',2.4,4.5,.1],['fj','Faja horizontal (m)',0,1,.05]];
+function ui(){
+ $('pre').innerHTML=Object.keys(PRESETS).map(k=>`<button data-pre="${k}" class="${k===preset?'on':''}">${k}</button>`).join('');
+ $('vars0').innerHTML=V0.map(([k,t,a,b,s])=>`<div class="row"><label>${t}</label><output id="o0_${k}">${f1(NAVE[k])}</output><input type="range" id="r0_${k}" min="${a}" max="${b}" step="${s}" value="${NAVE[k]}"></div>`).join('');
+ $('vars').innerHTML=VARS.map(([k,t,a,b,s])=>{const v=(k==='n'||k==='mod')?P[view][k]:SH[k];return `<div class="row"><label>${t}</label><output id="o_${k}">${k==='n'||k==='mod'?v:f2(v)}</output><input type="range" id="r_${k}" min="${a}" max="${b}" step="${s}" value="${v}"></div>`}).join('')+`<div style="margin:6px 0"><label>Machimbre </label><span><button data-dir="h" class="${dirM==='h'?'on':''}">Horizontal</button><button data-dir="v" class="${dirM==='v'?'on':''}">Vertical</button></span></div>`+(view==='hast'?`<div class="row"><label>Vidrio triangular arriba</label><input type="checkbox" id="tri" ${tri?'checked':''}></div>`:'');
+ $('pal').innerHTML=Object.entries(MAT).map(([k,[n,c]])=>`<button data-m="${k}" class="${k===sel?'on':''}"><i style="background:${c}"></i>${n}</button>`).join('');
+ document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===view));
+ V0.forEach(([k])=>$('r0_'+k).oninput=e=>{NAVE[k]=+e.target.value;draw()});
+ VARS.forEach(([k])=>$('r_'+k).oninput=e=>{const v=+e.target.value;if(k==='n'||k==='mod'){P[view][k]=v;OV[view]={}}else SH[k]=v;$('o_'+k).textContent=k==='n'||k==='mod'?v:f2(v);draw()});
+ if($('tri'))$('tri').onchange=e=>{tri=e.target.checked;draw()};
+}
+/* ----- celdas ----- */
+function geom(){const {L,W,e,f}=NAVE;if(view==='lat')return{Wd:L,H:e,top:x=>e,ri:null};const Wi=W-2*f,ri=e+W/2*TA-f/CA,ei=e+f*(TA-1/CA);return{Wd:Wi,H:ri,top:x=>ei+(ri-ei)*(1-Math.abs(x-Wi/2)/(Wi/2)),ri,ei}}
+function cells(){
+ const g=geom(),{n,mod}=P[view],{pw,hz,hv,fj}=SH,bw=g.Wd/n,C=[],mods=MODS[mod];
+ const hv2=Math.max(hv,hz+1.2),yf=hv2+fj;
+ for(let i=0;i<=n;i++){const xc=i*bw,w=(i===0||i===n)?pw/2:pw;C.push({id:'p'+i,kind:'pier',x0:i===0?0:xc-pw/2,x1:i===n?g.Wd:xc+pw/2,y0:0,y1:hv2,mat:SH.pier})}
+ for(let i=0;i<n;i++){
+  const xa=i===0?pw/2:i*bw+pw/2,xb=i===n-1?g.Wd-pw/2:(i+1)*bw-pw/2,mw=(xb-xa)/mod;
+  for(let j=0;j<mod;j++){const x0=xa+j*mw,x1=x0+mw;
+   if(hz>0)C.push({id:`z${i}.${j}`,kind:'zoc',x0,x1,y0:0,y1:hz,mat:SH.zoc});
+   C.push({id:`v${i}.${j}`,kind:'vano',x0,x1,y0:hz,y1:hv2,mat:mods[j]})}
+  if(fj>0)C.push({id:'f'+i,kind:'faja',x0:i*bw,x1:(i+1)*bw,y0:hv2,y1:yf,mat:SH.faja});
+  C.push({id:'u'+i,kind:'upper',x0:i*bw,x1:(i+1)*bw,y0:yf,y1:null,mat:SH.upper});
+ }
+ C.forEach(c=>{const o=OV[view][c.id];if(o)c.mat=o});
+ return C}
+function topAt(c,x){return view==='lat'?NAVE.e:geom().top(x)}
+function area(c){if(c.kind!=='upper')return(c.x1-c.x0)*(c.y1-c.y0);let a=0,N=40;for(let k=0;k<N;k++){const x=c.x0+(k+.5)*(c.x1-c.x0)/N;a+=Math.max(0,topAt(c,x)-c.y0)*(c.x1-c.x0)/N}return a}
+const T=(x,y,t,a='')=>`<text x="${x}" y="${y}" ${a}>${t}</text>`;
+function defs(){return `<defs>
+<pattern id="pPi" width="100" height="62" patternUnits="userSpaceOnUse"><rect width="100" height="62" fill="#9a9488"/>${[[0,0,38,18,'#a9a396'],[38,0,34,18,'#8d877b'],[72,0,28,18,'#b0aa9d'],[0,18,26,22,'#8f897d'],[26,18,44,22,'#a39d90'],[70,18,30,22,'#979184'],[0,40,48,22,'#aaa497'],[48,40,30,22,'#8b8579'],[78,40,22,22,'#a09a8d']].map(r=>`<rect x="${r[0]}" y="${r[1]}" width="${r[2]}" height="${r[3]}" fill="${r[4]}" stroke="#5f5a50" stroke-width="1.3"/>`).join('')}</pattern>
+<pattern id="pMh" width="40" height="9" patternUnits="userSpaceOnUse"><rect width="40" height="9" fill="#b48a5d"/><rect y="0" width="40" height="1.6" fill="#7d5a36"/><rect y="1.6" width="40" height="1" fill="#cfa677"/></pattern>
+<pattern id="pMv" width="9" height="40" patternUnits="userSpaceOnUse"><rect width="9" height="40" fill="#b48a5d"/><rect x="0" width="1.6" height="40" fill="#7d5a36"/><rect x="1.6" width="1" height="40" fill="#cfa677"/></pattern>
+<pattern id="pCe" width="9" height="40" patternUnits="userSpaceOnUse"><rect width="9" height="40" fill="#4a3224"/><rect width="1.8" height="40" fill="#2b1c13"/></pattern>
+<linearGradient id="gV" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#bcd8e4"/><stop offset=".5" stop-color="#8fb7c9"/><stop offset="1" stop-color="#b3d0dd"/></linearGradient></defs>`}
+const FILL=m=>m==='piedra'?'url(#pPi)':m==='madera'?(dirM==='h'?'url(#pMh)':'url(#pMv)'):m==='cenefa'?'url(#pCe)':m==='vidrio'?'url(#gV)':m==='puerta'?'#3f6e83':m==='ciego'?'#d8d4c8':'#1d1f22';
+function draw(){
+ const g=geom(),C=cells(),s=Math.min(36,880/g.Wd),X0=40,Y0=24,Wp=g.Wd*s,Hp=g.H*s,X=x=>X0+x*s,Y=y=>Y0+Hp-y*s;let out=defs();
+ const clip=view==='hast'?`<clipPath id="cl"><polygon points="${X(0)},${Y(0)} ${X(0)},${Y(g.ei)} ${X(g.Wd/2)},${Y(g.ri)} ${X(g.Wd)},${Y(g.ei)} ${X(g.Wd)},${Y(0)}"/></clipPath>`:'';
+ out+=clip;
+ if(view==='lat'){out+=`<rect x="${X0-12}" y="${Y(NAVE.e)-((NAVE.W/2*TA)*s)/CA*1}" width="${Wp+24}" height="${(NAVE.W/2*TA)*s}" fill="#2c3036"/><rect x="${X0-12}" y="${Y(NAVE.e)-4}" width="${Wp+24}" height="6" fill="#111"/>`}
+ else{out+=`<polygon points="${X(-NAVE.f)},${Y(0)} ${X(-NAVE.f)},${Y(g.ei+.1)} ${X(g.Wd/2)},${Y(g.ri+NAVE.f/CA)} ${X(g.Wd+NAVE.f)},${Y(g.ei+.1)} ${X(g.Wd+NAVE.f)},${Y(0)}" fill="#1d1f22"/>`}
+ out+=`<line x1="${X0-30}" y1="${Y(0)}" x2="${X0+Wp+30}" y2="${Y(0)}" stroke="#222" stroke-width="3"/>`;
+ C.forEach(c=>{
+  const y1=c.y1===null?null:c.y1,w=X(c.x1)-X(c.x0);let shape,lab='';
+  if(c.kind==='upper'){const pts=[[c.x0,c.y0],[c.x1,c.y0]];const xs=[c.x1];if(view==='hast'&&c.x0<g.Wd/2&&c.x1>g.Wd/2)xs.push(g.Wd/2);xs.sort((a,b)=>b-a);const top=[[c.x1,topAt(c,c.x1)]];if(view==='hast'&&c.x0<g.Wd/2&&c.x1>g.Wd/2)top.push([g.Wd/2,g.ri]);top.push([c.x0,topAt(c,c.x0)]);const all=pts.concat(top);shape=`<polygon class="cell" data-id="${c.id}" points="${all.map(p=>X(p[0])+','+Y(p[1])).join(' ')}" fill="${FILL(c.mat)}" stroke="#222" stroke-width="1.2"/>`}
+  else shape=`<rect class="cell" data-id="${c.id}" x="${X(c.x0)}" y="${Y(c.y1)}" width="${w}" height="${(c.y1-c.y0)*s}" fill="${FILL(c.mat)}" stroke="#222" stroke-width="1.2"/>`;
+  out+=shape;
+  if(c.mat==='vidrio'&&c.kind==='vano'){const hh=c.y1-c.y0;out+=`<line x1="${X(c.x0)}" y1="${Y(2.4)}" x2="${X(c.x1)}" y2="${Y(2.4)}" stroke="#1d1f22" stroke-width="2" pointer-events="none"/>`;out+=`<line x1="${X(c.x0)+w*.5}" y1="${Y(c.y1)}" x2="${X(c.x0)+w*.5}" y2="${Y(c.y0)}" stroke="#1d1f22" stroke-width="1.2" pointer-events="none"/>`}
+  if(c.mat==='puerta'&&c.kind==='vano'){const dw=Math.min(1.8,c.x1-c.x0-.1),cx=(c.x0+c.x1)/2;out+=`<rect x="${X(cx-dw/2)}" y="${Y(2.4)}" width="${dw*s}" height="${2.4*s}" fill="#3f6e83" stroke="#111" stroke-width="1.5" pointer-events="none"/><line x1="${X(cx)}" y1="${Y(2.4)}" x2="${X(cx)}" y2="${Y(0)}" stroke="#111" pointer-events="none"/>`;if(c.y1>2.45)out+=`<rect x="${X(c.x0)}" y="${Y(c.y1)}" width="${w}" height="${(c.y1-2.4)*s}" fill="url(#gV)" stroke="#111" pointer-events="none"/>`;if(dw<(c.x1-c.x0)-.05)out+=`<rect x="${X(c.x0)}" y="${Y(2.4)}" width="${(c.x1-c.x0-dw)/2*s}" height="${2.4*s}" fill="url(#gV)" pointer-events="none"/><rect x="${X(cx+dw/2)}" y="${Y(2.4)}" width="${(c.x1-c.x0-dw)/2*s}" height="${2.4*s}" fill="url(#gV)" pointer-events="none"/>`}
+ });
+ if(view==='hast'&&tri){const ya=g.ri-.55,hh=Math.min(1.9,ya-(Math.max(SH.hv,SH.hz+1.2)+SH.fj)-.2),hw=hh/TA;if(hh>.4)out+=`<polygon class="cell" data-id="tri" points="${X(g.Wd/2)},${Y(ya)} ${X(g.Wd/2+hw)},${Y(ya-hh)} ${X(g.Wd/2-hw)},${Y(ya-hh)}" fill="${FILL(OV.hast.tri||'vidrio')}" stroke="#111" stroke-width="1.5"/>`}
+ /* cotas */
+ const bw=g.Wd/P[view].n;for(let i=0;i<P[view].n;i++)out+=`<line x1="${X(i*bw)}" y1="${Y(0)+22}" x2="${X((i+1)*bw)}" y2="${Y(0)+22}" stroke="#555"/>`+T(X((i+.5)*bw),Y(0)+38,f2(bw)+' m','text-anchor="middle" font-size="12" fill="#555"');
+ $('ttl').innerHTML=(view==='lat'?`<b>Cara interior lateral</b> · ${f1(NAVE.L)} m de largo · alero a ${f1(NAVE.e)} m`:`<b>Hastial desde la avenida</b> · ${f2(g.Wd)} m entre marcos · cumbrera a ${f2(g.ri)} m`)+' · las líneas naranjas son los pórticos; todo queda dentro de la cenefa.';
+ for(let i=0;i<=P[view].n;i++)out+=`<line x1="${X(i*bw)}" y1="${Y(g.H)-6}" x2="${X(i*bw)}" y2="${Y(0)}" stroke="#d9822b" stroke-width="1" stroke-dasharray="3 3" pointer-events="none"/>`;
+ $('el').setAttribute('viewBox',`0 0 ${Wp+X0*2} ${Hp+Y0+56}`);$('el').innerHTML=out;
+ $('el').querySelectorAll('.cell').forEach(el=>el.onclick=ev=>paint(el.dataset.id,ev.shiftKey));
+ stats(C);
+}
+function paint(id,all){
+ const C=cells(),c=C.find(x=>x.id===id);const setm=m=>{OV[view][id]=m};
+ if(id==='tri'){OV.hast.tri=sel;draw();return}
+ if(all&&c){C.filter(x=>x.kind===c.kind&&(c.kind!=='vano'&&c.kind!=='zoc'||x.id.split('.')[1]===c.id.split('.')[1])).forEach(x=>OV[view][x.id]=sel)}else OV[view][id]=sel;draw()}
+function counts(v){const sv=view;view=v;const C=cells(),g=geom(),A={};const add=(m,a)=>A[m]=(A[m]||0)+a;
+ C.forEach(c=>{let a=area(c);if(c.kind==='vano'&&c.mat==='puerta'){const dw=Math.min(1.8,c.x1-c.x0-.1);add('puerta',dw*2.4);add('vidrio',a-dw*2.4)}else add(c.mat,a)});
+ if(v==='hast'&&tri){const ya=g.ri-.55,hh=Math.min(1.9,ya-(Math.max(SH.hv,SH.hz+1.2)+SH.fj)-.2),at=hh>.4?hh*hh/TA:0;if(at){const um=cells().filter(c=>c.kind==='upper').sort((a,b)=>Math.abs((a.x0+a.x1)/2-g.Wd/2)-Math.abs((b.x0+b.x1)/2-g.Wd/2))[0].mat;add(um,-at);add(OV.hast.tri||'vidrio',at)}}
+ view=sv;return A}
+function stats(){
+ const a=counts('lat'),b=counts('hast'),T={};Object.keys(MAT).forEach(k=>T[k]=2*(a[k]||0)+(b[k]||0));const tot=Object.values(T).reduce((x,y)=>x+y,0),fac=tot||1;
+ let usd=0;const rows=Object.keys(MAT).filter(k=>T[k]>.05).map(k=>{usd+=T[k]*PR[k];return `<tr><td><i style="display:inline-block;width:14px;height:14px;background:${MAT[k][1]};border:1px solid #888;vertical-align:middle"></i> ${MAT[k][0]}</td><td class="n">${f1(a[k]||0)}</td><td class="n">${f1(b[k]||0)}</td><td class="n"><b>${f1(T[k])}</b></td><td class="n">${f1(T[k]/fac*100)} %</td></tr>`}).join('');
+ const vi=(T.vidrio||0)+(T.puerta||0);
+ $('stats').innerHTML=`<table><thead><tr><th>Material</th><th class="n">m² cara lateral</th><th class="n">m² hastial</th><th class="n">m² nave (2 laterales + 1 hastial)</th><th class="n">% de la piel</th></tr></thead><tbody>${rows}<tr><td><b>Total visto</b></td><td class="n">${f1(Object.values(a).reduce((x,y)=>x+y,0))}</td><td class="n">${f1(Object.values(b).reduce((x,y)=>x+y,0))}</td><td class="n"><b>${f1(tot)}</b></td><td></td></tr></tbody></table><p class="note">Vidriado total (vidrio + puertas): <b>${f1(vi)} m²</b> (${f1(vi/fac*100)} %). La cara del retiro puede llevar otro reparto: este cuadro suma dos caras iguales. Los m² de piedra y madera son los que se agregan al rubrado (piedra 230 USD/m², madera 96 USD/m²).</p>`;
+ $('hint').innerHTML=`Clic en una zona para pintarla con <b>${MAT[sel][0]}</b>. Mayús + clic pinta todas las del mismo tipo.`;
+ $('json').value=JSON.stringify({esquema:preset,nave:NAVE,reparto:SH,maquinado:dirM,vistas:P,pintado:OV,m2_nave:T},null,1)}
+document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
+ if(b.dataset.view){view=b.dataset.view;ui();draw()}else if(b.dataset.pre){preset=b.dataset.pre;const q=PRESETS[preset];['pw','hz','hv','fj','pier','zoc','faja','upper'].forEach(k=>SH[k]=q[k]);MODS=q.mods;OV.lat={};OV.hast={};ui();draw()}else if(b.dataset.m){sel=b.dataset.m;ui();draw()}else if(b.dataset.dir){dirM=b.dataset.dir;ui();draw()}else if(b.id==='rst'){OV.lat={};OV.hast={};draw()}else if(b.id==='cp'){navigator.clipboard&&navigator.clipboard.writeText($('json').value)}});
+ui();draw();window.__t={set:(v)=>{view=v;ui();draw()},pre:(k)=>{document.querySelector(`[data-pre="${k}"]`).click()}};
+</script></body></html>
