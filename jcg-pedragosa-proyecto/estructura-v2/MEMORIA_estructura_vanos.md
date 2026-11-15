@@ -118,3 +118,11 @@ Pesos con áreas nominales sin radios de esquina. Las platinas nuevas pesan unos
 **Interferencias:** 0 con aberturas; 261 contactos con estructura conservada, todos de extremo o soldadura (cruces contra columnas/dinteles, cartelas contra cara de ala, clavadera de piñón en columna 1, correas vs dintel) — sin penetraciones reales de volumen significativo.
 
 **Supuestos no verificados:** viento neto 1,0 kPa (UNIT 50-84), tabla ISOWALL 80 mm provista por el cliente, fy 235 MPa, propiedades de la C por fórmula (sin catálogo), espesores reales de tubos. Todo requiere cálculo firmado antes de ejecutar.
+
+---
+## 9. Datos verificados en fuentes (15/11/2026)
+
+- **Viento UNIT 50-84:** vk = 43,9 m/s (158 km/h) a ≤25 km de la costa atlántica / Río de la Plata (art. 6.2.2.2, citado por la Intendencia de Montevideo y por memorias de obra); 135 km/h para el resto del país. qc = vc²/16,3 → a vk pleno ≈ 118 kg/m² (1,16 kPa). Con presión interior ±0,3 y Ce ±0,8 en paredes, el neto en panel queda en ≈ 105–130 kg/m² según Kz/rugosidad (**no verificados**: Kz, Kd, rugosidad del padrón). El 1,0 kPa supuesto está en el borde bajo; usar **1,3 kPa en paredes y ~1,7 kPa succión de cubierta** hasta que el calculista fije Kz. La norma exige además verificar ausencia de colapso a 185 km/h (exigencia IM Montevideo; confirmar en Maldonado).
+- **Paneles Kingspan Bromyros (Uruguay):** el catálogo oficial NO trae tablas de carga; sólo K/R (Isoroof 80 mm K=0,277). Para cubierta indica "carga admisible 80 kg/m² para 3 o más soportes" (producto exacto a confirmar) → **incompatible con succión de ~150 kg/m²** salvo que se confirme otra tabla. La tabla Isowall del cliente es del tipo Cintac/Tupemesa (50/75 mm, L/200, A792 Gr37), no de Bromyros. Pedir tabla de Isowall 80 mm e Isoroof/Isodec 80 mm a Bromyros (0800 1948).
+- **Tubos:** pesos coherentes con el modelo: RHS 100×50 ≈ 6,6–6,8 kg/m (e=3 mm); RHS 120×60 ≈ 10,8 kg/m (e=4 mm); RHS 200×100: 5 mm = 22,3, 6 mm ≈ 26–27 kg/m (Cintac). Falta confirmar espesores y calidad (A500 Gr.C / fy≥315 MPa vs 235 asumido) con el proveedor.
+- **Perfil C 250×75×25×2,5:** no se encontró ficha publicada; propiedades siguen por fórmula (×0,85). Pedir catálogo (Gerdau Uruguay, Ternium) o usar IPE/RHS con tabla.
