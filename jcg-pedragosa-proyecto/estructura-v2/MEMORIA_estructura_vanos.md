@@ -177,3 +177,40 @@ Referencia cruzada, NO es el Isowall de Bromyros (otro perfil, norma AS/NZS 1170
 **Peso agregado por la cenefa (kg):** correas prolongadas ≈ 150 · viga de borde 130 · postes 302 · placas base 18 · dintel 117 · voladizos ≈ 20 · IPE y solera prolongados ≈ 80 → ≈ 0,8 t. **Neto total de la estructura v2 ≈ +4,4 t** sin la cruz de fondo opcional (185 kg).
 
 **Pendiente:** verificar postes de esquina y dintel con viento 1,3 kPa (sobre fajas y cara de cenefa), anclajes a platea, babetas y sofito; el DAE no incluye los paneles.
+
+
+---
+## 13. Fijación del panel a las líneas de apoyo + cambio de IPE a RHS (muros largos) y espesores de clavaderas
+
+**Hallazgo de geometría (error mío en la versión anterior):** las jambas y soleras RHS 100×50 sobresalen 50 mm de la cara exterior de las alas de columna (z = −46,34 lado A / −35,00 lado B), que es donde apoya el panel. Los dos IPE acostados (dintel y alero) tenían el ala exterior en z = −46,285 / −35,055, es decir **55 mm detrás del plano del panel**: no había apoyo directo y el panel no se podía atornillar a ellos.
+
+**Cambio:** los dos IPE se reemplazan por RHS acostados con la cara de 100 / 80 mm **a ras del panel** (z = −46,34 / −35,00) y el canto (200 / 160 mm) hacia el interior. Mismos ejes (y = 2,95 y 5,54), mismas luces entre alas de columna (x = XC ± 0,12 / 0,14), incluida la prolongación de la cenefa. Los tubos del modelo son macizos (el GLB no trae espesor): el espesor figura en el nombre del grupo.
+
+| Línea | Antes | Ahora | Peso | Mel (S235) | Demanda ELU | Utilización flexión | Flecha SLS (viga simple, conservador) |
+|---|---|---|---|---|---|---|---|
+| Dintel de vano y=2,95 | IPE 200 (22,4 kg/m) | **RHS 200×100×5** | 22,8 kg/m | 35,7 kNm | 22 kNm | 0,62 (IPE: 0,49) | ≈ L/309 (IPE: L/395) |
+| Viga de alero y=5,54 | IPE 160 (15,8 kg/m) | **RHS 160×80×4** | 14,6 kg/m | 18,3 kNm | ≈ 11 kNm | 0,60 (IPE: 0,43) | ≈ L/253 (IPE: L/353) |
+
+- Eje débil (peso propio y panel): RHS 200×100×5 Iz = 512 cm⁴ contra 142 cm⁴ del IPE 200; la parte vertical de la flexión biaxial pasa de ≈ 0,23 a ≈ 0,07. Biaxial dintel ≈ 0,69 (antes 0,72). Sección cerrada: mucha más rigidez a torsión.
+- Metodología: flexión elástica con Wel, demanda ELU tomada de la sección 3 (22 y ≈ 11 kNm, derivada de 0,43 × capacidad del IPE 160), flecha SLS con viento ELU/1,5 en viga simple (las vigas reales son continuas por tramo de panel pero simplemente apoyadas entre columnas: conservador sólo en el sentido de no usar continuidad del panel). **No** se verificó pandeo local (relaciones c/t de tubos clase 1–3, no crítico) ni el nudo.
+- **Pendiente (detalle de unión):** el extremo del RHS llega al borde del ala de la columna (x = XC ± 0,12). Hay que resolver placa de testa soldada + escuadras al ala (el IPE tenía el mismo problema), y como el tubo queda 55 mm fuera del plano de las alas de columna, la placa debe ser de ≈ 70 mm de saliente. A dimensionar con la reacción (≈ 8,7 kN por viga en ELU, orden de magnitud).
+
+**Clavaderas de piñón (tubos RHS 120×60, pedido de Ramiro "2,5 mm"):**
+| Línea | Espesor | Utilización | Flecha | kg/m |
+|---|---|---|---|---|
+| Frente y=2,95 y 4,36 | **2,5 mm** | 0,42 → 0,64 | L/571 → L/373 | 10,8 → 6,9 |
+| Fondo y=3,70 | **3,0 mm** (2,5 mm da 1,02 ⇒ no pasa) | 0,67 → 0,87 | L/373 → L/288 | 10,8 → 8,2 |
+(Cálculo elástico por proporción de módulo resistente W e inercia I respecto del tubo de 4 mm ya verificado.)
+
+**Sistema de fijación del panel (todas las líneas):**
+- Tornillo autoperforante **punta #3, Ø6,3 × 100 mm** con arandela EPDM Ø16 y tope de profundidad; **sin pre-agujero ni punzonado previo**. Cálculo: panel 80 + cinta 3 + pared del tubo + ≥ 10 mm de punta libre. Capacidad de perforación de la punta #3 ≈ 5,5 mm de acero total (pared + chapa del panel 0,5): vale para paredes de 2,5 / 3 / 4 mm; en el **RHS 200×100×5 queda al límite** (5 + 0,5 mm). Si en obra se complica, pasar el dintel a pared 4 mm (utilización 0,76; flecha ≈ L/252) o usar punta #5.
+- **Cinta de neopreno/butilo de 3 mm** entre panel y tubo (antipuente térmico, evita ruido y condensación).
+- Distribución: **3 tornillos por módulo de panel de 1,0 m en cada línea** (a 0,15 / 0,50 / 0,85 m del borde del módulo), módulo asumido 1,0 m a partir de x = −70,58 (lados A/B) y z = −46,34 (fondo): **a confirmar con el ancho útil real del panel**.
+- Carga por tornillo (succión 1,3 kPa, línea con 1,0 m de ancho × ≈ 1,4 m tributarios medios / 3 tornillos): ≈ 0,6–0,9 kN, contra arrancamiento/pull-through típico de tornillo 6,3 en chapa 2,5–4 mm ≈ 3–4 kN (margen ≥ 3). **Valores de catálogo del fabricante sin verificar**: confirmar con la tabla de fijaciones del proveedor del panel.
+- Velocidad estimada: 1–3 s por tornillo con pared ≤ 4 mm (atornillador 2000–2500 rpm, nariz con tope; cargador automático si es posible); orden de magnitud, no medido.
+
+**Modelado (DAE):** grupo `Tornillos de panel: autoperforantes punta #3, 6,3x100 con arandela EPDM`: **380 tornillos** (vástago + arandela + cabeza) en: solera (y 0,10, fuera de los vanos), dintel (y 2,95) y alero (y 5,54) en lados A y B incluida la cenefa, y fondo (solera y línea y 3,70). **No modelados:** frente (hay que fijar los paños de la ventana alta/vidriera para saber qué tramos de panel existen) ni el contorno de cenefa; los paneles y la cinta no están en el DAE (tornillos y tubos se ven "al aire"). Interferencia con aberturas/cruces: **0**.
+
+**Planilla (kg, sólo lo que cambió):** dintel RHS 947 (IPE 200 ≈ 930) · alero RHS 602 (IPE 160 ≈ 651) · clavaderas frente 144 + fondo 86 = 230 (antes 339) · tornillos ≈ 13 kg (380 u). Neto de la estructura v2 ≈ +4,42 t (sin la cruz de fondo opcional, 185 kg).
+
+**Aclaración sobre correas de techo:** el nombre de grupo C 250×75×25×**3,0** es deliberado (sección 11: subida de 2,5 a 3,0 mm por el momento de apoyo con 1,7 kPa); los estudios previos de correas con 2,5 mm quedan superados.
