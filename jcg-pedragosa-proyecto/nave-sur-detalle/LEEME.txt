@@ -1,10 +1,16 @@
 Nave sur, padron 10598: modelo de detalle (anteproyecto). Metros, Z arriba, mismo origen que el modelo general (X = 0 en la avenida; fondo del lote en X = -47,3; Y = 0 limite sur del 10598).
 
-GRUPOS (se importan como componentes anidados, cada uno se edita aparte):
-01 Fundacion / 02 Estructura H240 / 03 Correas / 04 Clavaderas / 05 Tensores / 06 Cubierta paneles / 07 Fachadas paneles (Muro sur, Muro norte, Hastial avenida, Hastial fondo) / 08 Cenefa madera / 09 Aberturas (un grupo por abertura: Vidriera, Puerta, Ventana, Ventana poligonal hastial; cada uno con aluminio, vidrio, junquillos, herrajes y contramarco de chapa plegada) / 10 Portal y viseras / 11 Desagues.
+GRUPOS (componentes anidados, cada uno se edita aparte):
+01 Fundacion / 02 Estructura H240 / 03 Correas / 04 Clavaderas / 05 Tensores / 06 Cubierta paneles / 07 Fachadas paneles / 08 Cenefa madera / 09 Aberturas (un grupo por abertura, con contramarco plegado) / 10 Portal y viseras (cabeza + viseras en cenefa/panel continuo) / 12 Desagues.
+VARIANTES (solo una de cada par se ve a la vez):
+  10b Patas portal cenefa  |  10c Patas portal piedra (franjas)
+  11a Apoyos aletas chapa  |  11b Apoyos lamas madera solei  |  11c Apoyos columnas piedra
+Colores de panel: materiales "Panel muro" y "Panel techo" (opciones: blanco+grafito, PIR blanco, PIR gris claro, muro gris claro + techo grafito).
 
-ETIQUETAS: en SketchUp, Ventana > Consola Ruby y pegar:
-  load 'C:/ruta/a/la/carpeta/sbu_etiquetas.rb'
-(con barras normales /, tambien en Windows). Crea una etiqueta por cada grupo principal y se la asigna. Despues se prenden y apagan desde el panel Etiquetas.
+CONSOLA RUBY (Ventana > Consola Ruby), barras normales /:
+  1) load 'C:/ruta/sbu_etiquetas.rb'      (crea etiquetas; apaga las variantes 10c, 11b, 11c)
+  2) load 'C:/ruta/sbu_opciones.rb'
+     SBU.opcion(patas: :piedra, apoyos: :madera, panel: :gris_claro)
+Tambien se pueden prender/apagar a mano desde el panel Etiquetas; el color se cambia editando el material en Materiales.
 
 Perfiles a validar por el Ing. Ricardo Portugau. Los encuentros de rodilla y cumbrera estan aproximados.

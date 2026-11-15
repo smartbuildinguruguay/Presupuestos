@@ -1,15 +1,18 @@
 # SBU - asigna una etiqueta (tag) a cada grupo principal del modelo importado
-# Uso: seleccionar el componente importado (o nada, para todo el modelo) y correr este archivo en la consola Ruby.
+# Uso: importar el .dae, dejarlo seleccionado (o nada, para todo el modelo) y correr este archivo en la consola Ruby.
+# Las variantes (10c, 11b, 11c) quedan apagadas; se prenden desde el panel Etiquetas o con sbu_opciones.rb
 model = Sketchup.active_model
 model.start_operation('Etiquetas SBU', true)
 cuenta = 0
+apagadas = ['10c', '11b', '11c']
 recorrer = lambda do |ents|
   ents.each do |e|
     next unless e.respond_to?(:definition)
     nombre = e.name.to_s.empty? ? e.definition.name.to_s : e.name.to_s
-    if nombre =~ /^\d\d /
+    if nombre =~ /^(\d\d[a-z]?) /
       tag = model.layers[nombre] || model.layers.add(nombre)
       e.layer = tag
+      tag.visible = !apagadas.include?($1)
       cuenta += 1
     end
     recorrer.call(e.definition.entities)
@@ -18,4 +21,4 @@ end
 recorrer.call(model.selection.empty? ? model.entities : model.selection)
 model.commit_operation
 puts "Etiquetas asignadas: #{cuenta}"
-model.layers.each { |l| puts "  - #{l.name}" if l.name =~ /^\d\d / }
+model.layers.each { |l| puts "  - #{l.name}#{l.visible? ? '' : ' (apagada)'}" if l.name =~ /^\d\d[a-z]? / }

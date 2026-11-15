@@ -1,4 +1,4 @@
-﻿Pieza;Cantidad;ml;m2;kg
+﻿Pieza;Cant;ml;m2;kg
 Viga de fundación bajo pórtico 40×40;4;45.2;0;0
 Nudo de hormigón 70×70×60;8;0;0;0
 Pernos de anclaje M20 ×500;32;0;0;0
@@ -27,9 +27,13 @@ Contramarco de chapa plegada (ventana);3;22.2;0;0
 Ventana de 2 hojas;3;0;9.9;0
 Ventana poligonal de vidrio laminado 5+5 (base recta hacia abajo);1;0;11.9;0
 Contramarco de chapa plegada (ventana poligonal);1;20.5;0;0
-Portal: marco de chapa plegada (volumen proyectado 1,20 m);0;0;12.8;0
-Vísera de chapa con cielorraso de madera;0;44.4;48.8;0
-Aleta de vísera;8;0;30.8;0
+Portal: cabeza de panel/cenefa (volumen proyectado 1,20 m);0;0;6.4;0
+Patas del portal en piedra (franjas, opcion);2;0;6.2;0
+Vísera de panel con cielorraso de madera y cenefa de borde;0;44.4;48.8;0
+Aleta de vísera (chapa plegada);8;0;29.0;0
+Lama de madera 5x15 (solei);178;583.8;0;0
+Tirante de madera 18x18 (cargadero y zocalo de lamas);4;88.8;0;0
+Columna de piedra 44x44 (apoyo de vísera);8;26.2;0;0
 Canaleta de chapa en alero;2;42.0;0;0
 Bajada pluvial ø80;4;23.6;0;0
 Tensor de cubierta ø20;8;71.0;0;0
