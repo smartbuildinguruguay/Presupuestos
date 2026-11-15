@@ -1,0 +1,7 @@
+Nave sur, padron 10598: modelo de detalle (anteproyecto).
+Metros, Z hacia arriba, mismo origen que el modelo general (X = 0 en la linea de avenida, fondo del lote en X = -47,3, Y = 0 limite sur del 10598).
+Sustituye a la nave sur del modelo general: importar en la misma posicion.
+Cada capa y material queda como un grupo con nombre: Fundacion, Estructura H240, Correas C150, Clavaderas C100, Tensores, Paneles techo PIR, Paneles muro PIR, Cenefa madera, Aberturas, Portal y viseras, Desagues.
+Perfiles (a validar por el Ing. Ricardo Portugau): columnas y dinteles H240 (HEB 240), correas C150x50x2 cada 1,2 m sobre la cubierta, clavaderas C100x50x2 cada 1,2 m (reciben los paneles de muro verticales), panel PIR 80 mm de 1,00 m util, tensores d20.
+Los perfiles estan modelados como cajas (el H240 con alas y alma); los encuentros (rodillas, cumbrera) son aproximados para que los termines en SketchUp.
+despiece.csv tiene las cantidades de cada pieza.
