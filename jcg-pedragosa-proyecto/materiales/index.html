@@ -23,9 +23,11 @@ textarea{width:100%;height:90px;font:11px ui-monospace,monospace;border:1px soli
 <div>
 <div class="panel"><h3>Cara</h3><button data-view="lat" class="on">Lateral</button><button data-view="hast">Hastial (portal)</button>
 <h3>Nave</h3><div id="nave"></div>
+<h3>Referencias de las fotos</h3><div id="refs"></div>
 <h3>Esquemas (regeneran las formas)</h3><div id="pre"></div>
 <div class="f"><label>Bahías / ejes</label><input type="number" id="nb" min="1" max="6" step="1"></div>
 <div class="f"><label>Fondo de revestimiento</label><select id="base"></select></div>
+<div class="f"><label>Material del marco</label><select id="frm"></select></div>
 <div class="f c"><label>Machimbre vertical</label><input type="checkbox" id="mv"></div></div>
 <div class="panel"><h3>Vista</h3>
 <div class="f c"><label>Modo</label><span><button data-mode="cad" class="on">CAD</button><button data-mode="col">Color</button></span></div>
@@ -44,9 +46,9 @@ textarea{width:100%;height:90px;font:11px ui-monospace,monospace;border:1px soli
 <script>
 const $=id=>document.getElementById(id),TA=Math.tan(20*Math.PI/180),CA=Math.cos(20*Math.PI/180),SA=Math.sin(20*Math.PI/180);
 const f1=n=>(Math.round(n*10)/10).toString().replace('.',','),f2=n=>(Math.round(n*100)/100).toFixed(2).replace('.',',');
-const MAT={vidrio:['Vidrio','#9ec3d3'],puerta:['Puerta','#3f6e83'],piedra:['Piedra','#9a9488'],madera:['Madera machimbrada','#b48a5d'],cenefa:['Cenefa oscura','#4a3224'],ciego:['Paño ciego','#d8d4c8'],marco:['Marco negro','#1d1f22']};
+const MAT={vidrio:['Vidrio','#9ec3d3'],puerta:['Puerta','#3f6e83'],piedra:['Piedra','#9a9488'],madera:['Madera machimbrada','#b48a5d'],cenefa:['Cenefa oscura','#4a3224'],ciego:['Paño ciego','#d8d4c8'],marco:['Marco negro','#1d1f22'],tablas:['Tablas de madera verticales','#a9794c'],chapa:['Chapa engrafada','#8f969c'],panel:['Panel blanco','#efeeea']};
 let NAVE={L:22,W:11.5,e:6,f:.55},view='lat',mode='cad',sel=null,uid=1;
-const ST={base:{lat:'madera',hast:'madera'},nb:{lat:3,hast:2},shapes:{lat:[],hast:[]},mv:false};
+const ST={frame:'marco',base:{lat:'madera',hast:'madera'},nb:{lat:3,hast:2},shapes:{lat:[],hast:[]},mv:false};
 const PRESETS={
  'Columnas de piedra':{pw:.7,hz:.6,hv:3.3,fj:0,pier:'piedra',zoc:'piedra',faja:'madera',tri:true},
  'Fajas de piedra':{pw:.35,hz:1.0,hv:3.0,fj:.6,pier:'piedra',zoc:'piedra',faja:'piedra',tri:true},
@@ -64,7 +66,7 @@ const polyArea=P=>{let a=0;for(let i=0;i<P.length;i++){const q=P[(i+1)%P.length]
 /* ---------- generadores de esquema ---------- */
 function nid(){return uid++}
 function gen(v){
- const g=geom(v),p=PRESETS[preset],n=ST.nb[v],bw=g.Wd/n,pw=p.pw,hz=p.hz,hv=Math.max(p.hv,hz+1.2),fj=p.fj,S=[];
+ const g=geom(v),p=PRESETS[preset]||PRESETS['Columnas de piedra'],n=ST.nb[v],bw=g.Wd/n,pw=p.pw,hz=p.hz,hv=Math.max(p.hv,hz+1.2),fj=p.fj,S=[];
  const R=(name,x,y,w,h,mat,o={})=>S.push({id:nid(),t:'rect',name,x,y,w,h,mat,nd:0,ht:0,...o});
  if(hz>0)for(let i=0;i<n;i++)R('Zócalo '+(i+1),i*bw,0,bw,hz,p.zoc);
  for(let i=0;i<n;i++){const xa=i*bw+(i===0?0:pw/2),xb=(i+1)*bw-(i===n-1?0:pw/2),w=xb-xa;
@@ -74,6 +76,24 @@ function gen(v){
  if(fj>0)R('Faja',0,hv,g.Wd,fj,p.faja);
  if(v==='hast'&&p.tri)S.push({id:nid(),t:'roof',name:'Ventana poligonal',x0:.6,x1:g.Wd-.6,yb:hv+fj+.35,d:.45,sim:true,mat:'vidrio',nd:4,ht:0});
  return S}
+
+/* ---------- referencias de las fotos ---------- */
+const REFS={
+ 'Portal blanco y pentágono':{foto:'ref/ref1.jpg',nota:'Marco ancho blanco, pentágono vidriado hasta el piso con travesaño; tablas de madera a los lados.',f:.9,frame:'panel',baseL:'tablas',baseH:'tablas',
+  H(g){const S=[],Wd=g.Wd;S.push(rc('Panel lateral izq.',0,0,.8,g.ei,'tablas'),rc('Panel lateral der.',Wd-.8,0,.8,g.ei,'tablas'));S.push(rf('Ventana poligonal',.8,Wd-.8,.35,.3,'vidrio',{nd:5,ht:3.0}));S.push(rc('Zócalo',.8,0,Wd-1.6,.35,'panel'));return S},
+  L(g,n){const S=[],bw=g.Wd/n;for(let i=0;i<n;i++){S.push(rc('Vidriera '+(i+1),i*bw+bw*.2,.35,bw*.6,2.95,'vidrio',{nd:3,ht:2.4}),rc('Puerta '+(i+1),i*bw+bw*.5-.9,0,1.8,2.4,'puerta',{door:true}));S.push(rc('Dintel '+(i+1),i*bw+bw*.2,3.3,bw*.6,.25,'marco'))}S.push(rc('Ventana angosta',g.Wd-1.1,1.4,.35,1.3,'vidrio'));return S}},
+ 'Barn con pilares de piedra':{foto:'ref/ref2.jpg',nota:'Pilares de piedra a toda altura, pentágono vidriado con travesaño y puertas vidriadas abajo; chapa oscura a los lados.',f:.55,frame:'marco',baseL:'chapa',baseH:'chapa',
+  H(g){const S=[],Wd=g.Wd;S.push(rf('Pilar de piedra izq.',0,.95,0,.02,'piedra'),rf('Pilar de piedra der.',Wd-.95,Wd,0,.02,'piedra'));S.push(rf('Ventana poligonal',.95,Wd-.95,3.55,.22,'vidrio',{nd:5,ht:1.15}));S.push(rc('Viga',.95,3.35,Wd-1.9,.2,'marco'));S.push(rc('Puertas vidriadas',.95,0,Wd-1.9,3.35,'vidrio',{nd:5,ht:0}));return S},
+  L(g,n){const S=[],bw=g.Wd/n;for(let i=0;i<=n;i++)S.push(rc('Pilar '+String.fromCharCode(65+i),clamp(i*bw-.45,0,g.Wd-.9),0,.9,g.H,'piedra'));for(let i=0;i<n;i++)S.push(rc('Vidriera '+(i+1),i*bw+.6,.1,bw-1.2,3.35,'vidrio',{nd:3,ht:2.4}),rc('Puerta '+(i+1),i*bw+bw/2-.9,0,1.8,2.4,'puerta',{door:true}));return S}},
+ 'Cabaña: portal de madera':{foto:'ref/ref3.jpg',nota:'Portal de madera, vidrio parcial en el hastial con paño de madera al lado; lateral de chapa con vidriera corrida entre paños de madera y una ventana cuadrada.',f:.6,frame:'tablas',baseL:'chapa',baseH:'tablas',
+  H(g){const S=[],Wd=g.Wd;S.push(rf('Ventana poligonal',.5,Wd*.55,.45,.4,'vidrio',{nd:2,ht:2.4,sim:false}));S.push(rc('Puerta',Wd*.55-2.4,0,1.5,2.4,'puerta',{door:true}));return S},
+  L(g){const S=[],L=g.Wd;S.push(rc('Paño de madera izq.',L*.2,0,.8,3.0,'tablas'),rc('Vidriera corrida',L*.2+.8,.45,L*.5,2.7,'vidrio',{nd:3,ht:0}),rc('Paño de madera der.',L*.2+.8+L*.5,0,1.6,3.0,'tablas'),rc('Ventana cuadrada',L*.92,1.3,.6,.6,'vidrio'));return S}},
+ 'Dintel negro y tablas':{foto:'ref/ref4.jpg',nota:'Tablas verticales oscuras, viga negra horizontal gruesa que separa vidrio alto y bajo, panel de madera a un costado.',f:.5,frame:'marco',baseL:'cenefa',baseH:'cenefa',
+  H(g){const S=[],Wd=g.Wd;S.push(rc('Dintel negro',.0,3.5,Wd,.45,'marco'));S.push(rf('Ventana poligonal',.9,Wd-.9,4.1,.3,'vidrio',{nd:3,ht:0}));S.push(rc('Vidriera baja',.9,0,Wd-.9-.9,3.5,'vidrio',{nd:3,ht:0}),rc('Puerta',Wd/2-.9,0,1.8,2.4,'puerta',{door:true}));return S},
+  L(g,n){const S=[],bw=g.Wd/n;for(let i=0;i<n;i++){S.push(rc('Vidriera '+(i+1),i*bw+.5,0,bw-1.0,3.3,'vidrio',{nd:4,ht:0}),rc('Puerta '+(i+1),i*bw+bw/2-.9,0,1.8,2.4,'puerta',{door:true}));}S.push(rc('Dintel negro',0,3.3,g.Wd,.45,'marco'));return S}}};
+function rc(name,x,y,w,h,mat,o={}){return{id:nid(),t:'rect',name,x,y,w,h,mat,nd:0,ht:0,...o}}
+function rf(name,x0,x1,yb,d,mat,o={}){return{id:nid(),t:'roof',name,x0,x1,yb,d,sim:Math.abs((x0)-(geom('hast').Wd-x1))<.02&&view==='hast',mat,nd:0,ht:0,...o}}
+function applyRef(k){const r=REFS[k];pushU();NAVE.f=r.f;ST.frame=r.frame;ST.base.lat=r.baseL;ST.base.hast=r.baseH;const n=ST.nb.lat,v0=view;view='lat';ST.shapes.lat=r.L(geom('lat'),n);view='hast';ST.shapes.hast=r.H(geom('hast'));view=v0;preset=k;sel=null;full()}
 function reset(){uid=1;['lat','hast'].forEach(v=>ST.shapes[v]=gen(v));sel=null}
 /* ---------- patrones ---------- */
 function defs(){const c=mode==='col',ln=c?'#7d5a36':'#444',v=ST.mv;
@@ -85,10 +105,10 @@ function defs(){const c=mode==='col',ln=c?'#7d5a36':'#444',v=ST.mv;
  <pattern id="hPie" width="100" height="62" patternUnits="userSpaceOnUse"><rect width="100" height="62" fill="${c?'#9a9488':'#fff'}"/>${blocks.map((r,i)=>`<rect x="${r[0]}" y="${r[1]}" width="${r[2]}" height="${r[3]}" fill="${c?tones[i]:'none'}" stroke="${c?'#5f5a50':'#333'}" stroke-width="1"/>`).join('')}</pattern>
  <pattern id="hVid" width="14" height="14" patternUnits="userSpaceOnUse"><rect width="14" height="14" fill="${c?'#b6d3e0':'#eef6fa'}"/><line x1="0" y1="14" x2="14" y2="0" stroke="${c?'#fff':'#7aa6bb'}" stroke-width="${c?2:.8}" opacity="${c?.5:1}"/></pattern>
  <pattern id="hCen" width="9" height="40" patternUnits="userSpaceOnUse"><rect width="9" height="40" fill="${c?'#4a3224':'#fff'}"/><line x1="0" y1="0" x2="0" y2="40" stroke="${c?'#2b1c13':'#333'}" stroke-width="${c?1.8:.8}"/></pattern>
- <pattern id="hCie" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="${c?'#d8d4c8':'#fff'}"/><circle cx="2" cy="2" r=".7" fill="#777"/><circle cx="6" cy="6" r=".7" fill="#777"/></pattern></defs>`}
-const FILL=m=>({vidrio:'url(#hVid)',piedra:'url(#hPie)',madera:ST.mv?'url(#hMadV)':'url(#hMad)',cenefa:'url(#hCen)',ciego:'url(#hCie)',marco:'#1d1f22',puerta:mode==='col'?'#3f6e83':'#dfe6ea'}[m]);
+ <pattern id="hCie" width="8" height="8" patternUnits="userSpaceOnUse"><rect width="8" height="8" fill="${c?'#d8d4c8':'#fff'}"/><circle cx="2" cy="2" r=".7" fill="#777"/><circle cx="6" cy="6" r=".7" fill="#777"/></pattern><pattern id="hTab" width="16" height="40" patternUnits="userSpaceOnUse"><rect width="16" height="40" fill="${c?'#a9794c':'#fff'}"/><line x1="0" y1="0" x2="0" y2="40" stroke="${c?'#6d4a2a':'#333'}" stroke-width="1.2"/><line x1="8" y1="0" x2="8" y2="40" stroke="${c?'#c4975f':'#aaa'}" stroke-width=".5"/></pattern><pattern id="hCha" width="11" height="40" patternUnits="userSpaceOnUse"><rect width="11" height="40" fill="${c?'#9aa1a7':'#fff'}"/><line x1="0" y1="0" x2="0" y2="40" stroke="${c?'#6c737a':'#333'}" stroke-width="1"/><line x1="2" y1="0" x2="2" y2="40" stroke="${c?'#c3c8cc':'#bbb'}" stroke-width=".6"/></pattern><pattern id="hPan" width="60" height="60" patternUnits="userSpaceOnUse"><rect width="60" height="60" fill="${c?'#efeeea':'#fff'}"/><path d="M0 0H60V60" fill="none" stroke="#999" stroke-width=".8"/></pattern></defs>`}
+const FILL=m=>({vidrio:'url(#hVid)',piedra:'url(#hPie)',madera:ST.mv?'url(#hMadV)':'url(#hMad)',cenefa:'url(#hCen)',ciego:'url(#hCie)',marco:'#1d1f22',tablas:'url(#hTab)',chapa:'url(#hCha)',panel:'url(#hPan)',puerta:mode==='col'?'#3f6e83':'#dfe6ea'}[m]);
 /* ---------- cotas ---------- */
-let SC=30,M={l:150,t:70,r:110,b:200},HH=0;
+let SC=30,M={l:150,t:70,r:110,b:245},HH=0;
 const PX=(x,y)=>[M.l+x*SC,M.t+HH-y*SC];
 function dim(a,b,off,txt,col='#222',o={}){
  let [x1,y1]=a,[x2,y2]=b;const dx=x2-x1,dy=y2-y1,len=Math.hypot(dx,dy)||1,ux=dx/len,uy=dy/len,nx=-uy,ny=ux,sg=off>=0?1:-1;
@@ -113,14 +133,14 @@ function draw(){
  const outline=view==='lat'?[[0,0],[g.Wd,0],[g.Wd,g.H],[0,g.H]]:[[0,0],[g.Wd,0],[g.Wd,g.ei],[g.Wd/2,g.ri],[0,g.ei]];
  const pp=P=>P.map(p=>PX(p[0],p[1]).join(',')).join(' ');
  if(view==='lat')o+=`<rect x="${M.l-12}" y="${PX(0,g.H)[1]-(NAVE.W/2*TA)*SC}" width="${g.Wd*SC+24}" height="${(NAVE.W/2*TA)*SC}" fill="${mode==='col'?'#2c3036':'#fff'}" stroke="#111" stroke-width="1.4"/>`+(mode==='cad'?`<text x="${M.l+g.Wd*SC/2}" y="${PX(0,g.H)[1]-(NAVE.W/2*TA)*SC/2+4}" text-anchor="middle" font-size="11" fill="#555">cubierta de chapa nervada (vista de canto)</text>`:'');
- else{const f=NAVE.f;o+=`<polygon points="${pp([[-f,0],[-f,g.ei+.12],[g.Wd/2,g.ri+f/CA],[g.Wd+f,g.ei+.12],[g.Wd+f,0]])}" fill="${mode==='col'?'#1d1f22':'#cfd3d6'}" stroke="#111" stroke-width="1.4"/>`+(mode==='cad'?`<text transform="translate(${PX(-f/2,2.5)[0]},${PX(-f/2,2.5)[1]}) rotate(-90)" font-size="10" text-anchor="middle" fill="#444">marco del portal ${f2(f)} m</text>`:'')}
+ else{const f=NAVE.f;o+=`<polygon points="${pp([[-f,0],[-f,g.ei+.12],[g.Wd/2,g.ri+f/CA],[g.Wd+f,g.ei+.12],[g.Wd+f,0]])}" fill="${ST.frame==='marco'?(mode==='col'?'#1d1f22':'#cfd3d6'):FILL(ST.frame)}" stroke="#111" stroke-width="1.4"/>`+(mode==='cad'?`<text transform="translate(${PX(-f/2,2.5)[0]},${PX(-f/2,2.5)[1]}) rotate(-90)" font-size="10" text-anchor="middle" fill="#444">marco del portal ${f2(f)} m</text>`:'')}
  o+=`<polygon points="${pp(outline)}" fill="${FILL(ST.base[view])}" stroke="#111" stroke-width="1.6"/>`;
  /* formas */
  S.forEach(s=>{const P=ptsOf(view,s),isel=sel===s.id;
   o+=`<polygon class="shp" data-id="${s.id}" points="${pp(P)}" fill="${FILL(s.mat)}" stroke="${isel?'#d9822b':'#111'}" stroke-width="${isel?2.6:1.5}"/>`;
   const ys=P.map(p=>p[1]),y0=Math.min(...ys),xs=P.map(p=>p[0]),x0=Math.min(...xs),x1=Math.max(...xs);
   if(s.mat==='vidrio'&&s.nd>0)for(let k=1;k<=s.nd;k++){const x=x0+(x1-x0)*k/(s.nd+1);const top=s.t==='roof'?topAt(view,x)-(view==='lat'?s.d:s.d/CA):s.y+s.h;o+=`<line x1="${PX(x,y0)[0]}" y1="${PX(x,y0)[1]}" x2="${PX(x,top)[0]}" y2="${PX(x,top)[1]}" stroke="#111" stroke-width="1.3" pointer-events="none"/>`}
-  if(s.mat==='vidrio'&&s.t==='rect'&&s.ht>0)o+=`<line x1="${PX(x0,y0+s.ht)[0]}" y1="${PX(x0,y0+s.ht)[1]}" x2="${PX(x1,y0+s.ht)[0]}" y2="${PX(x1,y0+s.ht)[1]}" stroke="#111" stroke-width="2" pointer-events="none"/>`;
+  if(s.mat==='vidrio'&&s.ht>0)o+=`<line x1="${PX(x0,y0+s.ht)[0]}" y1="${PX(x0,y0+s.ht)[1]}" x2="${PX(x1,y0+s.ht)[0]}" y2="${PX(x1,y0+s.ht)[1]}" stroke="#111" stroke-width="2" pointer-events="none"/>`;
   if(s.mat==='puerta'){const[cx,cy]=PX((x0+x1)/2,y0);o+=`<line x1="${PX((x0+x1)/2,y0)[0]}" y1="${PX((x0+x1)/2,y0)[1]}" x2="${PX((x0+x1)/2,s.y+s.h)[0]}" y2="${PX((x0+x1)/2,s.y+s.h)[1]}" stroke="#111" stroke-width="1.2" pointer-events="none"/><circle cx="${PX(x0+(x1-x0)*.46,y0+1)[0]}" cy="${PX(0,y0+1)[1]}" r="2.2" fill="#111" pointer-events="none"/><circle cx="${PX(x0+(x1-x0)*.54,y0+1)[0]}" cy="${PX(0,y0+1)[1]}" r="2.2" fill="#111" pointer-events="none"/>`}
  });
  o+=`<line x1="${M.l-30}" y1="${fy0}" x2="${M.l+g.Wd*SC+30}" y2="${fy0}" stroke="#000" stroke-width="3"/>`;
@@ -190,7 +210,7 @@ function props(){const s=cur(),el=$('props');if(!s){el.innerHTML='<div class="no
  let h=nm+matSel;
  if(s.t==='rect')h+=field('x','Posición X (desde el borde izq.)',s.x)+field('y','Altura del borde inferior',s.y)+field('w','Ancho',s.w,.05,.1)+field('h','Alto',s.h,.05,.1);
  else h+=field('x0','Borde izquierdo X',s.x0)+field('x1','Borde derecho X',s.x1)+field('yb','Altura del borde inferior',s.yb)+field('d','Distancia al techo (constante)',s.d,.05,.05)+`<div class="f c"><label>Simétrica respecto del eje</label><input type="checkbox" data-k="sim" ${s.sim?'checked':''}></div>`;
- if(s.mat==='vidrio')h+=field('nd','Montantes verticales',s.nd,1,0)+(s.t==='rect'?field('ht','Travesaño a (desde el borde inf.)',s.ht,.05,0):'');
+ if(s.mat==='vidrio')h+=field('nd','Montantes verticales',s.nd,1,0)+field('ht','Travesaño a (desde el borde inf.)',s.ht,.05,0);
  const P=ptsOf(view,s);h+=`<div class="note">Superficie: <b>${f2(polyArea(P))} m²</b></div><div style="margin-top:6px"><button id="bDup">Duplicar</button><button id="bMir">Espejar en el eje</button><button id="bUp">Subir capa</button><button id="bDn">Bajar capa</button><button id="bDel" class="dg">Eliminar</button></div>`;
  el.innerHTML=h;
  el.querySelectorAll('[data-k]').forEach(i=>{i.onchange=()=>{pushU();const k=i.dataset.k;let v=i.type==='checkbox'?i.checked:i.type==='number'?+i.value:i.value;s[k]=v;if(k==='sim'&&v){const g=geom(view);s.x1=g.Wd-s.x0}if(s.t==='roof'&&s.sim&&(k==='x0')){s.x1=geom(view).Wd-s.x0}if(s.t==='roof'&&s.sim&&k==='x1'){s.x0=geom(view).Wd-s.x1}props();layers();draw();stats();save()}});
@@ -209,17 +229,17 @@ function save(){try{localStorage.setItem('jcg-mat-cad2',JSON.stringify({NAVE,ST,
 function load(){try{const o=JSON.parse(localStorage.getItem('jcg-mat-cad2'));if(o&&o.ST&&o.ST.shapes){Object.assign(NAVE,o.NAVE);Object.assign(ST,o.ST);preset=o.preset;uid=o.uid;return true}}catch(e){}return false}
 function ui(){
  $('nave').innerHTML=[['L','Largo (m)',12,26],['W','Luz (m)',8,14],['e','Altura de alero (m)',4,8],['f','Marco del portal (m)',.2,1]].map(([k,t,a,b])=>`<div class="f"><label>${t}</label><input type="number" data-n="${k}" value="${NAVE[k]}" step=".05" min="${a}" max="${b}"></div>`).join('');
- $('pre').innerHTML=Object.keys(PRESETS).map(k=>`<button data-pre="${k}" class="${k===preset?'on':''}">${k}</button>`).join('');
- $('base').innerHTML=Object.entries(MAT).map(([k,[n]])=>`<option value="${k}"${ST.base[view]===k?' selected':''}>${n}</option>`).join('');$('nb').value=ST.nb[view];$('mv').checked=ST.mv;
+ $('refs').innerHTML=Object.entries(REFS).map(([k,r])=>`<div style="display:grid;grid-template-columns:72px 1fr;gap:8px;align-items:center;margin:4px 0"><a href="${r.foto}" target="_blank"><img src="${r.foto}" style="width:72px;height:54px;object-fit:cover;border-radius:6px;border:1px solid #ccc"></a><div><button data-ref="${k}" class="${k===preset?'on':''}">${k}</button><div class="note" style="margin:0">${r.nota}</div></div></div>`).join('');$('pre').innerHTML=Object.keys(PRESETS).map(k=>`<button data-pre="${k}" class="${k===preset?'on':''}">${k}</button>`).join('');
+ $('base').innerHTML=Object.entries(MAT).map(([k,[n]])=>`<option value="${k}"${ST.base[view]===k?' selected':''}>${n}</option>`).join('');$('nb').value=ST.nb[view];$('frm').innerHTML=Object.entries(MAT).filter(([k])=>!['vidrio','puerta'].includes(k)).map(([k,[n]])=>`<option value="${k}"${ST.frame===k?' selected':''}>${n}</option>`).join('');$('mv').checked=ST.mv;
  document.querySelectorAll('[data-view]').forEach(b=>b.classList.toggle('on',b.dataset.view===view));document.querySelectorAll('[data-mode]').forEach(b=>b.classList.toggle('on',b.dataset.mode===mode));
  document.querySelectorAll('[data-n]').forEach(i=>i.onchange=()=>{NAVE[i.dataset.n]=+i.value;full()})}
 function full(){ui();props();layers();draw();stats();save()}
 document.addEventListener('click',e=>{const b=e.target.closest('button');if(!b)return;
- if(b.dataset.view){view=b.dataset.view;sel=null;full()}else if(b.dataset.mode){mode=b.dataset.mode;ui();draw()}else if(b.dataset.pre){preset=b.dataset.pre;pushU();ST.shapes[view]=gen(view);if(view==='lat')ST.shapes.hast=gen('hast');else ST.shapes.lat=gen('lat');sel=null;full()}else if(b.dataset.sel){sel=+b.dataset.sel;props();layers();draw()}
+ if(b.dataset.view){view=b.dataset.view;sel=null;full()}else if(b.dataset.mode){mode=b.dataset.mode;ui();draw()}else if(b.dataset.ref){applyRef(b.dataset.ref)}else if(b.dataset.pre){if(!PRESETS[b.dataset.pre])return;preset=b.dataset.pre;pushU();ST.shapes[view]=gen(view);if(view==='lat')ST.shapes.hast=gen('hast');else ST.shapes.lat=gen('lat');sel=null;full()}else if(b.dataset.sel){sel=+b.dataset.sel;props();layers();draw()}
  else if(b.id==='rst'){pushU();reset();full()}else if(b.id==='uU')undo();else if(b.id==='cp'){navigator.clipboard&&navigator.clipboard.writeText($('json').value)}
  else if(b.id==='aR'||b.id==='aD'){pushU();const g=geom(view),d=b.id==='aD';const s={id:nid(),t:'rect',name:d?'Puerta':'Forma nueva',x:g.Wd/2-(d?.9:1),y:d?0:1,w:d?1.8:2,h:d?2.4:1.5,mat:d?'puerta':'vidrio',nd:d?0:1,ht:0};ST.shapes[view].push(s);sel=s.id;full()}
  else if(b.id==='aP'){pushU();const g=geom(view),s={id:nid(),t:'roof',name:'Polígono sigue techo',x0:1,x1:g.Wd-1,yb:Math.max(2,topAt(view,g.Wd/2)-2.6),d:.45,sim:true,mat:'vidrio',nd:2,ht:0};ST.shapes[view].push(s);sel=s.id;full()}});
-$('base').onchange=e=>{ST.base[view]=e.target.value;draw();stats();save()};$('nb').onchange=e=>{ST.nb[view]=clamp(+e.target.value,1,6);pushU();ST.shapes[view]=gen(view);sel=null;full()};$('mv').onchange=e=>{ST.mv=e.target.checked;draw();stats();save()};
+$('frm').onchange=e=>{ST.frame=e.target.value;draw();save()};$('base').onchange=e=>{ST.base[view]=e.target.value;draw();stats();save()};$('nb').onchange=e=>{ST.nb[view]=clamp(+e.target.value,1,6);pushU();if(REFS[preset]){applyRef(preset);return}ST.shapes[view]=gen(view);sel=null;full()};$('mv').onchange=e=>{ST.mv=e.target.checked;draw();stats();save()};
 ['sCot','sEje','sGrid','snap'].forEach(i=>$(i).onchange=draw);
 addEventListener('keydown',e=>{if((e.ctrlKey||e.metaKey)&&e.key==='z'){e.preventDefault();undo()}if((e.key==='Delete')&&sel&&document.activeElement.tagName!=='INPUT'){$('bDel')&&$('bDel').click()}});
 $('el').addEventListener('pointerdown',e=>{if(e.target.id==='el'||e.target.tagName==='polygon'&&!e.target.classList.contains('shp')){sel=null;props();layers();draw()}});
