@@ -146,3 +146,17 @@ Referencia cruzada, NO es el Isowall de Bromyros (otro perfil, norma AS/NZS 1170
 - Piñón de fondo (línea única y=3,70): solera→3,70 ≈ 3,6 m; 3,70→cumbrera ≈ 3,95 m. Con tabla de vano simple a 4,0 m (conservador, el panel real es continuo): SLS succ. 1,35 ≥ 1,3 (justo), ULS 2,68 ≥ 1,95 OK. **Margen mínimo: no superar 4,0 m; si Bromyros no confirma ≥ 1,3 kPa a 4,0 m, agregar una segunda línea de clavaderas (≈ y 5,3) en el fondo.**
 - Con la tabla Isowall del cliente (2 apoyos, 4,0 m → 110 kg/m² ≈ 1,08 kPa) el fondo NO cumpliría 1,3 kPa sin segunda línea; con 3 apoyos (138 kg/m² ≈ 1,35 kPa a 4,0 m) cumple justo.
 - Cubierta: sin tabla pública (Kingspan AU remite a Servicios Técnicos). Pendiente con Bromyros.
+
+---
+## 11. Cenefa frontal (vuelo 1,20 m, continúa la tanda de paneles de cubierta)
+
+**Solución:** las 8 correas C se prolongan 1,20 m más allá del pórtico frontal (x = −49,91 → −48,71; las C terminan en −48,77) y en las puntas se suelda una **viga de borde RHS 120×60×4** (120 mm en el canto, 6 cm en x) que sigue la pendiente de cada faldón, de alero a cumbrera, con corte vertical en cumbrera. Los paneles de cubierta continúan por encima (≥ 1 panel de 1,00 m de ancho útil más 0,20 m), apoyados en las C; la viga de borde recibe el canto libre del último panel y la cara vista de la cenefa (babeta/cierre). No hace falta nuevo pórtico: el vuelo es chico frente a la luz de 7 m.
+
+**Cálculo (viga continua de 3 tramos 6,75/7,0/6,75 m + vuelo 1,20 m, C 250×75×25):**
+- Cargas: gravedad ELU 1,13 kN/m normal al faldón; succión ELU 4,15 kN/m en zona de borde (1,7 kPa × 1,5 × 1,74 m − peso propio) y 2,43 kN/m en campo (1,04 kPa × 1,5).
+- Flecha en punta del vuelo por succión de servicio: ≈ 10 mm (≈ L/118 del vuelo, aceptable para cierre; subir a 3,0 mm la reduce).
+- Reacción extra en el último pórtico: ≈ 17 kN por correa (succión ELU), ya cubierta por 4 M12 de la L soldada (≈ 68 kN al aplastamiento).
+- **Hallazgo:** con el viento actualizado (1,7 kPa en borde) el momento de apoyo llega a ≈ 15,8 kNm vs ≈ 16,2 kNm de capacidad de la C 250×2,5 → utilización ≈ 0,97. **Se sube a C 250×75×25×3,0 mm** en todas las líneas (W ≈ 82 cm³, utilización ≈ 0,8; +≈ 300 kg). El vuelo en sí casi no agrega solicitación (+0,2 kNm).
+- Con succión, el ala inferior comprime en el apoyo: mantener tirantillas (sag rods) a 1/3 de luz y una en el vuelo.
+
+**Detalles a resolver en obra/taller:** empalmes de C solapados 30–40 cm con 4 bulones (lo más lejos posible del apoyo del pórtico 4), placa de punta 6 mm en cada C al soldar a la viga de borde, babeta y cierre inferior (sofito) de la cenefa. Peso viga de borde: 2 × ≈ 5,8 m × 10,8 kg/m.
