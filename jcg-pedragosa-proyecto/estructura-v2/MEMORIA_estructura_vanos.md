@@ -47,6 +47,22 @@ Presión de viento 1,0 kPa ≈ 102 kg/m² (servicio, L/200).
 | Panel sin línea intermedia (2 apoyos) a 4,0 m | 2 | 4,0 m | 110 | 0,93 |
 El panel no gobierna: los muros largos aguantan hasta ~2,2 kPa. La zona de borde de esquina tiene presiones locales mayores; confirmar con la norma. Succión: verificar fijaciones.
 
+## 3c. Techo: correas de techo (4 apoyos por faldón)
+Pedido: 4 líneas de correa por faldón (3 tramos de panel de ~1,86 m sobre la pendiente).
+| Dato | Valor | Estado |
+|---|---|---|
+| Peso propio techo (panel + correa + fijaciones) | 0,20 kN/m² | Supuesto |
+| Sobrecarga de mantenimiento | 0,30 kN/m² en planta | Supuesto |
+| Succión de viento | 0,8 kPa campo / 1,5 kPa borde (alero y cumbrera) | Supuesto, confirmar con UNIT 50‑84 |
+| Luz de correa | 7,0 m, tramo continuo de 3 vanos | Del modelo |
+
+- **Perfil:** C galvanizado 250×75×25×2,5 mm (8,6 kg/m) en las 8 líneas, mismo canto para que el plano del panel quede parejo. Campo: utilización 0,60; borde: 0,75; flecha > L/450. Propiedades del C calculadas con fórmula (sección efectiva ×0,85), **sin catálogo**.
+- **Posición:** web normal a la pendiente, apoyada sobre el ala superior del dintel; alas hacia la cumbrera. Líneas a 0, 1,86, 3,71 y 5,57 m sobre la pendiente.
+- **Por qué C y no tubo rectangular:** a igual resistencia el C pesa menos (≈ 8,6 kg/m contra ≈ 18 kg/m del RHS 200×100×4).
+- **Tirantillas:** con succión el ala inferior queda libre. Poner una o dos tirantillas por tramo (a tercios de luz).
+- **Tensores del techo:** en el modelo estaban 3–8 cm sobre el dintel, justo en la zona de las correas. Los bajé 15 cm (pasan por el alma del dintel, bajo las correas). Van en el DAE.
+- **Falta:** la tabla del ISODEC 80 mm para confirmar que el panel admite ~1,9 m entre apoyos con esas cargas (mucho margen esperable, no verificado).
+
 ## 4. Platinas de nudo
 **Forma elegida: contorno ajustado a la estructura** (hexágono en el alero, "chevron" en la cumbrera), chapa de 12 mm a cada lado, soldada a los cantos de las alas (cierra el nudo en cajón).
 - **Por qué no el rectángulo:** sobresale hasta 18 cm del contorno de la columna y deja esquinas que no cumplen función.
@@ -65,17 +81,20 @@ El panel no gobierna: los muros largos aguantan hasta ~2,2 kPa. La zona de borde
 | Soleras RHS 100×50×3 | 11 | 36,6 m | 248 |
 | Postes piñón RHS 200×100×6 | 6 | 41,8 m | 1.132 |
 | Clavaderas piñón RHS 120×60×4 | 12 | 31,4 m | 339 |
-| **Nuevo** | | | **4.282** |
+| Correas de techo C 250×75×25×2,5 | 8 | 167 m | 1.444 |
+| **Nuevo** | | | **5.726** |
 | Retirado (clavaderas 343 m, montantes 43 m, platinas rectangulares) | | | ≈ 3.580 |
-| **Neto** | | | **≈ +700 kg** |
+| **Neto sin correas** | | | **≈ +700 kg** |
+
+Las correas viejas (12 líneas, cajas macizas en el modelo) no tienen espesor definido, por eso no calculo su peso retirado.
 
 Pesos con áreas nominales sin radios de esquina. Las platinas nuevas pesan unos 70 kg más que las viejas porque ahora cubren la unión de verdad.
 
 ## 6. Qué contiene el DAE
 `Nave1_ESTRUCTURA_v2_vanos.dae` es la estructura completa (grupos con nombre). En **naranja** está lo nuevo; en gris lo existente.
-- Sin cambios: Columnas HEB 240, Dinteles HEB 240 (sin las platinas viejas), Correas.
-- Nuevo: Platinas, Vigas de vano IPE 200, Vigas de alero IPE 160, Jambas, Soleras, Postes de piñón, Clavaderas de piñón.
-- No incluye aberturas ni cruces (no cambiaron). En SketchUp: borrar el grupo 02_02 actual e importar este.
+- Sin cambios: Columnas HEB 240, Dinteles HEB 240 (sin las platinas viejas), tensores de muros.
+- Nuevo: Platinas, Vigas de vano IPE 200, Vigas de alero IPE 160, Jambas, Soleras, Postes de piñón, Clavaderas de piñón, Correas de techo C 250, Tensores de techo bajados.
+- No incluye aberturas. En SketchUp: borrar el grupo 02_02 y el grupo Cruces actuales e importar este.
 
 ## 7. Pendientes
 1. Confirmar la presión de viento y que la tabla del ISOWALL 80 mm coincida con el catálogo del proveedor.
