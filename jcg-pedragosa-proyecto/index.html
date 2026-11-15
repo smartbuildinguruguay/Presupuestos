@@ -108,7 +108,7 @@ const TAN = Math.tan(20 * Math.PI / 180);
 const NLB = 2, NCONS = 7, DP = 1.2, DPO = 1.0; // locales del fondo, consultorios, resguardo de cenefa al jardín y al retiro lateral
 const S = { ref: '', est: 'cro', suelo: 'S0', n: 3, gas: 0, iva: false, cara: 'mp', cons: 'N', bd: 12 };
 const NPLZ = 16, PL = { w: 2.5, d: 5, acc: 3.5, ais: 6, x1: -6 }; // estacionamiento del plano de la arquitecta: 16 plazas de 2,50 × 5,00
-const PORT = 1.5; // portal proyectado en el hastial (cuenta en el FOS)
+const PORT = 1.2; // portal proyectado en el hastial (cuenta en el FOS)
 const NV = [
   { id: 'S', n: 'Nave sur', pad: '10598', pa: 1050, x0: -43, x1: -22, y0: 3, y1: 14.5, tipo: 'dos' },
   { id: 'B', n: 'Nave del fondo', pad: '10597', pa: 1000, x0: -43, x1: -31, y0: 24.25, y1: 35.75, tipo: 'dos', niv: 2 },
@@ -331,7 +331,7 @@ function cotiza(o = S) {
   }
   if (q.cro) {
     it(3, `Resguardo de cenefa: vísera de ${f1(DP)} m sobre las vidrieras al jardín y de ${f1(DPO)} m sobre las puertas del retiro lateral, con ménsulas, aletas y cielorraso de cenefa`, Math.round(q.cIn + q.cOut), 'ml', 135, .4);
-    it(3, `Portal de hastial proyectado ${f1(DP)} m: marco, aletas y alero que protegen la vidriera`, Math.round(q.cen), 'ml', 85, .4);
+    it(3, `Portal de hastial proyectado ${f1(PORT)} m (la cenefa avanza y forma un volumen; vidriera retirada, alero continuo hasta la vísera lateral)`, Math.round(q.cen), 'ml', 130, .4);
     if (q.woodRec > 0) it(3, 'Madera natural (lapacho o pino tratado con aceite) en la cara interior de la cenefa: cielorraso de la vísera, aletas y antepecho, a cotizar', Math.round(q.woodRec), 'm²', 96, .45);
     if (q.stoneRec > 0) it(3, 'Piedra granítica careada en el zócalo de las vidrieras y el pie de las aletas, cara interior de la cenefa', Math.round(q.stoneRec), 'm²', 230, .55);
   }
@@ -452,6 +452,7 @@ function dImpl() {
   [10, 30, 50].forEach(y => g += `<polygon points="${X(0)},${Y(y)} ${X(0) + 10},${Y(y) - 5} ${X(0) + 10},${Y(y) + 5}" fill="#b03a2e"/>`);
   NV.forEach(b => {
     g += R_(X(b.x0), Y(b.y1), b.L * s, b.W * s, `fill="${b.tipo === 'dos' ? '#7f93a8' : '#6e8aa0'}" stroke="#111" stroke-width="1.3"`);
+    g += R_(X(b.x1), Y(b.y1), PORT * s, b.W * s, 'fill="#b9a58a" stroke="#111" stroke-dasharray="3 2" stroke-width="1" opacity=".85"');
     if (b.tipo === 'dos') g += L_(X(b.x0), Y((b.y0 + b.y1) / 2), X(b.x1), Y((b.y0 + b.y1) / 2), 'stroke="#fff" stroke-dasharray="4 3" stroke-width="1"');
     else g += `<polygon points="${X(b.x0) + 8},${Y(b.y1) + 10} ${X(b.x1) - 8},${Y(b.y1) + 10} ${X(b.x1) - 18},${Y(b.y1) + 5} ${X(b.x1) - 18},${Y(b.y1) + 15}" fill="#fff" opacity=".7"/>`;
     g += T_(X((b.x0 + b.x1) / 2), Y((b.y0 + b.y1) / 2) - 2, b.n, 'text-anchor="middle" font-weight="700" font-size="10"') + T_(X((b.x0 + b.x1) / 2), Y((b.y0 + b.y1) / 2) + 10, `${nf(b.A)} m² · ${b.tipo === 'dos' ? 'dos aguas' : 'un agua escondido'}`, 'text-anchor="middle" font-size="9"');
@@ -564,7 +565,7 @@ function dPais() {
   g += R_(X(-LOT.D), Y(60), LOT.D * s, 60 * s, 'fill="#dcebd2" stroke="#222" stroke-width="1.6"') + R_(X(-10), Y(60), 10 * s, 60 * s, 'fill="#efe9dd"');
   [20, 40].forEach(y => g += L_(X(-LOT.D), Y(y), X(0), Y(y), 'stroke="#555" stroke-dasharray="5 3"'));
   g += gardenSVG(X, Y, s);
-  NV.forEach(b => g += R_(X(b.x0), Y(b.y1), b.L * s, b.W * s, 'fill="#7f93a8" stroke="#111" stroke-width="1.3"') + T_(X((b.x0 + b.x1) / 2), Y((b.y0 + b.y1) / 2) + 4, b.n, 'text-anchor="middle" font-weight="700" font-size="11"'));
+  NV.forEach(b => g += R_(X(b.x1), Y(b.y1), PORT * s, b.W * s, 'fill="#b9a58a" stroke="#111" stroke-dasharray="3 2"') + R_(X(b.x0), Y(b.y1), b.L * s, b.W * s, 'fill="#7f93a8" stroke="#111" stroke-width="1.3"') + T_(X((b.x0 + b.x1) / 2), Y((b.y0 + b.y1) / 2) + 4, b.n, 'text-anchor="middle" font-weight="700" font-size="11"'));
   g += parkSVG(X, Y, s, '#999');
   const lb = [[-15, 30, 'Entrada', 1], [-24.5, 30, 'Plaza de estar', 1], [-26, 15.7, 'Galería', 1], [-32, 44.2, 'Galería', 1], [-24.5, 21.5, 'Cantero', 1], [-24.5, 38.5, 'Cantero', 1]];
   lb.forEach(([x, y, t]) => g += T_(X(x), Y(y) + 4, t, 'text-anchor="middle" font-size="10" font-weight="700" fill="#1d2630"'));
@@ -617,6 +618,7 @@ function gableEl(b, s, X0, base) { // hastial visto desde la avenida
     const rs = refSt(), f = rs ? rs.fw : FR, ri = b.r - f / CA, ei = b.e + f * (TA - 1 / CA);
     g += P_([[X(0), Y(0)], [X(0), Y(b.e)], [X(W / 2), Y(b.r)], [X(W), Y(b.e)], [X(W), Y(0)]], `fill="${rs ? rs.fr : COL.marco}" stroke="#000"`);
     g += P_([[X(f), Y(0)], [X(f), Y(ei)], [X(W / 2), Y(ri)], [X(W - f), Y(ei)], [X(W - f), Y(0)]], `fill="${rs ? rs.field : COL.cen}"`);
+    g += P_([[X(f), Y(0)], [X(f), Y(ei)], [X(W / 2), Y(ri)], [X(W / 2), Y(ri - .45)], [X(f + .45), Y(ei - .25)], [X(f + .45), Y(0)]], 'fill="rgba(0,0,0,.22)"');
     if (rs && rs.pil) [0, W - 1.2].forEach(x => g += R_(X(x), Y(b.e), 1.2 * s, b.e * s, `fill="${COL.pie}" stroke="#555"`));
     const ya = ri - .55, hh = 1.7, hw = hh / TA; g += P_([[X(W / 2), Y(ya)], [X(W / 2 + hw), Y(ya - hh)], [X(W / 2 - hw), Y(ya - hh)]], `fill="${COL.vid}" stroke="#222" opacity=".9"`);
     g += R_(X(f + .25), Y(3.0), (W - 2 * f - .5) * s, 3.0 * s, `fill="${COL.vid}" stroke="#222" opacity=".92"`) + L_(X(f + .25), Y(2.4), X(W - f - .25), Y(2.4), 'stroke="#222" stroke-width="1.4"');
@@ -666,8 +668,9 @@ function elCara(b, face, titulo) { // cara larga de una nave: aberturas reales y
   }
   if (b.cons) O.filter(q => q.t === 'w').forEach((q, i) => g += T_(X((q.a + q.z) / 2), Y(q.h1) - 5, 'C' + (i + 1), 'text-anchor="middle" font-size="10" fill="#fff"'));
   else for (let i = 0; i < S.n; i++) g += T_(X((i + .5) * b.L / S.n), Y(3.6) - 12, `Local ${i + 1}`, 'text-anchor="middle" font-size="10" fill="#ddd"');
+  if (st.cro) g += R_(X(b.L), Y(b.e), PORT * s, b.e * s, `fill="${rs ? rs.fr : COL.marco}" stroke="#000"`) + P_([[X(b.L), Y(b.e)], [X(b.L + PORT), Y(b.e)], [X(b.L + PORT), Y(b.e + .01)]], 'fill="none"') + T_(X(b.L + PORT) + 4, Y(b.e / 2), `portal +${f1(PORT)} m`, 'font-size="10" fill="#555"');
   g += L_(X(-.5), Y(0), X(b.L + .5), Y(0), 'stroke="#222" stroke-width="2"') + T_(X(0), 20, titulo, 'font-weight="700"') + T_(X(b.L), base + 18, `${f2(b.L)} m`, 'text-anchor="end" fill="#555"');
-  return SV(X0 * 2 + b.L * s, base + 28, g);
+  return SV(X0 * 2 + (b.L + PORT) * s + 70, base + 28, g);
 }
 const elLado = (b, t) => elCara(b, 'in', t), elCostado = b => elCara(b, 'out', 'Cara hacia el retiro lateral · puerta de servicio y ventana por local');
 function elFrenteB() {
@@ -801,9 +804,10 @@ function build3d() {
       polyUV([V3(b.x0, e, b.y0), V3(b.x1, e, b.y0), V3(b.x1, r, ym), V3(b.x0, r, ym)], roofM, G3.techos, uvX); polyUV([V3(b.x0, e, b.y1), V3(b.x1, e, b.y1), V3(b.x1, r, ym), V3(b.x0, r, ym)], roofM, G3.techos, uvX);
       if (cro) {
         const TA2 = Math.tan(20 * Math.PI / 180), ri = r - FRm * ci, ei = e + FRm * (TA2 - ci), fm = rs ? mat(new THREE.Color(rs.fr), { r: .5, s: THREE.DoubleSide }) : MT.marco;
-        if (rs && rs.pil) { b.fx.forEach(x => [b.y0 - .1, b.y1 + .1].forEach(yy => slab(x - .3, x + .3, yy - .15, yy + .15, 0, e, MT.stone, G3.piedra))); [b.y0, b.y1 - 1.2].forEach(yy => slab(b.x1, b.x1 + .15, yy, yy + 1.2, 0, e, MT.stone, G3.piedra)); }
+        if (rs && rs.pil) { b.fx.forEach(x => [b.y0 - .1, b.y1 + .1].forEach(yy => slab(x - .3, x + .3, yy - .15, yy + .15, 0, e, MT.stone, G3.piedra))); [b.y0, b.y1 - 1.2].forEach(yy => slab(b.x1 + PORT - .15, b.x1 + PORT, yy, yy + 1.2, 0, e, MT.stone, G3.piedra)); }
         const O = [[0, 0], [0, e], [W / 2, r], [W, e], [W, 0]], I = [[FRm, 0], [FRm, ei], [W / 2, ri], [W - FRm, ei], [W - FRm, 0]];
-        [[b.x1 + .03, 1], [b.x0 - .03, -1]].forEach(([xf]) => { for (let i = 0; i < 4; i++) polyUV([V3(xf, O[i][1], b.y0 + O[i][0]), V3(xf, O[i + 1][1], b.y0 + O[i + 1][0]), V3(xf, I[i + 1][1], b.y0 + I[i + 1][0]), V3(xf, I[i][1], b.y0 + I[i][0])], fm, G3.madera, uvZ); });
+        [[b.x1 + PORT, 1], [b.x0 - .03, -1]].forEach(([xf]) => { for (let i = 0; i < 4; i++) polyUV([V3(xf, O[i][1], b.y0 + O[i][0]), V3(xf, O[i + 1][1], b.y0 + O[i + 1][0]), V3(xf, I[i + 1][1], b.y0 + I[i + 1][0]), V3(xf, I[i][1], b.y0 + I[i][0])], fm, G3.madera, uvZ); });
+        for (let i = 0; i < 4; i++) { polyUV([V3(b.x1, O[i][1], b.y0 + O[i][0]), V3(b.x1 + PORT, O[i][1], b.y0 + O[i][0]), V3(b.x1 + PORT, O[i + 1][1], b.y0 + O[i + 1][0]), V3(b.x1, O[i + 1][1], b.y0 + O[i + 1][0])], fm, G3.madera, uvZ); polyUV([V3(b.x1, I[i][1], b.y0 + I[i][0]), V3(b.x1 + PORT, I[i][1], b.y0 + I[i][0]), V3(b.x1 + PORT, I[i + 1][1], b.y0 + I[i + 1][0]), V3(b.x1, I[i + 1][1], b.y0 + I[i + 1][0])], MT.wood, G3.madera, uvZ); }
         const ya = ri - .55, hh = 1.7, hw = hh / TA2; polyUV([V3(b.x1 + .05, ya, ym), V3(b.x1 + .05, ya - hh, ym + hw), V3(b.x1 + .05, ya - hh, ym - hw)], MT.glass, G3.naves, uvZ);
         if (!b.cons) decX(b.x1, b.y0 + FRm + .25, b.y1 - FRm - .25, 0, 3.0, MT.glass, G3.naves); if (!b.cons) for (let i = 1; i < 5; i++) { const yy = b.y0 + FRm + .25 + i * (W - 2 * FRm - .5) / 5; slab(b.x1 + .03, b.x1 + .07, yy - .03, yy + .03, 0, 3.0, MT.line.color ? MT.marco : MT.marco, G3.naves); }
         if (!b.cons) slab(b.x1 + .03, b.x1 + .07, b.y0 + FRm, b.y1 - FRm, 2.4, 2.45, MT.marco, G3.naves);
@@ -828,7 +832,7 @@ function build3d() {
       });
       if (cro) {
         const vi = yv(b.inY, sg * DP), vo = yv(b.outY, -sg * DPO);
-        slab(b.x0, b.x1, vi[0], vi[1], 3.3, 3.5, MT.marco, G3.naves); slab(b.x0, b.x1, vo[0], vo[1], 3.3, 3.5, MT.marco, G3.naves);
+        slab(b.x0, b.x1 + PORT, vi[0], vi[1], 3.3, 3.5, MT.marco, G3.naves); slab(b.x0, b.x1 + PORT, vo[0], vo[1], 3.3, 3.5, MT.marco, G3.naves);
         b.fx.forEach(x => { slab(x - .05, x + .05, vi[0], vi[1], 0, 3.5, MT.marco, G3.naves); slab(x - .05, x + .05, vo[0], vo[1], 0, 3.5, MT.marco, G3.naves); });
         if (S.cara !== 'lis') { // cara interior de la cenefa: madera natural arriba, piedra abajo
           const yi0 = b.y0 + .12, yi1 = b.y1 - .12, hs = S.cara === 'mp' ? 1.2 : 0;
