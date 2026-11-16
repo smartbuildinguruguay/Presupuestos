@@ -49,6 +49,7 @@ details{margin:2px 0}summary{cursor:pointer;padding:3px 0}.tree label{display:fl
 @media(max-width:900px){#app{grid-template-columns:1fr;grid-template-rows:56% 44%}aside{border-left:0;border-top:1px solid var(--line)}}
 .chips{display:flex;flex-wrap:wrap;gap:6px;margin:2px 0 6px}.sw2{border:1px solid var(--line);border-radius:8px;padding:4px 9px 4px 4px;display:flex;align-items:center;gap:6px;cursor:pointer;background:#fff;font:inherit;font-size:12px;color:var(--ink)}.sw2:hover{border-color:var(--acc)}.sw2.on{border-color:var(--acc);box-shadow:0 0 0 1px var(--acc);background:#e8f2f6}.sw2 i{width:22px;height:22px;border-radius:5px;border:1px solid #0003;background-size:cover;display:block}
 details.sec{border-bottom:1px solid var(--line)}details.sec>summary{cursor:pointer;font-weight:600;padding:10px 2px;list-style:none}details.sec>summary::before{content:"▸ ";color:var(--acc)}details.sec[open]>summary::before{content:"▾ "}details.sec>.bd{padding:0 0 12px}
+#p-conf.native>:not(#natBox){display:none}#carL label{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:4px 0;font-size:13px}#carL select{flex:0 0 58%;padding:5px;border:1px solid #cfd6dc;border-radius:6px;background:#fff}#costL table{width:100%;border-collapse:collapse;font-size:12.5px}#costL td{padding:3px 4px;border-bottom:1px solid #e6eaee}#costL td.n{text-align:right;white-space:nowrap}#costL tr.t td{font-weight:700;border-top:2px solid #12304a}
 </style>
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 </head><body>
@@ -63,7 +64,7 @@ details.sec{border-bottom:1px solid var(--line)}details.sec>summary{cursor:point
 <aside>
 <nav class="tabs" data-new="1"><button data-t="conf" class="on">Configurar</button><button data-t="mat">Materiales</button><button data-t="pro">Proyecto</button><button data-t="cap">Capas</button><button data-t="com">Cómputo</button><button data-t="vis">Vista</button></nav>
 <div class="pane on" id="p-conf">
-<div id="natBox" style="display:none"><h3>Modelo</h3><p class="note" id="mInfo"></p><h3>Capas del modelo</h3><div class="chips" id="chL"></div><div id="p2Box" style="display:none"><h3>Propuesta interior · corredor central</h3><div class="chips" id="chP2"></div><p class="note" id="p2Info"></p></div></div>
+<div id="natBox" style="display:none"><h3>Modelo</h3><p class="note" id="mInfo"></p><h3>Capas del modelo</h3><div class="chips" id="chL"></div><div id="carBox" style="display:none"><h3>Revestimiento por cara</h3><div id="carL"></div><h3>Costo de lo elegido</h3><div id="costL"></div><div class="chips" style="margin-top:8px"><button class="sw2" id="bSave">Guardar en el proyecto</button><button class="sw2" id="bLink">Copiar link de esta configuración</button></div><p class="note" id="saveInfo"></p></div><div id="p2Box" style="display:none"><h3>Propuesta interior · corredor central</h3><div class="chips" id="chP2"></div><p class="note" id="p2Info"></p></div></div>
 <h3>Estilo</h3><div id="slotEstilo"></div>
 <h3>Caras a revestir <span style="font-weight:400;text-transform:none">(o hacé clic sobre la pared en el visor)</span></h3><div class="chips" id="chS"></div>
 <h3>Revestimiento de las caras elegidas</h3><div class="chips" id="chV"></div>
@@ -557,12 +558,12 @@ function showSec(k){$$('.tabs button').forEach(x=>x.classList.toggle('on',x.data
 function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
 new ResizeObserver(resize).observe(stage);resize();
 renderer.setAnimationLoop(()=>{if(anim){const k=Math.min(1,(performance.now()-anim.t0)/700),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;cam.position.lerpVectors(anim.p0,anim.p1,e);ctl.target.lerpVectors(anim.t0v,anim.t1,e);if(k>=1)anim=null}ctl.update();renderer.render(scene,cam)});
-async function start(buf){state.mats={};state.portal='alero';state.apoyo='solei';state.aleroOn=true;state.estilo=0;await loadGLB(buf);buildProject();if(NATIVE){PJ.grp.visible=false;MESHES=MESHES.filter(inRoot)}renderEstilos();buildEls();buildTree();buildLayers();buildPropuesta();applyMats();applyOpts();applyPJ();$('#load').style.display='none';window.__ready=true}
+async function start(buf){state.mats={};state.portal='alero';state.apoyo='solei';state.aleroOn=true;state.estilo=0;await loadGLB(buf);buildProject();if(NATIVE){PJ.grp.visible=false;MESHES=MESHES.filter(inRoot)}renderEstilos();buildEls();buildTree();buildLayers();buildPropuesta();buildCaras();applyMats();applyOpts();applyPJ();$('#load').style.display='none';window.__ready=true}
 window.__cfg={PS,PJ,applyPJ,THREE,scene,cam,ctl,state,get MESHES(){return MESHES},applyOpts,applyMats,goView,xray,BBf:()=>BB,PRE};
 const LAYN={'01':'Platea y fundación','ESTRUCTURA':'Estructura','Paneles':'Paneles PIR','Divisiones':'Divisiones','Instalación':'Instalaciones','Estilo':'Cenefa de estilo','Revestimiento':'Revestimiento','Vísera':'Víseras','Cenefa':'Cenefa','Abertura':'Aberturas'};
 function buildLayers(){const box=$('#natBox'),h=$('#chL');if(!box)return;box.style.display=NATIVE?'':'none';if(!NATIVE)return;h.innerHTML='';const by={};
  ASM.children.forEach(o=>{if(o===PERSON||o.isMesh)return;let k=(nm(o)||'').split('_')[0].replace(/#\d+$/,'');if(!k||/^geom3d$/i.test(k))k='Otros';(by[k]=by[k]||[]).push(o)});
- Object.keys(by).sort().forEach(k=>{const b=document.createElement('button');b.className='sw2 on';b.textContent=LAYN[k]||k;b.onclick=()=>{const on=!b.classList.contains('on');b.classList.toggle('on',on);by[k].forEach(o=>o.visible=on);try{computo();syncTree()}catch(e){}};h.appendChild(b)});
+ Object.keys(by).sort().forEach(k=>{const b=document.createElement('button');b.className='sw2 on';b.textContent=LAYN[k]||k;b.onclick=()=>{const on=!b.classList.contains('on');b.classList.toggle('on',on);by[k].forEach(o=>o.visible=on);try{computo();syncTree()}catch(e){}try{updCost()}catch(e){}};h.appendChild(b)});
  const z=BB.getSize(new THREE.Vector3());$('#mInfo').textContent='Medidas totales del modelo: '+z.x.toFixed(2).replace('.',',')+' m de largo × '+z.z.toFixed(2).replace('.',',')+' m de ancho × '+z.y.toFixed(2).replace('.',',')+' m de alto (incluye víseras, cenefa y fundación). Los estilos superpuestos y el proyecto dibujado por código son del modelo anterior y acá quedan apagados: las divisiones, instalaciones y paneles vienen en el propio modelo.'}
 /* Propuesta interior de la nave tipo: locales en el perímetro, corredor central, divisiones bajas; etapa 2 (escalera y entrepiso) solo como estructura */
 const PR={};
@@ -592,13 +593,42 @@ function buildPropuesta(){const bx=$('#p2Box'),h=$('#chP2');if(!bx)return;bx.sty
   W.add(K);PR.deck=K}
  W.updateMatrixWorld(true);
  const nat=k=>ASM.children.filter(o=>(nm(o)||'').split('_')[0].replace(/#\d+$/,'')===k);
- const chip=(t,on,fn)=>{const b=document.createElement('button');b.className='sw2'+(on?' on':'');b.textContent=t;b.onclick=()=>{const v=!b.classList.contains('on');b.classList.toggle('on',v);fn(v)};h.appendChild(b);fn(on)};
+ const chip=(t,on,fn)=>{const b=document.createElement('button');b.className='sw2'+(on?' on':'');b.textContent=t;b.onclick=()=>{const v=!b.classList.contains('on');b.classList.toggle('on',v);fn(v);try{updCost()}catch(e){}};h.appendChild(b);fn(on)};
  chip('Divisiones bajas y corredor',true,v=>{D.visible=v;nat('Divisiones').forEach(o=>o.visible=!v);[...$('#chL').children].forEach(c=>{if(c.textContent==='Divisiones')c.classList.toggle('on',!v)})});
  chip('Etapa 2: escalera y entrepiso (estructura)',true,v=>{E.visible=v});
  if(K)chip('Deck cafetería (esquema)',true,v=>{K.visible=v});
  chip('Destapar: sin techo ni paneles',false,v=>{['Paneles','Estilo','Revestimiento','Cenefa'].forEach(k=>nat(k).forEach(o=>o.visible=!v));[...$('#chL').children].forEach(c=>{if(['Paneles PIR','Cenefa de estilo','Revestimiento','Cenefa'].includes(c.textContent))c.classList.toggle('on',!v)})});
  const a1=(XM-XB)*(Z1-ZA),a2=(XF-XM)*(Z1-ZA),f=n=>n.toFixed(1).replace('.',',');
  $('#p2Info').textContent=(MSEL==='n2'?'Nave a una sola agua (pendiente 7 %), con deck cafetería sobre la fachada vidriada. ':MSEL==='n3'?'Misma nave que la comercial; la distribución de consultorios está pendiente. ':'')+'Sección mínima: planta baja de 3,00 m libres, entrepiso a +'+f(HE)+' m y planta alta de 2,00 m contra el muro y 2,80 m en la parte alta (2,40 m de promedio). Cuatro locales en el perímetro ('+f(a1)+' y '+f(a2)+' m²), cada uno con salida propia y puerta al corredor central de '+f(Z2-Z1)+' m; baño accesible común al fondo; divisiones de '+f(H)+' m. En naranja, la etapa 2: escalera recta de 18 contrahuellas y estructura del entrepiso. Esquema para definir la propuesta: sin cálculo estructural.'}
+/* Revestimiento por cara, costo de lo elegido y guardado en el proyecto (modelos nuevos) */
+const CAR={faces:[],sel:{}};
+const REVS=[['none','Sin revestir (panel a la vista)',0],['orig','Tablitas de madera tratada (como el modelo)',62],['wpc1','WPC teca',140],['wpc2','WPC roble fino',140],['lapacho','Lapacho machimbrado',96],['madera','Madera',96],['piedra','Piedra',230],['grafito','Chapa grafito',7],['negro','Chapa negra',7],['blanco','Chapa blanca',0]];
+const KP=1.015*1.1*1.25; // ajuste 1,5 %, imprevistos 10 % y margen 25 %: de costo directo a precio
+const natG=k=>ASM.children.filter(o=>(nm(o)||'').split('_')[0].replace(/#\d+$/,'')===k);
+function buildCaras(){const bx=$('#carBox');if(!bx)return;bx.style.display=NATIVE?'':'none';$('#p-conf').classList.toggle('native',NATIVE);if(!NATIVE)return;
+ CAR.faces=[];const R=natG('Revestimiento')[0];const bb=new THREE.Box3().setFromObject(root),c0=bb.getCenter(new THREE.Vector3());
+ if(R)R.children.forEach(o=>{const b=new THREE.Box3().setFromObject(o),z=b.getSize(new THREE.Vector3()),c=b.getCenter(new THREE.Vector3());const ms=[];o.traverse(x=>{if(x.isMesh)ms.push(x)});if(!ms.length)return;
+  const lat=z.z<z.x,id=lat?(c.z<c0.z?'latA':'latB'):(c.x>c0.x?'frente':'fondo');CAR.faces.push({id,l:{latA:'Lateral A (vidrieras)',latB:'Lateral B',frente:'Frente (hastial a la avenida)',fondo:'Fondo'}[id],ms,area:(lat?z.x:z.z)*z.y,full:(lat?z.x:z.z)*z.y})});
+ CAR.faces.forEach(f=>{let a=0;f.ms.forEach(m=>a+=areaOf(m));if(a>0)f.area=Math.min(f.full,a/2)});
+ CAR.faces.sort((a,b)=>['frente','latA','latB','fondo'].indexOf(a.id)-['frente','latA','latB','fondo'].indexOf(b.id));
+ let saved=null;try{const h=new URLSearchParams(location.hash.slice(1)).get('c');saved=h?JSON.parse(decodeURIComponent(escape(atob(h)))):JSON.parse(localStorage.getItem('sbu_jcg_nave_'+MSEL)||'null')}catch(e){}
+ const L=$('#carL');L.innerHTML='';CAR.faces.forEach(f=>{CAR.sel[f.id]=saved&&saved.caras&&saved.caras[f.id]||'orig';const lb=document.createElement('label');lb.innerHTML='<span>'+f.l+'</span>';const se=document.createElement('select');REVS.forEach(([v,t])=>{const o=document.createElement('option');o.value=v;o.textContent=t;se.appendChild(o)});se.value=CAR.sel[f.id];se.onchange=()=>{CAR.sel[f.id]=se.value;applyCaras();updCost()};lb.appendChild(se);L.appendChild(lb)});
+ if(saved&&saved.capas){const set=(t,v)=>{[...document.querySelectorAll('#chL button,#chP2 button')].forEach(b=>{if(b.textContent===t&&b.classList.contains('on')!==!!v)b.click()})};Object.entries(saved.capas).forEach(([t,v])=>set(t,v))}
+ applyCaras();updCost();
+ $('#bSave').onclick=()=>{try{localStorage.setItem('sbu_jcg_nave_'+MSEL,JSON.stringify(snapCfg()));$('#saveInfo').textContent='Guardado. El proyecto general lo toma al abrirlo en este mismo navegador.'}catch(e){$('#saveInfo').textContent='No se pudo guardar en este navegador.'}};
+ $('#bLink').onclick=()=>{const u=location.origin+location.pathname+'?m='+MSEL+'#c='+btoa(unescape(encodeURIComponent(JSON.stringify(snapCfg()))));(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>{$('#saveInfo').textContent='Link copiado: abre esta misma configuración en cualquier equipo.'}).catch(()=>{$('#saveInfo').textContent=u})}}
+function applyCaras(){CAR.faces.forEach(f=>{const v=CAR.sel[f.id],p=PAL.find(x=>x.id===v);f.ms.forEach(m=>{m.visible=v!=='none';if(v==='none')return;if(v==='orig'||!p){if(m.userData.orig)m.material=m.userData.orig;if(m.userData.origUV)m.geometry.setAttribute('uv',m.userData.origUV)}else{const mm=matFor(p);if(!mm)return;if(!m.userData.boxUV)m.userData.boxUV=boxUV(m);m.geometry.setAttribute('uv',m.userData.boxUV);m.material=mm}})})}
+function costRows(){const r=[],on=k=>natG(k).some(o=>o.visible);
+ CAR.faces.forEach(f=>{const rv=REVS.find(x=>x[0]===CAR.sel[f.id])||REVS[0];r.push(['Revestimiento · '+f.l+': '+rv[1].split(' (')[0]+' · '+f.area.toFixed(0)+' m² × USD '+rv[2],f.area*rv[2]])});
+ if(on('Estilo'))r.push(['Cenefa de estilo (portal del frente), 46 ml × USD 130',46*130]);
+ if(on('Vísera'))r.push(['Víseras laterales con ménsulas y aletas, 27 ml × USD 135',27*135]);
+ if(PR.div&&PR.div.visible)r.push(['Divisiones bajas y corredor, 89 m² × USD 68 con pintura',89*68]);
+ if(PR.et2&&PR.et2.visible)r.push(['Etapa 2: entrepiso 131 m² × USD 96 y escalera',131*96+2400]);
+ if(PR.deck&&PR.deck.visible)r.push(['Deck cafetería, 53 m² × USD 118',53*118]);
+ return r}
+function updCost(){const h=$('#costL');if(!h||!NATIVE)return;const r=costRows(),t=r.reduce((a,x)=>a+x[1],0),u=n=>'USD '+Math.round(n).toLocaleString('es-UY');
+ h.innerHTML='<table><tr><td></td><td class="n">Costo directo</td><td class="n">Precio</td></tr>'+r.map(x=>'<tr><td>'+x[0]+'</td><td class="n">'+u(x[1])+'</td><td class="n">'+u(x[1]*KP)+'</td></tr>').join('')+'<tr class="t"><td>Total de opciones de esta nave</td><td class="n">'+u(t)+'</td><td class="n">'+u(t*KP)+'</td></tr></table><p class="note">Va por encima del precio base de cáscara. Precio = costo directo con ajuste 1,5 %, imprevistos 10 % y margen 25 %, sin IVA. Tarifas de referencia del master plan, a cotizar.</p>'}
+function snapCfg(){const capas={};[...document.querySelectorAll('#chL button,#chP2 button')].forEach(b=>{if(!/^Destapar/.test(b.textContent))capas[b.textContent]=b.classList.contains('on')});const r=costRows(),t=r.reduce((a,x)=>a+x[1],0);return{m:MSEL,nave:{n1:'Nave 1 · Comercial',n2:'Nave 2 · Gastronómico',n3:'Nave 3 · Consultorios'}[MSEL]||MSEL,caras:{...CAR.sel},capas,filas:r.map(x=>[x[0],Math.round(x[1])]),cd:Math.round(t),precio:Math.round(t*KP),fecha:new Date().toISOString().slice(0,10)}}
 const MODELS={n1:'NAVE_1_COMERCIAL.glb',n2:'NAVE_2_GASTRONOMICO.glb',n3:'NAVE_1_COMERCIAL.glb','3v':'NAVE_COMERCIAL.glb',v1:'NAVE_COMERCIAL_v1.glb'};const MQ=new URLSearchParams(location.search).get('m'),MSEL=MODELS[MQ]?MQ:'n1',TIPO=['n1','n2','n3'].includes(MSEL);
 document.querySelectorAll('#tabsM button').forEach(b=>{if(b.dataset.m===MSEL){b.style.background='#fff';b.style.color='#12304a'}b.onclick=()=>{location.search='?m='+b.dataset.m}});
 function b64(s){const bin=atob(s),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u.buffer}

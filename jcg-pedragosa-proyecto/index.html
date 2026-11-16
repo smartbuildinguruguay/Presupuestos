@@ -73,7 +73,7 @@ summary span{color:var(--acc)}
 </div>
 <div id="tabs"></div>
 <main>
-<section id="p-proy"><h2>El proyecto en una página</h2><div id="dProy"></div></section>
+<section id="p-proy"><h2>El proyecto en una página</h2><div id="dProy"></div><div id="dCfg"></div></section>
 <section id="p-impl"><h2>Implantación en los tres padrones</h2><div id="dImpl"></div></section>
 <section id="p-norm"><h2>Normativa y escenarios</h2><div id="dNorm"></div></section>
 <section id="p-pais"><h2>Jardín y paseo</h2><div id="dPais"></div></section>
@@ -1022,6 +1022,19 @@ function dProy() {
   <div class="card"><b>Dónde está cada cosa</b><ul><li><b>Implantación, Jardín y paseo y Plantas:</b> los tres padrones con retiros, FOS por padrón, sol y paisaje.</li><li><b>Fachadas y cortes y Estructura:</b> estilo elegido, pórticos, luces y aguas.</li><li><b>3D:</b> modelo por capas con sol por estación.</li><li><b>Rubrado, Cronograma, Extras y Rentabilidad:</b> se recalculan con el estilo, el suelo y los locales de la barra de arriba.</li></ul></div></div>
   <div class="warn" style="margin-top:12px"><b>Lo que falta para cerrar el proyecto:</b> planos de sanitaria y eléctrica sobre este layout, cálculo estructural, estudio de suelos, cotizaciones de proveedores con estas cantidades y la mensura. Está al final, en Supuestos y pendientes.</div>`;
 }
+function dCfg() {
+  const N = [['n1', 'Nave 1 · Comercial'], ['n2', 'Nave 2 · Gastronómico'], ['n3', 'Nave 3 · Consultorios']], RV = { none: 'sin revestir', orig: 'tablitas de madera', wpc1: 'WPC teca', wpc2: 'WPC roble', lapacho: 'lapacho', madera: 'madera', piedra: 'piedra', grafito: 'chapa grafito', negro: 'chapa negra', blanco: 'chapa blanca' }, CL = { frente: 'frente', latA: 'lateral A', latB: 'lateral B', fondo: 'fondo' };
+  let tc = 0, tp = 0, any = false;
+  const rows = N.map(([k, n]) => { let c = null; try { c = JSON.parse(localStorage.getItem('sbu_jcg_nave_' + k) || 'null'); } catch (e) { }
+    const lk = `<a href="configurador-nave/?m=${k}">abrir</a>`;
+    if (!c) return `<tr><td>${n}</td><td class="mut">sin configurar</td><td class="n">—</td><td class="n">—</td><td>${lk}</td></tr>`;
+    any = true; tc += c.cd; tp += c.precio;
+    const car = Object.entries(c.caras || {}).map(([f, v]) => `${CL[f] || f}: ${RV[v] || v}`).join(' · '), ex = Object.entries(c.capas || {}).filter(([t, v]) => v && /Etapa 2|Divisiones bajas|Deck/.test(t)).map(([t]) => t.split(':')[0].split(' (')[0].toLowerCase()).join(', ');
+    return `<tr><td>${n}<br><small class="mut">guardada el ${c.fecha}</small></td><td>${car}${ex ? '<br><small>más: ' + ex + '</small>' : ''}</td><td class="n">${u$(c.cd)}</td><td class="n">${u$(c.precio)}</td><td>${lk}</td></tr>`; }).join('');
+  return `<h3>Configuración elegida de cada nave</h3><p class="mut">Lo que se elige en el configurador 3D de cada nave (revestimiento por cara, cenefa, víseras, divisiones, etapa 2) se guarda con el botón «Guardar en el proyecto» y aparece acá, sumado por encima del precio base de cáscara.</p>
+  <table><thead><tr><th>Nave</th><th>Elegido</th><th class="n">Costo directo</th><th class="n">Precio sin IVA</th><th>Configurador</th></tr></thead><tbody>${rows}${any ? `<tr><td><b>Total de opciones</b></td><td></td><td class="n"><b>${u$(tc)}</b></td><td class="n"><b>${u$(tp)}</b></td><td></td></tr>` : ''}</tbody></table>
+  <p class="mut"><small>Se guarda en este navegador. Para pasarlo a otro equipo, usar «Copiar link de esta configuración» en el configurador.</small></p>`;
+}
 function dNorm() {
   const uso = b => S.reg === 'ind' ? { S: 'Local comercial', B: 'Gastronómico', N: 'Consultorios' }[b.id] : b.id === S.cons ? 'Consultorios' : b.id === 'B' ? 'Gastronómico' : 'Local comercial';
   const tabla = k => { const R = REG[k]; let r = '';
@@ -1079,7 +1092,7 @@ function show(id) { document.querySelectorAll('main > section').forEach(s => s.c
 $('tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) show(b.dataset.t); });
 function upd() {
   S.reg = $('cReg').value; const IND = S.reg === 'ind'; ['cN', 'cCons', 'cBd'].forEach(id => $(id).disabled = IND); S.est = $('cEst').value; S.ref = $('cRef').value; S.suelo = $('cSue').value; S.n = +$('cN').value; S.cons = IND ? 'none' : $('cCons').value; S.bd = +$('cBd').value; S.cara = $('cCara').value; applyGeom(); S.gas = Math.max(0, Math.min(unidades(S, true), +$('cGas').value || 0)); S.iva = $('cIva').checked;
-  $('dProy').innerHTML = dProy(); $('dImpl').innerHTML = dImpl(); $('dNorm').innerHTML = dNorm(); $('dPais').innerHTML = dPais(); $('dPlanta').innerHTML = dPlanta(); $('dSani').innerHTML = dSani(); $('dFach').innerHTML = dFach(); $('dEst').innerHTML = dEst(); $('dRub').innerHTML = dRub(); $('dCrono').innerHTML = dCrono(); $('dXtra').innerHTML = dXtra(); dRent(); $('dPend').innerHTML = dPend(); build3d();
+  $('dProy').innerHTML = dProy(); $('dImpl').innerHTML = dImpl(); $('dNorm').innerHTML = dNorm(); $('dCfg').innerHTML = dCfg(); $('dPais').innerHTML = dPais(); $('dPlanta').innerHTML = dPlanta(); $('dSani').innerHTML = dSani(); $('dFach').innerHTML = dFach(); $('dEst').innerHTML = dEst(); $('dRub').innerHTML = dRub(); $('dCrono').innerHTML = dCrono(); $('dXtra').innerHTML = dXtra(); dRent(); $('dPend').innerHTML = dPend(); build3d();
 }
 ['cReg', 'cEst', 'cRef', 'cSue', 'cN', 'cCons', 'cBd', 'cCara', 'cGas', 'cIva'].forEach(id => $(id).addEventListener('input', upd));
 $('cEst').value = S.est; upd(); fit(); view('iso'); setSun(1);
