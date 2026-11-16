@@ -591,8 +591,9 @@ function buildPropuesta(){const bx=$('#p2Box'),h=$('#chP2');if(!bx)return;bx.sty
   box(K,mW,XB,XF,Y0-.16,Y0-.02,z0,z1);for(let x=XB+.2;x<XF;x+=1.6)box(K,mM,x-.04,x+.04,Y0-.5,Y0-.16,z0+.1,z1-.1);
   [-68.3,-65.3,-62.3,-59.3].forEach((x,i)=>{const zz=i%2?-49.2:-48.0;const t=new THREE.Mesh(new THREE.CylinderGeometry(.4,.4,.04,24),mW);t.position.set(x,Y0+.72,zz);K.add(t);box(K,mM,x-.03,x+.03,Y0-.02,Y0+.7,zz-.03,zz+.03)});
   W.add(K);PR.deck=K}
- if(MSEL==='n2'){W.updateMatrixWorld(true);const yw=W.localToWorld(new THREE.Vector3(0,Y0+3,0)).y,pl=new THREE.Plane(new THREE.Vector3(0,-1,0),yw);renderer.localClippingEnabled=true;natG('05').forEach(o=>o.traverse(m=>{if(m.isMesh){m.material=m.material.clone();m.material.clippingPlanes=[pl]}}));
-  const g=new THREE.BufferGeometry(),X=-56.62,yA=5.85,yB=5.05;g.setAttribute('position',new THREE.Float32BufferAttribute([X,Y0+3,ZA-.1, X,Y0+3,ZB+.1, X,yB,ZB+.1, X,Y0+3,ZA-.1, X,yB,ZB+.1, X,yA,ZA-.1],3));g.computeVertexNormals();const pm=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0xeeece6,roughness:.6,side:THREE.DoubleSide}));pm.castShadow=true;PR.deck.add(pm)}
+ {if(PR.hast)W.remove(PR.hast);W.updateMatrixWorld(true);const yw=W.localToWorld(new THREE.Vector3(0,Y0+3,0)).y,pl=new THREE.Plane(new THREE.Vector3(0,-1,0),yw);renderer.localClippingEnabled=true;natG('05').forEach(o=>o.traverse(m=>{if(m.isMesh){m.material=m.material.clone();m.material.clippingPlanes=[pl]}}));
+  const g=new THREE.BufferGeometry(),X=-56.62,y3=Y0+3,za=ZA-.1,zb=ZB+.1,zm=(ZA+ZB)/2,P=MSEL==='n2'?[X,y3,za, X,y3,zb, X,5.05,zb, X,y3,za, X,5.05,zb, X,5.85,za]:[X,y3,za, X,y3,zb, X,5.05,zb, X,y3,za, X,5.05,zb, X,5.85,zm, X,y3,za, X,5.85,zm, X,5.05,za];
+  g.setAttribute('position',new THREE.Float32BufferAttribute(P,3));g.computeVertexNormals();const pm=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0xeeece6,roughness:.6,side:THREE.DoubleSide}));pm.castShadow=true;PR.hast=pm;W.add(pm)}
  W.updateMatrixWorld(true);
  const nat=k=>ASM.children.filter(o=>(nm(o)||'').split('_')[0].replace(/#\d+$/,'')===k);
  const chip=(t,on,fn)=>{const b=document.createElement('button');b.className='sw2'+(on?' on':'');b.textContent=t;b.onclick=()=>{const v=!b.classList.contains('on');b.classList.toggle('on',v);fn(v);try{updCost()}catch(e){}};h.appendChild(b);fn(on)};
@@ -605,7 +606,7 @@ function buildPropuesta(){const bx=$('#p2Box'),h=$('#chP2');if(!bx)return;bx.sty
 /* Revestimiento por cara, costo de lo elegido y guardado en el proyecto (modelos nuevos) */
 const CAR={faces:[],sel:{}};
 const REVS=[['none','Sin revestir (panel a la vista)',0],['orig','Tablitas de madera tratada (como el modelo)',62],['wpc1','WPC teca',140],['wpc2','WPC roble fino',140],['lapacho','Lapacho machimbrado',96],['madera','Madera',96],['piedra','Piedra',230],['grafito','Chapa grafito',7],['negro','Chapa negra',7],['blanco','Chapa blanca',0]];
-const KP=1.015*1.1*1.25; // ajuste 1,5 %, imprevistos 10 % y margen 25 %: de costo directo a precio
+const KP=1.015*1.1*1.25,INT=new URLSearchParams(location.search).get('int')==='1'; // factor de costo directo a precio
 const natG=k=>ASM.children.filter(o=>(nm(o)||'').split('_')[0].replace(/#\d+$/,'')===k);
 function buildCaras(){const bx=$('#carBox');if(!bx)return;bx.style.display=NATIVE?'':'none';$('#p-conf').classList.toggle('native',NATIVE);if(!NATIVE)return;
  CAR.faces=[];const R=natG('Revestimiento')[0];const bb=new THREE.Box3().setFromObject(root),c0=bb.getCenter(new THREE.Vector3());
@@ -621,15 +622,16 @@ function buildCaras(){const bx=$('#carBox');if(!bx)return;bx.style.display=NATIV
  $('#bLink').onclick=()=>{const u=location.origin+location.pathname+'?m='+MSEL+'#c='+btoa(unescape(encodeURIComponent(JSON.stringify(snapCfg()))));(navigator.clipboard?navigator.clipboard.writeText(u):Promise.reject()).then(()=>{$('#saveInfo').textContent='Link copiado: abre esta misma configuración en cualquier equipo.'}).catch(()=>{$('#saveInfo').textContent=u})}}
 function applyCaras(){CAR.faces.forEach(f=>{const v=CAR.sel[f.id],p=PAL.find(x=>x.id===v);f.ms.forEach(m=>{m.visible=v!=='none';if(v==='none')return;if(v==='orig'||!p){if(m.userData.orig)m.material=m.userData.orig;if(m.userData.origUV)m.geometry.setAttribute('uv',m.userData.origUV)}else{const mm=matFor(p);if(!mm)return;if(!m.userData.boxUV)m.userData.boxUV=boxUV(m);m.geometry.setAttribute('uv',m.userData.boxUV);m.material=mm}})})}
 function costRows(){const r=[],on=k=>natG(k).some(o=>o.visible);
- CAR.faces.forEach(f=>{const rv=REVS.find(x=>x[0]===CAR.sel[f.id])||REVS[0];r.push(['Revestimiento · '+f.l+': '+rv[1].split(' (')[0]+' · '+f.area.toFixed(0)+' m² × USD '+rv[2],f.area*rv[2]])});
- if(on('Estilo'))r.push(['Cenefa de estilo (portal del frente), 46 ml × USD 130',46*130]);
- if(on('07a')||on('07b'))r.push(['Soleil y aletas sobre las aberturas, 27 ml × USD 65 (el alero simple ya está en el precio base)',27*65]);
- if(PR.div&&PR.div.visible)r.push(['Divisiones bajas y corredor, 89 m² × USD 68 con pintura',89*68]);
- if(PR.et2&&PR.et2.visible)r.push(['Etapa 2: entrepiso 131 m² × USD 96 y escalera',131*96+2400]);
- if(PR.deck&&PR.deck.visible)r.push(['Deck cafetería, 53 m² × USD 118',53*118]);
+ CAR.faces.forEach(f=>{const rv=REVS.find(x=>x[0]===CAR.sel[f.id])||REVS[0];r.push(['Revestimiento · '+f.l+': '+rv[1].split(' (')[0]+' · '+f.area.toFixed(0)+' m²',f.area*rv[2]])});
+ if(on('Estilo'))r.push(['Cenefa de estilo (portal del frente), 46 ml',46*130]);
+ if(on('07a')||on('07b'))r.push(['Soleil y aletas sobre las aberturas, 27 ml (el alero simple ya está en el precio base)',27*65]);
+ if(PR.div&&PR.div.visible)r.push(['Divisiones bajas y corredor, 89 m² con pintura',89*68]);
+ if(PR.et2&&PR.et2.visible)r.push(['Etapa 2: entrepiso de 131 m² y escalera',131*96+2400]);
+ if(PR.deck&&PR.deck.visible)r.push(['Deck cafetería, 53 m²',53*118]);
  return r}
 function updCost(){const h=$('#costL');if(!h||!NATIVE)return;const r=costRows(),t=r.reduce((a,x)=>a+x[1],0),u=n=>'USD '+Math.round(n).toLocaleString('es-UY');
- h.innerHTML='<table><tr><td></td><td class="n">Costo directo</td><td class="n">Precio</td></tr>'+r.map(x=>'<tr><td>'+x[0]+'</td><td class="n">'+u(x[1])+'</td><td class="n">'+u(x[1]*KP)+'</td></tr>').join('')+'<tr class="t"><td>Total de opciones de esta nave</td><td class="n">'+u(t)+'</td><td class="n">'+u(t*KP)+'</td></tr></table><p class="note">Va por encima del precio base de cáscara. Precio = costo directo con ajuste 1,5 %, imprevistos 10 % y margen 25 %, sin IVA. Tarifas de referencia del master plan, a cotizar.</p>'}
+ const cd=x=>INT?'<td class="n">'+u(x)+'</td>':'';
+ h.innerHTML='<table><tr><td></td>'+(INT?'<td class="n">Costo directo</td>':'')+'<td class="n">Precio</td></tr>'+r.map(x=>'<tr><td>'+x[0]+'</td>'+cd(x[1])+'<td class="n">'+u(x[1]*KP)+'</td></tr>').join('')+'<tr class="t"><td>Total de opciones de esta nave</td>'+cd(t)+'<td class="n">'+u(t*KP)+'</td></tr></table><p class="note">Va por encima del precio base de cáscara. Precios sin IVA, de referencia y a confirmar con cotización.</p>'}
 function snapCfg(){const capas={};[...document.querySelectorAll('#chL button,#chP2 button')].forEach(b=>{if(!/^Destapar/.test(b.textContent))capas[b.textContent]=b.classList.contains('on')});const r=costRows(),t=r.reduce((a,x)=>a+x[1],0);return{m:MSEL,nave:{n1:'Nave 1 · Comercial',n2:'Nave 2 · Gastronómico',n3:'Nave 3 · Consultorios'}[MSEL]||MSEL,caras:{...CAR.sel},capas,filas:r.map(x=>[x[0],Math.round(x[1])]),cd:Math.round(t),precio:Math.round(t*KP),fecha:new Date().toISOString().slice(0,10)}}
 const MODELS={n1:'NAVE_1_COMERCIAL.glb',n2:'NAVE_2_GASTRONOMICO.glb',n3:'NAVE_1_COMERCIAL.glb','3v':'NAVE_COMERCIAL.glb',v1:'NAVE_COMERCIAL_v1.glb'};const MQ=MQ0,MSEL=MODELS[MQ]?MQ:'n1';
 document.querySelectorAll('#tabsM button').forEach(b=>{if(b.dataset.m===MSEL){b.style.background='#fff';b.style.color='#12304a'}b.onclick=()=>{location.search='?m='+b.dataset.m}});
