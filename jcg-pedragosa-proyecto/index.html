@@ -898,10 +898,10 @@ window.__exportScene = exportScene;
 /* ================= RUBRADO ================= */
 function dRub() {
   const c = cotiza(), k = IVA(); let h = '', sub = 0, rows = '', cn = '';
-  const cierra = () => { if (rows) h += `<details><summary><span>${cn}</span><b>${u$(sub * c.fv * k)}</b></summary><table><thead><tr><th>Rubro</th><th class="n">Cantidad</th><th class="n">Unitario USD</th><th class="n">Costo directo USD</th></tr></thead><tbody>${rows}</tbody></table></details>`; rows = ''; sub = 0; };
-  c.R.forEach(x => { if (x.cat) { cierra(); cn = x.cat; } else { sub += x.c; const qv = x.un === 'kg' || x.q % 1 === 0 ? nf(x.q) : f2(x.q); rows += `<tr><td>${x.t}</td><td class="n">${qv} ${x.un}</td><td class="n">${x.pu % 1 ? f2(x.pu) : nf(x.pu)}</td><td class="n">${nf(x.c)}</td></tr>`; } }); cierra();
+  const cierra = () => { if (rows) h += `<details><summary><span>${cn}</span><b>${u$(sub * c.fv * k)}</b></summary><table><thead><tr><th>Rubro</th><th class="n">Cantidad</th><th class="n">Unitario USD</th><th class="n">Precio USD</th></tr></thead><tbody>${rows}</tbody></table></details>`; rows = ''; sub = 0; };
+  c.R.forEach(x => { if (x.cat) { cierra(); cn = x.cat; } else { sub += x.c; const qv = x.un === 'kg' || x.q % 1 === 0 ? nf(x.q) : f2(x.q); rows += `<tr><td>${x.t}</td><td class="n">${qv} ${x.un}</td><td class="n">${f2(x.pu * c.fv)}</td><td class="n">${nf(x.c * c.fv)}</td></tr>`; } }); cierra();
   const q = c.q, m2 = c.ob / q.FP;
-  return `<div class="k"><div><span>Obra + gestión ${S.iva ? 'con IVA' : 'sin IVA'}</span><b>${u$(c.ob * k)}</b></div><div><span>Por m² de planta (${nf(q.FP)} m²)</span><b>${u$(m2 * k)}</b></div><div><span>Costo directo</span><b>${u$(c.costo)}</b></div><div><span>Aportes BPS</span><b>${u$(c.bps)}</b></div></div>
+  return `<div class="warn"><b>Precio vigente:</b> el de la <a href="propuesta/">página de propuestas</a> (cáscara de una planta, alturas mínimas). Este rubrado corresponde al esquema anterior de dos plantas y todavía no está actualizado.</div><div class="k"><div><span>Obra + gestión ${S.iva ? 'con IVA' : 'sin IVA'}</span><b>${u$(c.ob * k)}</b></div><div><span>Por m² de planta (${nf(q.FP)} m²)</span><b>${u$(m2 * k)}</b></div><div><span>Aportes BPS</span><b>${u$(c.bps)}</b></div></div>
   <p class="mut">Suelo: <b>${SUELO[S.suelo][0]}</b>. ${SUELO[S.suelo][2]} Estilo: <b>${EST[S.est].n}</b>. ${nf(q.nl)} locales en cáscara con baño accesible${S.gas ? `, ${S.gas} preparados para gastronomía` : ''}. Precios redondeados a USD 100.</p>
   <table><tbody><tr class="tot"><td>Precio de obra sin IVA</td><td class="n">${u$(c.venta)}</td></tr><tr><td>Gestión y aportes (abajo)</td><td class="n">${u$(c.gest)}</td></tr><tr class="tot"><td>Obra + gestión sin IVA</td><td class="n">${u$(c.ob)}</td></tr><tr><td>IVA 22 % sobre obra + gestión</td><td class="n">${u$(c.ob * .22)}</td></tr><tr><td>Aportes BPS de la mano de obra (50 %, a costo)</td><td class="n">${u$(c.bps)}</td></tr><tr class="tot"><td>Total con IVA y BPS</td><td class="n">${u$(c.ob * 1.22 + c.bps)}</td></tr></tbody></table>
   <h3>Rubro por rubro</h3>${h}<h3>Gestión y aportes</h3><table><tbody>${c.G.map(g => `<tr><td>${g[0]}</td><td class="n">${u$(g[1] * k)}</td></tr>`).join('')}</tbody></table>
@@ -1027,12 +1027,12 @@ function dCfg() {
   let tc = 0, tp = 0, any = false;
   const rows = N.map(([k, n]) => { let c = null; try { c = JSON.parse(localStorage.getItem('sbu_jcg_nave_' + k) || 'null'); } catch (e) { }
     const lk = `<a href="configurador-nave/?m=${k}">abrir</a>`;
-    if (!c) return `<tr><td>${n}</td><td class="mut">sin configurar</td><td class="n">—</td><td class="n">—</td><td>${lk}</td></tr>`;
+    if (!c) return `<tr><td>${n}</td><td class="mut">sin configurar</td><td class="n">—</td><td>${lk}</td></tr>`;
     any = true; tc += c.cd; tp += c.precio;
     const car = Object.entries(c.caras || {}).map(([f, v]) => `${CL[f] || f}: ${RV[v] || v}`).join(' · '), ex = Object.entries(c.capas || {}).filter(([t, v]) => v && /Etapa 2|Divisiones bajas|Deck/.test(t)).map(([t]) => t.split(':')[0].split(' (')[0].toLowerCase()).join(', ');
-    return `<tr><td>${n}<br><small class="mut">guardada el ${c.fecha}</small></td><td>${car}${ex ? '<br><small>más: ' + ex + '</small>' : ''}</td><td class="n">${u$(c.cd)}</td><td class="n">${u$(c.precio)}</td><td>${lk}</td></tr>`; }).join('');
+    return `<tr><td>${n}<br><small class="mut">guardada el ${c.fecha}</small></td><td>${car}${ex ? '<br><small>más: ' + ex + '</small>' : ''}</td><td class="n">${u$(c.precio)}</td><td>${lk}</td></tr>`; }).join('');
   return `<h3>Configuración elegida de cada nave</h3><p class="mut">Lo que se elige en el configurador 3D de cada nave (revestimiento por cara, cenefa, víseras, divisiones, etapa 2) se guarda con el botón «Guardar en el proyecto» y aparece acá, sumado por encima del precio base de cáscara.</p>
-  <table><thead><tr><th>Nave</th><th>Elegido</th><th class="n">Costo directo</th><th class="n">Precio sin IVA</th><th>Configurador</th></tr></thead><tbody>${rows}${any ? `<tr><td><b>Total de opciones</b></td><td></td><td class="n"><b>${u$(tc)}</b></td><td class="n"><b>${u$(tp)}</b></td><td></td></tr>` : ''}</tbody></table>
+  <table><thead><tr><th>Nave</th><th>Elegido</th><th class="n">Precio sin IVA</th><th>Configurador</th></tr></thead><tbody>${rows}${any ? `<tr><td><b>Total de opciones</b></td><td></td><td class="n"><b>${u$(tp)}</b></td><td></td></tr>` : ''}</tbody></table>
   <p class="mut"><small>Se guarda en este navegador. Para pasarlo a otro equipo, usar «Copiar link de esta configuración» en el configurador.</small></p>`;
 }
 function dNorm() {
@@ -1069,7 +1069,7 @@ function dPend() {
   <li><b>Accesos:</b> vidriera corrida al jardín y, por el retiro lateral, una puerta y una ventana por local; la nave del fondo (dos pisos) abre al parque por el hastial y por sus dos costados.</li>
   <li><b>Jardín:</b> decks y gravilla cuentan como jardín en el 60 % exigido (a confirmar con la Intendencia); el paseo de hormigón no. Especies, riego y drenaje los define un paisajista.</li>
   <li><b>Suelo firme</b> en el precio base; los otros suelos se comparan en Rubrado.</li>
-  <li><b>Tarifas</b> de la estimación v3 (panel, estructura, vidrieras, piedra a USD 230/m² estimada). Costo directo × 1,1 × 1,25.</li></ul>
+  <li><b>Tarifas</b> de la estimación v3 (panel, estructura, vidrieras, piedra a USD 230/m² estimada).</li></ul>
   <h3>Correcciones a la opción U publicada antes</h3><div class="warn"><ul><li>La nave del fondo quedaba a 1 m de los límites del padrón central y las naves de los extremos a 3 y 5 m: no cumplían los retiros laterales por padrón. Ahora todas respetan 3 m y suma mayor a 8 m.</li><li>La pendiente de las naves laterales era de 31°, no de 16° como decía la página. Ahora es de 20° y la cumbrera baja de 9,65 a 8,09 m.</li><li>Por eso la nave del fondo es perpendicular: 11,5 m sobre el jardín y 14 m de fondo.</li></ul></div>
   <h3>Pendientes</h3><ol>
   <li><b>Mensura</b> con norte, frentes, fondos y niveles de cada padrón, y servidumbres si las hay.</li>
