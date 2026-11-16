@@ -63,7 +63,7 @@ details.sec{border-bottom:1px solid var(--line)}details.sec>summary{cursor:point
 <aside>
 <nav class="tabs" data-new="1"><button data-t="conf" class="on">Configurar</button><button data-t="mat">Materiales</button><button data-t="pro">Proyecto</button><button data-t="cap">Capas</button><button data-t="com">Cómputo</button><button data-t="vis">Vista</button></nav>
 <div class="pane on" id="p-conf">
-<div id="natBox" style="display:none"><h3>Modelo</h3><p class="note" id="mInfo"></p><h3>Capas del modelo</h3><div class="chips" id="chL"></div></div>
+<div id="natBox" style="display:none"><h3>Modelo</h3><p class="note" id="mInfo"></p><h3>Capas del modelo</h3><div class="chips" id="chL"></div><div id="p2Box" style="display:none"><h3>Propuesta interior · corredor central</h3><div class="chips" id="chP2"></div><p class="note" id="p2Info"></p></div></div>
 <h3>Estilo</h3><div id="slotEstilo"></div>
 <h3>Caras a revestir <span style="font-weight:400;text-transform:none">(o hacé clic sobre la pared en el visor)</span></h3><div class="chips" id="chS"></div>
 <h3>Revestimiento de las caras elegidas</h3><div class="chips" id="chV"></div>
@@ -557,13 +557,42 @@ function showSec(k){$$('.tabs button').forEach(x=>x.classList.toggle('on',x.data
 function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
 new ResizeObserver(resize).observe(stage);resize();
 renderer.setAnimationLoop(()=>{if(anim){const k=Math.min(1,(performance.now()-anim.t0)/700),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;cam.position.lerpVectors(anim.p0,anim.p1,e);ctl.target.lerpVectors(anim.t0v,anim.t1,e);if(k>=1)anim=null}ctl.update();renderer.render(scene,cam)});
-async function start(buf){state.mats={};state.portal='alero';state.apoyo='solei';state.aleroOn=true;state.estilo=0;await loadGLB(buf);buildProject();if(NATIVE){PJ.grp.visible=false;MESHES=MESHES.filter(inRoot)}renderEstilos();buildEls();buildTree();buildLayers();applyMats();applyOpts();applyPJ();$('#load').style.display='none';window.__ready=true}
+async function start(buf){state.mats={};state.portal='alero';state.apoyo='solei';state.aleroOn=true;state.estilo=0;await loadGLB(buf);buildProject();if(NATIVE){PJ.grp.visible=false;MESHES=MESHES.filter(inRoot)}renderEstilos();buildEls();buildTree();buildLayers();buildPropuesta();applyMats();applyOpts();applyPJ();$('#load').style.display='none';window.__ready=true}
 window.__cfg={PS,PJ,applyPJ,THREE,scene,cam,ctl,state,get MESHES(){return MESHES},applyOpts,applyMats,goView,xray,BBf:()=>BB,PRE};
 const LAYN={'01':'Platea y fundación','ESTRUCTURA':'Estructura','Paneles':'Paneles PIR','Divisiones':'Divisiones','Instalación':'Instalaciones','Estilo':'Cenefa de estilo','Revestimiento':'Revestimiento','Vísera':'Víseras','Cenefa':'Cenefa','Abertura':'Aberturas'};
 function buildLayers(){const box=$('#natBox'),h=$('#chL');if(!box)return;box.style.display=NATIVE?'':'none';if(!NATIVE)return;h.innerHTML='';const by={};
  ASM.children.forEach(o=>{if(o===PERSON||o.isMesh)return;let k=(nm(o)||'').split('_')[0].replace(/#\d+$/,'');if(!k||/^geom3d$/i.test(k))k='Otros';(by[k]=by[k]||[]).push(o)});
  Object.keys(by).sort().forEach(k=>{const b=document.createElement('button');b.className='sw2 on';b.textContent=LAYN[k]||k;b.onclick=()=>{const on=!b.classList.contains('on');b.classList.toggle('on',on);by[k].forEach(o=>o.visible=on);try{computo();syncTree()}catch(e){}};h.appendChild(b)});
  const z=BB.getSize(new THREE.Vector3());$('#mInfo').textContent='Medidas totales del modelo: '+z.x.toFixed(2).replace('.',',')+' m de largo × '+z.z.toFixed(2).replace('.',',')+' m de ancho × '+z.y.toFixed(2).replace('.',',')+' m de alto (incluye víseras, cenefa y fundación). Los estilos superpuestos y el proyecto dibujado por código son del modelo anterior y acá quedan apagados: las divisiones, instalaciones y paneles vienen en el propio modelo.'}
+/* Propuesta interior de la nave tipo: locales en el perímetro, corredor central, divisiones bajas; etapa 2 (escalera y entrepiso) solo como estructura */
+const PR={};
+function buildPropuesta(){const bx=$('#p2Box'),h=$('#chP2');if(!bx)return;bx.style.display=MSEL==='2v'?'':'none';if(MSEL!=='2v')return;h.innerHTML='';
+ ['div','et2'].forEach(k=>{if(PR[k])W.remove(PR[k])});
+ const Y0=-.2,XB=-70.3,XF=-56.8,ZA=-46.2,ZB=-35.0,Z1=-42.3,Z2=-38.9,XM=-63.66,XN=-68.0,H=2.6,T=.1,YE=Y0+3.1,SX0=-66.0,RUN=.27,NT=16,RISE=3.1/17,SX1=SX0+NT*RUN,SZ0=-41.15,SZ1=-40.05;
+ const mD=new THREE.MeshStandardMaterial({color:0xe9e6df,roughness:.9}),mS=new THREE.MeshStandardMaterial({color:0xd9722b,roughness:.5,metalness:.35}),mT=new THREE.MeshStandardMaterial({color:0x9c6b3f,roughness:.8}),mP=new THREE.MeshStandardMaterial({color:0xd9722b,transparent:true,opacity:.16,depthWrite:false});
+ const box=(g,m,x0,x1,y0,y1,z0,z1)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(Math.abs(x1-x0),Math.abs(y1-y0),Math.abs(z1-z0)),m);b.position.set((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);b.castShadow=m!==mP;b.receiveShadow=true;g.add(b);return b};
+ const D=new THREE.Group();D.name='PROPUESTA_DIVISIONES';
+ const wallX=(z,x0,x1,doors)=>{let a=x0;doors.forEach(c=>{box(D,mD,a,c-.5,Y0,Y0+H,z-T/2,z+T/2);box(D,mD,c-.5,c+.5,Y0+2.1,Y0+H,z-T/2,z+T/2);a=c+.5});box(D,mD,a,x1,Y0,Y0+H,z-T/2,z+T/2)};
+ wallX(Z1,XB,XF,[-67.0,-60.0]);wallX(Z2,XB,XF,[-67.0,-60.0]);
+ box(D,mD,XM-T/2,XM+T/2,Y0,Y0+H,ZA,Z1);box(D,mD,XM-T/2,XM+T/2,Y0,Y0+H,Z2,ZB);
+ const zc=(Z1+Z2)/2;box(D,mD,XN-T/2,XN+T/2,Y0,Y0+H,Z1,zc-.5);box(D,mD,XN-T/2,XN+T/2,Y0+2.1,Y0+H,zc-.5,zc+.5);box(D,mD,XN-T/2,XN+T/2,Y0,Y0+H,zc+.5,Z2);
+ const E=new THREE.Group();E.name='ETAPA_2_ESTRUCTURA';
+ const cx=[XB+.1,-66.93,XM,-60.28,XF-.1];cx.forEach(x=>[Z1,Z2].forEach(z=>box(E,mS,x-.05,x+.05,Y0,YE-.2,z-.05,z+.05)));
+ [Z1,Z2,ZA+.1,ZB-.1].forEach(z=>box(E,mS,XB,XF,YE-.2,YE,z-.05,z+.05));
+ for(let i=0;i<9;i++){const x=XB+.1+i*(XF-XB-.2)/8;box(E,mS,x-.04,x+.04,YE-.16,YE,ZA+.1,Z1);box(E,mS,x-.04,x+.04,YE-.16,YE,Z2,ZB-.1);if(x<SX0-.3||x>SX1+1.2)box(E,mS,x-.04,x+.04,YE-.16,YE,Z1,Z2)}
+ [SX0-.3,SX1+1.2].forEach(x=>box(E,mS,x-.04,x+.04,YE-.16,YE,Z1,Z2));
+ const L=Math.hypot(NT*RUN,3.1),ang=Math.atan2(3.1,NT*RUN);[SZ0+.04,SZ1-.04].forEach(z=>{const b=box(E,mS,0,L,0,.2,0,.08);b.position.set((SX0+SX1)/2,Y0+1.55-.12,z);b.rotation.z=ang});
+ for(let i=1;i<=NT;i++)box(E,mT,SX0+(i-1)*RUN,SX0+i*RUN,Y0+i*RISE-.04,Y0+i*RISE,SZ0,SZ1);
+ box(E,mT,SX1,SX1+1.2,YE-.04,YE,SZ0,SZ1);
+ box(E,mP,XB,XF,YE,YE+.02,ZA,Z1);box(E,mP,XB,XF,YE,YE+.02,Z2,ZB);box(E,mP,XB,SX0-.3,YE,YE+.02,Z1,Z2);box(E,mP,SX1+1.2,XF,YE,YE+.02,Z1,Z2);
+ W.add(D,E);PR.div=D;PR.et2=E;W.updateMatrixWorld(true);
+ const nat=k=>ASM.children.filter(o=>(nm(o)||'').split('_')[0].replace(/#\d+$/,'')===k);
+ const chip=(t,on,fn)=>{const b=document.createElement('button');b.className='sw2'+(on?' on':'');b.textContent=t;b.onclick=()=>{const v=!b.classList.contains('on');b.classList.toggle('on',v);fn(v)};h.appendChild(b);fn(on)};
+ chip('Divisiones bajas y corredor',true,v=>{D.visible=v;nat('Divisiones').forEach(o=>o.visible=!v);[...$('#chL').children].forEach(c=>{if(c.textContent==='Divisiones')c.classList.toggle('on',!v)})});
+ chip('Etapa 2: escalera y entrepiso (estructura)',true,v=>{E.visible=v});
+ chip('Destapar: sin techo ni paneles',false,v=>{['Paneles','Estilo','Revestimiento','Cenefa'].forEach(k=>nat(k).forEach(o=>o.visible=!v));[...$('#chL').children].forEach(c=>{if(['Paneles PIR','Cenefa de estilo','Revestimiento','Cenefa'].includes(c.textContent))c.classList.toggle('on',!v)})});
+ const a1=(XM-XB)*(Z1-ZA),a2=(XF-XM)*(Z1-ZA),f=n=>n.toFixed(1).replace('.',',');
+ $('#p2Info').textContent='Cuatro locales en el perímetro ('+f(a1)+' y '+f(a2)+' m² cada uno), cada uno con salida propia al exterior y puerta al corredor central de '+f(Z2-Z1)+' m, que queda cubierto. Baño accesible común al fondo del corredor. Divisiones de '+f(H)+' m de alto, sin llegar al techo. En naranja, la etapa 2: escalera recta de 17 contrahuellas en el centro del corredor y estructura del entrepiso a +3,10 m. Es un esquema para definir la propuesta: sin cálculo estructural.'}
 const MODELS={'3v':'NAVE_COMERCIAL.glb','2v':'NAVE_TIPO_2V.glb','v1':'NAVE_COMERCIAL_v1.glb'};const MSEL=MODELS[new URLSearchParams(location.search).get('m')]?new URLSearchParams(location.search).get('m'):'3v';
 $('#selM').value=MSEL;$('#selM').onchange=e=>{location.search='?m='+e.target.value};
 function b64(s){const bin=atob(s),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u.buffer}
