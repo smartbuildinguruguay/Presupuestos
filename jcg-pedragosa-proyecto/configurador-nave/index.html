@@ -214,7 +214,7 @@ function matFor(p){const k=p.id+'|'+(CUSTOM&&p.id==='custom'?CUSTOM.stamp:'');if
  else m=new THREE.MeshStandardMaterial({color:p.c,roughness:p.r??.5,metalness:p.m??0,side:THREE.DoubleSide});
  m.userData.base={o:1,t:false};m.name='cfg:'+p.id;return MCACHE[k]=m}
 /* ---------- carga ---------- */
-let root,ASM,GROUPS=[],MESHES=[],PERSON=null,BB=new THREE.Box3(),NODE={},NATIVE=false;
+let root,ASM,GROUPS=[],MESHES=[],PERSON=null,BB=new THREE.Box3(),NODE={},NATIVE=false;const MQ0=new URLSearchParams(location.search).get('m'),TIPO=!MQ0||['n1','n2','n3'].includes(MQ0);
 function boxUV(mesh){const g=mesh.geometry;const pos=g.attributes.position;const n=pos.count;const uv=new Float32Array(n*2);const a=new THREE.Vector3(),b=new THREE.Vector3(),c=new THREE.Vector3(),nn=new THREE.Vector3(),e1=new THREE.Vector3(),e2=new THREE.Vector3();const M=mesh.matrixWorld;
  for(let i=0;i<n;i+=3){a.fromBufferAttribute(pos,i).applyMatrix4(M);b.fromBufferAttribute(pos,i+1).applyMatrix4(M);c.fromBufferAttribute(pos,i+2).applyMatrix4(M);e1.subVectors(b,a);e2.subVectors(c,a);nn.crossVectors(e1,e2);const ax=Math.abs(nn.x),ay=Math.abs(nn.y),az=Math.abs(nn.z);
   for(let k=0;k<3;k++){const p=k===0?a:k===1?b:c;let u,v;if(ax>=ay&&ax>=az){u=p.z;v=p.y}else if(az>=ay){u=p.x;v=p.y}else{u=p.x;v=p.z}uv[(i+k)*2]=u;uv[(i+k)*2+1]=v}}
@@ -558,39 +558,41 @@ function showSec(k){$$('.tabs button').forEach(x=>x.classList.toggle('on',x.data
 function resize(){const w=stage.clientWidth,h=stage.clientHeight;renderer.setSize(w,h,false);cam.aspect=w/h;cam.updateProjectionMatrix()}
 new ResizeObserver(resize).observe(stage);resize();
 renderer.setAnimationLoop(()=>{if(anim){const k=Math.min(1,(performance.now()-anim.t0)/700),e=k<.5?2*k*k:1-Math.pow(-2*k+2,2)/2;cam.position.lerpVectors(anim.p0,anim.p1,e);ctl.target.lerpVectors(anim.t0v,anim.t1,e);if(k>=1)anim=null}ctl.update();renderer.render(scene,cam)});
-async function start(buf){state.mats={};state.portal='alero';state.apoyo='solei';state.aleroOn=true;state.estilo=0;await loadGLB(buf);buildProject();if(NATIVE){PJ.grp.visible=false;MESHES=MESHES.filter(inRoot)}renderEstilos();buildEls();buildTree();buildLayers();buildPropuesta();buildCaras();applyMats();applyOpts();applyPJ();$('#load').style.display='none';window.__ready=true}
+async function start(buf){state.mats={};state.portal='alero';state.apoyo='solei';state.aleroOn=true;state.estilo=0;await loadGLB(buf);buildProject();if(NATIVE){PJ.grp.visible=false;MESHES=MESHES.filter(inRoot)}renderEstilos();buildEls();buildTree();buildLayers();buildPropuesta();buildCaras();applyMats();applyOpts();applyPJ();syncLayers();$('#load').style.display='none';window.__ready=true}
 window.__cfg={PS,PJ,applyPJ,THREE,scene,cam,ctl,state,get MESHES(){return MESHES},applyOpts,applyMats,goView,xray,BBf:()=>BB,PRE};
-const LAYN={'01':'Platea y fundación','ESTRUCTURA':'Estructura','Paneles':'Paneles PIR','Divisiones':'Divisiones','Instalación':'Instalaciones','Estilo':'Cenefa de estilo','Revestimiento':'Revestimiento','Vísera':'Víseras','Cenefa':'Cenefa','Abertura':'Aberturas'};
-function buildLayers(){const box=$('#natBox'),h=$('#chL');if(!box)return;box.style.display=NATIVE?'':'none';if(!NATIVE)return;h.innerHTML='';const by={};
+const LAYN={'05':'Hastial vidriado','07a':'Soleil y aletas A','07b':'Soleil y aletas B','01':'Platea y fundación','ESTRUCTURA':'Estructura','Paneles':'Paneles PIR','Divisiones':'Divisiones','Instalación':'Instalaciones','Estilo':'Cenefa de estilo','Revestimiento':'Revestimiento','Vísera':'Víseras','Cenefa':'Cenefa','Abertura':'Aberturas'};
+let LAYBY={};function syncLayers(){if(!NATIVE)return;[...document.querySelectorAll('#chL button')].forEach(b=>{(LAYBY[b.dataset.k]||[]).forEach(o=>o.visible=b.classList.contains('on'))});try{updCost()}catch(e){}}
+function buildLayers(){const box=$('#natBox'),h=$('#chL');if(!box)return;box.style.display=NATIVE?'':'none';if(!NATIVE)return;h.innerHTML='';const by={};LAYBY=by;
  ASM.children.forEach(o=>{if(o===PERSON||o.isMesh)return;let k=(nm(o)||'').split('_')[0].replace(/#\d+$/,'');if(!k||/^geom3d$/i.test(k))k='Otros';(by[k]=by[k]||[]).push(o)});
- Object.keys(by).sort().forEach(k=>{const b=document.createElement('button');b.className='sw2 on';b.textContent=LAYN[k]||k;b.onclick=()=>{const on=!b.classList.contains('on');b.classList.toggle('on',on);by[k].forEach(o=>o.visible=on);try{computo();syncTree()}catch(e){}try{updCost()}catch(e){}};h.appendChild(b)});
+ Object.keys(by).sort().forEach(k=>{const b=document.createElement('button');const off=TIPO&&(k==='07a'||k==='07b');if(off)by[k].forEach(o=>o.visible=false);b.className='sw2'+(off?'':' on');b.textContent=LAYN[k]||k;b.dataset.k=k;b.onclick=()=>{const on=!b.classList.contains('on');b.classList.toggle('on',on);by[k].forEach(o=>o.visible=on);try{computo();syncTree()}catch(e){}try{updCost()}catch(e){}};h.appendChild(b)});
  const z=BB.getSize(new THREE.Vector3());$('#mInfo').textContent='Medidas totales del modelo: '+z.x.toFixed(2).replace('.',',')+' m de largo × '+z.z.toFixed(2).replace('.',',')+' m de ancho × '+z.y.toFixed(2).replace('.',',')+' m de alto (incluye víseras, cenefa y fundación). Los estilos superpuestos y el proyecto dibujado por código son del modelo anterior y acá quedan apagados: las divisiones, instalaciones y paneles vienen en el propio modelo.'}
 /* Propuesta interior de la nave tipo: locales en el perímetro, corredor central, divisiones bajas; etapa 2 (escalera y entrepiso) solo como estructura */
 const PR={};
 function buildPropuesta(){const bx=$('#p2Box'),h=$('#chP2');if(!bx)return;bx.style.display=TIPO?'':'none';if(!TIPO)return;h.innerHTML='';
  ['div','et2','deck'].forEach(k=>{if(PR[k])W.remove(PR[k])});
- const Y0=-.2,XB=-70.3,XF=-56.8,ZA=-46.2,ZB=-35.0,Z1=-42.3,Z2=-38.9,XM=-63.66,XN=-68.0,H=2.6,T=.1,HE=3.3,YE=Y0+HE,SX0=-66.2,RUN=.27,NT=17,RISE=HE/18,SX1=SX0+NT*RUN,SZ0=-41.15,SZ1=-40.05;
+ const Y0=-.2,XB=-70.3,XF=-56.8,ZA=-46.2,ZB=-35.0,Z1=-42.3,Z2=-38.9,XM=-63.66,XN=-68.0,H=2.6,T=.1,HE=3.3,YE=Y0+HE,SX0=-64.6,RUN=.27,NT=17,RISE=HE/18,SZ0=-41.15,SZ1=-40.05;
  const mD=new THREE.MeshStandardMaterial({color:0xe9e6df,roughness:.9}),mS=new THREE.MeshStandardMaterial({color:0xd9722b,roughness:.5,metalness:.35}),mT=new THREE.MeshStandardMaterial({color:0x9c6b3f,roughness:.8}),mP=new THREE.MeshStandardMaterial({color:0xd9722b,transparent:true,opacity:.16,depthWrite:false});
  const box=(g,m,x0,x1,y0,y1,z0,z1)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(Math.abs(x1-x0),Math.abs(y1-y0),Math.abs(z1-z0)),m);b.position.set((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);b.castShadow=m!==mP;b.receiveShadow=true;g.add(b);return b};
  const D=new THREE.Group();D.name='PROPUESTA_DIVISIONES';
  const wallX=(z,x0,x1,doors)=>{let a=x0;doors.forEach(c=>{box(D,mD,a,c-.5,Y0,Y0+H,z-T/2,z+T/2);box(D,mD,c-.5,c+.5,Y0+2.1,Y0+H,z-T/2,z+T/2);a=c+.5});box(D,mD,a,x1,Y0,Y0+H,z-T/2,z+T/2)};
- wallX(Z1,XB,XF,[-67.0,-60.0]);wallX(Z2,XB,XF,[-67.0,-60.0]);
+ wallX(Z1,XB,XF,[-65.0,-59.5]);wallX(Z2,XB,XF,[-65.0,-59.5]);
  box(D,mD,XM-T/2,XM+T/2,Y0,Y0+H,ZA,Z1);box(D,mD,XM-T/2,XM+T/2,Y0,Y0+H,Z2,ZB);
- const zc=(Z1+Z2)/2;box(D,mD,XN-T/2,XN+T/2,Y0,Y0+H,Z1,zc-.5);box(D,mD,XN-T/2,XN+T/2,Y0+2.1,Y0+H,zc-.5,zc+.5);box(D,mD,XN-T/2,XN+T/2,Y0,Y0+H,zc+.5,Z2);
- const E=new THREE.Group();E.name='ETAPA_2_ESTRUCTURA';
+ const E=new THREE.Group();E.name='ETAPA_2_ESTRUCTURA';const SXT=SX0-NT*RUN; // la escalera sube hacia el fondo
  const cx=[XB+.1,-66.93,XM,-60.28,XF-.1];cx.forEach(x=>[Z1,Z2].forEach(z=>box(E,mS,x-.05,x+.05,Y0,YE-.2,z-.05,z+.05)));
  [Z1,Z2,ZA+.1,ZB-.1].forEach(z=>box(E,mS,XB,XF,YE-.2,YE,z-.05,z+.05));
- for(let i=0;i<9;i++){const x=XB+.1+i*(XF-XB-.2)/8;box(E,mS,x-.04,x+.04,YE-.16,YE,ZA+.1,Z1);box(E,mS,x-.04,x+.04,YE-.16,YE,Z2,ZB-.1);if(x<SX0-.3||x>SX1+1.2)box(E,mS,x-.04,x+.04,YE-.16,YE,Z1,Z2)}
- [SX0-.3,SX1+1.2].forEach(x=>box(E,mS,x-.04,x+.04,YE-.16,YE,Z1,Z2));
- const L=Math.hypot(NT*RUN,HE),ang=Math.atan2(HE,NT*RUN);[SZ0+.04,SZ1-.04].forEach(z=>{const b=box(E,mS,0,L,0,.2,0,.08);b.position.set((SX0+SX1)/2,Y0+HE/2-.12,z);b.rotation.z=ang});
- for(let i=1;i<=NT;i++)box(E,mT,SX0+(i-1)*RUN,SX0+i*RUN,Y0+i*RISE-.04,Y0+i*RISE,SZ0,SZ1);
- box(E,mT,SX1,SX1+1.2,YE-.04,YE,SZ0,SZ1);
- box(E,mP,XB,XF,YE,YE+.02,ZA,Z1);box(E,mP,XB,XF,YE,YE+.02,Z2,ZB);box(E,mP,XB,SX0-.3,YE,YE+.02,Z1,Z2);box(E,mP,SX1+1.2,XF,YE,YE+.02,Z1,Z2);
+ for(let i=0;i<9;i++){const x=XB+.1+i*(XF-XB-.2)/8;box(E,mS,x-.04,x+.04,YE-.16,YE,ZA+.1,Z1);box(E,mS,x-.04,x+.04,YE-.16,YE,Z2,ZB-.1);if(x<SXT)box(E,mS,x-.04,x+.04,YE-.16,YE,Z1,Z2)}
+ box(E,mS,SXT-.04,SXT+.04,YE-.16,YE,Z1,Z2);
+ const L=Math.hypot(NT*RUN,HE),ang=Math.atan2(HE,NT*RUN);[SZ0+.04,SZ1-.04].forEach(z=>{const b=box(E,mS,0,L,0,.2,0,.08);b.position.set((SX0+SXT)/2,Y0+HE/2-.12,z);b.rotation.z=-ang});
+ for(let i=1;i<=NT;i++)box(E,mT,SX0-i*RUN,SX0-(i-1)*RUN,Y0+i*RISE-.04,Y0+i*RISE,SZ0,SZ1);
+ [Z1,Z2].forEach(z=>{box(E,mS,SXT,XF,YE+.98,YE+1.02,z-.02,z+.02);for(let x=SXT;x<=XF;x+=1.2)box(E,mS,x-.02,x+.02,YE,YE+1,z-.02,z+.02)});
+ box(E,mP,XB,XF,YE,YE+.02,ZA,Z1);box(E,mP,XB,XF,YE,YE+.02,Z2,ZB);box(E,mP,XB,SXT,YE,YE+.02,Z1,Z2);
  W.add(D,E);PR.div=D;PR.et2=E;
  let K=null;if(MSEL==='n2'){K=new THREE.Group();K.name='DECK_CAFETERIA';const mW=new THREE.MeshStandardMaterial({color:0xa9764a,roughness:.85}),mM=new THREE.MeshStandardMaterial({color:0x2e2e2e,roughness:.6}),z0=-50.4,z1=-46.5;
   box(K,mW,XB,XF,Y0-.16,Y0-.02,z0,z1);for(let x=XB+.2;x<XF;x+=1.6)box(K,mM,x-.04,x+.04,Y0-.5,Y0-.16,z0+.1,z1-.1);
   [-68.3,-65.3,-62.3,-59.3].forEach((x,i)=>{const zz=i%2?-49.2:-48.0;const t=new THREE.Mesh(new THREE.CylinderGeometry(.4,.4,.04,24),mW);t.position.set(x,Y0+.72,zz);K.add(t);box(K,mM,x-.03,x+.03,Y0-.02,Y0+.7,zz-.03,zz+.03)});
   W.add(K);PR.deck=K}
+ if(MSEL==='n2'){W.updateMatrixWorld(true);const yw=W.localToWorld(new THREE.Vector3(0,Y0+3,0)).y,pl=new THREE.Plane(new THREE.Vector3(0,-1,0),yw);renderer.localClippingEnabled=true;natG('05').forEach(o=>o.traverse(m=>{if(m.isMesh){m.material=m.material.clone();m.material.clippingPlanes=[pl]}}));
+  const g=new THREE.BufferGeometry(),X=-56.62,yA=5.85,yB=5.05;g.setAttribute('position',new THREE.Float32BufferAttribute([X,Y0+3,ZA-.1, X,Y0+3,ZB+.1, X,yB,ZB+.1, X,Y0+3,ZA-.1, X,yB,ZB+.1, X,yA,ZA-.1],3));g.computeVertexNormals();const pm=new THREE.Mesh(g,new THREE.MeshStandardMaterial({color:0xeeece6,roughness:.6,side:THREE.DoubleSide}));pm.castShadow=true;PR.deck.add(pm)}
  W.updateMatrixWorld(true);
  const nat=k=>ASM.children.filter(o=>(nm(o)||'').split('_')[0].replace(/#\d+$/,'')===k);
  const chip=(t,on,fn)=>{const b=document.createElement('button');b.className='sw2'+(on?' on':'');b.textContent=t;b.onclick=()=>{const v=!b.classList.contains('on');b.classList.toggle('on',v);fn(v);try{updCost()}catch(e){}};h.appendChild(b);fn(on)};
@@ -599,7 +601,7 @@ function buildPropuesta(){const bx=$('#p2Box'),h=$('#chP2');if(!bx)return;bx.sty
  if(K)chip('Deck cafetería (esquema)',true,v=>{K.visible=v});
  chip('Destapar: sin techo ni paneles',false,v=>{['Paneles','Estilo','Revestimiento','Cenefa'].forEach(k=>nat(k).forEach(o=>o.visible=!v));[...$('#chL').children].forEach(c=>{if(['Paneles PIR','Cenefa de estilo','Revestimiento','Cenefa'].includes(c.textContent))c.classList.toggle('on',!v)})});
  const a1=(XM-XB)*(Z1-ZA),a2=(XF-XM)*(Z1-ZA),f=n=>n.toFixed(1).replace('.',',');
- $('#p2Info').textContent=(MSEL==='n2'?'Nave a una sola agua (pendiente 7 %), con deck cafetería sobre la fachada vidriada. ':MSEL==='n3'?'Misma nave que la comercial; la distribución de consultorios está pendiente. ':'')+'Sección mínima: planta baja de 3,00 m libres, entrepiso a +'+f(HE)+' m y planta alta de 2,00 m contra el muro y 2,80 m en la parte alta (2,40 m de promedio). Cuatro locales en el perímetro ('+f(a1)+' y '+f(a2)+' m²), cada uno con salida propia y puerta al corredor central de '+f(Z2-Z1)+' m; baño accesible común al fondo; divisiones de '+f(H)+' m. En naranja, la etapa 2: escalera recta de 18 contrahuellas y estructura del entrepiso. Esquema para definir la propuesta: sin cálculo estructural.'}
+ $('#p2Info').textContent=(MSEL==='n2'?'Nave a una sola agua (pendiente 7 %), con deck cafetería y el hastial vidriado solo hasta 3 m. ':'')+'Se entra por el medio del frente a un corredor central de '+f(Z2-Z1)+' m; cuatro locales en el perímetro ('+f(a1)+' y '+f(a2)+' m²), cada uno con salida propia al exterior. Al fondo del corredor, la escalera. Etapa 2 en naranja: la planta alta es el techo de los locales, con el hueco abierto sobre el corredor y baranda. Planta baja de 3,00 m libres, entrepiso a +'+f(HE)+' m, planta alta de 2,00 a 2,80 m. Divisiones de '+f(H)+' m. Esquema sin cálculo estructural.'}
 /* Revestimiento por cara, costo de lo elegido y guardado en el proyecto (modelos nuevos) */
 const CAR={faces:[],sel:{}};
 const REVS=[['none','Sin revestir (panel a la vista)',0],['orig','Tablitas de madera tratada (como el modelo)',62],['wpc1','WPC teca',140],['wpc2','WPC roble fino',140],['lapacho','Lapacho machimbrado',96],['madera','Madera',96],['piedra','Piedra',230],['grafito','Chapa grafito',7],['negro','Chapa negra',7],['blanco','Chapa blanca',0]];
@@ -621,7 +623,7 @@ function applyCaras(){CAR.faces.forEach(f=>{const v=CAR.sel[f.id],p=PAL.find(x=>
 function costRows(){const r=[],on=k=>natG(k).some(o=>o.visible);
  CAR.faces.forEach(f=>{const rv=REVS.find(x=>x[0]===CAR.sel[f.id])||REVS[0];r.push(['Revestimiento · '+f.l+': '+rv[1].split(' (')[0]+' · '+f.area.toFixed(0)+' m² × USD '+rv[2],f.area*rv[2]])});
  if(on('Estilo'))r.push(['Cenefa de estilo (portal del frente), 46 ml × USD 130',46*130]);
- if(on('Vísera'))r.push(['Víseras laterales con ménsulas y aletas, 27 ml × USD 135',27*135]);
+ if(on('07a')||on('07b'))r.push(['Soleil y aletas sobre las aberturas, 27 ml × USD 65 (el alero simple ya está en el precio base)',27*65]);
  if(PR.div&&PR.div.visible)r.push(['Divisiones bajas y corredor, 89 m² × USD 68 con pintura',89*68]);
  if(PR.et2&&PR.et2.visible)r.push(['Etapa 2: entrepiso 131 m² × USD 96 y escalera',131*96+2400]);
  if(PR.deck&&PR.deck.visible)r.push(['Deck cafetería, 53 m² × USD 118',53*118]);
@@ -629,7 +631,7 @@ function costRows(){const r=[],on=k=>natG(k).some(o=>o.visible);
 function updCost(){const h=$('#costL');if(!h||!NATIVE)return;const r=costRows(),t=r.reduce((a,x)=>a+x[1],0),u=n=>'USD '+Math.round(n).toLocaleString('es-UY');
  h.innerHTML='<table><tr><td></td><td class="n">Costo directo</td><td class="n">Precio</td></tr>'+r.map(x=>'<tr><td>'+x[0]+'</td><td class="n">'+u(x[1])+'</td><td class="n">'+u(x[1]*KP)+'</td></tr>').join('')+'<tr class="t"><td>Total de opciones de esta nave</td><td class="n">'+u(t)+'</td><td class="n">'+u(t*KP)+'</td></tr></table><p class="note">Va por encima del precio base de cáscara. Precio = costo directo con ajuste 1,5 %, imprevistos 10 % y margen 25 %, sin IVA. Tarifas de referencia del master plan, a cotizar.</p>'}
 function snapCfg(){const capas={};[...document.querySelectorAll('#chL button,#chP2 button')].forEach(b=>{if(!/^Destapar/.test(b.textContent))capas[b.textContent]=b.classList.contains('on')});const r=costRows(),t=r.reduce((a,x)=>a+x[1],0);return{m:MSEL,nave:{n1:'Nave 1 · Comercial',n2:'Nave 2 · Gastronómico',n3:'Nave 3 · Consultorios'}[MSEL]||MSEL,caras:{...CAR.sel},capas,filas:r.map(x=>[x[0],Math.round(x[1])]),cd:Math.round(t),precio:Math.round(t*KP),fecha:new Date().toISOString().slice(0,10)}}
-const MODELS={n1:'NAVE_1_COMERCIAL.glb',n2:'NAVE_2_GASTRONOMICO.glb',n3:'NAVE_1_COMERCIAL.glb','3v':'NAVE_COMERCIAL.glb',v1:'NAVE_COMERCIAL_v1.glb'};const MQ=new URLSearchParams(location.search).get('m'),MSEL=MODELS[MQ]?MQ:'n1',TIPO=['n1','n2','n3'].includes(MSEL);
+const MODELS={n1:'NAVE_1_COMERCIAL.glb',n2:'NAVE_2_GASTRONOMICO.glb',n3:'NAVE_1_COMERCIAL.glb','3v':'NAVE_COMERCIAL.glb',v1:'NAVE_COMERCIAL_v1.glb'};const MQ=MQ0,MSEL=MODELS[MQ]?MQ:'n1';
 document.querySelectorAll('#tabsM button').forEach(b=>{if(b.dataset.m===MSEL){b.style.background='#fff';b.style.color='#12304a'}b.onclick=()=>{location.search='?m='+b.dataset.m}});
 function b64(s){const bin=atob(s),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u.buffer}
 (async()=>{try{if(window.OV2_B64&&window.OV2_B64.length>100)if(window.OV3_B64&&window.OV3_B64.length>100)OVBUF.push({name:'Estilo 3 · cenefa larga',desc:'Cenefa larga: banda continua en el borde del techo que proyecta en el frente.',buf:b64(window.OV3_B64)});OVBUF.push({name:'Estilo 2 · cenefa nueva',desc:'Portal con cenefa simple frontal, cielorraso y alero de techo rediseñados (superpuesto al modelo base).',buf:b64(window.OV2_B64)});const rs=await fetch(MODELS[MSEL]);if(!rs.ok)throw new Error('no encontré '+MODELS[MSEL]);const buf=await rs.arrayBuffer();await start(buf)}catch(err){$('#load').innerHTML='No pude cargar el modelo ('+err.message+').<br>Usá “Cargar .glb editado” para elegir tu archivo.'}})();
