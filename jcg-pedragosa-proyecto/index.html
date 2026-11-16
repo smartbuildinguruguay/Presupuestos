@@ -58,8 +58,9 @@ summary span{color:var(--acc)}
 @media print{#ctl,#tabs{display:none}section{display:block!important}}
 </style></head><body>
 <header><h1>Locales y consultorios en Pedragosa Sierra · una nave en cada padrón</h1>
-<p>Juan Carlos García · Av. Pedragosa Sierra, Punta del Este · padrones 10596, 10597 y 10598 · SBU · Ramiro Portugau, director de obra · Ing. Ricardo Portugau, cálculo · documento de trabajo 14/11/2026</p></header>
+<p>Juan Carlos García · Av. Pedragosa Sierra, Punta del Este · padrones 10596, 10597 y 10598 · SBU · Ramiro Portugau, director de obra · Ing. Ricardo Portugau, cálculo · documento de trabajo 14/11/2026 · normativa revisada 16/11/2026</p></header>
 <div id="ctl">
+<label>Escenario normativo <select id="cReg"><option value="ind" selected>Padrones independientes (1 unidad por padrón)</option><option value="conj">Padrones fusionados (conjunto de bloques bajos)</option></select></label>
 <label>Estilo <select id="cEst"><option value="cro" selected>Croquis (cenefas)</option><option value="nor">Nórdico</option><option value="esc">Escandinavo</option><option value="pat">Patagónico</option></select></label>
 <label>Referencia de fachada <select id="cRef"><option value="" selected>Croquis base</option><option value="r1">Portal blanco y pentágono</option><option value="r2">Barn con pilares de piedra</option><option value="r3">Cabaña: portal de madera</option><option value="r4">Dintel negro y tablas</option></select></label>
 <label>Suelo <select id="cSue"></select></label>
@@ -74,6 +75,7 @@ summary span{color:var(--acc)}
 <main>
 <section id="p-proy"><h2>El proyecto en una página</h2><div id="dProy"></div></section>
 <section id="p-impl"><h2>Implantación en los tres padrones</h2><div id="dImpl"></div></section>
+<section id="p-norm"><h2>Normativa y escenarios</h2><div id="dNorm"></div></section>
 <section id="p-pais"><h2>Jardín y paseo</h2><div id="dPais"></div></section>
 <section id="p-planta"><h2>Plantas de las tres naves</h2><div id="dPlanta"></div></section>
 <section id="p-sani"><h2>Sanitaria de los consultorios</h2><div id="dSani"></div></section>
@@ -103,10 +105,15 @@ const IVA = () => S.iva ? 1.22 : 1;
 // X hacia el fondo en negativo (avenida en X = 0, al este) · Y hacia el norte · norte arriba
 const LOT = { D: 47.3, F: 60 };
 const RET = { fr: 10, lat: 3, suma: 8, fo: 4 };
+/* Escenarios normativos (TONE, Sector 3 Balneario). ind: cada padrón por separado, unidad aislada según la subzona 3.1.4; conj: los tres padrones fusionados, conjunto de bloques bajos de la subzona 3.2.1 */
+const REG = {
+  ind: { n: 'Padrones independientes · una unidad por padrón', fos: .20, fot: .40, verde: .60, alt: 7, cumb: 8.05, un: 1, art: 'subzona 3.1.4 (art. D.215), por remisión de la 3.2.1' },
+  conj: { n: 'Padrones fusionados · conjunto de bloques bajos', fos: .25, fot: 1, verde: .60, alt: 12, cumb: 13.8, un: 99, art: 'subzona 3.2.1 (art. D.219)' }
+};
 const PADS = [['10598', 0, 20, 1050], ['10597', 20, 40, 1000], ['10596', 40, 60, 1000]];
 const TAN = Math.tan(20 * Math.PI / 180);
 const NLB = 2, NCONS = 7, DP = 1.2, DPO = 1.0; // locales del fondo, consultorios, resguardo de cenefa al jardín y al retiro lateral
-const S = { ref: '', est: 'cro', suelo: 'S0', n: 3, gas: 0, iva: false, cara: 'mp', cons: 'N', bd: 12 };
+const S = { reg: 'ind', ref: '', est: 'cro', suelo: 'S0', n: 3, gas: 0, iva: false, cara: 'mp', cons: 'N', bd: 12 };
 const NPLZ = 16, PL = { w: 2.5, d: 5, acc: 3.5, ais: 6, x1: -6 }; // estacionamiento del plano de la arquitecta: 16 plazas de 2,50 × 5,00
 const PORT = 1.2; // portal proyectado en el hastial (cuenta en el FOS)
 const NV = [
@@ -467,17 +474,18 @@ function dImpl() {
   g += L_(X(-LOT.D), Y(0) + 28, X(-LOT.D) + 10 * s, Y(0) + 28, 'stroke="#111" stroke-width="2"') + T_(X(-LOT.D) + 10 * s + 4, Y(0) + 32, '10 m');
   const svg = SV(X(0) + 110, Y(0) + 40, g);
   let dmin = 99; for (let i = 0; i < 3; i++) for (let j = i + 1; j < 3; j++) dmin = Math.min(dmin, rectDist(NV[i], NV[j]));
-  let rows = '';
-  NV.forEach(b => { const lim = b.pa * .25; const ap = (b.L + PORT) * b.W; rows += chk(ap <= lim, `FOS · ${b.n} (${b.pad})`, `${nf(b.A)} m² + portal ${f1(PORT * b.W)} m² = ${nf(ap)} m² · ${f1(ap / b.pa * 100)} % de ${nf(b.pa)} m² (máx. ${nf(lim)} m²)`); });
+  let rows = ''; const RG = REG[S.reg];
+  NV.forEach(b => { const lim = b.pa * RG.fos; const ap = (b.L + PORT) * b.W; rows += chk(ap <= lim, `FOS · ${b.n} (${b.pad})`, `${nf(b.A)} m² + portal ${f1(PORT * b.W)} m² = ${nf(ap)} m² · ${f1(ap / b.pa * 100)} % de ${nf(b.pa)} m² (máx. ${nf(lim)} m²)`); });
   NV.forEach(b => rows += chk(b.lat[0] >= 3 && b.lat[1] >= 3 && b.lat[0] + b.lat[1] > 8, `Retiros laterales · ${b.pad}`, `${f2(b.lat[0])} m y ${f2(b.lat[1])} m · suma ${f2(b.lat[0] + b.lat[1])} m (mín. 3 y suma > 8)`));
   rows += chk(NV.every(b => b.x1 <= -10), 'Retiro frontal', `Naves a ${f1(-Math.max(...NV.map(b => b.x1)))} m o más de la línea de avenida (mín. 10 m)`) + chk(NV.every(b => b.x0 >= -(LOT.D - 4)), 'Retiro de fondo', `Naves a ${f1(LOT.D + Math.min(...NV.map(b => b.x0)))} m del fondo como mínimo (mín. 4 m)`);
   rows += chk(NV.every(b => Math.hypot(b.L, b.W) <= 42.5 && b.A <= 900), 'Bloque ≤ 900 m² e inscrito en Ø 42,5 m', NV.map(b => `${b.id}: Ø ${f1(Math.hypot(b.L, b.W))} m`).join(' · '));
-  rows += chk(dmin >= 5, 'Separación entre bloques', `${f2(gS)} m y ${f2(gN)} m entre las naves de los extremos y la del fondo (mín. 5 m; 8 m de promedio)`) + chk(NV.every(b => b.alt <= 12), 'Altura', `máx. ${f2(Math.max(...NV.map(b => b.alt)))} m (límite 12 m)`);
-  rows += chk(q.FP + PORT * sum(NV, b => b.W) <= 3050 * .25, 'FOS total', `${nf(q.FP)} m² + portales ${nf(PORT * sum(NV, b => b.W))} m² · ${f1((q.FP + PORT * sum(NV, b => b.W)) / 30.5)} % (máx. 25 %)`) + chk(q.jar >= 1830, 'Jardín ≥ 60 %', `${nf(q.jar)} m² · ${f1(q.jar / 30.5)} % (deck y gravilla cuentan como jardín: a confirmar)`) + chk(q.plz >= NPLZ && q.plz >= q.nl, 'Estacionamiento', `${q.plz} plazas de ${f2(PL.w)} × ${f2(PL.d)} m (como en el plano de la arquitecta: 16) para ${q.nl} unidades, una accesible de ${f1(PL.acc)} m; en el retiro de frente: a confirmar`);
+  rows += chk(dmin >= 5, 'Separación entre bloques', `${f2(gS)} m y ${f2(gN)} m entre las naves de los extremos y la del fondo (mín. 5 m; 8 m de promedio)`) + chk(NV.every(b => b.hm <= RG.alt && b.r <= RG.cumb), 'Altura', `promedio del techo ${f2(Math.max(...NV.map(b => b.hm)))} m (límite ${f2(RG.alt)} m) · cumbrera ${f2(Math.max(...NV.map(b => b.r)))} m (límite ${f2(RG.cumb)} m)`) + chk(NV.every(b => nloc(b) <= RG.un), 'Unidades por padrón', S.reg === 'ind' ? `${NV.map(b => b.id + ': ' + nloc(b)).join(' · ')} (máx. 1 unidad aislada por padrón; sin bloques ni apareadas)` : 'Varios locales por bloque: admitido en bloque bajo') + chk(S.reg === 'conj', 'Predio para bloque bajo', S.reg === 'conj' ? 'Fusionados: 3.050 m² y 60 m de frente (mín. 900 m² por bloque y 30 m de frente)' : 'Cada padrón por separado no alcanza 1.200 m² ni 30 m de frente: no admite bloque, solo una unidad aislada');
+  rows += chk(q.FP + PORT * sum(NV, b => b.W) <= 3050 * RG.fos, 'FOS total', `${nf(q.FP)} m² + portales ${nf(PORT * sum(NV, b => b.W))} m² · ${f1((q.FP + PORT * sum(NV, b => b.W)) / 30.5)} % (máx. ${nf(RG.fos * 100)} %)`) + chk(q.jar >= 1830, 'Jardín ≥ 60 %', `${nf(q.jar)} m² · ${f1(q.jar / 30.5)} % (deck y gravilla cuentan como jardín: a confirmar)`) + chk(q.plz >= NPLZ && q.plz >= q.nl, 'Estacionamiento', `${q.plz} plazas de ${f2(PL.w)} × ${f2(PL.d)} m (como en el plano de la arquitecta: 16) para ${q.nl} unidades, una accesible de ${f1(PL.acc)} m; en el retiro de frente: a confirmar`);
   rows += chk(NV.every(b => chkAbert(b).length === 0), 'Aberturas fuera de las columnas', 'Ninguna puerta ni ventana cae sobre una columna de pórtico (las vidrieras corridas pasan entre columnas)') + chk(NV.every(b => Math.min(...b.lat) - DPO >= 2), 'Resguardo de cenefa en los retiros', `Vísera de ${f1(DPO)} m al retiro lateral y ${f1(DP)} m al jardín: el retiro libre queda en ${f1(Math.min(...NV.map(b => Math.min(...b.lat))) - DPO)} m como mínimo (a confirmar con la Intendencia)`);
   const sol = SOLES.map(([n, dd, c]) => `<tr><td>${n}</td><td class="n">${Math.round(solParque(dd, c) * 100)} %</td></tr>`).join('');
   return `<div class="cols" style="grid-template-columns:minmax(0,1.15fr) minmax(0,1fr)"><div>${svg}</div><div>
-  <div class="ok"><b>Una nave por padrón, todas contra el retiro de fondo.</b> Las naves sur y norte arrancan en la misma línea de fondo y la del medio, corta y de dos pisos, cierra la U contra el fondo. Cada una respeta los retiros de su padrón y entre ellas queda un jardín-paseo abierto a la avenida. Los padrones no se fusionan.</div>
+  <div class="warn" style="margin-bottom:10px"><b>Escenario: ${RG.n}.</b> La tabla de abajo verifica el modelo actual contra ${RG.art}. El detalle y la comparación de escenarios están en la pestaña Normativa y escenarios.</div>
+  <div class="ok"><b>Una nave por padrón, todas contra el retiro de fondo.</b> Las naves sur y norte arrancan en la misma línea de fondo y la del medio, corta y de dos pisos, cierra la U contra el fondo. Cada una respeta los retiros de su padrón y entre ellas queda un jardín-paseo abierto a la avenida. ${S.reg === 'ind' ? 'Los padrones no se fusionan.' : 'En este escenario los tres padrones se fusionan en un predio de 3.050 m².'}</div>
   <h3>Verificación por padrón</h3><table><thead><tr><th>Criterio</th><th>Resultado</th><th></th></tr></thead><tbody>${rows}</tbody></table>
   <h3>Sol sobre el jardín central</h3><table><thead><tr><th>Momento</th><th class="n">Jardín al sol</th></tr></thead><tbody>${sol}</tbody></table>
   <p class="mut"><small>Sombra gris: invierno a las 12:40, con alturas medias. Círculos verdes: Ø 42,5 m. Puntos azules: acceso al jardín; naranjas: acceso por el retiro lateral. Flechas rojas: un acceso vehicular por padrón. El detalle del paisaje está en la pestaña Jardín y paseo.</small></p></div></div>
@@ -1011,11 +1019,34 @@ function dProy() {
   <div class="card"><b>Dónde está cada cosa</b><ul><li><b>Implantación, Jardín y paseo y Plantas:</b> los tres padrones con retiros, FOS por padrón, sol y paisaje.</li><li><b>Fachadas y cortes y Estructura:</b> estilo elegido, pórticos, luces y aguas.</li><li><b>3D:</b> modelo por capas con sol por estación.</li><li><b>Rubrado, Cronograma, Extras y Rentabilidad:</b> se recalculan con el estilo, el suelo y los locales de la barra de arriba.</li></ul></div></div>
   <div class="warn" style="margin-top:12px"><b>Lo que falta para cerrar el proyecto:</b> planos de sanitaria y eléctrica sobre este layout, cálculo estructural, estudio de suelos, cotizaciones de proveedores con estas cantidades y la mensura. Está al final, en Supuestos y pendientes.</div>`;
 }
+function dNorm() {
+  const uso = b => b.id === S.cons ? 'Consultorios' : b.id === 'B' ? 'Gastronómico' : 'Local comercial';
+  const tabla = k => { const R = REG[k]; let r = '';
+    NV.forEach(b => { const ap = (b.L + PORT) * b.W, lim = b.pa * R.fos;
+      r += chk(k === 'conj' || ap <= lim, `${b.n} · ${b.pad} · ${uso(b)}`, `huella ${nf(ap)} m² con portal (${f1(ap / b.pa * 100)} % del padrón${k === 'ind' ? ', máx. ' + nf(lim) + ' m²' : ''})${k === 'conj' ? ' · ' + nloc(b) + (nloc(b) === 1 ? ' unidad' : ' unidades') + ' · techo promedio ' + f2(b.hm) + ' m, cumbrera ' + f2(b.r) + ' m' : ''}`);
+      if (k === 'ind') r += chk(nloc(b) <= R.un && b.hm <= R.alt && b.r <= R.cumb && b.A * b.niv <= b.pa * R.fot, '&nbsp;&nbsp;unidades, altura y FOT', `${nloc(b)} de 1 unidad · promedio ${f2(b.hm)} de ${f2(R.alt)} m · cumbrera ${f2(b.r)} de ${f2(R.cumb)} m · construido ${nf(b.A * b.niv)} de ${nf(b.pa * R.fot)} m²`); });
+    const tot = sum(NV, b => (b.L + PORT) * b.W);
+    if (k === 'conj') r += chk(tot <= 3050 * R.fos, 'FOS del conjunto', `${nf(tot)} m² de ${nf(3050 * R.fos)} m² (25 % de 3.050 m²)`) + chk(NV.every(b => Math.hypot(b.L, b.W) <= 42.5 && b.A <= 900), 'Cada bloque en Ø 42,5 m y hasta 900 m²', NV.map(b => `${b.id}: Ø ${f1(Math.hypot(b.L, b.W))} m`).join(' · ')) + chk(NV.every(b => b.hm <= R.alt), 'Altura', `promedio máx. ${f2(Math.max(...NV.map(b => b.hm)))} m de ${f2(R.alt)} m (PB + 3 pisos)`) + chk(true, 'Predio mínimo', '3.050 m² para tres bloques (900 m² por bloque) y 60 m de frente (mín. 30 m)');
+    else r += chk(tot <= sum(NV, b => b.pa * R.fos), 'Total construible', `${nf(tot)} m² de ${nf(sum(NV, b => b.pa * R.fos))} m² (suma de los tres padrones)`);
+    return `<table><thead><tr><th>Criterio</th><th>Modelo actual</th><th></th></tr></thead><tbody>${r}</tbody></table>`; };
+  const aj = NV.map(b => { const rise = b.r - b.e, lmax = b.pa * REG.ind.fos / b.W - PORT, emax = Math.min(REG.ind.alt - rise / 2, REG.ind.cumb - rise); return `<tr><td>${b.n} (${b.pad})</td><td class="n">${f2(b.L)} m</td><td class="n">${f2(lmax)} m</td><td class="n">${f2(b.e)} m</td><td class="n">${f2(emax)} m</td><td class="n">${nf((lmax + PORT) * b.W)} m²</td></tr>`; }).join('');
+  return `<div class="lead"><b>Dónde estamos.</b> Los tres padrones dan a Av. Pedragosa Sierra entre Albert Einstein e Isabel de Castilla: Sector 3 Balneario, subzona 3.2.1 Vías Principales Residenciales (interpretación por límites; falta la consulta previa). Hay dos formas de construir y esta página las compara sobre el mismo modelo. El selector <b>Escenario normativo</b> de arriba define con cuál se verifica la Implantación.</div>
+  <div class="cols"><div class="card"><b>A · Padrones independientes</b><p class="mut">Una construcción por padrón, sin fusionar. Cada padrón (1.000 a 1.050 m²) no llega al mínimo de bloque bajo, así que va como <b>una unidad aislada</b> con la norma de barrio jardín.</p><ul><li>Una unidad por padrón (1.000 m² por unidad; sin bloques ni apareadas).</li><li>FOS 20 % · FOT 40 % · verde 60 %.</li><li>Altura 7 m (PB + PA), medida al promedio del techo inclinado; cumbrera hasta 8,05 m.</li><li>Sirve igual para <b>tres casas, una casa grande o tres locales</b>: no queda atado a un solo destino.</li><li>Permiso y obra por padrón, por etapas.</li></ul></div>
+  <div class="card"><b>B · Padrones fusionados</b><p class="mut">Los tres padrones pasan a ser un predio de 3.050 m² con un <b>conjunto de tres bloques bajos</b>.</p><ul><li>Varios locales por bloque.</li><li>FOS 25 % (762 m² en total) · FOT 100 % · verde 60 %.</li><li>Altura 12 m (PB + 3 pisos).</li><li>Cada bloque inscripto en un círculo de Ø 42,5 m y hasta 900 m² de planta; los vínculos entre bloques van abiertos, sin techo.</li><li>Exige fusión y un solo permiso; el destino queda comercial.</li></ul></div></div>
+  <h3>A · Padrones independientes: cómo queda el modelo actual</h3>${tabla('ind')}
+  <h3>B · Padrones fusionados: cómo queda el modelo actual</h3>${tabla('conj')}
+  <h3>Ajuste de cada nave para cumplir el escenario A</h3><table><thead><tr><th>Nave</th><th class="n">Largo actual</th><th class="n">Largo máximo</th><th class="n">Alero actual</th><th class="n">Alero máximo</th><th class="n">Huella máxima con portal</th></tr></thead><tbody>${aj}</tbody></table>
+  <p class="mut"><small>Largo máximo: FOS 20 % del padrón, con el ancho actual y el portal de ${f1(PORT)} m (cuenta en el FOS por superar 90 cm). Alero máximo: el que deja el promedio del techo en 7,00 m y la cumbrera en 8,05 m con la pendiente de 20°. La altura se mide desde el terreno natural, no desde la platea: conviene dejar 20 a 30 cm de margen.</small></p>
+  <div class="cols"><div class="card"><b>Camino por etapas</b><ol><li><b>Etapa 1:</b> tres unidades independientes (comercial, gastronómico al centro y consultorios), una por padrón.</li><li><b>Etapa 2, si el mercado lo pide:</b> fusión y paso a conjunto de bloques bajos, con más superficie, más altura y varios locales por nave.</li></ol><p class="mut">Para no cerrar la etapa 2, las tres naves se implantan desde el inicio con los retiros del conjunto: ${RET.fr} m al frente, ${RET.lat} m laterales (suma mayor a ${RET.suma} m) y ${RET.fo} m de fondo.</p></div>
+  <div class="card"><b>Retiro de fondo y barbacoa</b><p>La nave no puede ocupar el retiro de fondo. Lo que se admite en retiros laterales y de fondo son construcciones auxiliares (depósito, garaje, parrillero techado, servicio) de hasta 20 m² y 3 m de altura promedio, de la mitad del predio hacia el fondo. Para el gastronómico alcanza para un parrillero techado o un depósito separado del salón.</p></div></div>
+  <div class="warn" style="margin-top:12px"><b>Estado de cada dato.</b><ul><li><b>Confirmado en el digesto de la Intendencia (TONE):</b> parámetros de la subzona 3.2.1 y de la 3.1.4, círculo de Ø 42,5 m y 900 m² como norma general del Sector 3, auxiliares en retiros.</li><li><b>Interpretación:</b> que los padrones caen en la 3.2.1 y que la subzona de fondo es la 3.1.4; que la cumbrera admite 15 % sobre la altura máxima (art. 152).</li><li><b>Sin verificar:</b> retiros laterales y de fondo exactos para unidades aisladas en la 3.1.4 y si el frontal de 10 m les aplica; que un centro de consultorios alquilados uno a uno cuente como una sola unidad; viabilidad del uso comercial y gastronómico; estacionamientos exigidos; si la Intendencia acepta el conjunto sin fusión formal.</li></ul>Todo va a la consulta previa escrita en Urbanismo antes de presentar el permiso.</div>
+  <p class="mut"><small>Fuentes: <a href="https://digesto.maldonado.gub.uy/armado-titulo/132">Digesto de Maldonado, TONE, Título II, Sector 3 Balneario</a> · <a href="https://www.impo.com.uy/bases/decretos-junta-depart-maldonado-nd/3718-1997/217">Decreto 3718/1997, art. 217</a>. Revisado el 16/11/2026.</small></p>`;
+}
 function dPend() {
   return `<h3>Supuestos de este documento</h3><ul>
   <li><b>Geometría:</b> norte arriba y avenida al este según el visor SNIG; orden de padrones 10598 sur, 10597 centro y 10596 norte; frente de 20 m por padrón y fondo de 47,3 m. Todo sale de una sola tabla de naves, así que si la mensura cambia una medida, se corrige en un lugar.</li>
   <li><b>Retiros:</b> frente 10 m, fondo 4 m, laterales de 3 m con suma mayor a 8 m, según la presentación de normativa del 14/11/2026. Con 20 m de frente, cada nave queda en 11,5 m de ancho; la del fondo mide 11,5 × ${f1(NV[1].L)} m en dos pisos.</li>
-  <li><b>FOS por padrón</b> (25 % de la superficie de cada uno). Si la Intendencia lo calcula distinto, hay que reverlo.</li>
+  <li><b>FOS:</b> ${nf(REG[S.reg].fos * 100)} % en el escenario elegido (${REG[S.reg].n}). Ver Normativa y escenarios.</li>
   <li><b>Estacionamiento</b> en el retiro frontal, una plaza por local (art. 208). Que se admita estacionar dentro del retiro es una consulta.</li>
   <li><b>Alturas:</b> alero a 6,00 m (previsión de planta alta), techo a 20°, nave del fondo de dos pisos (entrepiso a 3,20 m) con el mismo techo a 20°.</li>
   <li><b>Estilo Croquis:</b> lo que interpreté del dibujo: cenefas verticales de madera oscura en muros, cubierta de chapa nervada oscura que continúa la piel hasta el piso sin alero, marco oscuro de 55 cm en los hastiales con banderola triangular y vidriera con travesaño. Las cenefas se cotizan a USD 62/m² colocadas (supuesto). Si querías que la cubierta llegue literalmente al piso, hay que rehacer la sección.</li>
@@ -1026,7 +1057,7 @@ function dPend() {
   <h3>Correcciones a la opción U publicada antes</h3><div class="warn"><ul><li>La nave del fondo quedaba a 1 m de los límites del padrón central y las naves de los extremos a 3 y 5 m: no cumplían los retiros laterales por padrón. Ahora todas respetan 3 m y suma mayor a 8 m.</li><li>La pendiente de las naves laterales era de 31°, no de 16° como decía la página. Ahora es de 20° y la cumbrera baja de 9,65 a 8,09 m.</li><li>Por eso la nave del fondo es perpendicular: 11,5 m sobre el jardín y 14 m de fondo.</li></ul></div>
   <h3>Pendientes</h3><ol>
   <li><b>Mensura</b> con norte, frentes, fondos y niveles de cada padrón, y servidumbres si las hay.</li>
-  <li><b>Consulta previa:</b> subzona 3.2.1, FOS por padrón, estacionamiento en el retiro frontal, destino del pluvial, y si la fusión no es necesaria.</li>
+  <li><b>Consulta previa:</b> subzona 3.2.1 y subzona de fondo (3.1.4), una unidad por padrón o conjunto con fusión, FOS, retiros de unidad aislada, altura con techo inclinado, usos, estacionamiento en el retiro frontal y destino del pluvial.</li>
   <li><b>Planos de sanitaria y eléctrica</b> sobre este layout, con una conexión de UTE y OSE por padrón (los de la v1 son del bloque anterior).</li>
   <li><b>Cálculo estructural</b> del Ing. Ricardo Portugau: perfiles, correas, anclajes y succión de viento.</li>
   <li><b>Estudio de suelos</b> para confirmar el suelo firme.</li>
@@ -1038,16 +1069,16 @@ function dPend() {
   <p class="mut"><small>Valores de referencia en dólares, sin IVA salvo que se indique, sujetos a mensura, normativa y cálculo final. Smart Building Uruguay · Ramiro Portugau · 098 526 226 · smartbuildinguruguay@gmail.com</small></p>`;
 }
 /* ================= CONTROL ================= */
-const TABS = [['p-proy', 'Proyecto'], ['p-impl', 'Implantación'], ['p-pais', 'Jardín y paseo'], ['p-planta', 'Plantas'], ['p-sani', 'Sanitaria consultorios'], ['p-fach', 'Fachadas y cortes'], ['p-est', 'Estructura y aguas'], ['p-3d', '3D por capas'], ['p-rub', 'Rubrado y precio'], ['p-crono', 'Cronograma y pagos'], ['p-xtra', 'Extras por local'], ['p-rent', 'Rentabilidad'], ['p-pend', 'Supuestos y pendientes']];
+const TABS = [['p-proy', 'Proyecto'], ['p-impl', 'Implantación'], ['p-norm', 'Normativa y escenarios'], ['p-pais', 'Jardín y paseo'], ['p-planta', 'Plantas'], ['p-sani', 'Sanitaria consultorios'], ['p-fach', 'Fachadas y cortes'], ['p-est', 'Estructura y aguas'], ['p-3d', '3D por capas'], ['p-rub', 'Rubrado y precio'], ['p-crono', 'Cronograma y pagos'], ['p-xtra', 'Extras por local'], ['p-rent', 'Rentabilidad'], ['p-pend', 'Supuestos y pendientes']];
 $('tabs').innerHTML = TABS.map(([id, t]) => `<button data-t="${id}">${t}</button>`).join('');
 $('cSue').innerHTML = Object.entries(SUELO).map(([k, v]) => `<option value="${k}">${v[0]}</option>`).join('');
 function show(id) { document.querySelectorAll('main > section').forEach(s => s.classList.toggle('on', s.id === id)); $('tabs').querySelectorAll('button').forEach(b => b.classList.toggle('on', b.dataset.t === id)); if (id === 'p-3d') { fit(); } history.replaceState(null, '', '#' + id); }
 $('tabs').addEventListener('click', e => { const b = e.target.closest('button'); if (b) show(b.dataset.t); });
 function upd() {
-  S.est = $('cEst').value; S.ref = $('cRef').value; S.suelo = $('cSue').value; S.n = +$('cN').value; S.cons = $('cCons').value; S.bd = +$('cBd').value; S.cara = $('cCara').value; applyGeom(); S.gas = Math.max(0, Math.min(unidades(S, true), +$('cGas').value || 0)); S.iva = $('cIva').checked;
-  $('dProy').innerHTML = dProy(); $('dImpl').innerHTML = dImpl(); $('dPais').innerHTML = dPais(); $('dPlanta').innerHTML = dPlanta(); $('dSani').innerHTML = dSani(); $('dFach').innerHTML = dFach(); $('dEst').innerHTML = dEst(); $('dRub').innerHTML = dRub(); $('dCrono').innerHTML = dCrono(); $('dXtra').innerHTML = dXtra(); dRent(); $('dPend').innerHTML = dPend(); build3d();
+  S.reg = $('cReg').value; S.est = $('cEst').value; S.ref = $('cRef').value; S.suelo = $('cSue').value; S.n = +$('cN').value; S.cons = $('cCons').value; S.bd = +$('cBd').value; S.cara = $('cCara').value; applyGeom(); S.gas = Math.max(0, Math.min(unidades(S, true), +$('cGas').value || 0)); S.iva = $('cIva').checked;
+  $('dProy').innerHTML = dProy(); $('dImpl').innerHTML = dImpl(); $('dNorm').innerHTML = dNorm(); $('dPais').innerHTML = dPais(); $('dPlanta').innerHTML = dPlanta(); $('dSani').innerHTML = dSani(); $('dFach').innerHTML = dFach(); $('dEst').innerHTML = dEst(); $('dRub').innerHTML = dRub(); $('dCrono').innerHTML = dCrono(); $('dXtra').innerHTML = dXtra(); dRent(); $('dPend').innerHTML = dPend(); build3d();
 }
-['cEst', 'cRef', 'cSue', 'cN', 'cCons', 'cBd', 'cCara', 'cGas', 'cIva'].forEach(id => $(id).addEventListener('input', upd));
+['cReg', 'cEst', 'cRef', 'cSue', 'cN', 'cCons', 'cBd', 'cCara', 'cGas', 'cIva'].forEach(id => $(id).addEventListener('input', upd));
 $('cEst').value = S.est; upd(); fit(); view('iso'); setSun(1);
 show(location.hash.slice(1) && $(location.hash.slice(1)) ? location.hash.slice(1) : 'p-proy');
 (function loop() { requestAnimationFrame(loop); ctl.update(); ren.render(sc, cam); })();
