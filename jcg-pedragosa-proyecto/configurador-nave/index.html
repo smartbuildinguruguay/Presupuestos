@@ -53,7 +53,7 @@ details.sec{border-bottom:1px solid var(--line)}details.sec>summary{cursor:point
 <script type="importmap">{"imports":{"three":"https://cdn.jsdelivr.net/npm/three@0.160.0/build/three.module.js","three/addons/":"https://cdn.jsdelivr.net/npm/three@0.160.0/examples/jsm/"}}</script>
 </head><body>
 <header><h1>Configurador 3D · Nave comercial</h1><small>Av. Pedragosa Sierra · SBU</small><span class="sp"></span>
-<select id="selM" class="btn" style="cursor:pointer" title="Modelo"><option value="3v">Nave comercial · 3 vanos (modelo nuevo)</option><option value="2v">Nave tipo · 2 vanos (ajustada al padrón individual)</option><option value="v1">Nave 1 · modelo anterior con estilos</option></select>
+<span id="tabsM" style="display:flex;gap:6px"><button class="btn" data-m="n1">Nave 1 · Comercial</button><button class="btn" data-m="n2">Nave 2 · Gastronómico</button><button class="btn" data-m="n3">Nave 3 · Consultorios</button></span>
 <button class="btn" id="bLoad">Cargar .glb editado</button><button class="btn" id="bShot">Captura PNG</button><button class="btn" id="bJson">Exportar configuración</button>
 <input type="file" id="fGlb" accept=".glb,.gltf" hidden><input type="file" id="fTex" accept="image/*" hidden></header>
 <div id="app">
@@ -566,9 +566,9 @@ function buildLayers(){const box=$('#natBox'),h=$('#chL');if(!box)return;box.sty
  const z=BB.getSize(new THREE.Vector3());$('#mInfo').textContent='Medidas totales del modelo: '+z.x.toFixed(2).replace('.',',')+' m de largo × '+z.z.toFixed(2).replace('.',',')+' m de ancho × '+z.y.toFixed(2).replace('.',',')+' m de alto (incluye víseras, cenefa y fundación). Los estilos superpuestos y el proyecto dibujado por código son del modelo anterior y acá quedan apagados: las divisiones, instalaciones y paneles vienen en el propio modelo.'}
 /* Propuesta interior de la nave tipo: locales en el perímetro, corredor central, divisiones bajas; etapa 2 (escalera y entrepiso) solo como estructura */
 const PR={};
-function buildPropuesta(){const bx=$('#p2Box'),h=$('#chP2');if(!bx)return;bx.style.display=MSEL==='2v'?'':'none';if(MSEL!=='2v')return;h.innerHTML='';
- ['div','et2'].forEach(k=>{if(PR[k])W.remove(PR[k])});
- const Y0=-.2,XB=-70.3,XF=-56.8,ZA=-46.2,ZB=-35.0,Z1=-42.3,Z2=-38.9,XM=-63.66,XN=-68.0,H=2.6,T=.1,YE=Y0+3.1,SX0=-66.0,RUN=.27,NT=16,RISE=3.1/17,SX1=SX0+NT*RUN,SZ0=-41.15,SZ1=-40.05;
+function buildPropuesta(){const bx=$('#p2Box'),h=$('#chP2');if(!bx)return;bx.style.display=TIPO?'':'none';if(!TIPO)return;h.innerHTML='';
+ ['div','et2','deck'].forEach(k=>{if(PR[k])W.remove(PR[k])});
+ const Y0=-.2,XB=-70.3,XF=-56.8,ZA=-46.2,ZB=-35.0,Z1=-42.3,Z2=-38.9,XM=-63.66,XN=-68.0,H=2.6,T=.1,HE=3.3,YE=Y0+HE,SX0=-66.2,RUN=.27,NT=17,RISE=HE/18,SX1=SX0+NT*RUN,SZ0=-41.15,SZ1=-40.05;
  const mD=new THREE.MeshStandardMaterial({color:0xe9e6df,roughness:.9}),mS=new THREE.MeshStandardMaterial({color:0xd9722b,roughness:.5,metalness:.35}),mT=new THREE.MeshStandardMaterial({color:0x9c6b3f,roughness:.8}),mP=new THREE.MeshStandardMaterial({color:0xd9722b,transparent:true,opacity:.16,depthWrite:false});
  const box=(g,m,x0,x1,y0,y1,z0,z1)=>{const b=new THREE.Mesh(new THREE.BoxGeometry(Math.abs(x1-x0),Math.abs(y1-y0),Math.abs(z1-z0)),m);b.position.set((x0+x1)/2,(y0+y1)/2,(z0+z1)/2);b.castShadow=m!==mP;b.receiveShadow=true;g.add(b);return b};
  const D=new THREE.Group();D.name='PROPUESTA_DIVISIONES';
@@ -581,20 +581,26 @@ function buildPropuesta(){const bx=$('#p2Box'),h=$('#chP2');if(!bx)return;bx.sty
  [Z1,Z2,ZA+.1,ZB-.1].forEach(z=>box(E,mS,XB,XF,YE-.2,YE,z-.05,z+.05));
  for(let i=0;i<9;i++){const x=XB+.1+i*(XF-XB-.2)/8;box(E,mS,x-.04,x+.04,YE-.16,YE,ZA+.1,Z1);box(E,mS,x-.04,x+.04,YE-.16,YE,Z2,ZB-.1);if(x<SX0-.3||x>SX1+1.2)box(E,mS,x-.04,x+.04,YE-.16,YE,Z1,Z2)}
  [SX0-.3,SX1+1.2].forEach(x=>box(E,mS,x-.04,x+.04,YE-.16,YE,Z1,Z2));
- const L=Math.hypot(NT*RUN,3.1),ang=Math.atan2(3.1,NT*RUN);[SZ0+.04,SZ1-.04].forEach(z=>{const b=box(E,mS,0,L,0,.2,0,.08);b.position.set((SX0+SX1)/2,Y0+1.55-.12,z);b.rotation.z=ang});
+ const L=Math.hypot(NT*RUN,HE),ang=Math.atan2(HE,NT*RUN);[SZ0+.04,SZ1-.04].forEach(z=>{const b=box(E,mS,0,L,0,.2,0,.08);b.position.set((SX0+SX1)/2,Y0+HE/2-.12,z);b.rotation.z=ang});
  for(let i=1;i<=NT;i++)box(E,mT,SX0+(i-1)*RUN,SX0+i*RUN,Y0+i*RISE-.04,Y0+i*RISE,SZ0,SZ1);
  box(E,mT,SX1,SX1+1.2,YE-.04,YE,SZ0,SZ1);
  box(E,mP,XB,XF,YE,YE+.02,ZA,Z1);box(E,mP,XB,XF,YE,YE+.02,Z2,ZB);box(E,mP,XB,SX0-.3,YE,YE+.02,Z1,Z2);box(E,mP,SX1+1.2,XF,YE,YE+.02,Z1,Z2);
- W.add(D,E);PR.div=D;PR.et2=E;W.updateMatrixWorld(true);
+ W.add(D,E);PR.div=D;PR.et2=E;
+ let K=null;if(MSEL==='n2'){K=new THREE.Group();K.name='DECK_CAFETERIA';const mW=new THREE.MeshStandardMaterial({color:0xa9764a,roughness:.85}),mM=new THREE.MeshStandardMaterial({color:0x2e2e2e,roughness:.6}),z0=-50.4,z1=-46.5;
+  box(K,mW,XB,XF,Y0-.16,Y0-.02,z0,z1);for(let x=XB+.2;x<XF;x+=1.6)box(K,mM,x-.04,x+.04,Y0-.5,Y0-.16,z0+.1,z1-.1);
+  [-68.3,-65.3,-62.3,-59.3].forEach((x,i)=>{const zz=i%2?-49.2:-48.0;const t=new THREE.Mesh(new THREE.CylinderGeometry(.4,.4,.04,24),mW);t.position.set(x,Y0+.72,zz);K.add(t);box(K,mM,x-.03,x+.03,Y0-.02,Y0+.7,zz-.03,zz+.03)});
+  W.add(K);PR.deck=K}
+ W.updateMatrixWorld(true);
  const nat=k=>ASM.children.filter(o=>(nm(o)||'').split('_')[0].replace(/#\d+$/,'')===k);
  const chip=(t,on,fn)=>{const b=document.createElement('button');b.className='sw2'+(on?' on':'');b.textContent=t;b.onclick=()=>{const v=!b.classList.contains('on');b.classList.toggle('on',v);fn(v)};h.appendChild(b);fn(on)};
  chip('Divisiones bajas y corredor',true,v=>{D.visible=v;nat('Divisiones').forEach(o=>o.visible=!v);[...$('#chL').children].forEach(c=>{if(c.textContent==='Divisiones')c.classList.toggle('on',!v)})});
  chip('Etapa 2: escalera y entrepiso (estructura)',true,v=>{E.visible=v});
+ if(K)chip('Deck cafetería (esquema)',true,v=>{K.visible=v});
  chip('Destapar: sin techo ni paneles',false,v=>{['Paneles','Estilo','Revestimiento','Cenefa'].forEach(k=>nat(k).forEach(o=>o.visible=!v));[...$('#chL').children].forEach(c=>{if(['Paneles PIR','Cenefa de estilo','Revestimiento','Cenefa'].includes(c.textContent))c.classList.toggle('on',!v)})});
  const a1=(XM-XB)*(Z1-ZA),a2=(XF-XM)*(Z1-ZA),f=n=>n.toFixed(1).replace('.',',');
- $('#p2Info').textContent='Cuatro locales en el perímetro ('+f(a1)+' y '+f(a2)+' m² cada uno), cada uno con salida propia al exterior y puerta al corredor central de '+f(Z2-Z1)+' m, que queda cubierto. Baño accesible común al fondo del corredor. Divisiones de '+f(H)+' m de alto, sin llegar al techo. En naranja, la etapa 2: escalera recta de 17 contrahuellas en el centro del corredor y estructura del entrepiso a +3,10 m. Es un esquema para definir la propuesta: sin cálculo estructural.'}
-const MODELS={'3v':'NAVE_COMERCIAL.glb','2v':'NAVE_TIPO_2V.glb','v1':'NAVE_COMERCIAL_v1.glb'};const MSEL=MODELS[new URLSearchParams(location.search).get('m')]?new URLSearchParams(location.search).get('m'):'3v';
-$('#selM').value=MSEL;$('#selM').onchange=e=>{location.search='?m='+e.target.value};
+ $('#p2Info').textContent=(MSEL==='n2'?'Nave a una sola agua (pendiente 7 %), con deck cafetería sobre la fachada vidriada. ':MSEL==='n3'?'Misma nave que la comercial; la distribución de consultorios está pendiente. ':'')+'Sección mínima: planta baja de 3,00 m libres, entrepiso a +'+f(HE)+' m y planta alta de 2,00 m contra el muro y 2,80 m en la parte alta (2,40 m de promedio). Cuatro locales en el perímetro ('+f(a1)+' y '+f(a2)+' m²), cada uno con salida propia y puerta al corredor central de '+f(Z2-Z1)+' m; baño accesible común al fondo; divisiones de '+f(H)+' m. En naranja, la etapa 2: escalera recta de 18 contrahuellas y estructura del entrepiso. Esquema para definir la propuesta: sin cálculo estructural.'}
+const MODELS={n1:'NAVE_1_COMERCIAL.glb',n2:'NAVE_2_GASTRONOMICO.glb',n3:'NAVE_1_COMERCIAL.glb','3v':'NAVE_COMERCIAL.glb',v1:'NAVE_COMERCIAL_v1.glb'};const MQ=new URLSearchParams(location.search).get('m'),MSEL=MODELS[MQ]?MQ:'n1',TIPO=['n1','n2','n3'].includes(MSEL);
+document.querySelectorAll('#tabsM button').forEach(b=>{if(b.dataset.m===MSEL){b.style.background='#fff';b.style.color='#12304a'}b.onclick=()=>{location.search='?m='+b.dataset.m}});
 function b64(s){const bin=atob(s),u=new Uint8Array(bin.length);for(let i=0;i<bin.length;i++)u[i]=bin.charCodeAt(i);return u.buffer}
 (async()=>{try{if(window.OV2_B64&&window.OV2_B64.length>100)if(window.OV3_B64&&window.OV3_B64.length>100)OVBUF.push({name:'Estilo 3 · cenefa larga',desc:'Cenefa larga: banda continua en el borde del techo que proyecta en el frente.',buf:b64(window.OV3_B64)});OVBUF.push({name:'Estilo 2 · cenefa nueva',desc:'Portal con cenefa simple frontal, cielorraso y alero de techo rediseñados (superpuesto al modelo base).',buf:b64(window.OV2_B64)});const rs=await fetch(MODELS[MSEL]);if(!rs.ok)throw new Error('no encontré '+MODELS[MSEL]);const buf=await rs.arrayBuffer();await start(buf)}catch(err){$('#load').innerHTML='No pude cargar el modelo ('+err.message+').<br>Usá “Cargar .glb editado” para elegir tu archivo.'}})();
 </script></body></html>
