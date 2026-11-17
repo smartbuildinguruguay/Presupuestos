@@ -1,0 +1,56 @@
+<!doctype html><html lang="es"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SBU · Panel de módulos del proyecto</title>
+<style>
+:root{--ink:#17212b;--mut:#5f6b76;--line:#dfe5ea;--acc:#1f4a6b;--bg:#f6f7f5;--card:#fff;--ok:#2f7d4f;--warn:#b5532a}
+*{box-sizing:border-box}body{margin:0;font:15px/1.5 system-ui,-apple-system,"Segoe UI",Roboto,sans-serif;color:var(--ink);background:var(--bg)}
+header{background:var(--acc);color:#fff;padding:24px 20px}header div,main{max-width:1080px;margin:0 auto}
+header small{letter-spacing:.18em;opacity:.8}h1{margin:6px 0 4px;font-size:26px}header p{margin:0;opacity:.9}
+main{padding:18px 20px 60px}h2{font-size:18px;margin:28px 0 10px;text-transform:uppercase;letter-spacing:.05em;color:var(--acc)}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(260px,1fr));gap:12px}
+.mod{background:var(--card);border:1px solid var(--line);border-radius:12px;padding:14px;display:flex;flex-direction:column;gap:6px}
+.mod .id{font-size:12px;color:var(--mut);letter-spacing:.06em}.mod h3{margin:0;font-size:16px}.mod p{margin:0;color:var(--mut);font-size:14px}
+.st{font-size:12px;border-radius:99px;padding:1px 9px;align-self:flex-start;background:#e8eef3;color:var(--acc)}
+.st.ok{background:#e4f1e8;color:var(--ok)}.st.wip{background:#fbeee6;color:var(--warn)}.st.priv{background:#eeeeee;color:#555}
+a.btn{display:inline-block;background:var(--acc);color:#fff;text-decoration:none;border-radius:8px;padding:7px 12px;font-size:14px;align-self:flex-start;margin-top:4px}
+a.btn.alt{background:#fff;color:var(--acc);border:1px solid var(--acc)}.dis{font-size:13px;color:var(--mut);margin-top:4px}
+table{width:100%;border-collapse:collapse;background:var(--card);border:1px solid var(--line)}
+th,td{padding:8px 10px;border-bottom:1px solid var(--line);text-align:left;vertical-align:top;font-size:14px}th{background:#eef2f5}
+.note{color:var(--mut);font-size:13px}.wrap{overflow-x:auto}
+</style></head><body>
+<header><div><small>SMART BUILDING URUGUAY · APP DE PROYECTOS</small><h1>Panel de módulos</h1><p>Acceso rápido a lo que se está trabajando y cómo se conecta cada parte. Versión 0, sin datos internos.</p></div></header>
+<main>
+
+<h2>Proyecto Pedragosa Sierra · Juan Carlos García</h2>
+<div class="grid">
+<div class="mod"><span class="id">01 · PROPUESTA</span><h3>Propuestas 1 y 2 para el cliente</h3><span class="st ok">Vigente</span><p>Dos precios únicos: tres naves (USD 683.600) y padrón unificado (USD 967.600), sin IVA.</p><a class="btn" href="../jcg-pedragosa-proyecto/propuesta/">Abrir propuesta</a></div>
+<div class="mod"><span class="id">02 · PROYECTO</span><h3>Master plan simplificado</h3><span class="st ok">Actualizado</span><p>Resumen de las dos propuestas, qué incluye el precio, normativa del caso y próximos pasos.</p><a class="btn" href="../jcg-pedragosa-proyecto/">Abrir proyecto</a><a class="btn alt" href="../jcg-pedragosa-proyecto/detalle-anterior.html">Detalle anterior</a></div>
+<div class="mod"><span class="id">03 · DISEÑO 3D</span><h3>Configurador de nave</h3><span class="st wip">En ajuste</span><p>Tres pestañas: Nave 1 comercial, Nave 2 gastronómico, Nave 3 consultorios. Revestimiento por cara, precio de cada opción, guardar en el proyecto o copiar link.</p><a class="btn" href="../jcg-pedragosa-proyecto/configurador-nave/">Abrir configurador</a></div>
+<div class="mod"><span class="id">04 · TÉCNICO</span><h3>Catálogo técnico de la nave</h3><span class="st wip">Falta renders</span><p>Planta, cortes, fachadas, composición del panel, transmitancia y comparación PIR contra EPS.</p><a class="btn" href="../jcg-pedragosa-proyecto/catalogo/">Abrir catálogo</a></div>
+<div class="mod"><span class="id">05 · ESTRUCTURA</span><h3>Hoja E-01 para cotizar</h3><span class="st ok">Medido del modelo</span><p>Plantas, pórtico, hastial y lista de materiales por nave. Sin cálculo: lo hace el ingeniero.</p><a class="btn" href="../jcg-pedragosa-proyecto/estructura/">Abrir hoja E-01</a></div>
+<div class="mod"><span class="id">06 · IMPLANTACIÓN</span><h3>Implantación y planos</h3><span class="st">Carpeta</span><p>Esquema del predio, padrones y plantas de referencia del proyecto inicial.</p><a class="btn alt" href="../jcg-pedragosa-implantacion/">Abrir carpeta</a></div>
+</div>
+
+<h2>Cómo se conecta</h2>
+<div class="wrap"><table>
+<thead><tr><th>De</th><th>A</th><th>Qué pasa</th></tr></thead><tbody>
+<tr><td>Modelo 3D de la nave (.glb)</td><td>Configurador</td><td>Muestra la nave; las capas, aberturas y revestimientos se controlan desde ahí.</td></tr>
+<tr><td>Modelo 3D de la nave (.glb)</td><td>Hoja E-01 de estructura</td><td>Las cantidades, largos y pesos de acero salen del despiece del modelo.</td></tr>
+<tr><td>Configurador</td><td>Propuesta y proyecto</td><td>Cada opción elegida con precio se guarda en el proyecto o viaja en el link. Hoy el precio de opciones no suma a la propuesta: es referencia.</td></tr>
+<tr><td>Configurador</td><td>Catálogo técnico</td><td>Al cargar el modelo en la web, el catálogo muestra la nave configurada.</td></tr>
+<tr><td>Hoja E-01</td><td>Presupuesto interno</td><td>El acero de la hoja se pasa al rubro de estructura: cantidad, precio por kilo y montaje.</td></tr>
+<tr><td>Presupuesto interno (privado)</td><td>Propuesta y proyecto</td><td>Los rubros se redondean y pasan a las páginas para el cliente. El margen y el costo directo no se publican.</td></tr>
+<tr><td>Normativa</td><td>Proyecto y propuesta</td><td>Define escenario (padrones separados o unificados), alturas, ocupación y lo que hay que confirmar en la Intendencia.</td></tr>
+<tr><td>Catálogo técnico</td><td>Cálculo térmico y de muros</td><td>Usa el panel PIR 80 mm de la nave; si se cambia el panel, se recalcula.</td></tr>
+</tbody></table></div>
+<p class="note">Lo que cambia una pieza afecta a las que van abajo. Por eso el orden de trabajo es: modelo, estructura, presupuesto interno, propuesta.</p>
+
+<h2>Módulos internos (no publicados)</h2>
+<div class="grid">
+<div class="mod"><span class="id">07 · PRESUPUESTO</span><h3>Planilla de presupuesto interno</h3><span class="st priv">Privado</span><p>Rubrado ítem por ítem, gestión, márgenes, alternativas y etapa 2. Se comparte solo dentro de SBU.</p></div>
+<div class="mod"><span class="id">08 · PLANIFICACIÓN</span><h3>Árbol de pensamiento de la app</h3><span class="st priv">Privado</span><p>Pizarra con las etapas de un proyecto: diseño, presupuesto, cálculo, obra, cobros y normativa.</p></div>
+<div class="mod"><span class="id">09 · CONTROL</span><h3>Obra, cobros y cronograma</h3><span class="st">Pendiente</span><p>Seguimiento de avance, pagos a proveedores y cronograma por rubro. Todavía no está armado para este proyecto.</p></div>
+</div>
+
+<h2>Próximos módulos de la app</h2>
+<p class="note">Lo que sigue en la app: cálculo de estructura con el ingeniero, cotización por proveedor, y control de obra. Cada uno se agrega acá cuando tenga una versión para ver.</p>
+</main></body></html>
