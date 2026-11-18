@@ -1,6 +1,6 @@
 {
   "proyecto": "Pedragosa Sierra · Juan Carlos García",
-  "nota": "Solo cantidades y planos. Costos y márgenes: planilla privada SBU. Tres naves de 250 m² por nave (750 m²); dados solo en columnas; sanitaria y eléctrica a precio global sin despiece.",
+  "nota": "Solo cantidades y planos. Costos y márgenes: planilla privada SBU. Tres naves de 22,5 × 11,1 m (≈250 m² c/u); dados solo en columnas; sanitaria y eléctrica a precio global sin despiece.",
   "rubrado": [
     {
       "sec": "1 · Preliminares",
@@ -24,7 +24,7 @@
       "sec": "1 · Preliminares",
       "item": "Movimiento de suelo: excavación, retiro, tosca compactada y nivelado",
       "explicacion": "Excavación, retiro de material, relleno con tosca, compactación y nivelado de 250 m² por nave. Precio de presupuesto: UYU 764.000 sin IVA por 300 m² (USD 63,35/m² a 40,2).",
-      "cantidad": 750,
+      "cantidad": 749.25,
       "unidad": "m²",
       "plano": "presupuesto movimiento de suelo",
       "estado": "incluido"
@@ -32,8 +32,8 @@
     {
       "sec": "2 · Cimentación",
       "item": "Platea H30 de 15 cm con malla doble",
-      "explicacion": "Platea de 250 m² por nave con malla, nylon y bomba.",
-      "cantidad": 750,
+      "explicacion": "Platea de 249,75 m² por nave (22,5 × 11,1 m) con malla, nylon y bomba.",
+      "cantidad": 749.25,
       "unidad": "m²",
       "plano": "cimentacion_planta_detalle",
       "estado": "incluido"
@@ -59,8 +59,8 @@
     {
       "sec": "2 · Cimentación",
       "item": "Llaneado mecánico de platea (piso de local)",
-      "explicacion": "Terminación de la platea como piso base (250 m² por nave).",
-      "cantidad": 750,
+      "explicacion": "Terminación de la platea como piso base (22,5 × 11,1 m por nave).",
+      "cantidad": 749.25,
       "unidad": "m²",
       "plano": "cimentacion_planta_detalle",
       "estado": "incluido"
@@ -68,8 +68,8 @@
     {
       "sec": "3 · Estructura de acero",
       "item": "Acero de pórticos, techo, muros y anclajes",
-      "explicacion": "6.370 kg por nave según el modelo, fabricado, pintado y montado. Galvanizado no incluido.",
-      "cantidad": 19110,
+      "explicacion": "6.605 kg por nave según el modelo de 22.5 × 11.1 m. fabricado. pintado y montado. Galvanizado no incluido.",
+      "cantidad": 19815.6,
       "unidad": "kg",
       "plano": "desarrollo_plano_estructural_nave1 + pedido",
       "estado": "incluido"
@@ -86,8 +86,8 @@
     {
       "sec": "4 · Techo",
       "item": "Panel PIR 80 mm engrafado, techo",
-      "explicacion": "Panel de cubierta de dos faldones por nave: 249 m² por nave a 50 USD/m².",
-      "cantidad": 747,
+      "explicacion": "Panel de cubierta de dos faldones: 273.2 m² por nave a 50 USD/m².",
+      "cantidad": 819.5,
       "unidad": "m²",
       "plano": "estructura_nave_modelo (planta de techo)",
       "estado": "incluido"
@@ -96,7 +96,7 @@
       "sec": "4 · Techo",
       "item": "Montaje de techo, fijaciones y sellado",
       "explicacion": "Colocación del panel de cubierta.",
-      "cantidad": 747,
+      "cantidad": 819.5,
       "unidad": "m²",
       "plano": "estructura_nave_modelo (planta de techo)",
       "estado": "incluido"
@@ -113,8 +113,8 @@
     {
       "sec": "5 · Fachadas y muros",
       "item": "Panel PIR 80 mm, muros (neto)",
-      "explicacion": "Revestimiento neto por nave según fachadas_revestimientos: 303,36 m² (descontados vanos). A 50 USD/m².",
-      "cantidad": 910.08,
+      "explicacion": "Revestimiento neto por nave: 322.6 m² (escalado de 303,36 m² por la longitud). A 50 USD/m².",
+      "cantidad": 967.7,
       "unidad": "m²",
       "plano": "fachadas_revestimientos",
       "estado": "incluido"
@@ -123,7 +123,7 @@
       "sec": "5 · Fachadas y muros",
       "item": "Montaje de muros, remates y zócalo",
       "explicacion": "Colocación de paneles de muro y remates.",
-      "cantidad": 910.08,
+      "cantidad": 967.7,
       "unidad": "m²",
       "plano": "fachadas_revestimientos",
       "estado": "incluido"
@@ -270,7 +270,7 @@
       "orden": 1,
       "titulo": "Cimentación",
       "doc": "planos/cimentacion_esquema.pdf",
-      "estado": "Pendiente: dibujo viejo (dados B/C, 12,10 m); rehacer a 250 m² por nave"
+      "estado": "Pendiente: rehacer a 22,5 × 11,1 m con dados solo en columnas"
     },
     {
       "id": "est",
@@ -291,7 +291,7 @@
       "orden": 4,
       "titulo": "Sanitaria planta baja (3 naves)",
       "doc": "planos/sanitaria_PB_3_naves.pdf",
-      "estado": "Pendiente: geometría de 250 m² por nave; conteos supuestos; precio global sin despiece"
+      "estado": "Esquemático 22,5 × 11,1 m; conteos supuestos; precio global sin despiece"
     },
     {
       "id": "mod",
@@ -305,7 +305,7 @@
       "orden": 6,
       "titulo": "Eléctrica planta baja (3 naves)",
       "doc": "planos/electrica_PB_3_naves.pdf",
-      "estado": "Pendiente: geometría de 250 m² por nave; conteos supuestos; precio global sin despiece"
+      "estado": "Esquemático 22,5 × 11,1 m; conteos supuestos; precio global sin despiece"
     }
   ]
 }
