@@ -1,6 +1,6 @@
 {
   "proyecto": "Pedragosa Sierra · Juan Carlos García",
-  "nota": "Solo cantidades y planos. Costos y márgenes: planilla privada SBU. Naves de 11,1 × 20,5 m; dados solo en columnas; sanitaria y eléctrica a precio global sin despiece.",
+  "nota": "Solo cantidades y planos. Costos y márgenes: planilla privada SBU. Tres naves de 250 m² por nave (750 m²); dados solo en columnas; sanitaria y eléctrica a precio global sin despiece.",
   "rubrado": [
     {
       "sec": "1 · Preliminares",
@@ -22,18 +22,18 @@
     },
     {
       "sec": "1 · Preliminares",
-      "item": "Desmonte y tosca compactada bajo platea",
-      "explicacion": "Retiro de suelo y tosca al 95 % Proctor bajo las plateas (227,55 m² por nave, 11,1 × 20,5 m).",
-      "cantidad": 682.65,
+      "item": "Movimiento de suelo: excavación, retiro, tosca compactada y nivelado",
+      "explicacion": "Excavación, retiro de material, relleno con tosca, compactación y nivelado de 250 m² por nave. Precio de presupuesto: UYU 764.000 sin IVA por 300 m² (USD 63,35/m² a 40,2).",
+      "cantidad": 750,
       "unidad": "m²",
-      "plano": "cimentacion_planta_detalle",
+      "plano": "presupuesto movimiento de suelo",
       "estado": "incluido"
     },
     {
       "sec": "2 · Cimentación",
       "item": "Platea H30 de 15 cm con malla doble",
-      "explicacion": "Platea de 227,55 m² por nave (11,1 × 20,5 m) con malla, nylon y bomba.",
-      "cantidad": 682.65,
+      "explicacion": "Platea de 250 m² por nave con malla, nylon y bomba.",
+      "cantidad": 750,
       "unidad": "m²",
       "plano": "cimentacion_planta_detalle",
       "estado": "incluido"
@@ -59,8 +59,8 @@
     {
       "sec": "2 · Cimentación",
       "item": "Llaneado mecánico de platea (piso de local)",
-      "explicacion": "Terminación de la platea como piso base (227,55 m² por nave).",
-      "cantidad": 682.65,
+      "explicacion": "Terminación de la platea como piso base (250 m² por nave).",
+      "cantidad": 750,
       "unidad": "m²",
       "plano": "cimentacion_planta_detalle",
       "estado": "incluido"
@@ -270,7 +270,7 @@
       "orden": 1,
       "titulo": "Cimentación",
       "doc": "planos/cimentacion_esquema.pdf",
-      "estado": "Pendiente: dibujo viejo con dados B/C; actualizar a 11,1 × 20,5 m con dados solo en columnas"
+      "estado": "Pendiente: dibujo viejo (dados B/C, 12,10 m); rehacer a 250 m² por nave"
     },
     {
       "id": "est",
@@ -291,7 +291,7 @@
       "orden": 4,
       "titulo": "Sanitaria planta baja (3 naves)",
       "doc": "planos/sanitaria_PB_3_naves.pdf",
-      "estado": "Esquemático, conteos supuestos; precio global sin despiece"
+      "estado": "Pendiente: geometría de 250 m² por nave; conteos supuestos; precio global sin despiece"
     },
     {
       "id": "mod",
@@ -305,7 +305,7 @@
       "orden": 6,
       "titulo": "Eléctrica planta baja (3 naves)",
       "doc": "planos/electrica_PB_3_naves.pdf",
-      "estado": "Esquemático, conteos supuestos; precio global sin despiece"
+      "estado": "Pendiente: geometría de 250 m² por nave; conteos supuestos; precio global sin despiece"
     }
   ]
 }
