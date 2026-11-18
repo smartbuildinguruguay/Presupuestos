@@ -1,6 +1,6 @@
 {
   "proyecto": "Pedragosa Sierra · Juan Carlos García",
-  "nota": "Solo cantidades y planos. Costos y márgenes: planilla privada SBU. Tres naves de 22,5 × 11,1 m (≈250 m² c/u); dados solo en columnas; sanitaria y eléctrica a precio global sin despiece.",
+  "nota": "Solo cantidades y planos. Costos y márgenes: planilla privada SBU. Tres naves de 22,5 × 11,1 m, 5 pórticos a 5,625 m; dados solo en columnas; sanitaria y eléctrica a precio global sin despiece.",
   "rubrado": [
     {
       "sec": "1 · Preliminares",
@@ -50,8 +50,8 @@
     {
       "sec": "2 · Cimentación",
       "item": "Nudos bajo columnas de pórtico con pernos",
-      "explicacion": "8 dados por nave en las posiciones de columnas (líneas A y D); columnas interiores fuera del presupuesto.",
-      "cantidad": 24,
+      "explicacion": "10 dados por nave en las posiciones de columnas (5 pórticos × 2 columnas); columnas interiores fuera del presupuesto.",
+      "cantidad": 30,
       "unidad": "u",
       "plano": "desarrollo_plano_estructural_nave1",
       "estado": "incluido"
@@ -68,8 +68,8 @@
     {
       "sec": "3 · Estructura de acero",
       "item": "Acero de pórticos, techo, muros y anclajes",
-      "explicacion": "6.605 kg por nave según el modelo de 22.5 × 11.1 m. fabricado. pintado y montado. Galvanizado no incluido.",
-      "cantidad": 19815.6,
+      "explicacion": "7.142 kg por nave según el modelo de 5 pórticos (22.5 × 11.1 m). fabricado. pintado y montado. Galvanizado no incluido.",
+      "cantidad": 21425.4,
       "unidad": "kg",
       "plano": "desarrollo_plano_estructural_nave1 + pedido",
       "estado": "incluido"
@@ -284,7 +284,7 @@
       "orden": 3,
       "titulo": "Esquema estructural a 4 pórticos",
       "doc": "planos/estructura_nave_modelo.pdf",
-      "estado": "Vigente"
+      "estado": "Vigente: 5 pórticos a 5,625 m, nave 22,5 × 11,1 m"
     },
     {
       "id": "san",
