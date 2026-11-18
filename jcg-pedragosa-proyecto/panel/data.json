@@ -1,0 +1,331 @@
+{
+ "proyecto": "Pedragosa Sierra · Juan Carlos García",
+ "nota": "Solo cantidades y planos. Costos y márgenes: planilla privada SBU.",
+ "rubrado": [
+  {
+   "sec": "1 · Preliminares",
+   "item": "Obrador, cerco y replanteo",
+   "explicacion": "Instalación de obra y replanteo de los tres padrones.",
+   "cantidad": 1,
+   "unidad": "gl",
+   "plano": "Planta comercial",
+   "estado": "referencia"
+  },
+  {
+   "sec": "1 · Preliminares",
+   "item": "Estudio de suelos",
+   "explicacion": "6 sondeos SPT con informe para diseñar la platea.",
+   "cantidad": 1,
+   "unidad": "gl",
+   "plano": "Cimentación",
+   "estado": "referencia"
+  },
+  {
+   "sec": "1 · Preliminares",
+   "item": "Desmonte y tosca compactada",
+   "explicacion": "Retiro de 20 cm de suelo y 30 cm de tosca al 95 % Proctor bajo la platea.",
+   "cantidad": 724.5,
+   "unidad": "m²",
+   "plano": "Cimentación",
+   "estado": "escalado"
+  },
+  {
+   "sec": "2 · Cimentación",
+   "item": "Platea H30 de 15 cm con malla doble",
+   "explicacion": "Platea independiente por nave, sobre la envolvente del modelo (21,0 × 11,5 m por nave).",
+   "cantidad": 724.5,
+   "unidad": "m²",
+   "plano": "Cimentación",
+   "estado": "modelo"
+  },
+  {
+   "sec": "2 · Cimentación",
+   "item": "Vigas de borde de la platea",
+   "explicacion": "Viga perimetral de cada platea: 65 ml por nave (2 × 21,0 + 2 × 11,5 m).",
+   "cantidad": 195,
+   "unidad": "ml",
+   "plano": "Cimentación",
+   "estado": "modelo"
+  },
+  {
+   "sec": "2 · Cimentación",
+   "item": "Nudos bajo columnas con pernos",
+   "explicacion": "Un nudo por cada una de las 8 columnas de cada nave (24 total), con pernos de anclaje.",
+   "cantidad": 24,
+   "unidad": "u",
+   "plano": "Cimentación",
+   "estado": "modelo"
+  },
+  {
+   "sec": "2 · Cimentación",
+   "item": "Llaneado mecánico de la platea",
+   "explicacion": "Terminación de la platea como piso de local.",
+   "cantidad": 724.5,
+   "unidad": "m²",
+   "plano": "Cimentación",
+   "estado": "escalado"
+  },
+  {
+   "sec": "3 · Estructura de acero",
+   "item": "Acero de pórticos, techo, muros y anclajes",
+   "explicacion": "6.370 kg por nave según el modelo: columnas H/I 240, vigas de faldón, correas, cruces, dinteles, jambas y soleras. Fabricado, pintado y montado.",
+   "cantidad": 19110,
+   "unidad": "kg",
+   "plano": "Desglose estructura modelo",
+   "estado": "modelo"
+  },
+  {
+   "sec": "3 · Estructura de acero",
+   "item": "Previsión de planta alta",
+   "explicacion": "Esperas, núcleo de escalera y fosa de ascensor (no incluida en el precio base).",
+   "cantidad": 2,
+   "unidad": "u",
+   "plano": "Planta alta (pendiente)",
+   "estado": "fuera del precio base"
+  },
+  {
+   "sec": "4 · Techo",
+   "item": "Panel PIR 80 mm engrafado, techo",
+   "explicacion": "Panel de cubierta sobre los dos faldones de cada nave: 249 m² por nave.",
+   "cantidad": 746.7,
+   "unidad": "m²",
+   "plano": "Planta de techo",
+   "estado": "modelo · PIR a 50 USD/m²"
+  },
+  {
+   "sec": "4 · Techo",
+   "item": "Montaje de techo, fijaciones y sellado",
+   "explicacion": "Colocación, fijaciones y sellado del panel de cubierta.",
+   "cantidad": 746.7,
+   "unidad": "m²",
+   "plano": "Planta de techo",
+   "estado": "modelo"
+  },
+  {
+   "sec": "4 · Techo",
+   "item": "Canaletas y bajadas pluviales",
+   "explicacion": "Canaletas de chapa en los aleros de las tres naves y bajadas.",
+   "cantidad": 1,
+   "unidad": "gl",
+   "plano": "Planta de techo",
+   "estado": "referencia"
+  },
+  {
+   "sec": "5 · Fachadas y muros",
+   "item": "Panel PIR 80 mm, muros",
+   "explicacion": "Paneles de muros laterales y hastiales, descontando vanos y vidriería: 312 m² netos por nave.",
+   "cantidad": 935.4,
+   "unidad": "m²",
+   "plano": "Fachadas (hojas 3 y capturas)",
+   "estado": "modelo · PIR a 50 USD/m²"
+  },
+  {
+   "sec": "5 · Fachadas y muros",
+   "item": "Montaje de muros, remates y zócalo",
+   "explicacion": "Colocación de paneles, remates y zócalo.",
+   "cantidad": 935.4,
+   "unidad": "m²",
+   "plano": "Fachadas",
+   "estado": "modelo"
+  },
+  {
+   "sec": "5 · Fachadas y muros",
+   "item": "Cruz de San Andrés y cenefas de cierre",
+   "explicacion": "Cruces de contraviento en muro de fondo y lateral sur (bahías 1 y 3).",
+   "cantidad": 1,
+   "unidad": "gl",
+   "plano": "Fachadas",
+   "estado": "pendiente de cómputo"
+  },
+  {
+   "sec": "6 · Aberturas y vidriería",
+   "item": "Vidriería de aluminio línea pesada, laminado 5+5",
+   "explicacion": "Vidriería de frente (9,30 × 2,66 y ventana alta) y vanos norte: 63 m² por nave.",
+   "cantidad": 188.88,
+   "unidad": "m²",
+   "plano": "Fachadas · planilla de aberturas",
+   "estado": "modelo"
+  },
+  {
+   "sec": "6 · Aberturas y vidriería",
+   "item": "Puertas vidriadas",
+   "explicacion": "Puertas de acceso a locales (12 pares).",
+   "cantidad": 12,
+   "unidad": "par",
+   "plano": "Planta comercial",
+   "estado": "referencia"
+  },
+  {
+   "sec": "7 · Divisorios e interiores",
+   "item": "Divisorios steel frame de 3 m",
+   "explicacion": "Divisorios de 3 m, placa por cara y lana de roca (206 m² escalados).",
+   "cantidad": 319.88,
+   "unidad": "m²",
+   "plano": "Planta comercial",
+   "estado": "escalado"
+  },
+  {
+   "sec": "7 · Divisorios e interiores",
+   "item": "Masillado y pintura de divisorios",
+   "explicacion": "Dos caras de los divisorios.",
+   "cantidad": 639.75,
+   "unidad": "m²",
+   "plano": "Planta comercial",
+   "estado": "escalado"
+  },
+  {
+   "sec": "7 · Divisorios e interiores",
+   "item": "Baños accesibles terminados del gastronómico",
+   "explicacion": "Baterías de baños del gastronómico (2 baterías, con cabina accesible).",
+   "cantidad": 2,
+   "unidad": "u",
+   "plano": "Planta comercial",
+   "estado": "supuesto"
+  },
+  {
+   "sec": "8 · Instalación sanitaria",
+   "item": "Artefactos: inodoros, lavatorios y duchas",
+   "explicacion": "10 inodoros, 10 lavatorios y 10 duchas según cómputo.",
+   "cantidad": 30,
+   "unidad": "u",
+   "plano": "Sanitaria PB",
+   "estado": "estimado"
+  },
+  {
+   "sec": "8 · Instalación sanitaria",
+   "item": "Termotanques y desagües de cocina",
+   "explicacion": "6 termotanques y 6 desagües de kitchenette.",
+   "cantidad": 12,
+   "unidad": "u",
+   "plano": "Sanitaria PB",
+   "estado": "estimado"
+  },
+  {
+   "sec": "8 · Instalación sanitaria",
+   "item": "Cañerías de agua fría y caliente PPR Ø20",
+   "explicacion": "72,4 ml fría y 69,4 ml caliente.",
+   "cantidad": 141.8,
+   "unidad": "ml",
+   "plano": "Sanitaria PB",
+   "estado": "estimado"
+  },
+  {
+   "sec": "8 · Instalación sanitaria",
+   "item": "Colector cloacal y pluvial PVC Ø110",
+   "explicacion": "93,7 ml cloacal y 9 ml pluvial separada a calle.",
+   "cantidad": 102.7,
+   "unidad": "ml",
+   "plano": "Sanitaria PB",
+   "estado": "estimado"
+  },
+  {
+   "sec": "9 · Instalación eléctrica",
+   "item": "Tableros, medidores y tomas",
+   "explicacion": "7 tableros, 7 medidores UTE, 74 tomas, 74 bocas de iluminación, 16 tomas 20 A para aire acondicionado y 6 carteles C7.",
+   "cantidad": 184,
+   "unidad": "u",
+   "plano": "Eléctrica PB",
+   "estado": "estimado"
+  },
+  {
+   "sec": "10 · Terminaciones",
+   "item": "Pisos y revestimientos de locales",
+   "explicacion": "FALTA: no está cotizado. El presupuesto Eden Rock lo tiene como rubro propio.",
+   "cantidad": 0,
+   "unidad": "m²",
+   "plano": "Planta comercial",
+   "estado": "FALTA"
+  },
+  {
+   "sec": "10 · Terminaciones",
+   "item": "Pintura interior y exterior",
+   "explicacion": "FALTA: pintura de muros y cielorrasos, separada del masillado de divisorios.",
+   "cantidad": 0,
+   "unidad": "m²",
+   "plano": "Fachadas",
+   "estado": "FALTA"
+  },
+  {
+   "sec": "10 · Terminaciones",
+   "item": "Cielorraso de locales",
+   "explicacion": "Cielorraso de 21,7 m² según el cómputo; falta confirmar si es para todos los locales.",
+   "cantidad": 21.72,
+   "unidad": "m²",
+   "plano": "Planta comercial",
+   "estado": "FALTA"
+  },
+  {
+   "sec": "11 · Exteriores",
+   "item": "Pavimento de hormigón (estacionamiento)",
+   "explicacion": "16 plazas, maniobra y accesos. Fuera del precio base.",
+   "cantidad": 511,
+   "unidad": "m²",
+   "plano": "Implantación",
+   "estado": "fuera del precio base"
+  },
+  {
+   "sec": "11 · Exteriores",
+   "item": "Vereda municipal y paseo de entrada",
+   "explicacion": "Fuera del precio base.",
+   "cantidad": 144,
+   "unidad": "m²",
+   "plano": "Implantación",
+   "estado": "fuera del precio base"
+  },
+  {
+   "sec": "11 · Exteriores",
+   "item": "Decks de madera (plaza de comida)",
+   "explicacion": "162 m² de deck. Fuera del precio base.",
+   "cantidad": 162,
+   "unidad": "m²",
+   "plano": "Implantación · nave 2",
+   "estado": "fuera del precio base"
+  },
+  {
+   "sec": "12 · Cierre y gestión",
+   "item": "Andamios, fletes, limpieza y seguros",
+   "explicacion": "Cierre de obra.",
+   "cantidad": 1,
+   "unidad": "gl",
+   "plano": "Obra",
+   "estado": "referencia"
+  }
+ ],
+ "planos": [
+  {
+   "id": "cim",
+   "orden": 1,
+   "titulo": "Cimentación",
+   "doc": "planos/cimentacion_esquema.pdf",
+   "estado": "Geometría vieja, pendiente de actualizar a 250 m²"
+  },
+  {
+   "id": "est",
+   "orden": 2,
+   "titulo": "Estructura: techo, pórticos y fachadas",
+   "doc": "planos/desarrollo_plano_estructural_nave1.pdf",
+   "estado": "Vigente (modelo del usuario, 4 pórticos)"
+  },
+  {
+   "id": "est2",
+   "orden": 3,
+   "titulo": "Esquema estructural a 4 pórticos",
+   "doc": "planos/estructura_nave_modelo.pdf",
+   "estado": "Vigente"
+  },
+  {
+   "id": "san",
+   "orden": 4,
+   "titulo": "Sanitaria y eléctrica planta baja",
+   "doc": "planos/sanitaria_electrica_PB.pdf",
+   "estado": "Revisar con geometría de 250 m²"
+  },
+  {
+   "id": "mod",
+   "orden": 5,
+   "titulo": "Configurador 3D de nave",
+   "url": "https://smartbuildinguruguay.github.io/Presupuestos/jcg-pedragosa-proyecto/configurador-nave/",
+   "estado": "Vigente"
+  }
+ ]
+}
