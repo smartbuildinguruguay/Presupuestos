@@ -1,0 +1,32 @@
+{
+  "obra": "Pedragosa Sierra, Punta del Este (3 naves)",
+  "nave": {"largo_m": 22.5, "ancho_m": 11.1, "area_m2": 249.75, "porticos": 5, "separacion_m": 5.625},
+  "estructura_por_nave": {
+    "columnas_HI_240x100x6": {"cant": 10, "origen": "modelo"},
+    "vigas_cubierta_HI_240x100x6": {"cant": 10, "origen": "modelo"},
+    "acero_total_kg": {"valor": 7141.8, "origen": "modelo"}
+  },
+  "cimentacion": {
+    "dados_por_nave": {"cant": 10, "dim_m": "0.70 x 0.70 x 0.55", "origen": "calculada: solo bajo columnas"},
+    "platea_m2_por_nave": {"valor": 249.75, "origen": "medida"},
+    "riostres_m_por_nave": {"valor": 44.4, "origen": "calculada: 4 x 11.10"}
+  },
+  "sanitaria": {
+    "N1": {"inodoros": 2, "lavatorios": 2, "duchas": 2, "desagues_kitchenette": 3, "termotanques": 2},
+    "N2": {"inodoros": 4, "lavatorios": 4, "duchas": 2, "desagues_kitchenette": 3, "termotanques": 2},
+    "N3": {"inodoros": 4, "lavatorios": 4, "duchas": 6, "desagues_kitchenette": 0, "termotanques": 2},
+    "origen": "planilla original; reparticion por nave supuesta, pendiente de validar"
+  },
+  "electrica": {
+    "N1": {"tableros": 3, "medidores": 3, "tomas": 30, "bocas": 28, "tomas_20A": 6, "carteles_C7": 2},
+    "N2": {"tableros": 2, "medidores": 2, "tomas": 22, "bocas": 22, "tomas_20A": 4, "carteles_C7": 2},
+    "N3": {"tableros": 2, "medidores": 2, "tomas": 22, "bocas": 24, "tomas_20A": 6, "carteles_C7": 2},
+    "origen": "planilla original; reparticion por nave supuesta, pendiente de validar"
+  },
+  "pendientes": [
+    "Muros PIR: calcular sobre modelo de 5 porticos (hoy escalado 322.6 m2/nave)",
+    "Vidrieria: recalcular con 22.5 m",
+    "Vigas de borde de platea 201.6 ml: sin dimension ni cotizacion",
+    "Cimentacion: actualizar esquema a 10 dados por nave"
+  ]
+}
