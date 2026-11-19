@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Pedragosa Sierra · panel de obra (cantidades y planos)</title>
+<style>
+  :root { --ink:#1d2430; --mut:#6b7280; --line:#e5e7eb; --acc:#1f6fb4; --ok:#2e7d32; --warn:#b26a00; }
+  * { box-sizing:border-box; }
+  body { margin:0; font:15px/1.5 system-ui,-apple-system,Segoe UI,Roboto,sans-serif; color:var(--ink); background:#fafafa; }
+  header { background:#fff; border-bottom:1px solid var(--line); padding:20px 24px; }
+  header h1 { margin:0 0 4px; font-size:20px; }
+  header p { margin:0; color:var(--mut); font-size:13px; }
+  main { max-width:1100px; margin:0 auto; padding:24px; }
+  h2 { font-size:17px; margin:28px 0 10px; }
+  .cards { display:grid; grid-template-columns:repeat(auto-fit,minmax(200px,1fr)); gap:12px; }
+  .card { background:#fff; border:1px solid var(--line); border-radius:8px; padding:14px; }
+  .card .v { font-size:22px; font-weight:600; }
+  .card .k { color:var(--mut); font-size:12px; text-transform:uppercase; letter-spacing:.04em; }
+  .card .o { font-size:12px; color:var(--mut); margin-top:4px; }
+  table { width:100%; border-collapse:collapse; background:#fff; border:1px solid var(--line); border-radius:8px; overflow:hidden; font-size:14px; }
+  th, td { padding:9px 12px; border-bottom:1px solid var(--line); text-align:left; vertical-align:top; }
+  th { background:#f3f4f6; font-weight:600; font-size:12px; text-transform:uppercase; letter-spacing:.03em; color:var(--mut); }
+  td.n, th.n { text-align:right; font-variant-numeric:tabular-nums; }
+  .tag { display:inline-block; font-size:11px; padding:2px 8px; border-radius:999px; background:#eef2f7; color:#334155; }
+  .tag.med { background:#e8f5e9; color:var(--ok); }
+  .tag.sup { background:#fff4e0; color:var(--warn); }
+  .pend { background:#fff; border:1px solid var(--line); border-left:4px solid var(--warn); border-radius:8px; padding:12px 16px; }
+  .pend li { margin:4px 0; }
+  .planos a { display:block; padding:10px 14px; background:#fff; border:1px solid var(--line); border-radius:8px; margin-bottom:8px; color:var(--acc); text-decoration:none; }
+  .planos a:hover { border-color:var(--acc); }
+  .note { color:var(--mut); font-size:12px; margin-top:6px; }
+  #err { color:#b91c1c; }
+</style>
+</head>
+<body>
+<header>
+  <h1>Pedragosa Sierra · panel de obra</h1>
+  <p>Juan Carlos García · Punta del Este · 3 naves de 22,5 × 11,1 m · cantidades y planos. Sin precios ni margen (esos están en el presupuesto privado).</p>
+</header>
+<main>
+  <p id="err"></p>
+
+  <h2>Resumen (3 naves)</h2>
+  <div class="cards" id="resumen"></div>
+
+  <h2>Cimentación</h2>
+  <table>
+    <thead><tr><th>Rubro</th><th class="n">Cantidad</th><th>Detalle</th><th>Origen</th></tr></thead>
+    <tbody id="cim"></tbody>
+  </table>
+
+  <h2>Envolvente (por nave y total)</h2>
+  <table>
+    <thead><tr><th>Rubro</th><th class="n">Por nave (m²)</th><th class="n">3 naves (m²)</th><th>Origen</th></tr></thead>
+    <tbody id="env"></tbody>
+  </table>
+
+  <h2>Pendientes de decisión y de cotización</h2>
+  <div class="pend"><ul id="pend" style="margin:0;padding-left:18px"></ul></div>
+
+  <h2>Planos vigentes</h2>
+  <div class="planos" id="planos"></div>
+  <p class="note">Los planos se abren en PDF. Los cambios se ven en el historial de commits de este repositorio.</p>
+</main>
+<script>
+const fmt = (n, d=0) => (typeof n === 'number') ? n.toLocaleString('es-UY', {minimumFractionDigits:d, maximumFractionDigits:d}) : '—';
+const tag = o => {
+  const cls = /medid/i.test(o) ? 'med' : (/supuest|a validar|pendiente/i.test(o) ? 'sup' : '');
+  return `<span class="tag ${cls}">${o}</span>`;
+};
+const card = (k, v, o) => `<div class="card"><div class="k">${k}</div><div class="v">${v}</div><div class="o">${o||''}</div></div>`;
+const row = (cells) => `<tr>${cells.map((c,i)=> i===1 && typeof c==='number' ? `<td class="n">${fmt(c, c%1? 2:0)}</td>` : `<td>${c}</td>`).join('')}</tr>`;
+
+fetch('computo/cantidades.json', {cache:'no-store'})
+  .then(r => { if(!r.ok) throw new Error('no se pudo leer computo/cantidades.json'); return r.json(); })
+  .then(d => {
+    const c = d.cimentacion, e = d.envolvente_por_nave_m2, e3 = d.envolvente_3_naves_m2;
+    document.getElementById('resumen').innerHTML = [
+      card('Acero de estructura', fmt(d.galvanizado_ISO1461_kg.valor) + ' kg', '7.141,8 kg por nave · galvanizado ISO 1461'),
+      card('Platea', fmt(d.cimentacion.platea_m2_por_nave.valor*3) + ' m²', '249,75 m² por nave · e = 0,15 m'),
+      card('Hormigón (cim.)', fmt(c.hormigon_total_m3.valor, 1) + ' m³', 'platea + riostres + dados'),
+      card('Muro PIR neto', fmt(e3.muro_PIR_neto) + ' m²', fmt(e.muro_PIR_neto,1) + ' m² por nave'),
+      card('Techo PIR', fmt(e3.techo_PIR) + ' m²', fmt(e.techo_PIR,1) + ' m² por nave'),
+      card('Vidriería frente', fmt(e3.vidrieria) + ' m²', 'aluminio/PVC norte: ' + fmt(e3.aberturas_aluminio_PVC,1) + ' m²'),
+    ].join('');
+
+    document.getElementById('cim').innerHTML = [
+      ['Dados', d.cimentacion.dados_por_nave.cant + ' por nave · 0,70 × 0,70 × 0,55 m', 'solo bajo columnas', tag('calculada')].join('|'),
+      ['Riostres', d.cimentacion.riostres_por_nave.cant + ' por nave · 11,10 m · 0,40 × 0,40 m', 'uno por pórtico', tag('supuesta')].join('|'),
+      ['Platea', '249,75 m² por nave · e = 0,15 m', 'hormigón ' + fmt(d.cimentacion.hormigon_platea_m3.valor,2) + ' m³', tag('medida')].join('|'),
+      ['Hormigón total', fmt(c.hormigon_total_m3.valor,2) + ' m³', 'platea + riostres + dados', tag('calculada')].join('|'),
+      ['Armadura (kg)', 'dados ' + fmt(c.acero_kg.dados) + ' · riostres ' + fmt(c.acero_kg.riostres) + ' · malla ' + fmt(c.acero_kg.malla_platea), 'armadura tentativa', tag('supuesta')].join('|'),
+      ['Vigas de borde (pendiente)', fmt(d.vigas_borde_pendiente.longitud_ml,1) + ' ml · ' + fmt(d.vigas_borde_pendiente.hormigon_m3,2) + ' m³', 'no incluidas en el total', tag('pendiente')].join('|'),
+    ].map(r => { const [a,b,c2,t] = r.split('|'); return `<tr><td>${a}</td><td class="n">${b}</td><td>${c2}</td><td>${t}</td></tr>`; }).join('');
+
+    document.getElementById('env').innerHTML = [
+      ['Techo PIR (2 faldones)', e.techo_PIR, e3.techo_PIR, tag('medida')],
+      ['Muro PIR neto', e.muro_PIR_neto, e3.muro_PIR_neto, tag('calculada')],
+      ['Vidriería de frente', e.vidrieria_frente, e3.vidrieria, tag('planilla')],
+      ['Aberturas aluminio/PVC (norte)', e.aberturas_aluminio_PVC, e3.aberturas_aluminio_PVC, tag('planilla')],
+    ].map(([a,b,c2,t]) => `<tr><td>${a}</td><td class="n">${fmt(b,2)}</td><td class="n">${fmt(c2,2)}</td><td>${t}</td></tr>`).join('');
+
+    document.getElementById('pend').innerHTML = d.pendientes.map(p => `<li>${p}</li>`).join('');
+
+    document.getElementById('planos').innerHTML = [
+      ['planos/cimentacion_5porticos.pdf', 'Plano de cimentación (5 pórticos) · vigente, a validar'],
+      ['planos/estructura_nave_modelo.pdf', 'Estructura: planta de techo, pórtico tipo y fachadas · vigente'],
+      ['planos/sanitaria_PB_3_naves.pdf', 'Sanitaria PB, 3 naves · conteos de planilla'],
+      ['planos/electrica_PB_3_naves.pdf', 'Eléctrica PB, 3 naves · conteos de planilla'],
+    ].map(([h,t]) => `<a href="${h}">${t}</a>`).join('');
+  })
+  .catch(err => { document.getElementById('err').textContent = 'Error: ' + err.message; });
+</script>
+</body>
+</html>

@@ -113,10 +113,10 @@
     "origen": "planilla original; reparticion por nave supuesta, pendiente de validar"
   },
   "pendientes": [
-    "Vigas de borde de la platea (201,6 ml de la versión anterior): definir si se incluyen",
+    "Vigas de borde de la platea: decidir si se incluyen (32,3 m³ con 0,40 × 0,40)",
     "Armadura de dados, riostres y malla: validar con calculista",
     "Repartición de sanitaria y eléctrica por nave: validar",
-    "Galvanizado del acero (ISO 1461) no incluido en la cantidad de acero"
+    "Techo PIR: decidir si se presupuesta aparte de los muros"
   ],
   "envolvente_por_nave_m2": {
     "techo_PIR": {
@@ -141,5 +141,15 @@
     "muro_PIR_neto": 1001.47,
     "vidrieria": 141.75,
     "aberturas_aluminio_PVC": 47.16
+  },
+  "vigas_borde_pendiente": {
+    "longitud_ml": 201.6,
+    "seccion_m": "0.40 x 0.40 (supuesta)",
+    "hormigon_m3": 32.26,
+    "origen": "medida (perímetro de platea); no incluida en el total"
+  },
+  "galvanizado_ISO1461_kg": {
+    "valor": 21425,
+    "origen": "igual al acero de estructura; precio a cotizar"
   }
 }

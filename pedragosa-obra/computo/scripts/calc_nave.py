@@ -106,6 +106,14 @@ ok(abs(vidrio_frente * NAVES + abert_norte * NAVES - 188.88) < 0.1,
 ok(abs(muros + vidrio_frente + abert_norte - (muro_norte_bruto + muro_sur_bruto + 2*gable_bruto)) < 0.01,
    'muros netos + aberturas = paredes brutas')
 
+
+# ---- vigas de borde de la platea (pendiente de decisión: no entra en el total de hormigón) ----
+PERIM_NAVE = 2 * (L + W)
+VB_SECCION = (0.40, 0.40)
+vb_ml = PERIM_NAVE * NAVES
+vb_m3 = PERIM_NAVE * VB_SECCION[0] * VB_SECCION[1] * NAVES
+GALV_KG = round(7141.8 * NAVES)
+
 # ===== salida: cantidades.json =====
 step(7, 'Escritura de cantidades.json y plano')
 cant_path = RAIZ / 'computo' / 'cantidades.json'
@@ -132,11 +140,16 @@ d['envolvente_3_naves_m2'] = {
     'vidrieria': round(vidrio_frente * NAVES, 2),
     'aberturas_aluminio_PVC': round(abert_norte * NAVES, 2),
 }
+d['vigas_borde_pendiente'] = {
+    'longitud_ml': round(vb_ml, 1), 'seccion_m': '0.40 x 0.40 (supuesta)',
+    'hormigon_m3': round(vb_m3, 2), 'origen': 'medida (perímetro de platea); no incluida en el total',
+}
+d['galvanizado_ISO1461_kg'] = {'valor': GALV_KG, 'origen': 'igual al acero de estructura; precio a cotizar'}
 d['pendientes'] = [
-    'Vigas de borde de la platea (201,6 ml de la versión anterior): definir si se incluyen',
+    'Vigas de borde de la platea: decidir si se incluyen (32,3 m³ con 0,40 × 0,40)',
     'Armadura de dados, riostres y malla: validar con calculista',
     'Repartición de sanitaria y eléctrica por nave: validar',
-    'Galvanizado del acero (ISO 1461) no incluido en la cantidad de acero',
+    'Techo PIR: decidir si se presupuesta aparte de los muros',
 ]
 cant_path.write_text(json.dumps(d, ensure_ascii=False, indent=2), encoding='utf-8')
 
