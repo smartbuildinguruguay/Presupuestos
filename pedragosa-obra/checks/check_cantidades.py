@@ -35,8 +35,10 @@ if abs(area - d["nave"]["area_m2"]) > 0.01:
     errores.append(f"area {d['nave']['area_m2']} != {area:.2f}")
 
 # Riostres = 4 x ancho
-if abs(d["cimentacion"]["riostres_m_por_nave"]["valor"] - 4 * d["nave"]["ancho_m"]) > 0.01:
-    errores.append("riostres != 4 x ancho")
+if d["cimentacion"]["riostres_por_nave"]["cant"] != d["nave"]["porticos"]:
+    errores.append("riostres != porticos")
+if abs(d["cimentacion"]["riostres_por_nave"]["long_m"] - d["nave"]["ancho_m"]) > 0.01:
+    errores.append("riostre != ancho")
 
 if errores:
     print("FALLAS:"); [print(" -", e) for e in errores]; sys.exit(1)

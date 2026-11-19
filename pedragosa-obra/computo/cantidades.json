@@ -1,32 +1,145 @@
 {
   "obra": "Pedragosa Sierra, Punta del Este (3 naves)",
-  "nave": {"largo_m": 22.5, "ancho_m": 11.1, "area_m2": 249.75, "porticos": 5, "separacion_m": 5.625},
+  "nave": {
+    "largo_m": 22.5,
+    "ancho_m": 11.1,
+    "area_m2": 249.75,
+    "porticos": 5,
+    "separacion_m": 5.625
+  },
   "estructura_por_nave": {
-    "columnas_HI_240x100x6": {"cant": 10, "origen": "modelo"},
-    "vigas_cubierta_HI_240x100x6": {"cant": 10, "origen": "modelo"},
-    "acero_total_kg": {"valor": 7141.8, "origen": "modelo"}
+    "columnas_HI_240x100x6": {
+      "cant": 10,
+      "origen": "modelo"
+    },
+    "vigas_cubierta_HI_240x100x6": {
+      "cant": 10,
+      "origen": "modelo"
+    },
+    "acero_total_kg": {
+      "valor": 7141.8,
+      "origen": "modelo"
+    }
   },
   "cimentacion": {
-    "dados_por_nave": {"cant": 10, "dim_m": "0.70 x 0.70 x 0.55", "origen": "calculada: solo bajo columnas"},
-    "platea_m2_por_nave": {"valor": 249.75, "origen": "medida"},
-    "riostres_m_por_nave": {"valor": 44.4, "origen": "calculada: 4 x 11.10"}
+    "dados_por_nave": {
+      "cant": 10,
+      "dim_m": "0.70 x 0.70 x 0.55",
+      "origen": "calculada: solo bajo columnas"
+    },
+    "hormigon_dados_m3": {
+      "valor": 8.085,
+      "origen": "calculada"
+    },
+    "platea_m2_por_nave": {
+      "valor": 249.75,
+      "espesor_m": 0.15,
+      "origen": "medida"
+    },
+    "hormigon_platea_m3": {
+      "valor": 112.39,
+      "origen": "calculada"
+    },
+    "riostres_por_nave": {
+      "cant": 5,
+      "long_m": 11.1,
+      "seccion_m": "0.40 x 0.40",
+      "origen": "supuesta: uno por pórtico"
+    },
+    "hormigon_riostres_m3": {
+      "valor": 26.64,
+      "origen": "calculada"
+    },
+    "hormigon_total_m3": {
+      "valor": 147.11,
+      "origen": "calculada"
+    },
+    "acero_kg": {
+      "dados": 233,
+      "riostres": 1237,
+      "malla_platea": 1663,
+      "origen": "supuesta (armadura tentativa)"
+    }
   },
   "sanitaria": {
-    "N1": {"inodoros": 2, "lavatorios": 2, "duchas": 2, "desagues_kitchenette": 3, "termotanques": 2},
-    "N2": {"inodoros": 4, "lavatorios": 4, "duchas": 2, "desagues_kitchenette": 3, "termotanques": 2},
-    "N3": {"inodoros": 4, "lavatorios": 4, "duchas": 6, "desagues_kitchenette": 0, "termotanques": 2},
+    "N1": {
+      "inodoros": 2,
+      "lavatorios": 2,
+      "duchas": 2,
+      "desagues_kitchenette": 3,
+      "termotanques": 2
+    },
+    "N2": {
+      "inodoros": 4,
+      "lavatorios": 4,
+      "duchas": 2,
+      "desagues_kitchenette": 3,
+      "termotanques": 2
+    },
+    "N3": {
+      "inodoros": 4,
+      "lavatorios": 4,
+      "duchas": 6,
+      "desagues_kitchenette": 0,
+      "termotanques": 2
+    },
     "origen": "planilla original; reparticion por nave supuesta, pendiente de validar"
   },
   "electrica": {
-    "N1": {"tableros": 3, "medidores": 3, "tomas": 30, "bocas": 28, "tomas_20A": 6, "carteles_C7": 2},
-    "N2": {"tableros": 2, "medidores": 2, "tomas": 22, "bocas": 22, "tomas_20A": 4, "carteles_C7": 2},
-    "N3": {"tableros": 2, "medidores": 2, "tomas": 22, "bocas": 24, "tomas_20A": 6, "carteles_C7": 2},
+    "N1": {
+      "tableros": 3,
+      "medidores": 3,
+      "tomas": 30,
+      "bocas": 28,
+      "tomas_20A": 6,
+      "carteles_C7": 2
+    },
+    "N2": {
+      "tableros": 2,
+      "medidores": 2,
+      "tomas": 22,
+      "bocas": 22,
+      "tomas_20A": 4,
+      "carteles_C7": 2
+    },
+    "N3": {
+      "tableros": 2,
+      "medidores": 2,
+      "tomas": 22,
+      "bocas": 24,
+      "tomas_20A": 6,
+      "carteles_C7": 2
+    },
     "origen": "planilla original; reparticion por nave supuesta, pendiente de validar"
   },
   "pendientes": [
-    "Muros PIR: calcular sobre modelo de 5 porticos (hoy escalado 322.6 m2/nave)",
-    "Vidrieria: recalcular con 22.5 m",
-    "Vigas de borde de platea 201.6 ml: sin dimension ni cotizacion",
-    "Cimentacion: actualizar esquema a 10 dados por nave"
-  ]
+    "Vigas de borde de la platea (201,6 ml de la versión anterior): definir si se incluyen",
+    "Armadura de dados, riostres y malla: validar con calculista",
+    "Repartición de sanitaria y eléctrica por nave: validar",
+    "Galvanizado del acero (ISO 1461) no incluido en la cantidad de acero"
+  ],
+  "envolvente_por_nave_m2": {
+    "techo_PIR": {
+      "valor": 273.0,
+      "origen": "medida (faldones del modelo)"
+    },
+    "muro_PIR_neto": {
+      "valor": 333.82,
+      "origen": "calculada: bruto menos aberturas"
+    },
+    "vidrieria_frente": {
+      "valor": 47.25,
+      "origen": "planilla de aberturas"
+    },
+    "aberturas_aluminio_PVC": {
+      "valor": 15.72,
+      "origen": "planilla de aberturas"
+    }
+  },
+  "envolvente_3_naves_m2": {
+    "techo_PIR": 819.01,
+    "muro_PIR_neto": 1001.47,
+    "vidrieria": 141.75,
+    "aberturas_aluminio_PVC": 47.16
+  }
 }
