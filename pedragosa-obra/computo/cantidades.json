@@ -32,12 +32,14 @@
       "origen": "calculada"
     },
     "platea_m2_por_nave": {
-      "valor": 249.75,
+      "valor": 298.75,
+      "dim_m": "23.90 x 12.50",
+      "vuelo_m": 0.7,
       "espesor_m": 0.15,
-      "origen": "medida"
+      "origen": "calculada: nave más vuelo de 0,70 m por lado"
     },
     "hormigon_platea_m3": {
-      "valor": 112.39,
+      "valor": 134.44,
       "origen": "calculada"
     },
     "riostres_por_nave": {
@@ -51,13 +53,13 @@
       "origen": "calculada"
     },
     "hormigon_total_m3": {
-      "valor": 147.11,
+      "valor": 169.16,
       "origen": "calculada"
     },
     "acero_kg": {
       "dados": 233,
       "riostres": 1237,
-      "malla_platea": 1663,
+      "malla_platea": 1990,
       "origen": "supuesta (armadura tentativa)"
     }
   },
@@ -113,7 +115,7 @@
     "origen": "planilla original; reparticion por nave supuesta, pendiente de validar"
   },
   "pendientes": [
-    "Vigas de borde de la platea: decidir si se incluyen (32,3 m³ con 0,40 × 0,40)",
+    "Vigas de borde de la platea: decidir si se incluyen (34,9 m³ con 0,40 × 0,40)",
     "Armadura de dados, riostres y malla: validar con calculista",
     "Repartición de sanitaria y eléctrica por nave: validar",
     "Techo PIR: decidir si se presupuesta aparte de los muros"
@@ -143,9 +145,9 @@
     "aberturas_aluminio_PVC": 47.16
   },
   "vigas_borde_pendiente": {
-    "longitud_ml": 201.6,
+    "longitud_ml": 218.4,
     "seccion_m": "0.40 x 0.40 (supuesta)",
-    "hormigon_m3": 32.26,
+    "hormigon_m3": 34.94,
     "origen": "medida (perímetro de platea); no incluida en el total"
   },
   "galvanizado_ISO1461_kg": {

@@ -27,6 +27,10 @@ Z0 = 0.20
 DADO = (0.70, 0.70, 0.55)                  # ancho, largo, alto
 RIO = (0.40, 0.40)                         # riostre b x h
 PLAT_E = 0.15                              # espesor de platea
+PLAT_MARGEN = 0.70                         # vuelo de la platea más allá de la nave, cada lado (m)
+PLAT_L = L + 2 * PLAT_MARGEN               # 23,90 m
+PLAT_W = W + 2 * PLAT_MARGEN               # 12,50 m
+PLAT_AREA = PLAT_L * PLAT_W                # ≈ 298,75 m² (objetivo ≈ 300 m² por nave)
 KG = {6: 0.222, 8: 0.395, 12: 0.888}       # kg/m por diámetro
 DADOS_POR_NAVE = [(u, v) for u in LC for v in (0.0, W)]
 RIOSTRES_POR_NAVE = LC                     # un riostre transversal por pórtico
@@ -47,7 +51,8 @@ def ok(cond, texto):
 # ===== paso 1: geometría =====
 step(1, 'Geometría de la nave')
 area = L * W
-ok(abs(area - 249.75) < 0.01, f'área de planta {area:.2f} m² (esperado 249,75)')
+ok(abs(area - 249.75) < 0.01, f'área de nave {area:.2f} m² (esperado 249,75)')
+ok(abs(PLAT_AREA - 300) < 2, f'platea {PLAT_L:.2f} × {PLAT_W:.2f} = {PLAT_AREA:.2f} m² por nave (objetivo ≈ 300)')
 ok(len(LC) == 5, f'{len(LC)} pórticos a {LC[1]-LC[0]:.3f} m')
 
 # ===== paso 2: dados =====
@@ -67,10 +72,10 @@ print(f'   longitud de riostre {rio_L:.2f} m, volumen por nave {rio_vol:.3f} m³
 
 # ===== paso 4: platea y hormigón =====
 step(4, 'Platea y hormigón')
-hor_plat = area * PLAT_E * NAVES
+hor_plat = PLAT_AREA * PLAT_E * NAVES
 hor_total = hor_plat + hor_rio + hor_dados
 print(f'   platea {hor_plat:.2f} m³ · riostres {hor_rio:.2f} m³ · dados {hor_dados:.3f} m³ · total {hor_total:.2f} m³')
-ok(abs(hor_plat - 112.4) < 0.1, 'platea coincide con la cantidad anterior (112,4 m³)')
+ok(abs(hor_plat - PLAT_AREA * PLAT_E * NAVES) < 0.01, f'platea {hor_plat:.2f} m³ (3 naves)')
 
 # ===== paso 5: armadura =====
 step(5, 'Armadura supuesta')
@@ -79,10 +84,10 @@ rio_kg = 4 * (rio_L + 0.60) * KG[12] + (rio_L / 0.15 + 1) * (2 * (RIO[0] - 0.08)
 malla_kg_m2 = (1 / 0.20) * 2 * KG[6]
 kg_dados = dado_kg * len(DADOS_POR_NAVE) * NAVES
 kg_rio = rio_kg * len(RIOSTRES_POR_NAVE) * NAVES
-kg_malla = malla_kg_m2 * area * NAVES
+kg_malla = malla_kg_m2 * PLAT_AREA * NAVES
 print(f'   dado {dado_kg:.1f} kg · riostre {rio_kg:.1f} kg · malla {malla_kg_m2:.2f} kg/m²')
 print(f'   total: dados {kg_dados:.0f} kg · riostres {kg_rio:.0f} kg · malla platea {kg_malla:.0f} kg')
-ok(abs(kg_malla - 1664) < 5, f'malla de platea {kg_malla:.0f} kg (anterior 1.664)')
+ok(abs(kg_malla - malla_kg_m2 * PLAT_AREA * NAVES) < 1, f'malla de platea {kg_malla:.0f} kg (3 naves)')
 
 # ===== paso 6: envolvente =====
 step(6, 'Envolvente: techo, muros PIR y vidriería (por nave)')
@@ -108,7 +113,7 @@ ok(abs(muros + vidrio_frente + abert_norte - (muro_norte_bruto + muro_sur_bruto 
 
 
 # ---- vigas de borde de la platea (pendiente de decisión: no entra en el total de hormigón) ----
-PERIM_NAVE = 2 * (L + W)
+PERIM_NAVE = 2 * (PLAT_L + PLAT_W)
 VB_SECCION = (0.40, 0.40)
 vb_ml = PERIM_NAVE * NAVES
 vb_m3 = PERIM_NAVE * VB_SECCION[0] * VB_SECCION[1] * NAVES
@@ -121,7 +126,7 @@ d = json.loads(cant_path.read_text(encoding='utf-8'))
 d['cimentacion'] = {
     'dados_por_nave': {'cant': len(DADOS_POR_NAVE), 'dim_m': '0.70 x 0.70 x 0.55', 'origen': 'calculada: solo bajo columnas'},
     'hormigon_dados_m3': {'valor': round(hor_dados, 3), 'origen': 'calculada'},
-    'platea_m2_por_nave': {'valor': area, 'espesor_m': PLAT_E, 'origen': 'medida'},
+    'platea_m2_por_nave': {'valor': round(PLAT_AREA, 2), 'dim_m': f'{PLAT_L:.2f} x {PLAT_W:.2f}', 'vuelo_m': PLAT_MARGEN, 'espesor_m': PLAT_E, 'origen': 'calculada: nave más vuelo de 0,70 m por lado'},
     'hormigon_platea_m3': {'valor': round(hor_plat, 2), 'origen': 'calculada'},
     'riostres_por_nave': {'cant': len(RIOSTRES_POR_NAVE), 'long_m': rio_L, 'seccion_m': '0.40 x 0.40', 'origen': 'supuesta: uno por pórtico'},
     'hormigon_riostres_m3': {'valor': round(hor_rio, 2), 'origen': 'calculada'},
@@ -146,7 +151,7 @@ d['vigas_borde_pendiente'] = {
 }
 d['galvanizado_ISO1461_kg'] = {'valor': GALV_KG, 'origen': 'igual al acero de estructura; precio a cotizar'}
 d['pendientes'] = [
-    'Vigas de borde de la platea: decidir si se incluyen (32,3 m³ con 0,40 × 0,40)',
+    'Vigas de borde de la platea: decidir si se incluyen (34,9 m³ con 0,40 × 0,40)',
     'Armadura de dados, riostres y malla: validar con calculista',
     'Repartición de sanitaria y eléctrica por nave: validar',
     'Techo PIR: decidir si se presupuesta aparte de los muros',
@@ -160,6 +165,7 @@ GAP = 3.0
 for k in range(NAVES):
     o = k * (L + GAP)
     ax.add_patch(Rectangle((o, 0), L, W, fill=False, ec='black', lw=2.0))
+    ax.add_patch(Rectangle((o - PLAT_MARGEN, -PLAT_MARGEN), PLAT_L, PLAT_W, fc='#e9edf2', ec='#555', lw=1.2, ls='--', zorder=0))
     ax.add_patch(Rectangle((o, 0), L, W, fc='#f2f2f2', ec='none', zorder=0))
     for u in LC:
         ax.plot([o + u, o + u], [0, W], color='#7a7a7a', lw=0.8, ls=(0, (6, 3)))
@@ -171,7 +177,7 @@ for k in range(NAVES):
         ax.text(o + u, v, f'D{i}', ha='center', va='center', fontsize=6.5, weight='bold', zorder=4)
     ax.text(o + L / 2, -3.4, ['NAVE 1 · COMERCIAL', 'NAVE 2 · GASTRONÓMICO', 'NAVE 3 · CONSULTORIOS'][k],
             ha='center', fontsize=11, weight='bold')
-    ax.text(o + L / 2, -4.2, f'10 dados de 0,70 × 0,70 × 0,55 m · 5 riostres 0,40 × 0,40 m · platea {area:.2f} m²',
+    ax.text(o + L / 2, -4.2, f'10 dados de 0,70 × 0,70 × 0,55 m · 5 riostres 0,40 × 0,40 m · platea {PLAT_AREA:.2f} m²',
             ha='center', fontsize=8)
 ax.annotate('', xy=(0, -1.0), xytext=(L, -1.0), arrowprops=dict(arrowstyle='<->', lw=0.8))
 ax.text(L / 2, -1.6, f'{L:.2f} m', ha='center', fontsize=9)
@@ -181,7 +187,7 @@ ax.set_xlim(-3, NAVES * (L + GAP) - GAP + 3)
 ax.set_ylim(-5.5, W + 2.5)
 fig.text(0.04, 0.94, 'SMART BUILDING URUGUAY · Juan Carlos García · Pedragosa Sierra · Plano de cimentación (5 pórticos)',
          fontsize=12, weight='bold')
-fig.text(0.04, 0.915, 'Dados solo bajo columnas (10 por nave). Riostres transversales en cada pórtico. Platea e = 0,15 m. '
+fig.text(0.04, 0.915, 'Dados solo bajo columnas (10 por nave). Riostres transversales en cada pórtico. Platea 23,90 × 12,50 m (vuelo 0,70 m), e = 0,15 m. '
          'Dimensiones supuestas, a validar por el calculista.', fontsize=8)
 fig.text(0.04, 0.06, 'Medidas en metros · sin escala · dimensiones y armadura tentativas', fontsize=7.5)
 with PdfPages(RAIZ / 'planos' / 'cimentacion_5porticos.pdf') as pp:
