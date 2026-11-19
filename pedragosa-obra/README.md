@@ -21,32 +21,30 @@ python3 computo/scripts/calc_nave.py
 python3 checks/check_cantidades.py
 ```
 
+## Medidas de los dibujos del dueño (a escala)
+
+| Concepto | Medida |
+|---|---|
+| Ancho exterior | 12,10 m (acotado en `tres_naves_v2`) |
+| Largo exterior | 22,5 m |
+| Pórticos | 5, separados 5,12 m (4 vanos = 20,48 m) |
+| Distancia entre líneas de columnas | 10,96 m |
+| Dados | 0,70 × 0,70 m, 2 por pórtico (10 por nave) |
+| Alero / cumbrera | ≈ 5,70 m / ≈ 6,90 m (aproximado) |
+
+El front pórtico (el de adelante) es liviano, solo con paneles y clavaderas prolongadas.
+
 ## Cantidades por nave (y total de 3 naves)
 
 | Rubro | Por nave | 3 naves | Origen |
 |---|---|---|---|
-| Acero de estructura | 7.141,8 kg | 21.425 kg | modelo |
-| Dados | 10 (0,70 × 0,70 × 0,55 m) | 30 | calculada: solo bajo columnas |
-| Riostres | 5 de 11,10 m (0,40 × 0,40) | 15 | supuesta: uno por pórtico |
-| Platea | 298,75 m² (23,90 × 12,50 m, vuelo 0,70 m), e = 0,15 m | 896,25 m² | calculada |
-| Hormigón | 56,4 m³ | 169,2 m³ | calculada |
-| Armadura de dados, riostres y malla | ≈ 1.150 kg | ≈ 3.460 kg | supuesta |
-| Techo PIR (2 faldones) | 273,0 m² | 819,0 m² | medida |
-| Muro PIR neto | 333,8 m² | 1.001,5 m² | calculada: bruto menos aberturas |
-| Vidriería de frente | 47,25 m² | 141,75 m² | planilla de aberturas |
-| Aberturas aluminio/PVC (norte) | 15,72 m² | 47,2 m² | planilla de aberturas |
-
-
-## Base de trabajo vigente
-
-El cómputo métrico se hace sobre los archivos que el dueño de la obra define como fuente:
-
-1. `fachadas_revestimientos.pdf`: fachadas A y B, 98,10 m² netos de revestimiento cada una.
-2. `implantacion_padrones.pdf`: naves en los padrones 10596 (nave 1), 10597 (nave 2) y 10598 (nave 3). Cada nave está en su propio padrón, pegada al lateral izquierdo, con acceso por el derecho.
-3. `tres_naves_v2.pdf`: planta de las tres naves, de 12,10 m de ancho.
-4. Tomas de SketchUp de cimentación y estructura, con un pórtico más que el modelo anterior. **Pendiente de subir.**
-
-Los planos y cantidades que generamos antes a partir de nuestro modelo (5 pórticos, 22,5 × 11,1 m) **no son fuente**. Las cantidades de cimentación, envolvente y presupuesto se recalculan con las tomas nuevas.
+| Platea 0,15 m (23,20 × 12,80 m) | 296,96 m² | 890,88 m² | calculada (vuelo 0,35 m) |
+| Riostres transversales (uno por pórtico) | 5 de 10,96 m | 15 (164,4 ml) | confirmado por el dueño |
+| Dados | 10 (0,70 × 0,70 × 0,55 m) | 30 | medido + supuesto |
+| Hormigón total | 56,0 m³ | 168,0 m³ | calculada |
+| Techo PIR (2 faldones) | 277,6 m² | 832,7 m² | calculada |
+| Muro PIR neto | 301,4 m² | 904,2 m² | laterales medidos (98,10 m² c/u) + gables |
+| Acero de estructura | 7.141,8 kg | 21.425 kg | **modelo anterior: pendiente de recalcular** |
 
 ## Estado de los planos
 

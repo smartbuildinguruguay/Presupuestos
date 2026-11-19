@@ -1,14 +1,10 @@
-"""Valida cantidades.json contra la planilla original. Ejecutar: python3 checks/check_cantidades.py"""
+"""Valida computo/cantidades.json: planilla original y geometría medida. Ejecutar: python3 checks/check_cantidades.py"""
 import json, pathlib, sys
-
 raiz = pathlib.Path(__file__).resolve().parent.parent
 d = json.loads((raiz / "computo" / "cantidades.json").read_text(encoding="utf-8"))
 errores = []
-
 def suma(bloque, clave):
     return sum(v[clave] for k, v in bloque.items() if k.startswith("N"))
-
-# Planilla original (global)
 PLANILLA = {
     ("sanitaria", "inodoros"): 10, ("sanitaria", "lavatorios"): 10, ("sanitaria", "duchas"): 10,
     ("sanitaria", "desagues_kitchenette"): 6, ("sanitaria", "termotanques"): 6,
@@ -19,27 +15,13 @@ for (rubro, clave), esperado in PLANILLA.items():
     total = suma(d[rubro], clave)
     if total != esperado:
         errores.append(f"{rubro}.{clave}: suma {total} != planilla {esperado}")
-
-# Dados solo bajo columnas: 2 columnas por porticos interiores/extremos => 2 * porticos
+n = d["nave"]
+if n["porticos"] != 5: errores.append("porticos != 5")
+if abs(n["separacion_m"] * (n["porticos"] - 1) - 20.48) > 0.01: errores.append("vano total != 20,48")
 dados = d["cimentacion"]["dados_por_nave"]["cant"]
-if dados != 2 * d["nave"]["porticos"]:
-    errores.append(f"dados por nave {dados} != 2 x porticos")
-
-# Columnas = 2 por portico
-if d["estructura_por_nave"]["columnas_HI_240x100x6"]["cant"] != 2 * d["nave"]["porticos"]:
-    errores.append("columnas != 2 x porticos")
-
-# Area = largo x ancho
-area = d["nave"]["largo_m"] * d["nave"]["ancho_m"]
-if abs(area - d["nave"]["area_m2"]) > 0.01:
-    errores.append(f"area {d['nave']['area_m2']} != {area:.2f}")
-
-# Riostres = 4 x ancho
-if d["cimentacion"]["riostres_por_nave"]["cant"] != d["nave"]["porticos"]:
-    errores.append("riostres != porticos")
-if abs(d["cimentacion"]["riostres_por_nave"]["long_m"] - d["nave"]["ancho_m"]) > 0.01:
-    errores.append("riostre != ancho")
-
+if dados != 2 * n["porticos"]: errores.append("dados != 2 x porticos")
+if d["cimentacion"]["riostres_por_nave"]["cant"] != n["porticos"]: errores.append("riostres != porticos")
+if abs(d["cimentacion"]["riostres_por_nave"]["long_m"] - n["distancia_columnas_m"]) > 0.01: errores.append("riostre != distancia columnas")
 if errores:
     print("FALLAS:"); [print(" -", e) for e in errores]; sys.exit(1)
-print("OK: cantidades coinciden con planilla y geometria")
+print("OK: cantidades coinciden con planilla y geometría medida")

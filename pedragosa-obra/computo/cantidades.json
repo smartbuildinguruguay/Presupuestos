@@ -1,11 +1,14 @@
 {
   "obra": "Pedragosa Sierra, Punta del Este (3 naves)",
   "nave": {
-    "largo_m": 22.5,
-    "ancho_m": 11.1,
-    "area_m2": 249.75,
+    "ancho_exterior_m": 12.1,
+    "largo_exterior_m": 22.5,
     "porticos": 5,
-    "separacion_m": 5.625
+    "separacion_m": 5.12,
+    "distancia_columnas_m": 10.96,
+    "alero_m": 5.7,
+    "cumbrera_m": 6.9,
+    "origen": "medido a escala sobre dibujos del dueño"
   },
   "estructura_por_nave": {
     "columnas_HI_240x100x6": {
@@ -25,42 +28,37 @@
     "dados_por_nave": {
       "cant": 10,
       "dim_m": "0.70 x 0.70 x 0.55",
-      "origen": "calculada: solo bajo columnas"
-    },
-    "hormigon_dados_m3": {
-      "valor": 8.085,
-      "origen": "calculada"
+      "origen": "medido (0,70 m) + supuesto (alto 0,55)"
     },
     "platea_m2_por_nave": {
-      "valor": 298.75,
-      "dim_m": "23.90 x 12.50",
-      "vuelo_m": 0.7,
+      "valor": 296.96,
+      "dim_m": "23.20 x 12.80",
       "espesor_m": 0.15,
-      "origen": "calculada: nave más vuelo de 0,70 m por lado"
+      "origen": "calculada: nave más vuelo 0,35 m"
     },
     "hormigon_platea_m3": {
-      "valor": 134.44,
-      "origen": "calculada"
+      "valor": 133.63
     },
     "riostres_por_nave": {
       "cant": 5,
-      "long_m": 11.1,
+      "long_m": 10.96,
       "seccion_m": "0.40 x 0.40",
-      "origen": "supuesta: uno por pórtico"
+      "origen": "una por pórtico (confirmado por el dueño)"
     },
     "hormigon_riostres_m3": {
-      "valor": 26.64,
-      "origen": "calculada"
+      "valor": 26.3
+    },
+    "hormigon_dados_m3": {
+      "valor": 8.08
     },
     "hormigon_total_m3": {
-      "valor": 169.16,
-      "origen": "calculada"
+      "valor": 168.02
     },
     "acero_kg": {
       "dados": 233,
-      "riostres": 1237,
-      "malla_platea": 1990,
-      "origen": "supuesta (armadura tentativa)"
+      "riostres": 1222,
+      "malla_platea": 1978,
+      "origen": "supuesta"
     }
   },
   "sanitaria": {
@@ -115,38 +113,34 @@
     "origen": "planilla original; reparticion por nave supuesta, pendiente de validar"
   },
   "pendientes": [
-    "Vigas de borde de la platea: decidir si se incluyen (34,9 m³ con 0,40 × 0,40)",
-    "Armadura de dados, riostres y malla: validar con calculista"
+    "Acero de estructura: recalcular desde la lista de piezas del modelo nuevo (hoy 7.141,8 kg por nave, modelo anterior)",
+    "Vidriería de frente: medir en la fachada del dueño",
+    "Armadura de dados, riostres y malla: validar con calculista",
+    "Repartición de sanitaria y eléctrica por nave: validada",
+    "Techo PIR: se presupuesta al mismo precio que el muro PIR (USD 50/m²)"
   ],
   "envolvente_por_nave_m2": {
     "techo_PIR": {
-      "valor": 273.0,
-      "origen": "medida (faldones del modelo)"
+      "valor": 277.55,
+      "origen": "calculada: 2 faldones sobre 22,5 m"
     },
     "muro_PIR_neto": {
-      "valor": 333.82,
-      "origen": "calculada: bruto menos aberturas"
+      "valor": 301.41,
+      "origen": "laterales medidos (98,10 c/u) + gables calculados"
     },
     "vidrieria_frente": {
       "valor": 47.25,
-      "origen": "planilla de aberturas"
-    },
-    "aberturas_aluminio_PVC": {
-      "valor": 15.72,
-      "origen": "planilla de aberturas"
+      "origen": "pendiente de medir en fachada del dueño"
     }
   },
   "envolvente_3_naves_m2": {
-    "techo_PIR": 819.01,
-    "muro_PIR_neto": 1001.47,
-    "vidrieria": 141.75,
-    "aberturas_aluminio_PVC": 47.16
+    "techo_PIR": 832.66,
+    "muro_PIR_neto": 904.23,
+    "vidrieria": 141.75
   },
   "vigas_borde_pendiente": {
-    "longitud_ml": 218.4,
-    "seccion_m": "0.40 x 0.40 (supuesta)",
-    "hormigon_m3": 34.94,
-    "origen": "medida (perímetro de platea); no incluida en el total"
+    "longitud_ml": 216.0,
+    "origen": "no incluidas: el dueño confirmó riostres transversales"
   },
   "galvanizado_ISO1461_kg": {
     "valor": 21425,
