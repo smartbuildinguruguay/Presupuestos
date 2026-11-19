@@ -36,6 +36,18 @@ python3 checks/check_cantidades.py
 | Vidriería de frente | 47,25 m² | 141,75 m² | planilla de aberturas |
 | Aberturas aluminio/PVC (norte) | 15,72 m² | 47,2 m² | planilla de aberturas |
 
+
+## Base de trabajo vigente
+
+El cómputo métrico se hace sobre los archivos que el dueño de la obra define como fuente:
+
+1. `fachadas_revestimientos.pdf`: fachadas A y B, 98,10 m² netos de revestimiento cada una.
+2. `implantacion_padrones.pdf`: naves en los padrones 10596 (nave 1), 10597 (nave 2) y 10598 (nave 3). Cada nave está en su propio padrón, pegada al lateral izquierdo, con acceso por el derecho.
+3. `tres_naves_v2.pdf`: planta de las tres naves, de 12,10 m de ancho.
+4. Tomas de SketchUp de cimentación y estructura, con un pórtico más que el modelo anterior. **Pendiente de subir.**
+
+Los planos y cantidades que generamos antes a partir de nuestro modelo (5 pórticos, 22,5 × 11,1 m) **no son fuente**. Las cantidades de cimentación, envolvente y presupuesto se recalculan con las tomas nuevas.
+
 ## Estado de los planos
 
 | Documento | Estado | Observación |
