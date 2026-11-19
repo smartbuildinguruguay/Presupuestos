@@ -116,9 +116,7 @@
   },
   "pendientes": [
     "Vigas de borde de la platea: decidir si se incluyen (34,9 m³ con 0,40 × 0,40)",
-    "Armadura de dados, riostres y malla: validar con calculista",
-    "Repartición de sanitaria y eléctrica por nave: validar",
-    "Techo PIR: decidir si se presupuesta aparte de los muros"
+    "Armadura de dados, riostres y malla: validar con calculista"
   ],
   "envolvente_por_nave_m2": {
     "techo_PIR": {
@@ -153,5 +151,6 @@
   "galvanizado_ISO1461_kg": {
     "valor": 21425,
     "origen": "igual al acero de estructura; precio a cotizar"
-  }
+  },
+  "techo_PIR_decision": "se presupuesta al mismo precio que el muro PIR (USD 50/m²)"
 }

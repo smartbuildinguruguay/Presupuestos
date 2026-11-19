@@ -149,12 +149,11 @@ d['vigas_borde_pendiente'] = {
     'longitud_ml': round(vb_ml, 1), 'seccion_m': '0.40 x 0.40 (supuesta)',
     'hormigon_m3': round(vb_m3, 2), 'origen': 'medida (perímetro de platea); no incluida en el total',
 }
+d['techo_PIR_decision'] = 'se presupuesta al mismo precio que el muro PIR (USD 50/m²)'
 d['galvanizado_ISO1461_kg'] = {'valor': GALV_KG, 'origen': 'igual al acero de estructura; precio a cotizar'}
 d['pendientes'] = [
     'Vigas de borde de la platea: decidir si se incluyen (34,9 m³ con 0,40 × 0,40)',
     'Armadura de dados, riostres y malla: validar con calculista',
-    'Repartición de sanitaria y eléctrica por nave: validar',
-    'Techo PIR: decidir si se presupuesta aparte de los muros',
 ]
 cant_path.write_text(json.dumps(d, ensure_ascii=False, indent=2), encoding='utf-8')
 

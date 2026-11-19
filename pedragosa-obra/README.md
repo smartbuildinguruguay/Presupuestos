@@ -49,8 +49,8 @@ python3 checks/check_cantidades.py
 
 1. Validar con el calculista: dimensiones de dados y riostres, armadura y tipo de fundación.
 2. Vigas de borde de la platea: 218,4 ml y 34,9 m³ con 0,40 × 0,40 m, no incluidas en el total. Decidir si se incluyen.
-3. Validar la repartición por nave de sanitaria y eléctrica.
+3. Repartición por nave de sanitaria y eléctrica: validada.
 4. Galvanizado ISO 1461: 21.425 kg (igual al acero de estructura). Falta precio.
-5. Confirmar si el techo PIR se presupuesta como panel aparte de los muros.
+5. Techo PIR: se presupuesta al mismo precio que el muro PIR (USD 50/m²).
 
 El panel con estas cantidades está en `index.html` (se publica con GitHub Pages).
